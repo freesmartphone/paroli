@@ -1,6 +1,32 @@
 what do we want?
 
-effects when switching between the OM apps
-implement the home screen
-implement the "top bar"
-allow other apps (gtk)
+1. Effects when switching between the OM apps
+If every app is a X window any kind of effect must be done through a composite
+manager (eg. compiz). It can be incredible slow if we dont support any gl
+acceleration, so we must build EXA acceleration and use AIGLX as X server.
+(wm based).
+
+If we make every app be part of our own evas canvas (X window) we can implement
+different effects, but the infrastructure for it isnt done either 
+(self-contained).
+
+2. Implement the home screen
+This is relative to how we implement the whole architecture of the applications
+If we choose "self-contained", siwtiching to the home screen is just a matter of
+swapping the graphics elements the current page has.
+
+If we choose "wm based", we need to inform the wm to show our (home) window
+ and hide (close?) others. Im not sure if we are able to change the wm policy
+like modifying the stack of windows client side
+
+Another option for the "wm based" case is to create an e17 plugin to allow the
+desired behaviour, like clicking somewhere and showing the home window.
+
+3. Implement the "top bar"
+If we choose "wm based" we'll need a wm addition to add our toolbar instead of
+the wm's one. For the "self contained" we need to create that our own.
+
+4. Allow other apps (gtk)
+What "allows" means here? be able to run other apps (which is possible as we'll use a X server), or be able to make those apps consistent to our own design,
+like window stacking, switching, etc
+
