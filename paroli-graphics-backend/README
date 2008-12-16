@@ -1,0 +1,3 @@
+README
+
+The graphics backend is a vital part of the paroli concept, as it creates virtual windows on/in one x-window allowing different effects to be implemented in edje and etk.

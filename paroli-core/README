@@ -1,0 +1,3 @@
+README
+
+Paroli Core is the communicational core which links the applications, services and graphics backend, listens for dbus calls etc.
