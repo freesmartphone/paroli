@@ -1,6 +1,8 @@
 what do we want?
 
 1. Effects when switching between the OM apps
+
+round 1:
 If every app is a X window any kind of effect must be done through a composite
 manager (eg. compiz). It can be incredible slow if we dont support any gl
 acceleration, so we must build EXA acceleration and use AIGLX as X server.
@@ -10,7 +12,11 @@ If we make every app be part of our own evas canvas (X window) we can implement
 different effects, but the infrastructure for it isnt done either 
 (self-contained).
 
+round 2:
+couldn't we create our "self-contained" solution and let it run on the wm ? The only difficlty I see there is the behaviour of our top-bar, but maybe via dbus calls to paroli-core ?  
+  
 2. Implement the home screen
+round 1:
 This is relative to how we implement the whole architecture of the applications
 If we choose "self-contained", siwtiching to the home screen is just a matter of
 swapping the graphics elements the current page has.
@@ -21,12 +27,21 @@ like modifying the stack of windows client side
 
 Another option for the "wm based" case is to create an e17 plugin to allow the
 desired behaviour, like clicking somewhere and showing the home window.
+round 2:
+In my naïve world I thought we could adapt the illume theme to show .desktop files the way we want it to and integrate the clock on the desktop as well? Too naïve?
 
 3. Implement the "top bar"
+round 1:
 If we choose "wm based" we'll need a wm addition to add our toolbar instead of
 the wm's one. For the "self contained" we need to create that our own.
 
+round 2:
+I opt for the "wm based" here and would rather look into replacing the standard top-bar with ours.
+
 4. Allow other apps (gtk)
+round 1:
 What "allows" means here? be able to run other apps (which is possible as we'll use a X server), or be able to make those apps consistent to our own design,
 like window stacking, switching, etc
 
+round 2:
+  allowing here is running and being able to switch to them as well, which means we need a wm
