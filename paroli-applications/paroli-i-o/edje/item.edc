@@ -1,0 +1,573 @@
+//item added for each history item
+group { name: "history_item";
+     min: 470 80;
+     max: 470 80;
+     parts {
+        part
+        {
+            name: "base";
+            type: RECT;
+            description{ state: "default" 0.0;
+              color:0 0 0 255;
+              rel1{
+                  relative: 0.01 0.01;
+              }
+              rel2 {
+                  relative: 0.99 0.99;
+              }
+            }
+            description{ state: "edit" 0.0;
+              color:0 0 0 255;
+              rel1{
+                  relative: 0.01 0.01;
+              }
+              rel2 {
+                  relative: 0.99 0.99;
+              }
+            }
+        }
+        part{
+            name: "bottom";
+            type:RECT;
+            description
+            {
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "base";
+                }
+            }
+        }
+        part{
+            name: "msgs-button";
+            type:RECT;
+            description
+            {
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "bottom";
+                }
+                rel2 
+                {
+                    relative: 0.2 1.0;
+                    to: "bottom";
+                }
+            }
+        }
+        part
+        {
+            name: "msgs-button-text";
+            type: TEXT;
+            mouse_events:0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.1 0.5;
+                    size: 30;
+                    text: "Msg";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "msgs-button";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "msgs-button";
+                }
+
+            }
+            description
+            {
+              state: "edit" 0.0;
+              inherit: "default" 0.0;
+            }
+        }
+        part{
+            name: "roof";
+            type:RECT;
+            description
+            {
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "clickable";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "clickable";
+                }
+            }
+        }
+        part
+        {
+            name: "label";
+            type: TEXT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 40;
+                    text: "Testos";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "clickable";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.6;
+                    to: "clickable";
+                }
+
+            }
+            description
+            {
+              state: "edit" 0.0;
+              inherit: "default" 0.0;
+              rel1 
+                {
+                    relative: 0.2 0.0;
+                    to: "clickable";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.6;
+                    to: "clickable";
+                }
+            }
+        }
+        part{
+            name: "label-number";
+            type: TEXT;
+            mouse_events:0;
+            description { 
+                state: "default" 0.0;
+                visible:1;
+                color: 255 255 255 255;
+                text {
+                    align: 0.1 0.15;
+                    size: 20;
+                    text: "0000-00-0000000";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.0 0.51;
+                    to: "clickable";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to: "clickable";
+                }
+            }
+            description
+            {
+              state: "edit" 0.0;
+              inherit: "default" 0.0;
+              rel1 
+                {
+                    relative: 0.2 0.61;
+                    to: "clickable";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "clickable";
+                }
+            }
+        }
+//         part
+//         {
+//             name: "label-number";
+//             type: TEXT;
+//             description 
+//             { 
+//                 state: "default" 0.0;
+//                 rel1 
+//                 {
+//                     relative: 0.0 0.61;
+//                     to: "clickable";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 1.0 1.0;
+//                     to: "clickable";
+//                 }
+//             }
+//             description
+//             {
+//               state: "edit" 0.0;
+//               inherit: "default" 0.0;
+//               rel1 
+//                 {
+//                     relative: 0.2 0.61;
+//                     to: "clickable";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 1.0 1.0;
+//                     to: "clickable";
+//                 }
+//             }
+//         }
+        part
+        {
+            name: "border-outer";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                visible:0;
+                color:0 0 0 255;
+                rel1
+                {
+                    to:"clickable";
+                    relative: 0.01 0.01;
+                }
+                rel2 
+                {
+                    to:"clickable";
+                    relative: 0.99 0.99;
+                }
+            }
+        }
+        part
+        {
+            name: "clickable";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:255 255 0 0;
+                rel1
+                {
+                    relative: 0.0 0.0;
+                    to:"base";
+                }
+                rel2 
+                {
+                    relative: 1.00 1.00;
+                    to:"base";
+                }
+            }
+            description
+            { 
+                state: "moved" 0.0;
+                color:255 255 0 0;
+                rel1
+                {
+                    relative: 0.3 0.0;
+                    to:"base";
+                }
+                rel2 
+                {
+                    relative: 1.00 1.00;
+                    to:"base";
+                }
+            }
+//             dragable {
+//               confine: "clickable";
+//               events:  "clickable-color";
+//               x: 1 0 1;
+//               y: 0 0 0;
+//             }
+        }
+//         part{
+//             name:"clickable-color";
+//             type:RECT;
+//             mouse_events:0;
+//             description
+//             { 
+//                 state: "default" 0.0;
+//                 color:255 0 0 255;
+//                 rel1
+//                 {
+//                     relative: 0.5 0.2;
+//                     to: "clickable";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 0.8 0.3;
+//                     to: "clickable";
+//                 }
+//             }
+//         }
+//         part{
+//             name: "container";
+//             type:RECT;
+//             description
+//             { 
+//                 state: "default" 0.0;
+//                 color:255 255 0 255;
+//                 rel1
+//                 {
+//                     relative: 0.0 0.0;
+//                     to:"base";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 0.2 1.00;
+//                     to:"base";
+//                 }
+//             }
+//             description
+//             {
+//                 state: "moved" 0.0;
+//                 visible:0;
+//             }
+//             dragable {
+// //               confine: "container";
+//               events:  "container";
+//               x: 1 0 1;
+//               y: 0 0 0;
+//             }
+//         }
+//         part{
+//             name: "container-2";
+//             type:RECT;
+//             description
+//             {
+//                 state: "default" 0.0;
+//                 visible:0;
+//             }
+//             description
+//             { 
+//                 state: "moved" 0.0;
+//                 color:255 255 0 255;
+//                 rel1
+//                 {
+//                     relative: 0.0 0.0;
+//                     to:"base";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 0.2 1.00;
+//                     to:"base";
+//                 }
+//             }
+//             dragable {
+// //               confine: "container";
+//               events:  "container-2";
+//               x: 1 0 1;
+//               y: 0 0 0;
+//             }
+//         }
+        part
+        {
+            name: "redelete-base";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:0 0 0 0;
+                visible:0;
+                rel1
+                {
+                    relative: 0.0 0.0;
+                }
+                rel2 
+                {
+                    relative: 1.00 1.00;
+                }
+            }
+            description
+            { 
+                state: "edit" 0.0;
+                inherit:"default" 0.0;
+                visible:1;
+            }
+        }
+        part
+        {
+            name: "edit-base";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:0 0 0 125;
+                visible:0;
+                rel1
+                {
+                    relative: 0.0 0.0;
+                }
+                rel2 
+                {
+                    relative: 1.00 1.00;
+                }
+            }
+            description
+            { 
+                state: "edit" 0.0;
+                inherit:"default" 0.0;
+                visible:1;
+            }
+        }
+        part
+        {
+            name: "delete-button";
+            type: RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                visible: 0;
+            }
+            description
+            {
+              state: "edit" 0.0;
+              color: 124 0 0 255;
+              rel1 
+                {
+                    relative: 0.0 0.26;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.18 0.70;
+                    to: "base";
+                }
+            }
+        }
+        part
+        {
+            name: "edit-base-button";
+            type: TEXT;
+            mouse_events:0;
+            description
+            { 
+                state: "default" 0.0;
+                color:255 255 255 255;
+                visible:0;
+                text
+                {
+                    align:0.1 0.1;
+                    size:20;
+                    text:"delete";
+                    font:"Sans";
+                }
+                rel1
+                {
+                    relative: 0.0 0.0;
+                    to: "delete-button";
+                }
+                rel2 
+                {
+                    relative: 1.00 1.00;
+                    to: "delete-button";
+                }
+            }
+            description
+            { 
+                state: "edit" 0.0;
+                inherit:"default" 0.0;
+                visible:1;
+            }
+        }
+    }
+  programs {
+          program{
+            name:"edit-prog-to-edit";
+            signal:"edit";
+            source:"*";
+            action: STATE_SET "edit" 0.0;
+            target:"base";
+            target:"redelete-base";
+            target:"edit-base";
+            target:"edit-base-button";
+            target:"label";
+            target:"label-number";
+            target:"delete-button";
+          }
+          program{
+            name:"edit-prog-to-normal";
+            signal:"normal";
+            source:"";
+            action: STATE_SET "default" 0.0;
+            target:"base";
+            target:"edit-base";
+            target:"redelete-base";
+            target:"edit-base-button";
+            target:"label";
+            target:"label-number";
+            target:"delete-button";
+          }
+          program{
+            name:"not-delete";
+            signal:"mouse,clicked,1";
+            source:"delete-button";
+            action: STATE_SET "default" 0.0;
+            target:"edit-base";
+            target:"edit-base-button";
+            target:"delete-button";
+            target:"base";
+            target:"label";
+            target:"label-number";
+          }
+          program{
+            name:"redelete";
+            signal:"mouse,clicked,1";
+            source:"redelete-base";
+            action: STATE_SET "edit" 0.0;
+            target:"delete-button";
+            target:"edit-base";
+            target:"edit-base-button";
+            target:"base";
+            target:"label";
+            target:"label-number";
+          }
+          program{
+            name:"clickable-pressed";
+            signal:"mouse,up,1";
+            source:"clickable";
+            action: SIGNAL_EMIT "call_contact" "i/o";
+          }
+          program{
+            name:"remove-called-func";
+            signal:"remove_called";
+            source:"*";
+            action: SIGNAL_EMIT "remove_self" "momo";
+          }
+//           program{
+//             name:"container-pressed";
+//             signal:"drag*";
+//             source:"container";
+//             action: STATE_SET "moved" 0.0;
+//             transition: LINEAR 0.36667;
+//             target:"clickable";
+//             target:"container";
+//             target:"container-2";
+//           }
+//           program{
+//             name:"container-2-pressed";
+//             signal:"drag*";
+//             source:"container-2";
+//             action: STATE_SET "default" 0.0;
+//             transition: LINEAR 0.36667;
+//             target:"clickable";
+//             target:"container";
+//             target:"container-2";
+//           }
+  }
+}

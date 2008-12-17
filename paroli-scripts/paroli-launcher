@@ -1,0 +1,270 @@
+#!/usr/bin/python
+#
+#    Paroli
+#
+#    copyright 2008  Openmoko
+#    Guillaume Chereau (charlie@openmoko.org)
+#
+#    This file is part of Paroli.
+#
+#    Paroli is free software: you can redistribute it and/or modify it
+#    under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Paroli is distributed in the hope that it will be useful, but
+#    WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+
+"""DBus launcher paroli main script
+
+This script will load all the plugins, then start a DBus server
+listening that we can use to start any application.
+
+It is still experimental.
+
+To use it, start it (./launcher.py), then use for example dbus-send to
+start an application, e.g. : dbus-send --session   \
+--dest='org.tichy.launcher' /Launcher --print-reply \
+org.tichy.Launcher.Launch string:Contacts
+
+Note for neo : We need to remember to set DISPLAY=:0 even when we call
+the dbus method !
+"""
+
+import os
+import sys
+import dbus
+import dbus.service
+from optparse import OptionParser
+import ConfigParser
+import logging
+
+# This is to make sure that we use the local tichy lib if run from the
+# test directory
+sys.path.insert(0, '../paroli-core/')
+sys.path.insert(0, '../paroli-graphics-backend/')
+
+import tichy
+
+logger = logging.getLogger('')
+
+
+def parse_options():
+    """Parse the command line options
+
+    :Returns: the OptionParser result object
+    """
+    parser = OptionParser()
+    parser.add_option("", "--gui-backend", dest="gui_backend",
+                      help="select a specific gui backend",
+                      metavar="BACKEND",
+                      choices=["sdl", "csdl", "gtk", "etk", "paroli"],
+                      default=None)
+    parser.add_option("", "--fullscreen",
+                      action='store_true', dest="fullscreen",
+                      help="run tichy in fullscreen",
+                      default=False)
+    parser.add_option("", "--experimental",
+                      action='store_true', dest="experimental",
+                      help="Use experimental features",
+                      default=False)
+    parser.add_option("", "--session",
+                      action='store_const', dest='bus',
+                      help="Connect to the session bus",
+                      const='session', default='system')
+    parser.add_option("", "--launch", dest='launch',
+                      help="launch an applet using DBus",
+                      metavar="APPLICATION",
+                      default=None)
+
+    (options, args) = parser.parse_args()
+    return options
+
+
+def setup_logging():
+    """Set up two logging handlers, one in the log file, one in the
+    stdoutput"""
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
+        filename='/tmp/paroli.log', filemode='w')
+
+    formatter = logging.Formatter(
+        '%(name)-8s %(levelname)-8s %(message)s')
+    stream_log = logging.StreamHandler()
+    stream_log.setFormatter(formatter)
+    stream_log.setLevel(logging.INFO)
+    logger.addHandler(stream_log)
+
+
+def parse_config():
+    """parse the config files
+
+    We look into 3 locations : first the local dir, then /etc/paroli/,
+    then the home directory
+
+    :Returns: the ConfigParser object
+    """
+    config = ConfigParser.SafeConfigParser()
+    local_path = "./paroli.cfg"
+    system_path = "/etc/paroli/paroli.cfg"
+    home_path = os.path.expanduser("~/.paroli/paroli.cfg")
+    for path in [local_path, system_path, home_path]:
+        logger.info("read config file %s", path)
+        config.read(path)
+    return config
+
+
+class InitAll(tichy.Tasklet):
+    """Perform all basic initialization of services"""
+
+    def run(self):
+        # Register on the GSM Network
+        gsm_service = tichy.Service('GSM')
+        yield gsm_service.register()
+        # Get all the contacts
+        contacts = tichy.Service('Contacts')
+        yield contacts.init()
+        messages_service = tichy.Service('Messages')
+        yield messages_service.init()
+
+        # Finally we can start to listen for incoming calls
+        logger.info("start AutoAnswerCall")
+        yield AutoAnswerCall()
+
+
+class AutoAnswerCall(tichy.Tasklet):
+
+    def run(self):
+        # We don't create any window, just run in the background...
+        # warning; that would only work with gtk or etk backend...
+        gsm_service = tichy.Service('GSM')
+        while True:
+            call = yield tichy.Wait(gsm_service, 'incoming-call')
+            logger.info("got incoming call")
+            caller_service = tichy.Service('Caller')
+            yield caller_service.call(None, call)
+
+
+class Launcher(dbus.service.Object):
+    """Launch applets via DBus call
+
+    example, to launch the Contacts application, using dbus-send :
+      dbus-send --system --dest='org.tichy' /Launcher --print-reply \
+      org.tichy.Launcher.Launch string:Contacts
+    """
+
+    def __init__(self, *args, **kargs):
+        super(Launcher, self).__init__(*args, **kargs)
+        self.screen = None
+        logger.info("registered applications :")
+        for app in tichy.Application.subclasses:
+            if app.name:
+                logger.info("- %s", app.name)
+
+    @dbus.service.method("org.tichy.Launcher", "s")
+    def Launch(self, name):
+        """Launch a registered tichy application by name"""
+        logger.info("launch %s", name)
+        for app in tichy.Application.subclasses:
+            if app.name == name:
+                self.launch(app).start()
+                break
+        else:
+            logger.error("no application named  %s", name)
+
+    @tichy.tasklet.tasklet
+    def launch(self, app):
+        """Actually launch the application"""
+        kill_on_close = False
+        if not self.screen:
+            self.screen = self.create_screen()
+            kill_on_close = True
+        try:
+            yield app(self.screen)
+        except Exception, ex:
+            logger.error("application %s failed : %s", app.name, ex)
+            import traceback
+            logger.error(traceback.format_exc())
+        if kill_on_close:
+            self.screen.destroy()
+            self.screen = None
+
+    def create_screen(self):
+        painter = tichy.gui.Painter((480, 640))
+        return tichy.gui.Screen(tichy.mainloop, painter)
+
+    @dbus.service.method("org.tichy.Launcher")
+    def Quit(self):
+        """Quit tichy"""
+        logger.info("quit mainloop")
+        tichy.mainloop.quit()
+
+
+def launch(name, options):
+    """Use dbus to call the launcher"""
+    if options.bus == 'system':
+        bus = dbus.SystemBus()
+    else:
+        bus = dbus.SessionBus()
+    launcher = bus.get_object('org.tichy.launcher', '/Launcher')
+    launcher = dbus.Interface(launcher, 'org.tichy.Launcher')
+    launcher.Launch(options.launch)
+
+
+if __name__ == '__main__':
+    options = parse_options()
+
+    if options.launch:
+        launch(options.launch, options)
+        sys.exit(0)
+
+    setup_logging()
+    config = parse_config()
+
+    logger.info("init gui")
+    tichy.init_gui(options.gui_backend)
+
+    logger.info("connect to dbus")
+    if options.bus == 'system':
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+    else:
+        bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+    bus_name = dbus.service.BusName('org.tichy.launcher', bus)
+
+    # We import all the modules into the plugin directory
+    default_plugins_path = '/usr/share/tichy/plugins'
+    plugins_dir = config.get('plugins', 'path', default_plugins_path)
+    plugins_dirs = plugins_dir.split(':')
+    for plugins_dir in plugins_dirs:
+        try:
+            logger.info("try to load plugins in %s", plugins_dir)
+            tichy.plugins.import_all(plugins_dir)
+        except IOError:
+            logger.info("failed to load plugins in %s", plugins_dir)
+
+    # Set all the default services
+    if config.has_option('services', 'defaults'):
+        defaults = config.get('services', 'defaults').split(',')
+        for default in defaults:
+            service, name = default.strip().split(':')
+            logger.info("set service %s to %s", service, name)
+            tichy.Service.set_default(service, name)
+
+    # We set the default design
+    tichy.Service.set_default('Design', 'Default')
+
+    logger.info("start InitAll")
+    InitAll().start()
+
+    logger.info("start launcher service")
+    launcher = Launcher(bus, '/Launcher')
+
+    logger.info("starting mainloop")
+    tichy.mainloop.run()
+    logger.info("quit")

@@ -1,0 +1,14 @@
+styles
+{
+    style 
+    {
+      name: "textblock_style";
+      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+    }
+}
+collections
+{
+    #include "list.edc"
+    #include "item.edc"
+
+}

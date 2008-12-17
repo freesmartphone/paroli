@@ -1,0 +1,18 @@
+styles
+{
+    style 
+    {
+      name: "textblock_style";
+      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+    }
+}
+collections
+{
+    #include "dialpad_numbers.edc"
+    #include "contacts_details_rev2.edc"
+    #include "contacts_item.edc"
+    #include "edit_name.edc"
+    #include "edit_number_type.edc"
+    #include "contacts_list.edc"
+
+}

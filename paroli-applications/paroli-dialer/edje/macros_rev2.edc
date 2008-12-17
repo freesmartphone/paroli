@@ -1,0 +1,145 @@
+#define _PART_STATE_CHANGE_PROG(state, step ); \
+program \
+    {\
+            name: state"state_change_to_";\
+            signal: "to_"state"_state";\
+            source: "*";\
+            action: STATE_SET state step;\
+            target: "num_field";\
+            target: "num_field-text";\
+            target: "call-button";\
+            target: "call-button-inner";\
+            target: "call-button-text";\
+            target: "del-button";\
+            target: "del-button-inner";\
+            target: "del-button-text";\
+            target: "blocker";\
+        }\
+
+#define _PART_KEYPAD(partname, label, subtext, r1x, r1y, r2x, r2y ); \
+part\
+        {\
+            name: partname;\
+            type: RECT;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 0 0 0 255;\
+                rel1 \
+                {\
+                    relative: r1x r1y;\
+                }\
+                rel2 \
+                {\
+                    relative: r2x r2y;\
+                }\
+            }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 255 255 255 255;\
+            }\
+        }\
+        part\
+        {\
+            name:partname"-inner";\
+            type: RECT;\
+            mouse_events:0;\
+            description\
+            { \
+                state: "default" 0.0;\
+                color: 0 0 0 255;\
+                rel1 \
+                {\
+                    relative: 0.01 0.02;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 0.99 0.98;\
+                    to: partname;\
+                }\
+            }\
+        }\
+        part\
+        {\
+            name: partname"-text";\
+            type: TEXT;\
+            mouse_events: 0;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 255 255 255 255;\
+                text \
+                {\
+                    align: 0.5 0.1;\
+                    size: 40;\
+                    text: label;\
+                    font: "Sans";\
+                }\
+                rel1 \
+                {\
+                    relative: 0.0 0.0;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 1.0 1.0;\
+                    to: partname;\
+                }\
+            }\
+        }\
+        part\
+        {\
+            name: partname"-subtext";\
+            type: TEXT;\
+            mouse_events: 0;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 255 255 255 255;\
+                text \
+                {\
+                    align: 0.5 0.8;\
+                    size: 20;\
+                    text: subtext;\
+                    font: "Sans";\
+                }\
+                rel1 \
+                {\
+                    relative: 0.0 0.0;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 1.0 1.0;\
+                    to: partname;\
+                }\
+            }\
+        } \
+
+#define _PART_KEYPAD_PROG(partname, label ); \
+program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,clicked,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+            after: partname"-unpressed";\
+        }\
+        program \
+        { \
+            name: partname"-unpressed";\
+            action: STATE_SET "default" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+            after: partname"-send";\
+        }\
+        program \
+        { \
+            name: partname"-send";\
+            action: SIGNAL_EMIT "add_digit" label"";\
+        }\
