@@ -140,7 +140,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         ##add window actions
         ##close window
-        new_edje.edj.signal_callback_add("close_details", "*", self.close)
+        new_edje.edj.signal_callback_add("close_details", "*", self._close)
         ##add contact from phonebook
         new_edje.edj.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
@@ -191,7 +191,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.part_text_set('message-text',text)
         new_edje.edj.signal_callback_add("reply", "*", self.reply, message, new_edje)
         new_edje.edj.signal_callback_add("forward", "*", self.forward, message, new_edje)
-        new_edje.edj.signal_callback_add("close_details", "*", self.close)
+        new_edje.edj.signal_callback_add("close_details", "*", self._close)
         new_edje.edj.signal_callback_add("delete_message", "*", self.delete_message, message, new_edje,emission, canvas_obj)
         new_edje.edj.signal_callback_add("top-bar", "*", self.top_bar)
         message.read()
@@ -257,7 +257,7 @@ class ContactsApp(tichy.Application):
     
     ##general functions on module
     ##close window
-    def close(self,emission, source, param):
+    def _close(self,emission, source, param):
         emission.delete()
     
     ##load phonebook
