@@ -124,7 +124,7 @@ class ContactsApp(tichy.Application):
         
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         new_edje.edj.signal_callback_add("call_contact", "*", self.call_contact)
-        new_edje.edj.signal_callback_add("close_details", "*", self.close)
+        new_edje.edj.signal_callback_add("close_details", "*", self._close)
         new_edje.edj.signal_callback_add("edit_number", "*", self.edit_number_type, contact,new_edje, graphic_objects)
         new_edje.edj.signal_callback_add("edit_name", "*", self.edit_name, contact, new_edje, graphic_objects)
         new_edje.edj.signal_callback_add("delete_contact", "*", self.delete_contact, contact, new_edje,emission, graphic_objects)
@@ -322,7 +322,7 @@ class ContactsApp(tichy.Application):
         if len(value) != 0:
           emission.part_text_set("num_field-text",value[:-1])
     
-    def close(self,emission, source, param):
+    def _close(self,emission, source, param):
         emission.delete()
     
     def close_keyboard(self,*args):
