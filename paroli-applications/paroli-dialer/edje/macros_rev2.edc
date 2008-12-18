@@ -117,7 +117,7 @@ part\
                     to: partname;\
                 }\
             }\
-        } \
+        }
 
 #define _PART_KEYPAD_PROG(partname, label ); \
 program \
@@ -142,4 +142,4 @@ program \
         { \
             name: partname"-send";\
             action: SIGNAL_EMIT "add_digit" label"";\
-        }\
+        }
