@@ -49,6 +49,9 @@ class ContactsApp(tichy.Application):
         ##connect to tichy contacts service
         self.contact_service = Service('Contacts')
         self.phone_book = self.contact_service.contacts
+        def cmp_by_name(x, y):
+            return cmp(x.name, y.name)
+        self.phone_book.sort(cmp_by_name)
         
         ##create empty contacts objects list
         self.contact_objects_list = None
@@ -117,7 +120,7 @@ class ContactsApp(tichy.Application):
         #name = emission.part_text_get('label')
         number = str(contact.tel)
         name = str(contact.name)
-        info = str(contact.note)
+        info = str(contact.note) if hasattr(contact, 'note') else "" # The sim contact don't have a note
         new_edje = gui.edje_gui(self.main,'contacts_details',self.edje_file)
         new_edje.edj.part_text_set('number-text',number)
         new_edje.edj.part_text_set('name-text',name)
