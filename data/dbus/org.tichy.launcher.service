@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.tichy.launcher
+Exec=/usr/bin/tichy-launcher
+User=root
