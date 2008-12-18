@@ -1,0 +1,58 @@
+                              BUGS LIST
+
+Waiting for a issues traking system, here is the bug list thanks to
+the testing team
+
+1) Launching Application : sometimes show error dialog "Application
+   Execution Error"
+
+2) Launching Application : It takes time to open applications (Once
+   open applications second time is fast to open)
+
+3) Tele : No Connection screen while Dial ( screen become black empty
+   and only show top bar after press "call" menu)
+
+4) Tele : Can't initiate call
+
+5) Tele : There is no incoming call screen ( Just ring tone and
+   Vibration) or no incoming call (other side call to neo but no
+   reaction)
+
+6) Tele :  if click number quickly only shows first clicked number
+
+7) Tele : There is no button to call from People (if press blank
+   screen above keypad it go through people)
+
+8) Tele : Can't save number from Tele
+
+9) Tele : There is mute button but unable to use in the process of
+   connecting call
+
+10) Tele : Can't press +
+
+11) Tele : Cancel button appear after disconnected call few sec
+
+12) I/O : Can't scroll I/O list
+
+13) I/O : The list showing up only date without name or number
+
+14) I/O : Unable to use the Edit button
+
+15) I/O : Can't make call from I/O (it can make call rarely)
+
+16) Msgs : if send message to incorrect number it shows error dialog (
+    send message without number it shows error dialog)
+
+17) Msgs : New message coming but there is no message in the list
+    (when new message coming only sounds Alert)
+
+18) Msgs : There is no Message history in the list view (even sent
+    message is not there)
+
+19) Msgs :  There is no button to send from people
+
+20) People : Can not slide right to enter to Msg
+
+21) People :  Can't make call
+
+22) People :  No showing contact list when launch the people
