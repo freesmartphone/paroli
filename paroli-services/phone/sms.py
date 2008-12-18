@@ -128,6 +128,7 @@ class TestSms(tichy.Service):
     def update(self):
         yield None
 
+    @tichy.tasklet.tasklet
     def send(self, sms):
         logger.info("Sending message to %s", sms.number)
         yield tichy.tasklet.Sleep(2)
