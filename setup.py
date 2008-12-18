@@ -65,7 +65,7 @@ setup(name='Paroli',
       description="Paroli",
       author="Mirko Lindler",
       author_email='mirko@openmoko.org',
-      # url='',
+      package_dir = {'': 'paroli-core'},
       packages = ['paroli-core/tichy'],
       scripts= ['paroli-scripts/paroli-launcher'],
       # XXX: Those locations may not work on the neo !

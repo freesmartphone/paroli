@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=PLauncher
+TryExec=paroli-launcher
+Icon=tichy
+GenericName=paroli-launcher
+Comment=Paroli Launcher
+StartupNotify=false
+Exec=paroli-launcher
+Terminal=false
+Type=Application
+Categories=Office;
