@@ -26,6 +26,7 @@ import logging
 LOGGER = logging.getLogger('Contact')
 
 import tichy
+from tel_number import TelNumber
 
 # TODO: Redo the whole contact things. We should have a single contact
 # class, no subclass for different backends, instead we have
@@ -159,7 +160,7 @@ class Contact(tichy.Item):
     Field = ContactField        # Alias for the ContactField class
 
     name = ContactField('name', tichy.Text, True)
-    tel = ContactField('tel', tichy.TelNumber)
+    tel = ContactField('tel', TelNumber)
     fields = [name, tel]
 
     def __init__(self, **kargs):
@@ -274,7 +275,7 @@ class PhoneContact(Contact):
     storage = 'Phone'
 
     name = ContactField('name', tichy.Text, True)
-    tel = ContactField('tel', tichy.TelNumber)
+    tel = ContactField('tel', TelNumber)
     note = ContactField('note', tichy.Text)
     tel_type = ContactField('tel_type', tichy.Text)
     fields = [name, tel, note, tel_type]

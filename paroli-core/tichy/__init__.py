@@ -36,7 +36,6 @@ from actor import Actor
 from image import Image
 from time import Time
 from persistance import Persistance
-from tel_number import TelNumber
 import notifications
 
 from dialog import Dialog

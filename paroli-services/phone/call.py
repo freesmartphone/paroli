@@ -21,7 +21,7 @@
 __docformat__ = 'reStructuredText'
 
 import tichy
-
+from tel_number import TelNumber
 
 class Call(tichy.Item):
     """Class that represents a voice call"""
@@ -69,7 +69,7 @@ class Call(tichy.Item):
             released
                 The call has been released
         """
-        self.number = tichy.TelNumber.as_type(number)
+        self.number = TelNumber.as_type(number)
         self.direction = direction
         self.timestamp = tichy.Time.as_time(timestamp)
         self.status = status

@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger('Messages')
 
 import tichy
-
+from tel_number import TelNumber
 
 class Message(tichy.Item):
     """Base class for all messages
@@ -55,7 +55,7 @@ class Message(tichy.Item):
                 the time at which we received the message. If set to
                 None we use the current time
         """
-        self.peer = tichy.TelNumber.as_type(peer)
+        self.peer = TelNumber.as_type(peer)
         self.text = tichy.Text.as_type(text)
         self.timestamp = tichy.Time.as_time(timestamp)
         assert direction in ['in', 'out'], direction
