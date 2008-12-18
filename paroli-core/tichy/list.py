@@ -87,7 +87,7 @@ class List(list, Item):
 
     def sort(self, *args, **kargs):
         """Sort the list inplace"""
-        list.sort(*args, **kargs)
+        list.sort(self, *args, **kargs)
         self.emit('modified')
 
     def view(self, parent, **kargs):
