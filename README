@@ -1,3 +1,18 @@
 README
 
-Paroli is a fullscreen user interface for open devices.
+  Paroli is a fullscreen user interface for open devices.
+
+
+HOW TO RUN IT
+
+  paroli run as a dbus service waiting for client to send commands to
+  start applicatons.  The starting script is in the 'paroli-script'
+  directory.  See the instructions in paroli-script/README.
+
+
+AUTHORS:
+
+  Mirko Lindler <mirko@openmoko.org>
+  Guillaume 'Charlie' Chereau <charlie@openmoko.org>
+  Jorge Luis Zapata <turran@openmoko.com>
+  Jeremy Chang <jeremy@openmoko.com>

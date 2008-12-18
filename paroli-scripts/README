@@ -1,0 +1,38 @@
+                           PAROLI LAUNCHER
+
+The launcher is a script that will load tichy and all the servcies and
+plugins, then start a dbus client that allow clients to start
+applications by name.
+
+
+                         RUN IT ON THE PHONE
+
+For the DBus connection to succedd, we need to make sure than the
+proper dbus configurations file are installed in the filesystem. That
+is the file ./data/dbus/org.tichy.launcher.service should go into
+/usr/share/dbus-1/system-services/ and the file ./data/dbus/tichy.conf
+should go in /etc/dbus-1/system.d/
+
+To start a application send a dbus call to org.tichy.launcher, object
+/Launcher method org.tichy.Launcher.Launch(s). The parameter being the
+name of the application we want to start.
+
+You can use dbus-send to make the call :
+
+  dbus-send --system --dest='org.tichy.launcher' /Launcher \
+  --print-reply org.tichy.Launcher.Launch string:Paroli-Contacts
+
+or you can use paroli-launcher --launch :
+
+  paroli-launcher --launch Paroli-Contacts
+
+
+                        RUN IT ON THE DESKTOP
+
+It is basically the same, except that we can use the session bus
+instead of the system bus. Then we don't need to have the dbus conf
+file installed.
+
+To use the session bus, use the --session argument :
+
+  paroli-launcher --session
