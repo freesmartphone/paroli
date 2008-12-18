@@ -298,7 +298,8 @@ class Caller(tichy.Application):
 
         try:
             # The case when we have an incoming call
-            if not isinstance(number, (str, tichy.Text)):
+            # XXX: we should use an other way to check for a call object !
+            if not isinstance(number, (basestring, tichy.Text)):
                 call = number
                 #print dir(call)
                 self.edje_obj.edj.signal_emit('to_incoming_state',"*")
