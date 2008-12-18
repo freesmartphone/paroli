@@ -30,7 +30,24 @@ from distutils.extension import Extension
 from glob import glob
 import commands
 
-# process from Cython.Distutils import build_ext
+from distutils.command.build import build as _build
+from distutils.command.clean import clean as _clean
+
+class my_build(_build):
+    def run(self):
+        _build.run(self)
+
+        # compile theme files
+        import subprocess
+        result = subprocess.call("cd ./paroli-applications; ./build.sh", shell=True)
+        if result != 0:
+            raise Exception("Can't build theme files. Built edje_cc?")
+
+class my_clean(_clean):
+    def run(self):
+        _clean.run(self)
+        # XXX: add cleaning of the .edj files
+
 
 def plugins_files(source, dest):
     """generate the plugins data files list
@@ -80,5 +97,11 @@ setup(name='Paroli',
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \
           + plugins_files('paroli-services', 'paroli/services') \
           + plugins_files('paroli-applications', 'paroli/applications') \
-          + dbus_data
+          + dbus_data,
+
+      cmdclass = {'build': my_build,
+                  'clean': my_clean},
+      
       )
+
+
