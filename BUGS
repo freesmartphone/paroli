@@ -3,22 +3,20 @@
 Waiting for a issues traking system, here is the bug list thanks to
 the testing team
 
-1) Launching Application : sometimes show error dialog "Application
-   Execution Error"
-
-2) Launching Application : It takes time to open applications (Once
-   open applications second time is fast to open)
+1) Launching Application : No information when we launch an
+   application before the launcher has complete its initialization
+   (This one is tricky. The first thing to do would be to be able to
+   see the initialization status in the top bar of illume)
 
 3) Tele : No Connection screen while Dial ( screen become black empty
    and only show top bar after press "call" menu)
-
-4) Tele : Can't initiate call
 
 5) Tele : There is no incoming call screen ( Just ring tone and
    Vibration) or no incoming call (other side call to neo but no
    reaction)
 
-6) Tele :  if click number quickly only shows first clicked number
+6) Tele : when we click a number quickly we only react to the first
+   clicked number
 
 7) Tele : There is no button to call from People (if press blank
    screen above keypad it go through people)
@@ -28,20 +26,18 @@ the testing team
 9) Tele : There is mute button but unable to use in the process of
    connecting call
 
-10) Tele : Can't press +
+10) Tele : Can't press + on the dialer keypad
 
 11) Tele : Cancel button appear after disconnected call few sec
 
-12) I/O : Can't scroll I/O list
+12) I/O : Can't scroll I/O list !
 
-13) I/O : The list showing up only date without name or number
+13) I/O : Sometime the list shows only date without name or number !
 
 14) I/O : Unable to use the Edit button
 
-15) I/O : Can't make call from I/O (it can make call rarely)
-
-16) Msgs : if send message to incorrect number it shows error dialog (
-    send message without number it shows error dialog)
+16) Msgs : if send message to incorrect number it shows an error
+    dialog ( send message without number it shows error dialog)
 
 17) Msgs : New message coming but there is no message in the list
     (when new message coming only sounds Alert)
@@ -51,8 +47,18 @@ the testing team
 
 19) Msgs :  There is no button to send from people
 
-20) People : Can not slide right to enter to Msg
+20) People : Can not slide a contact right to enter to Msg (see Will's
+    interaction design)
 
-21) People :  Can't make call
+22) People : When we launch it before the launcher is complete we see
+    an empty list (see bug 1)
 
-22) People :  No showing contact list when launch the people
+23) After sliding a list view, if we stop moving the mouse before
+    releasing the click, then it emits a click event !
+
+24) Sometime GSM turn antenna power on fails with a timeout
+
+25) Contacts with unicode character are not rendered correctly
+
+26) Msg : when there is a problem in the sending process (e.g : SIM
+    memory full), we don't get any feed back from the application
