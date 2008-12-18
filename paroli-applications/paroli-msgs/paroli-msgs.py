@@ -221,7 +221,7 @@ class ContactsApp(tichy.Application):
             
         message_service = tichy.Service('SMS')
         for i in numbers:
-          message = tichy.phone.SMS(i,text,'out')
+          message = message_service.create(number=i, text=text, direction='out')
           print type(message)
           send = message_service.send(message)
           print type(send)
