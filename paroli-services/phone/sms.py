@@ -23,6 +23,8 @@ import dbus
 import tichy
 from tichy.tasklet import WaitDBus
 
+from tel_number import TelNumber
+
 import logging
 logger = logging.getLogger('SMS')
 
@@ -81,7 +83,7 @@ class FreeSmartPhoneSMS(tichy.Service):
 
     def create(self, number='', text='', direction='out'):
         """create a new sms instance"""
-        number = tichy.TelNumber(number)
+        number = TelNumber(number)
         text = tichy.Text(text)
         return SMS(number, text)
 
@@ -119,7 +121,7 @@ class TestSms(tichy.Service):
         self.create('0123456789', 'Hello')
 
     def create(self, number='', text='', direction='out'):
-        number = tichy.TelNumber(number)
+        number = TelNumber(number)
         text = tichy.Text(text)
         return SMS(number, text, direction)
 
