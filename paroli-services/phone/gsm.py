@@ -77,6 +77,7 @@ class GSMService(tichy.Service):
         # TODO: add some checks for data consistency
         logs = []
         for kargs in data:
+            #print kargs
             call = Call(**kargs)
             logs.append(call)
         self.logs[:] = logs
@@ -177,7 +178,8 @@ class FreeSmartPhoneGSM(GSMService):
                 yield self._ask_pin()
 
     def _ask_pin(self):
-        window = tichy.Service("WindowsManager").get_app_parent()
+        #window = tichy.Service("WindowsManager").get_app_parent()
+        window = None
         editor = tichy.Service('TextEdit')
         pin = yield editor.edit(window, name="Enter PIN",
                                 input_method='number')
