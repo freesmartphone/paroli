@@ -118,7 +118,7 @@ class Persistance(object):
         
         for s in self.parser.sections():
             sub_result = {}
-            print s
+            #print s
             for k, v in self.parser.items(s):
                 #print g
                 #d = [k, v]<<<d

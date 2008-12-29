@@ -30,7 +30,7 @@ class Message(tichy.Item):
     """Base class for all messages
     """
 
-    def __init__(self, peer, text, direction, status=None, timestamp=None):
+    def __init__(self, peer, text, direction, status=None, timestamp=None, sim_index=None,sim_imsi=None,msg_hash=None):
         """Create a new message
 
         :Parameters:
@@ -55,16 +55,32 @@ class Message(tichy.Item):
                 the time at which we received the message. If set to
                 None we use the current time
         """
+        
+        storage = None
+        
+        if sim_imsi == None:
+            sim_imsi = tichy.Service('SIM').sim_info['imsi']
+        
         self.peer = TelNumber.as_type(peer)
         self.text = tichy.Text.as_type(text)
-        self.timestamp = tichy.Time.as_time(timestamp)
+        self.sim_index = sim_index
+        self.sim_imsi = sim_imsi
+        #TODO: fix timestamp to recognize timezones        
+        import time
+        if timestamp == None:
+            my_time = time.localtime()
+        else:
+            my_time = timestamp[:24]
+        #print time
+        self.timestamp = tichy.Time.as_time(my_time)
         assert direction in ['in', 'out'], direction
         self.direction = direction
         self.status = status or direction == 'out' and 'read' or 'unread'
         assert self.status in ['read', 'unread'], status
+        self.msg_hash = str(self.sim_imsi)+str(self.sim_index)+str(self.timestamp)
 
     def get_text(self):
-        return tichy.Text("%s" % str(self.peer))
+        return tichy.Text("%s" % str(self.msg_hash))
 
     def read(self):
         """Mark the message as read
@@ -123,12 +139,74 @@ class Message(tichy.Item):
 
     def to_dict(self):
         """return the message attributes in a python dict"""
+        service = tichy.Service('SIM')
         return {'peer': str(self.peer),
                 'text': str(self.text),
                 'timestamp': str(self.timestamp),
                 'direction': self.direction,
-                'status': self.status}
+                'status': self.status,
+                'sim_index': self.sim_index,
+                'sim_imsi': service.sim_info['imsi'],
+                'msg_hash': self.msg_hash}
 
+class PhoneMessage(Message):
+    """Message that is stored on the phone"""
+
+    storage = 'Phone'
+
+    #peer = TelNumber.as_type(peer)
+    #text = tichy.Text.as_type(text)
+    #timestamp = tichy.Time.as_time(timestamp)
+    #direction = tichy.Text.as_type(text)
+    #status = tichy.Text.as_type(text)
+    #fields = [name, text, timestamp, direction, status]
+
+    def __init__(self, **kargs):
+        super(PhoneMessage, self).__init__(**kargs)
+        self.connect('modified', self._on_modified)
+
+    def _on_modified(self, message):
+        logger.info("Phone message modified %s message", message)
+        yield self.save()
+
+    @classmethod
+    def import_(cls, message):
+        """import a contact into the phone"""
+        assert not isinstance(message, PhoneMessage)
+        yield PhoneMessage(peer=message.peer,text=message.text,timestamp=message.timestamp,direction=message.direction,status=message.status)
+
+    @classmethod
+    def save(cls):
+        """Save all the phone contacts"""
+        logger.info("Saving phone messages")
+        messages = tichy.Service('Messages').messages
+        data = [c.to_dict() for c in messages if isinstance(c, PhoneMessage)]
+        tichy.Persistance('messages/Phone').save(data)
+        yield None
+
+    @classmethod
+    def load(cls):
+        """Load all the phone contacts
+
+        Return a list of all the contacts
+        """
+        logger.info("Loading phone messages")
+        ret = []
+        data = tichy.Persistance('messages/phone').load()
+        for kargs in data:
+            message = PhoneMessage(**kargs)
+            ret.append(message)
+        yield ret
+        
+    def __get_number(self):
+        return self.peer
+    number = property(__get_number)
+
+    @tichy.tasklet.tasklet
+    def send(self):
+        """Tasklet that will send the message"""
+        sms_service = tichy.Service('SMS')
+        yield sms_service.send(self)
 
 class MessagesService(tichy.Service):
     """The service that stores all the messages
@@ -141,6 +219,7 @@ class MessagesService(tichy.Service):
     def __init__(self):
         self.outbox = tichy.List()
         self.inbox = tichy.List()
+        self.messages = tichy.List()
         # Prepare the future notification
         self.notification = None
 
@@ -149,6 +228,7 @@ class MessagesService(tichy.Service):
         yield self._load_all()
         self.outbox.connect('modified', self._on_lists_modified)
         self.inbox.connect('modified', self._on_lists_modified)
+        self.messages.connect('modified', self._on_lists_modified)
 
     def _on_lists_modified(self, box):
         print "TEST"
@@ -180,6 +260,28 @@ class MessagesService(tichy.Service):
         assert(isinstance(msg, Message))
         self.outbox.insert(0, msg)
 
+    def add_to_messages(self, msg):
+        """Add a `Message` into the outbox
+
+        :Parameters:
+            msg : `Message`
+                The message we add
+        """
+
+        logger.info("Add to messages : %s", msg)
+        assert(isinstance(msg, Message))
+        self.messages.append(msg)
+
+    def delete_message(self,msg):
+        current_imsi = tichy.Service('SIM').sim_info['imsi']
+        if msg.sim_imsi == current_imsi:
+            print 'deleting message: ' , msg.sim_index
+            try:
+                tichy.Service('SIM').remove_message(msg)
+            except Exception, e:
+                print e
+        self.messages.remove(msg)
+
     def on_message_read(self, msg):
         self._update()
 
@@ -187,7 +289,7 @@ class MessagesService(tichy.Service):
         """Update the notification according to the number of unread messages
         in the inbox.
         """
-        nb_unread = len([m for m in self.inbox if m.status == 'unread'])
+        nb_unread = len([m for m in self.messages if m.status == 'unread'])
         logger.debug("%d unread messages", nb_unread)
         if nb_unread == 0 and self.notification:
             self.notification.release()
@@ -204,25 +306,37 @@ class MessagesService(tichy.Service):
         logger.info("load all messages")
         """load all the messages from all sources"""
         # TODO: make this coherent with contacts service method
-        data = tichy.Persistance('messages').load()
-        if not data:
-            yield None
-        # TODO: check for data coherence
         all_messages = []
-        for kargs in data:
-            message = Message(**kargs)
-            all_messages.append(message)
-        logger.info("got %d messages", len(all_messages))
-        for m in all_messages:
-            # XXX: we need to rethink all this stuff...
-            if m.direction == 'in':
-                self.add_to_inbox(m)
-            elif m.direction == 'out':
-                self.add_to_outbox(m)
+        for cls in Message.subclasses:
+            logger.info("loading messages from %s", cls.storage)
+            try:
+                #print cls
+                messages = yield cls.load() 
+                logger.info("Got %d messages from %s", len(messages),
+                            cls.storage)
+            except Exception, ex:
+                logger.warning("can't get messages : %s", ex)
+                continue
+            assert all(isinstance(x, Message) for x in messages)
+            hashes_before = []
+            for z in all_messages:
+                hashes_before.append(z.msg_hash)
+            for x in messages:
+              if x.msg_hash not in hashes_before:
+                all_messages.append(x)
+        self.messages[:] = all_messages
+        logger.info("Totally got %d messages", len(self.messages))
+
 
     @tichy.tasklet.tasklet
     def _save_all(self):
         logger.info("save all messages")
-        data = [x.to_dict() for x in self.inbox + self.outbox]
-        tichy.Persistance('messages').save(data)
+        #for x in self.messages:
+          #print x.msg_hash
+          #print x.sim_index
+        data = [x.to_dict() for x in self.messages]
+        #print dir(data)
+        
+        #print data.keys()
+        tichy.Persistance('messages/phone').save(data)
         yield None

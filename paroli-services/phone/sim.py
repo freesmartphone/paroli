@@ -26,6 +26,7 @@ import logging
 logger = logging.getLogger('SIM')
 
 from contact import Contact
+from message import Message
 from tel_number import TelNumber
 
 class SIMContact(Contact):
@@ -60,6 +61,40 @@ class SIMContact(Contact):
         ret = yield sim.get_contacts()
         yield ret
 
+class SIMMessage(Message):
+    
+    storage = 'SIM'
+
+    #peer = TelNumber.as_type(peer)
+    #text = tichy.Text.as_type(text)
+    #timestamp = tichy.Time.as_time(timestamp)
+    #direction = tichy.Text.as_type(text)
+    #status = tichy.Text.as_type(text)
+    #fields = [name, text, timestamp, direction, status]
+
+    def __init__(self, sim_index=None, **kargs):
+        super(SIMMessage, self).__init__(sim_index=sim_index, **kargs)
+        self.sim_index = sim_index
+        #self.icon = 'pics/sim.png'
+
+    @classmethod
+    def import_(cls, contact):
+        """create a new contact from an other contact)
+        """
+        assert not isinstance(message, PhoneMessage)
+        ret = PhoneMessage(peer=message.peer,text=message.text,timestamp=message.timestamp,direction=message.direction,status=message.status)
+        yield ret
+
+    #def delete(self):
+        #sim = tichy.Service('SIM')
+        #yield sim.remove_contact(self)
+
+    @classmethod
+    @tichy.tasklet.tasklet
+    def load(cls):
+        sim = tichy.Service('SIM')
+        ret = yield sim.get_messages()
+        yield ret
 
 class FreeSmartPhoneSim(tichy.Service):
 
@@ -74,6 +109,9 @@ class FreeSmartPhoneSim(tichy.Service):
                                       '/org/freesmartphone/GSM/Device')
             self.gsm_sim = dbus.Interface(self.gsm,
                                           'org.freesmartphone.GSM.SIM')
+            self.sim_info = self.gsm_sim.GetSimInfo()
+            #for d in self.sim_imsi:
+            #print self.sim_info['imsi']
         except Exception, e:
             logger.warning("can't use freesmartphone GSM : %s", e)
             self.gsm = None
@@ -115,6 +153,51 @@ class FreeSmartPhoneSim(tichy.Service):
             ret.append(contact)
         yield ret
 
+    def get_messages(self):
+        """Return the list of all the messages in the SIM
+
+        The framework may fail, so we try at least 5 times before we
+        give up. We need to remove this if the framework correct this
+        problem.
+        """
+        for i in range(5):
+            try:
+                logger.info("Retrieve Messages")
+                entries = yield WaitDBus(self.gsm_sim.RetrieveMessagebook,
+                                         'all')
+                logger.info("Got %d messages" % len(entries))
+                logger.debug('get messages : %s', entries)
+                break
+            except Exception, e:
+                logger.error("can't retrieve message book : %s" % e)
+                logger.info("retrying in 10 seconds")
+                yield tichy.tasklet.Sleep(10)
+                continue
+        else:
+            logger.error("can't retrieve message book")
+            raise Exception("can't retrieve message book")
+
+        ret = []
+        for entry in entries:
+            #print entry
+            index = int(entry[0])
+            #name = unicode(entry[1])
+            #tel = str(entry[2])
+            status = unicode(entry[1])
+            text = unicode(entry[3]).encode('utf8')
+            if status in  ['read','unread']:
+              timestamp = entry[4]['timestamp']
+              #print timestamp
+            else :
+              timestamp = 'Tue Oct 14 12:01:07 2008'
+            direction = unicode(entry[4]['direction'])
+            peer = unicode(entry[2])
+            
+            message = SIMMessage(peer=peer,text=text,timestamp=timestamp,direction=direction,status=status, sim_index=index)
+            self.indexes[index] = message
+            ret.append(message)
+        yield ret
+
     def add_contact(self, name, number):
         logger.info("add %s : %s into the sim" % (name, number))
         index = self._get_free_index()
@@ -140,28 +223,33 @@ class FreeSmartPhoneSim(tichy.Service):
         yield WaitDBus(self.gsm_sim.DeleteEntry, 'contacts',
                        contact.sim_index)
 
+    def remove_message(self, message):
+        logger.info("remove message %s from sim", message.sim_index)
+        self.gsm_sim.DeleteMessage(int(message.sim_index))
+
+
     def send_pin(self, pin):
         logger.info("sending pin")
         yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
 
 
-class TestSim(tichy.Service):
+#class TestSim(tichy.Service):
 
-    service = 'SIM'
-    name = 'Test'
+    #service = 'SIM'
+    #name = 'Test'
 
-    @tichy.tasklet.tasklet
-    def get_contacts(self):
-        yield [SIMContact(name='test', tel='099872394', sim_index=0)]
+    #@tichy.tasklet.tasklet
+    #def get_contacts(self):
+        #yield [SIMContact(name='test', tel='099872394', sim_index=0)]
 
-    @tichy.tasklet.tasklet
-    def add_contact(self, name, number):
-        logger.info("add %s : %s into the sim" % (name, number))
-        index = 0
-        contact = SIMContact(name=name, tel=number, sim_index=index)
-        yield contact
+    #@tichy.tasklet.tasklet
+    #def add_contact(self, name, number):
+        #logger.info("add %s : %s into the sim" % (name, number))
+        #index = 0
+        #contact = SIMContact(name=name, tel=number, sim_index=index)
+        #yield contact
 
-    @tichy.tasklet.tasklet
-    def remove_contact(self, contact):
-        logger.info("remove contact %s from sim", contact.name)
-        yield None
+    #@tichy.tasklet.tasklet
+    #def remove_contact(self, contact):
+        #logger.info("remove contact %s from sim", contact.name)
+        #yield None

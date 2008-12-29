@@ -31,20 +31,20 @@ logger = logging.getLogger('SMS')
 from message import Message
 
 
-class SMS(Message):
+#class SMS(Message):
 
-    def __init__(self, number, text, direction='out'):
-        super(SMS, self).__init__(number, text, direction)
+    #def __init__(self, number, text, direction='out'):
+        #super(SMS, self).__init__(number, text, direction)
 
-    def __get_number(self):
-        return self.peer
-    number = property(__get_number)
+    #def __get_number(self):
+        #return self.peer
+    #number = property(__get_number)
 
-    @tichy.tasklet.tasklet
-    def send(self):
-        """Tasklet that will send the message"""
-        sms_service = tichy.Service('SMS')
-        yield sms_service.send(self)
+    #@tichy.tasklet.tasklet
+    #def send(self):
+        #"""Tasklet that will send the message"""
+        #sms_service = tichy.Service('SMS')
+        #yield sms_service.send(self)
 
 
 class FreeSmartPhoneSMS(tichy.Service):
@@ -79,13 +79,13 @@ class FreeSmartPhoneSMS(tichy.Service):
         for msg in messages:
             id, status, number, text = msg
             sms = self.create(str(number), unicode(text), 'in')
-            messages_service.add_to_inbox(sms)
+            messages_service.add_to_messages(sms)
 
     def create(self, number='', text='', direction='out'):
         """create a new sms instance"""
         number = TelNumber(number)
         text = tichy.Text(text)
-        return SMS(number, text)
+        return Message(number, text, direction)
 
     @tichy.tasklet.tasklet
     def send(self, sms):
@@ -97,9 +97,9 @@ class FreeSmartPhoneSMS(tichy.Service):
         yield WaitDBus(self.sim_iface.SendStoredMessage, message_id)
         logger.info("Done")
         # We store a copy cause we don't want to modify the stored sms.
-        logger.info("Store message into outbox")
-        sms = SMS(sms.peer, sms.text, 'out')
-        tichy.Service('Messages').add_to_outbox(sms)
+        logger.info("Store message into messages")
+        #sms = SMS(sms.peer, sms.text, 'out')
+        tichy.Service('Messages').add_to_messages(sms)
 
     def on_incoming_message(self, index):
         logger.info("Incoming message %d", index)
@@ -108,7 +108,7 @@ class FreeSmartPhoneSMS(tichy.Service):
         peer = str(message[1])
         text = unicode(message[2])
         sms = SMS(peer, text, 'in')
-        tichy.Service('Messages').add_to_inbox(sms)
+        tichy.Service('Messages').add_to_messages(sms)
 
 
 class TestSms(tichy.Service):
