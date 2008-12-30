@@ -9,12 +9,20 @@ acceleration, so we must build EXA acceleration and use AIGLX as X server.
 (wm based).
 
 If we make every app be part of our own evas canvas (X window) we can implement
-different effects, but the infrastructure for it isnt done either 
+different effects, but the infrastructure for it isnt done either
 (self-contained).
 
 round 2:
-couldn't we create our "self-contained" solution and let it run on the wm ? The only difficlty I see there is the behaviour of our top-bar, but maybe via dbus calls to paroli-core ?  
-  
+couldn't we create our "self-contained" solution and let it run on the wm ? The only difficlty I see there is the behaviour of our top-bar, but maybe via dbus calls to paroli-core ?
+
+round 3:
+Well that's not the only difficulty, we'll also have the problem of one wm
+interrupting the other, i.e our wm (the self-contained one) and the main wm.
+I think the best solution is just to forget about this self-contained wm for
+now and try to build using the already provided architecture:
+X + AIGLX + compiz + wm.
+
+
 2. Implement the home screen
 round 1:
 This is relative to how we implement the whole architecture of the applications
@@ -30,6 +38,12 @@ desired behaviour, like clicking somewhere and showing the home window.
 round 2:
 In my naïve world I thought we could adapt the illume theme to show .desktop files the way we want it to and integrate the clock on the desktop as well? Too naïve?
 
+round 3:
+It is possible, right now the .desktop files are shown on illume maybe we just
+need to re-arrange them somehow to fit our needs? A new Group naming: "Paroli"
+and show them by default without that title and the rest inside an
+"Applications" group title?
+
 3. Implement the "top bar"
 round 1:
 If we choose "wm based" we'll need a wm addition to add our toolbar instead of
@@ -38,6 +52,10 @@ the wm's one. For the "self contained" we need to create that our own.
 round 2:
 I opt for the "wm based" here and would rather look into replacing the standard top-bar with ours.
 
+round 3:
+Then we just need to modify the illume one, dunno how fixed/themable it is, that
+needs more research so the .edc designers can know what/how to do.
+
 4. Allow other apps (gtk)
 round 1:
 What "allows" means here? be able to run other apps (which is possible as we'll use a X server), or be able to make those apps consistent to our own design,
@@ -45,3 +63,6 @@ like window stacking, switching, etc
 
 round 2:
   allowing here is running and being able to switch to them as well, which means we need a wm
+
+round 3:
+Indeed :)
