@@ -44,7 +44,7 @@ import os
 import sys
 import dbus
 import dbus.service
-#from optparse import OptionParser
+from optparse import OptionParser
 import ConfigParser
 import logging
 import profile
@@ -65,36 +65,36 @@ print time.ctime()
 logger = logging.getLogger('')
 
 
-#def parse_options():
-    #"""Parse the command line options
+def parse_options():
+    """Parse the command line options
 
-    #:Returns: the OptionParser result object
-    #"""
-    #parser = OptionParser()
-    #parser.add_option("", "--gui-backend", dest="gui_backend",
-                      #help="select a specific gui backend",
-                      #metavar="BACKEND",
-                      #choices=["sdl", "csdl", "gtk", "etk", "paroli"],
-                      #default=None)
-    #parser.add_option("", "--fullscreen",
-                      #action='store_true', dest="fullscreen",
-                      #help="run tichy in fullscreen",
-                      #default=False)
-    #parser.add_option("", "--experimental",
-                      #action='store_true', dest="experimental",
-                      #help="Use experimental features",
-                      #default=False)
-    #parser.add_option("", "--session",
-                      #action='store_const', dest='bus',
-                      #help="Connect to the session bus",
-                      #const='session', default='system')
-    #parser.add_option("", "--launch", dest='launch',
-                      #help="launch an applet using DBus",
-                      #metavar="APPLICATION",
-                      #default=None)
+    :Returns: the OptionParser result object
+    """
+    parser = OptionParser()
+    parser.add_option("", "--gui-backend", dest="gui_backend",
+                      help="select a specific gui backend",
+                      metavar="BACKEND",
+                      choices=["sdl", "csdl", "gtk", "etk", "paroli"],
+                      default=None)
+    parser.add_option("", "--fullscreen",
+                      action='store_true', dest="fullscreen",
+                      help="run tichy in fullscreen",
+                      default=False)
+    parser.add_option("", "--experimental",
+                      action='store_true', dest="experimental",
+                      help="Use experimental features",
+                      default=False)
+    parser.add_option("", "--session",
+                      action='store_const', dest='bus',
+                      help="Connect to the session bus",
+                      const='session', default='system')
+    parser.add_option("", "--launch", dest='launch',
+                      help="launch an applet using DBus",
+                      metavar="APPLICATION",
+                      default=None)
 
-    #(options, args) = parser.parse_args()
-    #return options
+    (options, args) = parser.parse_args()
+    return options
 
 
 def setup_logging():
@@ -229,11 +229,11 @@ def launch(name, options):
 
 
 if __name__ == '__main__':
-    #options = parse_options()
+    options = parse_options()
 
-    #if options.launch:
-        #launch(options.launch, options)
-        #sys.exit(0)
+    if options.launch:
+        launch(options.launch, options)
+        sys.exit(0)
 
     setup_logging()
     config = parse_config()
@@ -242,10 +242,10 @@ if __name__ == '__main__':
     tichy.init_gui(None)
 
     logger.info("connect to dbus")
-    #if options.bus == 'system':
-    bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-    #else:
-        #bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+    if options.bus == 'system':
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+    else:
+        bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
     bus_name = dbus.service.BusName('org.tichy.launcher', bus)
 
     # We import all the modules into the plugin directory

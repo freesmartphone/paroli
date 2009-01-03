@@ -46,7 +46,7 @@ class Persistance(object):
     plugins are not suppoed to read the file directly.
     """
 
-    base_path = os.path.expanduser('~/.tichy/')
+    base_path = os.path.expanduser('~/.paroli/')
 
     def __init__(self, path):
         self.path = path

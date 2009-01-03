@@ -123,7 +123,7 @@ class TestSms(tichy.Service):
     def create(self, number='', text='', direction='out'):
         number = TelNumber(number)
         text = tichy.Text(text)
-        return SMS(number, text, direction)
+        return Message(number, text, direction)
 
     def update(self):
         yield None

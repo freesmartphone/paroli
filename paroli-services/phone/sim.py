@@ -233,23 +233,23 @@ class FreeSmartPhoneSim(tichy.Service):
         yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
 
 
-#class TestSim(tichy.Service):
+class TestSim(tichy.Service):
 
-    #service = 'SIM'
-    #name = 'Test'
+    service = 'SIM'
+    name = 'Test'
+    sim_info = {'imsi':0077}
+    @tichy.tasklet.tasklet
+    def get_contacts(self):
+        yield [SIMContact(name='test', tel='099872394', sim_index=0)]
 
-    #@tichy.tasklet.tasklet
-    #def get_contacts(self):
-        #yield [SIMContact(name='test', tel='099872394', sim_index=0)]
+    @tichy.tasklet.tasklet
+    def add_contact(self, name, number):
+        logger.info("add %s : %s into the sim" % (name, number))
+        index = 0
+        contact = SIMContact(name=name, tel=number, sim_index=index)
+        yield contact
 
-    #@tichy.tasklet.tasklet
-    #def add_contact(self, name, number):
-        #logger.info("add %s : %s into the sim" % (name, number))
-        #index = 0
-        #contact = SIMContact(name=name, tel=number, sim_index=index)
-        #yield contact
-
-    #@tichy.tasklet.tasklet
-    #def remove_contact(self, contact):
-        #logger.info("remove contact %s from sim", contact.name)
-        #yield None
+    @tichy.tasklet.tasklet
+    def remove_contact(self, contact):
+        logger.info("remove contact %s from sim", contact.name)
+        yield None
