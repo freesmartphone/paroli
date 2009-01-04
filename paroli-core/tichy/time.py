@@ -38,7 +38,11 @@ class Time(tichy.Item):
         return Time(value)
 
     def __str__(self):
-        return time.asctime(self.__value)
+        #TODO: fix only a very dirty solution
+        if len(self.__value) == 9:
+          return time.asctime(self.__value)
+        else :
+          return self.__value
 
     def get_text(self):
         return tichy.Text(str(self))

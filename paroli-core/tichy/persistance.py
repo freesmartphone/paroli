@@ -25,14 +25,16 @@
 
 import os
 
-import yaml
-try:
-    from yaml import CLoader as Loader
-    from yaml import CDumper as Dumper
-except ImportError: 
-    from yaml import Loader, Dumper
+#import yaml
+#try:
+    #from yaml import CLoader as Loader
+    #from yaml import CDumper as Dumper
+#except ImportError: 
+    #from yaml import Loader, Dumper
 
 import logging
+import ConfigParser
+
 LOGGER = logging.getLogger('persistance')
 
 
@@ -48,6 +50,7 @@ class Persistance(object):
 
     def __init__(self, path):
         self.path = path
+        self.parser = ConfigParser.ConfigParser()
 
     def _open(self, mod='r'):
         path = os.path.join(self.base_path, self.path)
@@ -69,18 +72,60 @@ class Persistance(object):
                 Any kind of python structure that can be
                 serialized. Usually dictionary or list.
         """
+        
+        #config = 
+
+        import random
+
+        
+
+        
+        #print dir(data)
+        #print data
+        section = 0
+        for m in data:
+            section += 1
+            self.parser.add_section(section)
+            for k, v in m.iteritems():
+              self.parser.set(section, k, v)
+        
         file = self._open('w')
-        file.write(yaml.dump(data,
-                             default_flow_style=False,
-                             Dumper=Dumper))
+        #file = open('/home/root/test.txt','w')
+        #file.write(yaml.dump(data,
+                             #default_flow_style=False,
+                             #Dumper=Dumper))
+        
+        #print config
+        self.parser.write(file)
+
+
 
     def load(self):
         """Load data from the file
 
         :Returns: The structure previously saved into the file
         """
+        
         try:
             file = self._open()
         except IOError, ex:
             return None
-        return yaml.load(file, Loader=Loader)
+        
+        self.parser.readfp(file)
+        
+        #return yaml.load(file, Loader=Loader)
+        result = []
+        
+        for s in self.parser.sections():
+            sub_result = {}
+            #print s
+            for k, v in self.parser.items(s):
+                #print g
+                #d = [k, v]<<<d
+                sub_result[k]=v
+            
+            result.append(sub_result)
+        
+        #print result
+        return result
+        return None

@@ -14,5 +14,6 @@ collections
     #include "edit_name.edc"
     #include "edit_number_type.edc"
     #include "contacts_list.edc"
+    #include "create_message.edc"
 
 }

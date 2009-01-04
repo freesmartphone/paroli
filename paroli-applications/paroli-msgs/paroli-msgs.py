@@ -65,7 +65,7 @@ class ContactsApp(tichy.Application):
         self.msgs_service = tichy.Service('Messages')
         inbox = self.msgs_service.inbox
         outbox = self.msgs_service.outbox
-        all_list = inbox + outbox
+        all_list = self.msgs_service.messages
         
         def comp(m1, m2):
           return cmp(m2.timestamp, m1.timestamp)
@@ -239,10 +239,10 @@ class ContactsApp(tichy.Application):
         canvas_obj.remove_all()
         details_window.edj.delete()
         messages_service = Service('Messages')
-        if message.direction == 'in':
-            messages_service.inbox.remove(message)
-        else:
-            messages_service.outbox.remove(message)
+        #if message.direction == 'in':
+        messages_service.delete_message(message)
+        #else:
+            #messages_service.outbox.remove(message)
     
     ##reply to message INCOMPLETE
     def reply(self, emission, source, param, message, details_window):

@@ -10,5 +10,6 @@ collections
 {
     #include "list.edc"
     #include "item.edc"
+    #include "create_message.edc"
 
 }

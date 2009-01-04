@@ -348,6 +348,7 @@ class ContactsService(tichy.Service):
         for cls in Contact.subclasses:
             LOGGER.info("loading contacts from %s", cls.storage)
             try:
+                print cls
                 contacts = yield cls.load()
                 LOGGER.info("Got %d contacts from %s", len(contacts),
                             cls.storage)

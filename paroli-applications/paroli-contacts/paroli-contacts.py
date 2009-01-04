@@ -338,7 +338,58 @@ class ContactsApp(tichy.Application):
         
     def on_del(self, w):
         self.text.value = self.text.value[:-1]
-       
+    
+     ## step two (enter message)    
+    def create_message(self, emission, source, param, contact):
+        ##get numbers from dialpad
+        numbers = contact.tel
+        print numbers
+        ##load main gui
+        new_edje = gui.edje_gui(self.main,'create_message',self.edje_file)
+        ## show main gui
+        new_edje.edj.layer_set(3)
+        new_edje.edj.show()  
+        self.open_keyboard()
+        text = ''
+        textbox = gui.etk.TextView()
+        textbox.size_request_set(200,180)
+        textbox.textblock_get().text_set(text,0)
+        #textbox.theme_file_set(self.edje_file)
+        box = gui.edje_box(self,'V',1)
+        box.box.append(textbox, gui.etk.VBox.START, gui.etk.VBox.NONE,0)
+        new_edje.add(box.scrolled_view,box,"message")
+        textbox.focus()
+        box.box.show_all()
+        
+        ##set window actions
+        ##close window
+        new_edje.edj.signal_callback_add("back", "*", new_edje.close_extra_child)
+        ##go to next step
+        new_edje.edj.signal_callback_add("send", "*", self.send_message, numbers, textbox, new_edje)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
+    
+    ##send message INCOMPLETE
+    def send_message(self, emission, source, param, numbers, textbox, step_2):
+        print "send message called"
+        number = numbers
+        text = textbox.textblock_get().text_get(0)
+        try:
+            step_2.close_extra_child(emission,source,param)
+        except Exception,e : 
+            print e
+            
+        message_service = tichy.Service('SMS')
+        #for i in numbers:
+        message = message_service.create(number,text,'out')
+          #print type(message)
+        send = message_service.send(message)
+          #print type(send)
+        send.start()
+          #print "would send message: ", text, "to :", i
+          #self.contact_objects_list.generate_single_item_obj(i,text,message)
+
+        self.close_keyboard()
+    
     def self_test(self,emission, source, param):
         print "emission: ", str(emission)
         print "source: ", str(source)

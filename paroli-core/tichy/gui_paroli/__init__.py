@@ -323,6 +323,7 @@ class contact_list:
         #edje_obj.signal_callback_add("*", "*", self.app_window.self_test)
         if self.app_window.name == 'Paroli-Contacts':
           edje_obj.signal_callback_add("contact_details", "*", self.app_window.show_details, contact, [canvas_obj,edje_obj])
+          edje_obj.signal_callback_add("create_message", "*", self.app_window.create_message,contact)
           
         elif self.app_window.name == 'Paroli-Msgs':
             if self.item_group == 'message-contacts_item':
@@ -333,6 +334,7 @@ class contact_list:
         elif self.app_window.name == 'Paroli-I/O':
             #import 
             edje_obj.signal_callback_add("call_contact", "*", self.app_window.call_contact, contact)
+            edje_obj.signal_callback_add("create_message", "*", self.app_window.create_message,contact)
             #edje_obj.signal_callback_add("remove_self", "*", )
             #canvas_obj.on_destroyed(self.app_window.remove_entry, contact)
         else:
