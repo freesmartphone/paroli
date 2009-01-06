@@ -47,7 +47,7 @@ import dbus.service
 #from optparse import OptionParser
 import ConfigParser
 import logging
-import profile
+#import profile
 print time.ctime()
 
 # This is to make sure that we use the local tichy lib if run from the
