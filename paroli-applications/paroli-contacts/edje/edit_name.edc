@@ -326,6 +326,14 @@ group { name: "edit-name";
                 source: "back-button";
                 action: SIGNAL_EMIT "save_successful" "name-box";
           }
+      program 
+        { 
+            name: "back-button-clicked";
+            signal: "mouse,up,1";
+            source: "back-button";
+            action: SIGNAL_EMIT "back" "back-button";
+        }
+
           program 
         { 
           name: "contact_saved_signal";

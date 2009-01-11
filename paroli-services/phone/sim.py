@@ -109,7 +109,7 @@ class FreeSmartPhoneSim(tichy.Service):
                                       '/org/freesmartphone/GSM/Device')
             self.gsm_sim = dbus.Interface(self.gsm,
                                           'org.freesmartphone.GSM.SIM')
-            self.sim_info = self.gsm_sim.GetSimInfo()
+            
             #for d in self.sim_imsi:
             #print self.sim_info['imsi']
         except Exception, e:
@@ -118,6 +118,10 @@ class FreeSmartPhoneSim(tichy.Service):
             raise tichy.ServiceUnusable
 
         self.indexes = {}       # map sim_index -> contact
+
+    def set_info(self):
+        #set sim info variable to be used by various apps
+        self.sim_info = self.gsm_sim.GetSimInfo()
 
     def get_contacts(self):
         """Return the list of all the contacts in the SIM

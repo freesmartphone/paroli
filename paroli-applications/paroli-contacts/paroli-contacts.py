@@ -268,6 +268,7 @@ class ContactsApp(tichy.Application):
         new_edje.add(box.scrolled_view,box,"name-box")
         #new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_callback_add("close_w_textfield", "*", new_edje.close_extra_child)
+        new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         new_edje.edj.signal_callback_add("save_contact", "*", self.save_new_contact,name_object=new_edje,number=number,first_window=first_window)
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)

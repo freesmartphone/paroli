@@ -7,14 +7,14 @@ program \
             action: STATE_SET state step;\
             target: "num_field";\
             target: "num_field-text";\
-            target: "call-button";\
-            target: "call-button-inner";\
-            target: "call-button-text";\
             target: "del-button";\
             target: "del-button-inner";\
             target: "del-button-text";\
+            target: "call-button";\
+            target: "call-button-inner";\
+            target: "call-button-text";\
             target: "blocker";\
-        }\
+        }
 
 #define _PART_KEYPAD(partname, label, subtext, r1x, r1y, r2x, r2y ); \
 part\
@@ -38,7 +38,7 @@ part\
             { \
                 state: "clicked" 0.0;\
                 inherit: "default" 0.0;\
-                color: 255 255 255 255;\
+                color: 255 0 0 255;\
             }\
         }\
         part\
@@ -120,26 +120,28 @@ part\
         }
 
 #define _PART_KEYPAD_PROG(partname, label ); \
-program \
+        program \
         { \
             name: partname"-pressed";\
-            signal: "mouse,clicked,1";\
+            signal: "mouse,down,1";\
             source: partname;\
             action: STATE_SET "clicked" 0.0;\
             transition: LINEAR 0.16667;\
             target: partname;\
-            after: partname"-unpressed";\
         }\
         program \
         { \
             name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
             action: STATE_SET "default" 0.0;\
             transition: LINEAR 0.16667;\
             target: partname;\
-            after: partname"-send";\
         }\
         program \
         { \
-            name: partname"-send";\
+            name: partname"-clicked";\
+            signal: "mouse,clicked,1";\
+            source: partname;\
             action: SIGNAL_EMIT "add_digit" label"";\
         }
