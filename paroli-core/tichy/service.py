@@ -122,6 +122,12 @@ class Service(Item):
         Service.__bases[service].emit("changed", default)
 
     @classmethod
+    def is_default(cls):
+        """return true if a service is the default one"""
+        default = cls.__defaults.get(cls.service, None)
+        return default and isinstance(default, cls)
+
+    @classmethod
     def get_all(cls, name):
         """return all the service that have a given name
 
@@ -189,6 +195,19 @@ class Service(Item):
             cls.__singleton = singleton
         return cls.__singleton
 
-    def __getattr__(self, name):
-        """Only defined to quiet pylint"""
-        return self.__dict__[name]
+
+# TODO: add more introspection of the services, we should be able to
+#       get all the methods defined by a service as well
+
+def print_infos():
+    """print some info about all the registered services"""
+    print "All services :"
+    print
+    for name, clss in Service._Service__all_services.items():
+        print "Service '%s' :" % name
+        for cls in clss:
+            print "  * %s" % cls.name or 'unnamed',
+            if cls.is_default():
+                print " [default]"
+            else:
+                print

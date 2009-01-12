@@ -95,6 +95,9 @@ def parse_options():
     parser.add_option("", "--cfgfile", dest="cfg_file",
                       help="specigy the configuration file to use",
                       metavar="FILE", default=None)
+    parser.add_option("", "--show-services", dest='show_services',
+                      action='store_true', default=False,
+                      help="print some info about the services and exit")
 
     (options, args) = parser.parse_args()
     return options
@@ -257,13 +260,6 @@ if __name__ == '__main__':
     logger.info("init gui")
     tichy.init_gui(None)
 
-    logger.info("connect to dbus")
-    if options.bus == 'system':
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-    else:
-        bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
-    bus_name = dbus.service.BusName('org.tichy.launcher', bus)
-
     # We import all the modules into the plugin directory
     default_plugins_path = '/usr/share/tichy/plugins'
     plugins_dir = config.get('plugins', 'path', default_plugins_path)
@@ -285,6 +281,18 @@ if __name__ == '__main__':
 
     # We set the default design
     tichy.Service.set_default('Design', 'Default')
+
+    if options.show_services:
+        from tichy.service import print_infos
+        print_infos()
+        sys.exit(0)
+
+    logger.info("connect to dbus")
+    if options.bus == 'system':
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+    else:
+        bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+    bus_name = dbus.service.BusName('org.tichy.launcher', bus)
 
     logger.info("start InitAll")
     #print time.ctime()
