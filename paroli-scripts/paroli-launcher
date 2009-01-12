@@ -92,6 +92,9 @@ def parse_options():
                       help="launch an applet using DBus",
                       metavar="APPLICATION",
                       default=None)
+    parser.add_option("", "--cfgfile", dest="cfg_file",
+                      help="specigy the configuration file to use",
+                      metavar="FILE", default=None)
 
     (options, args) = parser.parse_args()
     return options
@@ -113,19 +116,29 @@ def setup_logging():
     logger.addHandler(stream_log)
 
 
-def parse_config():
+def parse_config(cfg_file=None):
     """parse the config files
 
     We look into 3 locations : first the local dir, then /etc/paroli/,
     then the home directory
 
+    :Parameters:
+
+        cfg_file : str | None
+            the configuartion file to use, or None for default config
+            files
+
     :Returns: the ConfigParser object
     """
     config = ConfigParser.SafeConfigParser()
-    local_path = "./paroli.cfg"
-    system_path = "/etc/paroli/paroli.cfg"
-    home_path = os.path.expanduser("~/.paroli/paroli.cfg")
-    for path in [local_path, system_path, home_path]:
+    if not cfg_file:
+        local_path = "./paroli.cfg"
+        system_path = "/etc/paroli/paroli.cfg"
+        home_path = os.path.expanduser("~/.paroli/paroli.cfg")
+        files = [local_path, system_path, home_path]
+    else:
+        files = cfg_file.split(':')
+    for path in files:
         logger.info("read config file %s", path)
         config.read(path)
     return config
@@ -239,7 +252,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     setup_logging()
-    config = parse_config()
+    config = parse_config(cfg_file=options.cfg_file)
 
     logger.info("init gui")
     tichy.init_gui(None)
@@ -283,4 +296,3 @@ if __name__ == '__main__':
     logger.info("starting mainloop")
     tichy.mainloop.run()
     logger.info("quit")
-    
