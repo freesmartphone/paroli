@@ -71,7 +71,6 @@ class Message(tichy.Item):
             my_time = time.localtime()
         else:
             my_time = timestamp[:24]
-        #print time
         self.timestamp = tichy.Time.as_time(my_time)
         assert direction in ['in', 'out'], direction
         self.direction = direction
