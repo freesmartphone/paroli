@@ -62,7 +62,7 @@ class SIMContact(Contact):
         yield ret
 
 class SIMMessage(Message):
-    
+
     storage = 'SIM'
 
     #peer = TelNumber.as_type(peer)
@@ -109,7 +109,7 @@ class FreeSmartPhoneSim(tichy.Service):
                                       '/org/freesmartphone/GSM/Device')
             self.gsm_sim = dbus.Interface(self.gsm,
                                           'org.freesmartphone.GSM.SIM')
-            
+
             #for d in self.sim_imsi:
             #print self.sim_info['imsi']
         except Exception, e:
@@ -196,7 +196,7 @@ class FreeSmartPhoneSim(tichy.Service):
               timestamp = 'Tue Oct 14 12:01:07 2008'
             direction = unicode(entry[4]['direction'])
             peer = unicode(entry[2])
-            
+
             message = SIMMessage(peer=peer,text=text,timestamp=timestamp,direction=direction,status=status, sim_index=index)
             self.indexes[index] = message
             ret.append(message)
@@ -237,23 +237,30 @@ class FreeSmartPhoneSim(tichy.Service):
         yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
 
 
-#class TestSim(tichy.Service):
+class TestSim(tichy.Service):
 
-    #service = 'SIM'
-    #name = 'Test'
+    service = 'SIM'
+    name = 'Test'
 
-    #@tichy.tasklet.tasklet
-    #def get_contacts(self):
-        #yield [SIMContact(name='test', tel='099872394', sim_index=0)]
+    @tichy.tasklet.tasklet
+    def get_contacts(self):
+        yield [SIMContact(name='test', tel='099872394', sim_index=0)]
 
-    #@tichy.tasklet.tasklet
-    #def add_contact(self, name, number):
-        #logger.info("add %s : %s into the sim" % (name, number))
-        #index = 0
-        #contact = SIMContact(name=name, tel=number, sim_index=index)
-        #yield contact
+    @tichy.tasklet.tasklet
+    def get_messages(self):
+        yield []
 
-    #@tichy.tasklet.tasklet
-    #def remove_contact(self, contact):
-        #logger.info("remove contact %s from sim", contact.name)
-        #yield None
+    @tichy.tasklet.tasklet
+    def add_contact(self, name, number):
+        logger.info("add %s : %s into the sim" % (name, number))
+        index = 0
+        contact = SIMContact(name=name, tel=number, sim_index=index)
+        yield contact
+
+    @tichy.tasklet.tasklet
+    def remove_contact(self, contact):
+        logger.info("remove contact %s from sim", contact.name)
+        yield None
+
+    def set_info(self):
+        pass
