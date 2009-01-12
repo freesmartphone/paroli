@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# I do this very quickly and it is ugly
+# This script will build the edje files for each application
 cd paroli-contacts; ./build.sh; cd ..
 cd paroli-dialer; ./build.sh; cd ..
 cd paroli-i-o; ./build.sh; cd ..
