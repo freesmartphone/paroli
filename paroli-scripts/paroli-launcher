@@ -153,7 +153,7 @@ class InitAll(tichy.Tasklet):
     def run(self):
         # Register on the GSM Network
         gsm_service = tichy.Service('GSM')
-        yield gsm_service.register()
+        yield gsm_service.init()
         # Set SIM info
         gsm_sim = tichy.Service('SIM')
         gsm_sim.set_info()
