@@ -26,19 +26,6 @@ group
                 }
             }
         }
-        part{
-              name: "top-bar";
-              type: RECT;
-              description{ state: "default" 0.0;
-                color:0 0 255 255;
-                rel1{
-                    relative: 0.01 0.0;
-                }
-                rel2 {
-                    relative: 0.99 0.05;
-                }
-              }
-            }
         part
         {
             name:"edit-button";
@@ -639,13 +626,6 @@ group
     }
     programs 
     {
-        program 
-        { 
-              name: "top-bar-tapped";
-              signal: "mouse,clicked,1";
-              source: "top-bar";
-              action: SIGNAL_EMIT "top_bar" "contacts-items";
-        }
         program
         {
             name: "close-clickable-pressed";

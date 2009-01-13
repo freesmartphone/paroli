@@ -20,24 +20,6 @@ group { name: "dialpad_numbers";
         }
         part
         {
-            name: "top-bar";
-            type: RECT;
-            description
-            { 
-                state: "default" 0.0;
-                color:0 0 255 255;
-                rel1
-                {
-                    relative: 0.00 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 0.05;
-                }
-            }
-        }
-        part
-        {
             name: "active-call";
             type: TEXT;
             mouse_events: 0;
@@ -62,34 +44,6 @@ group { name: "dialpad_numbers";
                 {
                     relative: 1.0 1.0;
                     to: "base";
-                }
-            }
-        }
-        part
-        {
-            name: "clock";
-            type: TEXT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.5 0.0;
-                    size: 18;
-                    text: "20:08";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "top-bar";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "top-bar";
                 }
             }
         }
@@ -653,13 +607,6 @@ group { name: "dialpad_numbers";
     }
     programs
     {
-        program 
-        { 
-            name: "top-bar-tapped";
-            signal: "mouse,up,1";
-            source: "top-bar";
-            action: SIGNAL_EMIT "top_bar" "tapped";
-        }
 //         program 
 //         { 
 //             name: "num_field-clicked";
