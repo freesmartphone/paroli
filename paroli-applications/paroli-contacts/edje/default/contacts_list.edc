@@ -1,0 +1,68 @@
+
+images {
+   image: "add.png" COMP;
+}
+
+group { 
+      name: "people";
+      max: 480 640;
+      parts {
+          part{
+            name: "base";
+            type: RECT;
+            description{ state: "default" 0.0;
+              color:0 0 0 255;
+              rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 0.99 1.0;
+                }
+            }
+          }
+         part {
+            name: "add-button";
+            type: IMAGE;
+            description {
+               state: "default" 0.0;
+               min: 40 40;
+               max: 40 40;
+               rel1 {
+                  relative: 0.0 0.06;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.2 0.15;
+                  to: "base";
+               }
+               image {
+                  normal: "add.png";
+               }
+               visible: 1;
+            }
+         }
+           part{
+            name:"contacts-items";
+            type:SWALLOW;
+              description { 
+              state: "default" 0.0;
+              color: 0 255 255 255;
+              rel1 { to:"base";
+                relative: 0.05 0.2;
+                    }
+              rel2 {to:"base";
+                relative: 0.95 1.0;
+                    }
+            }
+           }
+      }
+      programs {
+          program 
+              { 
+                    name: "add-button";
+                    signal: "mouse,up,1";
+                    source: "add-button";
+                    action: SIGNAL_EMIT "add_contact" "contacts-items";
+              }
+      }
+}
