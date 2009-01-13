@@ -275,6 +275,8 @@ if __name__ == '__main__':
     if config.has_option('services', 'defaults'):
         defaults = config.get('services', 'defaults').split(',')
         for default in defaults:
+            if not default:
+                continue
             service, name = default.strip().split(':')
             logger.info("set service %s to %s", service, name)
             tichy.Service.set_default(service, name)
