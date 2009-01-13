@@ -51,7 +51,7 @@ class GSMService(tichy.Service):
         self._load_logs()
         self.logs.connect('modified', self._on_logs_modified)
 
-    def register(self, on_step=None):
+    def init(self, on_step=None):
         """This must return a Tasklet"""
         raise NotImplementedError
 
@@ -131,7 +131,7 @@ class FreeSmartPhoneGSM(GSMService):
         """
         return self.provider
 
-    def register(self, on_step=None):
+    def init(self, on_step=None):
         """Tasklet that registers on the network
 
         :Parameters:
@@ -280,7 +280,7 @@ class TestGsm(GSMService):
         super(TestGsm, self).__init__()
         self.logs.append(Call('0478657392'))
 
-    def register(self, on_step=None):
+    def init(self, on_step=None):
         """register on the network"""
 
         def default_on_step(msg):

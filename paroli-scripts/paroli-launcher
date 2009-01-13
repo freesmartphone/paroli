@@ -153,10 +153,10 @@ class InitAll(tichy.Tasklet):
     def run(self):
         # Register on the GSM Network
         gsm_service = tichy.Service('GSM')
-        yield gsm_service.register()
+        yield gsm_service.init()
         # Set SIM info
         gsm_sim = tichy.Service('SIM')
-        gsm_sim.set_info()
+        yield gsm_sim.init()
         # Get all the contacts
         contacts = tichy.Service('Contacts')
         yield contacts.init()
@@ -275,6 +275,8 @@ if __name__ == '__main__':
     if config.has_option('services', 'defaults'):
         defaults = config.get('services', 'defaults').split(',')
         for default in defaults:
+            if not default:
+                continue
             service, name = default.strip().split(':')
             logger.info("set service %s to %s", service, name)
             tichy.Service.set_default(service, name)
