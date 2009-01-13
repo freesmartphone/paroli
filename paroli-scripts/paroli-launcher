@@ -156,7 +156,7 @@ class InitAll(tichy.Tasklet):
         yield gsm_service.init()
         # Set SIM info
         gsm_sim = tichy.Service('SIM')
-        yield gsm_sim.init()
+        gsm_sim.set_info()
         # Get all the contacts
         contacts = tichy.Service('Contacts')
         yield contacts.init()
