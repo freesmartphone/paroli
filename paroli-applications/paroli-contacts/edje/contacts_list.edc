@@ -1,7 +1,11 @@
 
-group { name: "people";
-      min: 480 575;
-      max: 480 575;
+images {
+   image: "add.png" COMP;
+}
+
+group { 
+      name: "people";
+      max: 480 640;
       parts {
           part{
             name: "base";
@@ -16,96 +20,27 @@ group { name: "people";
                 }
             }
           }
-          part{
-              name: "top-bar";
-              type: RECT;
-              description{ state: "default" 0.0;
-                color:0 255 0 255;
-                rel1{
-                    relative: 0.01 0.0;
-                }
-                rel2 {
-                    relative: 0.99 0.05;
-                }
-              }
+         part {
+            name: "add-button";
+            type: IMAGE;
+            description {
+               state: "default" 0.0;
+               min: 40 40;
+               max: 40 40;
+               rel1 {
+                  relative: 0.0 0.06;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.2 0.15;
+                  to: "base";
+               }
+               image {
+                  normal: "add.png";
+               }
+               visible: 1;
             }
-          part{
-            name: "clock";
-            type: TEXT;
-            mouse_events:0;
-            description { state: "default" 0.0;
-                          color: 255 255 255 255;
-                          text {
-                                  align: 0.5 0.0;
-                                  size: 18;
-                                  text: "20:08";
-                                  font: "Sans";
-                          }
-                          rel1 {
-                                  relative: 0.0 0.0;
-                                  to: "top-bar";
-                          }
-                          rel2 {
-                                  relative: 1.0 1.0;
-                                  to: "top-bar";
-                          }
-                  }
-          }
-           part{
-            name:"add-button";
-            type:RECT;
-            description { state: "default" 0.0;
-            visible:1;
-                  color: 255 255 255 0;
-                  rel1 {
-                          relative: 0.0 0.06;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 0.4 0.15;
-                          to: "base";
-                  }
-            }
-            description { state: "wait" 0.0;
-                  inherit:"default" 0.0;
-            }
-            description { state: "edit-mode" 0.0;
-                  inherit:"default" 0.0;
-            }
-           }
-           part{
-            name:"add-button-text";
-            type:TEXT;
-            mouse_events:0;
-            description { state: "default" 0.0;
-            visible:1;
-                  color: 255 255 255 255;
-                  text {
-                          align: 0.0 0.0;
-                          size: 24;
-                          text: "Add";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.0 0.0;
-                          to: "add-button";
-                  }
-                  rel2 {
-                          relative: 1.0 1.0;
-                          to: "add-button";
-                  }
-            }
-            description { state: "edit-mode" 0.0;
-                  color: 255 255 255 255;
-                  text {
-                          align: 0.0 0.0;
-                          size: 24;
-                          text: "done";
-                          font: "Sans";
-                  }
-                  inherit:"default" 0.0;
-            }
-           }
+         }
            part{
             name:"contacts-items";
             type:SWALLOW;
@@ -113,22 +48,15 @@ group { name: "people";
               state: "default" 0.0;
               color: 0 255 255 255;
               rel1 { to:"base";
-                relative: 0.0 0.16;
+                relative: 0.05 0.2;
                     }
               rel2 {to:"base";
-                relative: 1.0 0.99;
+                relative: 0.95 1.0;
                     }
             }
            }
       }
       programs {
-          program 
-              { 
-                    name: "top-bar-tapped";
-                    signal: "mouse,clicked,1";
-                    source: "top-bar";
-                    action: SIGNAL_EMIT "top_bar" "contacts-items";
-              }
           program 
               { 
                     name: "add-button";
