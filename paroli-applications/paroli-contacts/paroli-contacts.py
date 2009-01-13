@@ -75,6 +75,7 @@ class ContactsApp(tichy.Application):
         
         #self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
+        self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("mouse,move", "*", self.listen)
         self.edje_obj.edj.layer_set(2)
         self.edje_obj.edj.show()
@@ -96,6 +97,10 @@ class ContactsApp(tichy.Application):
         print source
         print param
         print emission.part_drag_value_get('clickable_blocker')
+    
+    def top_bar(self,emission,source,param):
+        print "doing self.main.emit('back')"
+        self.main.emit('back')
     
     def call_contact(self, emission, source, param):
         number = emission.part_text_get('number-text')
@@ -120,6 +125,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.part_text_set('number-text',number)
         new_edje.edj.part_text_set('name-text',name)
         
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         new_edje.edj.signal_callback_add("call_contact", "*", self.call_contact)
         new_edje.edj.signal_callback_add("close_details", "*", self._close)
         new_edje.edj.signal_callback_add("edit_number", "*", self.edit_number_type, contact,new_edje, graphic_objects)
@@ -142,6 +148,7 @@ class ContactsApp(tichy.Application):
         number = emission.part_text_get('number-text')
         
         new_edje = gui.edje_gui(self.main,'edit-number-type',self.edje_file)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_callback_add("num_type_clicked", "*", self.edit_number, number, contact, details_window,new_edje, graphic_objects)
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
@@ -161,6 +168,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         new_edje.edj.signal_callback_add("save-button", "*", self.save_contact_number, 'number' , number_type, contact, details_window, name_dummy, graphic_objects)
         new_edje.edj.signal_callback_add("save_successful", "*", first_window.delete)
@@ -168,18 +176,19 @@ class ContactsApp(tichy.Application):
         new_edje.edj.layer_set(4)
         new_edje.edj.show()
     
-    def add_number_new_contact(self, emission, source, param):
+    def add_number_new_contact(self,emission, source, param):
         print "add new number called"
         
         #number = emission.part_text_get('number-text')
         #me = 'mirko'
-        new_edje = gui.edje_gui(self.main, 'dialpad_numbers', self.edje_file)
+        new_edje = gui.edje_gui(self.main,'dialpad_numbers',self.edje_file)
         #new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_emit('new_contact_mode','*')
         new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
-        new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact, first_window=new_edje)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
+        new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact,first_window=new_edje)
         
         new_edje.edj.layer_set(4)
         new_edje.edj.show()
@@ -210,6 +219,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_emit('new_contact_mode','*')
         #new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_callback_add("next_step", "*", self.edit_name_info, contact, first_window,new_edje, graphic_objects)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         new_edje.edj.signal_callback_add("save_successful", "*", new_edje.close_extra_child)
         new_edje.edj.signal_callback_add("save_successful", "*", self.close_keyboard)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
@@ -238,6 +248,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("close_w_textfield", "*", last_window.close_extra_child)
         new_edje.edj.signal_callback_add("save_successful", "*", new_edje.close_extra_child)
         new_edje.edj.signal_callback_add("save_successful", "*", self.close_keyboard)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
@@ -259,6 +270,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("close_w_textfield", "*", new_edje.close_extra_child)
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         new_edje.edj.signal_callback_add("save_contact", "*", self.save_new_contact,name_object=new_edje,number=number,first_window=first_window)
+        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
