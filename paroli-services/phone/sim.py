@@ -242,6 +242,9 @@ class TestSim(tichy.Service):
     service = 'SIM'
     name = 'Test'
 
+    def __init__(self):
+        self.sim_info = {'imsi':'0123456789012345'}
+
     @tichy.tasklet.tasklet
     def get_contacts(self):
         yield [SIMContact(name='test', tel='099872394', sim_index=0)]
