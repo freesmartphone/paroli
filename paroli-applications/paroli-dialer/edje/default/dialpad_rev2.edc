@@ -1,10 +1,14 @@
 #include "macros_rev2.edc"
 
+images {
+   image: "call.png" COMP;
+   image: "end_call.png" COMP;
+   image: "answer.png" COMP;
+   image: "backspace.png" COMP;
+   image: "speaker.png" COMP;
+}
+
 group { name: "tele";
-    
-    min: 480 525;
-    max: 480 525;
-    
     parts
     {
         part 
@@ -16,24 +20,6 @@ group { name: "tele";
             { 
                 state:   "default"  0.0;
                 color: 0 0 0 255;
-            }
-        }
-        part
-        {
-            name: "top-bar";
-            type: RECT;
-            description
-            { 
-                state: "default" 0.0;
-                color:0 0 255 255;
-                rel1
-                {
-                    relative: 0.00 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 0.05;
-                }
             }
         }
         part
@@ -67,37 +53,8 @@ group { name: "tele";
         }
         part
         {
-            name: "clock";
-            type: TEXT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.5 0.0;
-                    size: 18;
-                    text: "20:08";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "top-bar";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "top-bar";
-                }
-            }
-        }
-        part
-        {
             name: "num_field";
             type: RECT;
-//             mouse_events: 0;
             description 
             { 
                 state: "default" 0.0;
@@ -180,278 +137,90 @@ group { name: "tele";
               inherit:"default" 0.0;
             }
         }
-// // //         ROW ONE
-        part
-        {
+         part {
             name: "call-button";
-            type: RECT;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.0 0.20;
-                }
-                rel2 
-                {
-                    relative: 0.65 0.35;
-                }
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               rel1 {
+                  relative: 0.0 0.20;
+               }
+               rel2 {
+                  relative: 0.65 0.35;
+               }
+               image {
+                  normal: "call.png";
+               }
+               visible: 1;
             }
             description
             {
               state: "incoming" 0.0;
               inherit:"default" 0.0;
+              image.normal: "answer.png";
             }
             description
             {
               state: "dialing" 0.0;
               inherit:"default" 0.0;
+              image.normal: "end_call.png";
             }
             description
             {
               state: "active" 0.0;
               inherit:"default" 0.0;
+              image.normal: "end_call.png";
             }
             description
             {
               state: "releasing" 0.0;
               inherit:"default" 0.0;
             }
-        }
-        part
-        {
-            name:"call-button-inner";
-            type: RECT;
-            mouse_events:0;
-            description
-            { 
-                state: "default" 0.0;
-                color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.01 0.02;
-                    to: "call-button";
-                }
-                rel2 
-                {
-                    relative: 0.99 0.98;
-                    to: "call-button";
-                }
-            }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-              color: 128 0 0 255;
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-              color: 128 0 0 255;
-            }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
-            }
-        }
-        part
-        {
-            name: "call-button-text";
-            type: TEXT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.5 0.4;
-                    size: 40;
-                    text: "Call";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "call-button";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "call-button";
-                }
-            }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-              text.text:"Accept";
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-              text.text:"Cancel";
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-              text.text:"End Call";
-            }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
-              text.text:"Wait";
-            }
-        }
-        part
-        {
+         }
+
+         part {
             name: "del-button";
-            type: RECT;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.66 0.20;
-                }
-                rel2 
-                {
-                    relative: 1.0 0.35;
-                }
-            }
-            description 
-            { 
-                state: "clicked" 0.0;
-                inherit: "default" 0.0;
-                color: 255 255 255 255;
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               rel1 {
+                  relative: 0.66 0.20;
+               }
+               rel2 {
+                  relative: 1.0 0.35;
+               }
+               image {
+                  normal: "backspace.png";
+               }
+               visible: 1;
             }
             description
             {
               state: "incoming" 0.0;
               inherit:"default" 0.0;
+              image.normal: "speaker.png";
             }
             description
             {
               state: "dialing" 0.0;
               inherit:"default" 0.0;
+              image.normal: "speaker.png";
             }
             description
             {
               state: "active" 0.0;
               inherit:"default" 0.0;
+              image.normal: "speaker.png";
             }
             description
             {
               state: "releasing" 0.0;
               inherit:"default" 0.0;
             }
-            
-        }
-        part
-        {
-            name:"del-button-inner";
-            type: RECT;
-            mouse_events:0;
-            description
-            { 
-                state: "default" 0.0;
-                color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.01 0.02;
-                    to: "del-button";
-                }
-                rel2 
-                {
-                    relative: 0.99 0.98;
-                    to: "del-button";
-                }
-            }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-            }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
-            }
-        }
-        part
-        {
-            name: "del-button-text";
-            type: TEXT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.5 0.4;
-                    size: 40;
-                    text: "del";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "del-button";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "del-button";
-                }
-            }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-              text.text:"mute";
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-              text.text:"mute";
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-              text.text:"mute";
-            }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
-              text.text:"mute";
-            }
-        }
+         }
+
 // // //         ROW TWO
         _PART_KEYPAD("button-1", "1", "", 0.0, 0.36,  0.32, 0.51);
         _PART_KEYPAD("button-2", "2", "ABC", 0.33, 0.36,  0.65, 0.51);
@@ -511,13 +280,6 @@ group { name: "tele";
     }
     programs
     {
-        program 
-        { 
-            name: "top-bar-tapped";
-            signal: "mouse,clicked,1";
-            source: "top-bar";
-            action: SIGNAL_EMIT "top_bar" "tapped";
-        }
         program 
         { 
             name: "num_field-clicked";

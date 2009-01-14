@@ -8,11 +8,7 @@ program \
             target: "num_field";\
             target: "num_field-text";\
             target: "del-button";\
-            target: "del-button-inner";\
-            target: "del-button-text";\
             target: "call-button";\
-            target: "call-button-inner";\
-            target: "call-button-text";\
             target: "blocker";\
         }
 
