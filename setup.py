@@ -95,8 +95,8 @@ setup(name='Paroli',
                     (os.path.join(sys.prefix, 'share/pixmaps/'),
                      ['data/tichy']),
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \
-          + plugins_files('paroli-services', 'share/paroli/services') \
-          + plugins_files('paroli-applications', 'share/paroli/applications') \
+          + plugins_files('paroli-services', '../../usr/share/paroli/services') \
+          + plugins_files('paroli-applications', '../../usr/share/paroli/applications') \
           + dbus_data,
 
       cmdclass = {'build': my_build,
