@@ -36,3 +36,7 @@ file installed.
 To use the session bus, use the --session argument :
 
   paroli-launcher --session
+
+then to start an application (for example Paroli-Dialer) :
+
+  paroli-launcher --session --launch Paroli-Dialer
