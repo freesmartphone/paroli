@@ -1,2 +1,2 @@
 #!/bin/sh
-edje_cc $@ -id . -fd . edje/paroli-i-o.edc -o paroli-i-o.edj
+edje_cc $@ -id edje/default/images -fd . edje/default/paroli-i-o.edc -o paroli-i-o.edj
