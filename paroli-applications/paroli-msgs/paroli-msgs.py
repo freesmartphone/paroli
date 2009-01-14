@@ -173,7 +173,7 @@ class ContactsApp(tichy.Application):
         ##close window
         new_edje.edj.signal_callback_add("back", "*", new_edje.close_extra_child)
         ##go to next step
-        new_edje.edj.signal_callback_add("send", "*", self.send_message, numbers, textbox, step_1, new_edje, original_message)
+        new_edje.edj.signal_callback_add("send", "*", self._on_send_message, numbers, textbox, step_1, new_edje, original_message)
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
     
     
@@ -197,40 +197,40 @@ class ContactsApp(tichy.Application):
         message.read()
         new_edje.edj.layer_set(3)
         new_edje.edj.show()   
+
+    def _on_send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
+        """Called when the user click the send button
+
+        The function will simply start the send_message tasklet
+        """
+        self.send_message(emission, source, param, numbers, textbox, step_1, step_2, original_message).start()
     
-    ##send message INCOMPLETE
+    @tichy.tasklet.tasklet
     def send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
+        """tasklet that performs the sending process"""
         logger.debug("send message called")
         numbers = numbers
         text = textbox.textblock_get().text_get(0)
-        # XXX: we shouldn't ignore any exception
+
         try:
             step_2.close_extra_child(emission,source,param)
-        except Exception,e :
-            logger.error("Ignoring error %s", e)
-        
-        try:
             step_1.delete(emission,source,param)
-        except Exception,e :
-            logger.error("Ignoring error %s", e)
-        
-        try:
             if original_message != None:
                 original_message.delete(emission, source, param)
-        except Exception,e :
-            logger.error("Ignoring error %s", e)
             
-        message_service = tichy.Service('SMS')
-        for i in numbers:
-            message = message_service.create(number=i, text=text, direction='out')
-            send = message_service.send(message)
-            send.start()
-            logger.info("would send message: %s to : %s", text, i)
-            self.contact_objects_list.generate_single_item_obj(i,text,message)
-        
-        self.contact_objects_list.box.box.redraw_queue()
-        self.contact_objects_list.box.box.show_all()
-        self.close_keyboard()
+            message_service = tichy.Service('SMS')
+            for i in numbers:
+                message = message_service.create(number=i, text=text, direction='out')
+                logger.info("would send message: %s to : %s", text, i)
+                yield message_service.send(message)
+                self.contact_objects_list.generate_single_item_obj(i,text,message)
+
+            self.contact_objects_list.box.box.redraw_queue()
+            self.contact_objects_list.box.box.show_all()
+            self.close_keyboard()
+        except Exception, ex:
+            logger.error("Got error %s", ex)
+            # XXX: at this point we should show an error box or do something
         
     ##delete message INCOMPLETE
     def delete_message(self,emission, source, param, message, details_window, messages_edje_obj, canvas_obj):
