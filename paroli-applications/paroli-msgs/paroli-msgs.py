@@ -68,7 +68,7 @@ class ContactsApp(tichy.Application):
         all_list = self.msgs_service.messages
         
         def comp(m1, m2):
-          return cmp(m2.timestamp, m1.timestamp)
+            return cmp(m2.timestamp, m1.timestamp)
         
         all_list.sort(comp)
         #for e in all_list:
@@ -116,7 +116,7 @@ class ContactsApp(tichy.Application):
         yield tichy.Wait(self.main, 'back')
         ##remove all children -- edje elements 
         for i in self.main.children:
-          i.remove()
+            i.remove()
         self.main.etk_obj.hide()   # Don't forget to close the window
     
     ##functions for message app
@@ -200,34 +200,33 @@ class ContactsApp(tichy.Application):
     
     ##send message INCOMPLETE
     def send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
-        print "send message called"
+        logger.debug("send message called")
         numbers = numbers
         text = textbox.textblock_get().text_get(0)
+        # XXX: we shouldn't ignore any exception
         try:
             step_2.close_extra_child(emission,source,param)
-        except Exception,e : 
-            print e
+        except Exception,e :
+            logger.error("Ignoring error %s", e)
         
         try:
-          step_1.delete(emission,source,param)
+            step_1.delete(emission,source,param)
         except Exception,e :
-            print e
+            logger.error("Ignoring error %s", e)
         
         try:
-          if original_message != None:
-            original_message.delete(emission, source, param)
+            if original_message != None:
+                original_message.delete(emission, source, param)
         except Exception,e :
-            print e
+            logger.error("Ignoring error %s", e)
             
         message_service = tichy.Service('SMS')
         for i in numbers:
-          message = message_service.create(number=i, text=text, direction='out')
-          print type(message)
-          send = message_service.send(message)
-          print type(send)
-          send.start()
-          print "would send message: ", text, "to :", i
-          self.contact_objects_list.generate_single_item_obj(i,text,message)
+            message = message_service.create(number=i, text=text, direction='out')
+            send = message_service.send(message)
+            send.start()
+            logger.info("would send message: %s to : %s", text, i)
+            self.contact_objects_list.generate_single_item_obj(i,text,message)
         
         self.contact_objects_list.box.box.redraw_queue()
         self.contact_objects_list.box.box.show_all()
@@ -272,9 +271,9 @@ class ContactsApp(tichy.Application):
         except Exception,e:
             print e
         try:
-          self.extra_child = new_edje
-          new_edje.edj.layer_set(3)
-          new_edje.edj.show()
+            self.extra_child = new_edje
+            new_edje.edj.layer_set(3)
+            new_edje.edj.show()
         except Exception,e:
             print e
         print "done"
@@ -314,9 +313,9 @@ class ContactsApp(tichy.Application):
         print "add recipient called"
         old = dial_pad.part_text_get('num_field-text')
         if len(old) == 0:
-          new = str(contact.tel)
+            new = str(contact.tel)
         else:
-          new = old + ' ' + str(contact.tel)
+            new = old + ' ' + str(contact.tel)
         
         dial_pad.part_text_set('num_field-text', new)
         self.extra_child.close_extra_child(emission, source, param)
@@ -329,9 +328,9 @@ class ContactsApp(tichy.Application):
         new_sign = param
         value = emission.part_text_get('num_field-text')
         if value == None:
-          new = str(new_sign)
+            new = str(new_sign)
         else:
-          new = str(value)+str(new_sign)
+            new = str(value)+str(new_sign)
           
         emission.part_text_set('num_field-text',new)
     
@@ -340,7 +339,7 @@ class ContactsApp(tichy.Application):
         print "number_edit del called"
         value = emission.part_text_get("num_field-text")
         if len(value) != 0:
-          emission.part_text_set("num_field-text",value[:-1])
+            emission.part_text_set("num_field-text",value[:-1])
     
     ##top bar delete calls
     def top_bar(self,emission,source,param):
@@ -485,19 +484,19 @@ class ContactsApp(tichy.Application):
     
     def save_contact_number(self,emission,source,param, switch ,info, contact, details_window,name=None):
         if switch == 'number':
-          number = emission.part_text_get('num_field-text')
-          contact.tel = number
-          details_window.edj.part_text_set('number-text', number)
-          details_window.edj.part_text_set('number-info', info)
-          emission.signal_emit('contact_saved','*')
+            number = emission.part_text_get('num_field-text')
+            contact.tel = number
+            details_window.edj.part_text_set('number-text', number)
+            details_window.edj.part_text_set('number-info', info)
+            emission.signal_emit('contact_saved','*')
         elif switch == 'name':
-          cinfo = info.text_get()
-          cname = name.text_get()
-          print dir(emission)
-          #contact.name = name
-          details_window.edj.part_text_set('name-text', cname)
-          details_window.edj.part_text_set('name-info', cinfo)
-          emission.signal_emit('contact_name_edit_saved','*')
+            cinfo = info.text_get()
+            cname = name.text_get()
+            print dir(emission)
+            # contact.name = name
+            details_window.edj.part_text_set('name-text', cname)
+            details_window.edj.part_text_set('name-info', cinfo)
+            emission.signal_emit('contact_name_edit_saved','*')
     
     def save_new_contact(self,emission, source, param,name_object=None,number=None,first_window=None):
         print "save new contact called"
