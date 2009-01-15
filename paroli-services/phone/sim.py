@@ -119,9 +119,11 @@ class FreeSmartPhoneSim(tichy.Service):
 
         self.indexes = {}       # map sim_index -> contact
 
+    @tichy.tasklet.tasklet
     def set_info(self):
         #set sim info variable to be used by various apps
-        self.sim_info = self.gsm_sim.GetSimInfo()
+        logger.debug("Get sim info")
+        self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
 
     def get_contacts(self):
         """Return the list of all the contacts in the SIM
@@ -243,7 +245,7 @@ class TestSim(tichy.Service):
     name = 'Test'
 
     def __init__(self):
-        self.sim_info = {'imsi':'0123456789012345'}
+        pass
 
     @tichy.tasklet.tasklet
     def get_contacts(self):
@@ -265,5 +267,7 @@ class TestSim(tichy.Service):
         logger.info("remove contact %s from sim", contact.name)
         yield None
 
+    @tichy.tasklet.tasklet
     def set_info(self):
-        pass
+        self.sim_info = {'imsi':'0123456789012345'}
+        yield None
