@@ -32,7 +32,6 @@ import plugins
 from list import List
 from text import Text
 from item import Item
-from image import Image
 from time import Time
 from persistance import Persistance
 import notifications
