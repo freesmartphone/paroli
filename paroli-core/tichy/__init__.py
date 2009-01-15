@@ -38,8 +38,6 @@ from time import Time
 from persistance import Persistance
 import notifications
 
-from dialog import Dialog
-
 mainloop = None
 gui = None
 

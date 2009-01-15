@@ -49,9 +49,6 @@ class Application(Tasklet, Item):
     that the application can use.
     """
 
-    design = 'Default'  # Set this to the name of a Design service to
-                        # specify the optimal design.
-
     category = None
 
     @classmethod
@@ -97,20 +94,13 @@ class Application(Tasklet, Item):
 
     def do_run(self, parent, *args, **kargs):
         """You shouldn't change this, redefine the run method instead"""
-        # Before trunning the app we set the default design the the
-        # one specified by the application
-        if self.design:
-            old_design = tichy.Service('Design')
-            tichy.Service.set_default('Design', self.design)
         window = tichy.gui.Window(parent, modal=True, expand=True)
         ret = yield super(Application, self).do_run(window, *args, **kargs)
         window.destroy()
-        if self.design:
-            tichy.Service.set_default('Design', old_design)
         yield ret
 
 
 class Gadget(Tasklet, Item):
     """Special Application that can be put in a bar.
     """
-    design = None
+    pass

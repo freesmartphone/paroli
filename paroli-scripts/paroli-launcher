@@ -281,9 +281,6 @@ if __name__ == '__main__':
             logger.info("set service %s to %s", service, name)
             tichy.Service.set_default(service, name)
 
-    # We set the default design
-    tichy.Service.set_default('Design', 'Default')
-
     if options.show_services:
         from tichy.service import print_infos
         print_infos()
