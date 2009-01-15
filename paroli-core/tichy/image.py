@@ -50,10 +50,6 @@ class Image(tichy.Item):
             return
         self.surf = painter.surface_from_image(self.path)
 
-    def view(self, parent):
-        import tichy.gui
-        return tichy.gui.ImageWidget(parent, self)
-
     def draw(self, painter, size=None):
         self.load(painter)
         painter.draw_surface(self.surf)

@@ -57,16 +57,8 @@ class ItemMetaClass(type):
 class Item(tichy.Object):
     """Base class for all items.
 
-       Item are used to separate the data from there view.  Every item
-       has a view method that can generate of view of itself.  Items
-       also need to expose a set of minimal information that can be
-       used by the Design service. Those information are:
-       - a name
-       - an optional icon
-
        The subclasses class attribute of an Item class is a list of
        all its subclasses.
-
     """
     __metaclass__ = ItemMetaClass
 
@@ -95,30 +87,6 @@ class Item(tichy.Object):
 
     def __init__(self):
         super(Item, self).__init__()
-
-    def view(self, parent, **kargs):
-        """Create a view of the Item
-
-        :Parameters:
-            `parent` : gui.Widget
-                The parent widget the view will be created in
-
-        :Returns: the widget that represents the item
-        """
-        raise NotImplementedError
-
-    def edit(self, parent):
-        """return a tasklet that will edit the item value
-
-        :Parameters:
-            `parent` : gui.Widget
-                The parent widget the view will be created in
-
-        :Returns: a `tichy.Tasklet` that sill start the editing task
-        """
-        # TODO: now that we have a proper Actor system, we should be
-        # able to remove this ?
-        raise NotImplementedError
 
     def get_text(self):
         """Return the name of the item as a tichy.Text object

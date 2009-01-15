@@ -88,8 +88,3 @@ class List(list, Item):
         """Sort the list inplace"""
         list.sort(self, *args, **kargs)
         self.emit('modified')
-
-    def view(self, parent, **kargs):
-        """Return a view of the list"""
-        design = Service('Design')
-        return design.view_list(parent, self, **kargs)

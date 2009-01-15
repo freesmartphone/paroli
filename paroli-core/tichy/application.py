@@ -44,9 +44,6 @@ class Application(Tasklet, Item):
       application should appears in the launcher application If the
       name or category is not defined, then the app won't show up in
       the laucher application
-
-    The view method of an application instance will create a frame
-    that the application can use.
     """
 
     category = None
@@ -64,18 +61,6 @@ class Application(Tasklet, Item):
     @classmethod
     def get_sub_text(cls):
         return None
-
-    def view(self, parent, **kargs):
-        """Create a view of a frame for the application in the parent widget
-
-        :Parameters:
-
-            parent : gui.Widget
-                The parent widget we create the view in
-        """
-        # The 'Design' service is in charge of creating the frame
-        design = Service('Design')
-        return design.view_application(parent, self, **kargs)
 
     def do_run(self, parent, *args, **kargs):
         """You shouldn't change this, redefine the run method instead"""

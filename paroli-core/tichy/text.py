@@ -29,22 +29,16 @@ class Text(Item):
         "modified": emitted when the text has been modified
     """
 
-    def __init__(self, value="", editable=False):
+    def __init__(self, value=""):
         """Create a new text instance
 
         :Parameters:
 
             value : unicode
                 The initial value of the text
-
-            editable : bool
-                If True then the text will be editable. Than means
-                than the view of the text should provide a way to edit
-                the text.
         """
         super(Text, self).__init__()
         self.__value = unicode(value)
-        self.editable = editable
 
     @classmethod
     def as_type(cls, value):
@@ -71,9 +65,6 @@ class Text(Item):
 
     value = property(__get_value, __set_value)
 
-    def input_method(self):
-        return None
-
     def __repr__(self):
         return self.__value.encode('ascii', 'replace')
 
@@ -88,41 +79,3 @@ class Text(Item):
 
     def __cmp__(self, o):
         return cmp(self.__value, unicode(o))
-
-    def view(self, parent, editable=None, **kargs):
-        """Create a view of the text
-
-        :Parameters:
-
-            parent : gui.Widget
-                The parent widget we create the view in
-
-            editable : bool or None
-                If True then the view will be editable, if False it
-                won't be. If set to None it will use the value
-                provided in the `__init__` method.
-        """
-        from .gui import Label, Edit
-        editable = editable if editable is not None else self.editable
-        if not editable:
-            ret = Label(parent, self.__value, **kargs)
-        else:
-            ret = Edit(parent, item=self, **kargs)
-
-        connection = self.connect('modified', Text.on_modified, ret)
-        ret.connect('destroyed', self.on_view_destroyed, connection)
-        return ret
-
-    def edit(self, window, **kargs):
-        """return a `Tasklet` that can be used to edit the widget"""
-        # first we get the appropriate TextEdit Service
-        text_edit = Service('TextEdit')
-        # Then we call the service with our text
-        return text_edit.edit(
-            window, self, input_method=self.input_method(), **kargs)
-
-    def on_modified(self, view):
-        view.text = self.__value
-
-    def on_view_destroyed(self, view, connection):
-        self.disconnect(connection)
