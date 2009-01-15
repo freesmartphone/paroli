@@ -38,6 +38,38 @@ class BaseService(Item):
 
     This class is used to have a common class associated with all
     service with the same 'service' attribute
+
+    To define a new service, it is enough to create a class that
+    inherit from the Service class. The service should have a
+    'service' attribute with the name of the service. e.g :
+
+    class MyService(Service):
+        service = 'MyService'
+
+    All the services are singleton and paroli will take care to create
+    them and keep track of there instances.
+    
+    when a plugin/application need to use a given service, it create
+    it like this :
+
+    my_service = Service('MyService')
+
+    paroli will return a service that as the given name. There are
+    some additional mechanism to let paroli decide which service to
+    use but it is not important.
+
+    So why is it convenient to use this Service class ? Because then
+    you can have several implementation of the same service, and the
+    context decide *dynamically* which one is going to be used.
+
+    Coupled with the plugin system this is very powerful because it
+    let the plugins redefine internal behavior of paroli (it is in
+    fact a kind of chain of responsibilty pattern)
+
+    For example at initialization paroli may need to get a PIN code
+    from the user. Do do so it will request the 'TextEdit'
+    service. Then it is assumed that one of the plugins did register
+    this service.
     """
 
     def __init__(self, service):
