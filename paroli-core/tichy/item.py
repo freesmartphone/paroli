@@ -67,7 +67,6 @@ class Item(tichy.Object):
        The subclasses class attribute of an Item class is a list of
        all its subclasses.
 
-       An Item can also create an `Actor` item acting on itself.
     """
     __metaclass__ = ItemMetaClass
 
@@ -137,14 +136,6 @@ class Item(tichy.Object):
         :Returns: `tichy.Text` | None
         """
         return None
-
-    def create_actor(self):
-        """Return an actor acting on this item
-
-        :Returns: `tichy.Actor`
-        """
-        from tichy.actor import Actor
-        return Actor(self)
 
     def __unicode__(self):
         return unicode(self.get_text())

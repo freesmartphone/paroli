@@ -30,8 +30,7 @@ class List(list, Item):
     """Base class for list
 
     It is better to use this class instead of python list in the case
-    we want to monitor the list modifications. We can also create
-    actor on a list.
+    we want to monitor the list modifications.
 
     Signals
         'modified' : emitted any time the list has been modified
@@ -94,54 +93,3 @@ class List(list, Item):
         """Return a view of the list"""
         design = Service('Design')
         return design.view_list(parent, self, **kargs)
-
-    def actors_view(self, parent, can_delete=False, **kargs):
-        """Return a view that contains actors view to all the elements of this
-        list
-
-        :Parameters:
-
-            parent : gui.Widget
-                The parent widget
-
-            can_delete : bool
-                If True, add a "Delete" action to every element of the
-                list
-        """
-        # This method is tricky. Modify with care !
-
-        actors = ActorList()
-
-        def on_delete(action, item, view):
-            """called when the user wants to delete an item"""
-            actors.remove(action.actor)
-            self.remove(item)
-
-        def on_modified(l):
-            """Called when the original list is modified"""
-            actors.clear()
-            for e in self:
-                actor = e.create_actor()
-                if can_delete:
-                    actor.new_action("Delete").connect('activated', on_delete)
-                actors.append(actor)
-
-        connection = self.connect('modified', on_modified)
-        on_modified(self)
-        view = actors.view(parent, **kargs)
-
-        def on_destroyed(view, connection):
-            self.disconnect(connection)
-
-        # We don't forget to remove the connection
-        view.connect('destroyed', on_destroyed, connection)
-
-        return view
-
-
-class ActorList(List):
-    """Special List that only contains actors"""
-
-    def view(self, parent, **kargs):
-        design = Service('Design')
-        return design.view_actor_list(parent, self, **kargs)

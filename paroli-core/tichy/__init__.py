@@ -29,10 +29,9 @@ from application import Application, Gadget
 from service import Service, ServiceUnusable
 import plugins
 
-from list import List, ActorList
+from list import List
 from text import Text
 from item import Item
-from actor import Actor
 from image import Image
 from time import Time
 from persistance import Persistance

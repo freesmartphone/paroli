@@ -52,21 +52,6 @@ class Application(Tasklet, Item):
     category = None
 
     @classmethod
-    def create_actor(cls):
-        from tichy import Actor
-        ret = Actor(cls)
-        run_action = ret.new_action("Run")
-
-        def on_run_action(action, app, view):
-            yield app(view.window)
-
-        ret.default_action = run_action    # So that by default we run
-                                           # the application
-        run_action.connect('activated', on_run_action)
-
-        return ret
-
-    @classmethod
     def get_text(cls):
         """
         Return the name of the application

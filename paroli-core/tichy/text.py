@@ -126,13 +126,3 @@ class Text(Item):
 
     def on_view_destroyed(self, view, connection):
         self.disconnect(connection)
-
-    def create_actor(self):
-        from actor import Actor
-        ret = Actor(self)
-
-        def on_edit(actor, item, view):
-            yield item.edit(view.window)
-
-        ret.new_action("Edit").connect('activated', on_edit)
-        return ret
