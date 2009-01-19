@@ -71,15 +71,6 @@ def parse_options():
     :Returns: the OptionParser result object
     """
     parser = OptionParser()
-    parser.add_option("", "--gui-backend", dest="gui_backend",
-                      help="select a specific gui backend",
-                      metavar="BACKEND",
-                      choices=["sdl", "csdl", "gtk", "etk", "paroli"],
-                      default=None)
-    parser.add_option("", "--fullscreen",
-                      action='store_true', dest="fullscreen",
-                      help="run tichy in fullscreen",
-                      default=False)
     parser.add_option("", "--experimental",
                       action='store_true', dest="experimental",
                       help="Use experimental features",

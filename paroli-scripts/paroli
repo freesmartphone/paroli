@@ -48,10 +48,6 @@ def parse_options():
     :Returns: the OptionParser result object
     """
     parser = OptionParser()
-    parser.add_option("", "--fullscreen",
-                      action='store_true', dest="fullscreen",
-                      help="run tichy in fullscreen",
-                      default=False)
     parser.add_option("", "--cfgfile", dest="cfg_file",
                       help="specigy the configuration file to use",
                       metavar="FILE", default=None)
