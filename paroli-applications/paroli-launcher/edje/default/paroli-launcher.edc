@@ -325,7 +325,7 @@ collections{
                 _LINK_PROG("i-o", "I/O", 0.0, 0.2);
                 _LINK_PROG("msgs", "Msgs", 0.2, 0.4);
                 _LINK_PROG("tele", "Tele", 0.4, 0.6);
-                _LINK_PROG("pixels", "Pixels", 0.6, 0.8);
+//                 _LINK_PROG("test", "Pixels", 0.6, 0.8);
                 _LINK_PROG("people", "People", 0.8, 1.0);
           }
           programs {
@@ -366,6 +366,27 @@ collections{
                   signal: "mouse,up,1";
                   source: "i-o-link-box";
                   action: SIGNAL_EMIT "launch_app" "Paroli-I/O";
+              }
+              program 
+              {
+                  name: "msgs-launcher";
+                  signal: "mouse,up,1";
+                  source: "msgs-link-box";
+                  action: SIGNAL_EMIT "launch_app" "Paroli-Msgs";
+              }
+              program 
+              {
+                  name: "tele-launcher";
+                  signal: "mouse,up,1";
+                  source: "tele-link-box";
+                  action: SIGNAL_EMIT "launch_app" "Paroli-Dialer";
+              }
+              program 
+              {
+                  name: "People-launcher";
+                  signal: "mouse,up,1";
+                  source: "people-link-box";
+                  action: SIGNAL_EMIT "launch_app" "Paroli-Contacts";
               }
           }
     }

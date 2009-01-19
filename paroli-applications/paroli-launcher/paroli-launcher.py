@@ -59,23 +59,6 @@ class I_O_App(tichy.Application):
         logging = "launching :" + str(name)
         logger.info(str(logging))
         
-        try:
-            retcode = call("python" + " /usr/share/paroli.git/paroli-scripts/paroli-launcher --launch Paroli-I/O", shell=True)
-            if retcode < 0:
-                print "Child was terminated by signal", -retcode
-            else:
-                print "Child returned", retcode
-        except OSError, e:
-            print "Execution failed:", e
-
-        
-        
-        #bus = dbus.SystemBus()
-        
-        #try:
-            #launcher = bus.get_object('org.tichy.launcher', '/Launcher')
-            #launcher_2 = dbus.Interface(launcher, 'org.tichy.Launcher')
-        #except Exception, e:
-            #print e
-          
-        #launcher_2.Launch(name)
+        for app in tichy.Application.subclasses:
+            if app.name == name:
+                app(self.main).start()    
