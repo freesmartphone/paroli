@@ -132,7 +132,9 @@ class TestSms(tichy.Service):
     def send(self, sms):
         logger.info("Sending message to %s", sms.peer)
         yield tichy.tasklet.Sleep(2)
-        tichy.Service('Messages').add_to_outbox(sms)
+        logger.info("Store message into messages")
+        tichy.Service('Messages').add_to_messages(sms)
+
         yield None
 
     def fake_incoming_message(self, msg):
