@@ -84,15 +84,12 @@ class DialerApp(tichy.Application):
         emission.part_text_set('num_field-text',new)
     
     def num_field(self,emission,source,param):
-        print "existence", emission.part_exists(param)
         number = emission.part_text_get(param)
-        print "value", number
         if number == None or len(number) == 0:
             self.load_phone_book( emission, source, param)
         else :
-            print "number found"
+            logger.debug("number found")
             self.add_contact( emission, source, param)
-        print "num_field"
         
     def func_btn(self,emission,source,param):
         if param == 'call-button':
@@ -101,7 +98,7 @@ class DialerApp(tichy.Application):
             self.number_edit_del(emission,source,param)
     
     def number_edit_del(self,emission, source, param):
-        print "number_edit del called"
+        logger.debug("number_edit del called")
         value = emission.part_text_get("num_field-text")
         if len(value) != 0:
           emission.part_text_set("num_field-text",value[:-1])
@@ -127,7 +124,6 @@ class DialerApp(tichy.Application):
             #print e
             
         #if element == 'main_dialer_window':
-        print element
         #emission.signal_emit('close_application','*')
         self.main.emit('back')
     
@@ -135,7 +131,7 @@ class DialerApp(tichy.Application):
           #print element
     
     def call_contact(self, emission, source, param):
-        print "call contact called"
+        logger.debug("call contact called")
         number = emission.part_text_get('label-number')
         name = emission.part_text_get('label')
         self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
@@ -144,13 +140,13 @@ class DialerApp(tichy.Application):
         try:
             self.extra_child.edj.delete()
         except Exception,e:
-            print e
+            logger.error("in call_contact, got error : %s", e)
     
     def add_contact(self,emission, source, param):
-        print "add contact in dialer"
+        logger.debug("add contact in dialer")
         try:
             number = emission.part_text_get('num_field-text')
-            print number
+            logger.debug("number is %s", number)
             new_edje = gui.edje_gui(self.main,'save-number',self.edje_file)
             new_edje.edj.name_set('save_contact')
             new_edje.edj.signal_callback_add("save_contact", "*", self.save_number)
@@ -167,70 +163,67 @@ class DialerApp(tichy.Application):
             new_edje.edj.layer_set(2)
             new_edje.edj.show()
             self.extra_child = new_edje
-        except Exception,e:
-          print e
+        except Exception, e:
+          logger.error("Got error in add_contact : %e", e)
             
     def save_number(self,emission, source, param):
-         print "save number in dialer"
+         logger.ebug("save number in dialer")
          name = self.extra_child.text_field.text_get()
-         print name
+         logger.debug("name is %s", name)
          number = emission.part_text_get('number')
-         print number
+         logger.debug("number is %s", number)
          contacts_service = tichy.Service('Contacts')
          try:
             contact = contacts_service.create(str(name),tel=str(number))
          except Exception,e:
-            print e
-         print contact
+            logger.error("Got error in save_number : %s", e)
          self.edje_obj.edj.part_text_set('num_field-text','')
          emission.signal_emit('save-notice','*')
          try:
             emission.render_op_set(1)
          except Exception,e:
-            print e
+            logger.error("Got error in save_number : %s", e)
          self.contact_service.add(contact)
     
     def load_phone_book(self, emission, source, param):
-        print "load phone book called"
+        logger.debug("load phone book called")
         try:
             new_edje = gui.edje_gui(self.main,'tele-people',self.edje_file)
             new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
             new_edje.edj.name_set('contacts_list')
         except Exception,e:
-            print e
+            logger.error("Got error in load_phone_book : %s", e)
         self.extra_child = new_edje
         new_edje.edj.layer_set(3)
         new_edje.edj.show()
-        print "done"
         try:
             contacts_box = gui.edje_box(self,'V',1)
         except Exception,e:
-            print e
+            logger.error("Got error in load_phone_book : %s", e)
           
         try: 
-            print "self.lists.generate_contacts_list(self,orig_parent,self.phone_book,contacts_edje,self.edje_obj)"
             self.contact_objects_list = gui.contact_list(self.phone_book,contacts_box,self.main.etk_obj.evas,self.edje_file,'tele-contacts_item',self)
         except Exception,e:
-            print e 
+            logger.error("Got error in load_phone_book : %s", e)
         
         try: 
             to_2_swallowed = contacts_box.scrolled_view
         except Exception,e:
-            print e 
+            logger.error("Got error in load_phone_book : %s", e)
         
         try: 
-            print "new_edje.add(to_2_swallowed,contacts_edje)"
             new_edje.add(to_2_swallowed,contacts_box,"contacts-items")
         except Exception,e:
-            print e 
-        
+            logger.error("Got error in load_phone_book : %s", e)
+
         try: 
             contacts_box.box.show()
         except Exception,e:
-            print e 
+            logger.error("Got error in load_phone_book : %s", e)
+
           
     def start_call(self,orig,orig_parent,emission, source, param):
-        print "start call called"
+        logger.debug("start call called")
         number = emission.part_text_get("num_field-text")
         
         caller_service = Service('Caller')
@@ -269,8 +262,7 @@ class Caller(tichy.Application):
         # We open a new window for a call
         #logger.info("Caller run")
         
-        print "caller run"
-        print "in caller: ", name
+        logger.debug("caller run, name : %s", name)
         self.gsm_service = tichy.Service('GSM')
         
         #print parent
@@ -310,7 +302,6 @@ class Caller(tichy.Application):
                 
                 def make_active(emission, source, param):
                     call.activate()
-                    print "making active"
                     
                 self.edje_obj.edj.signal_callback_add("activate_call", "*", make_active)
                 
@@ -332,24 +323,23 @@ class Caller(tichy.Application):
                     try:
                         call.release()
                     except Exception, e:
-                        print "exception here in pre state"
+                        logger.error("exception here in pre state")
                         call.emit('released')
                     
                 self.edje_obj.edj.signal_callback_add("release_call", "*", call_release_pre)
 
             i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'))
             if i == 0: #activated
-              print "call activated"
+              logger.debug("call activated")
               self.edje_obj.edj.signal_emit('to_active_state',"*")
               self.edje_obj.edj.part_text_set('num_field-text',str(call.number))
               #print 'should be an active call here: ', self.gsm_service.gsm_call.ListCalls().__contains__('active')
               def call_release(emission, source, param):
-                  print "call releasing"
+                  logger.info("call releasing")
                   try:
                     call.release() 
                   except Exception,e:
-                    print e
-                    print "exception here"
+                    logger.error("Error : %s", e)
                     call.emit('released')
                     #self.edje_obj.edj.signal_emit('notfound',"*")
                     #yield tichy.Wait(call, 'released')
@@ -363,10 +353,10 @@ class Caller(tichy.Application):
                   call.release()
                   yield tichy.Wait(call, 'released')
                 except Exception, e:
-                  print e
+                  logger.error("Got error in caller : %s", e)
                   
         except Exception, e:
-            print e
+            logger.error("Got error in caller : %s")
             #import traceback
             #logger.error("%s, %s", e, traceback.format_exc())
             #yield tichy.Dialog(self.window, "Error", e.message)
@@ -376,22 +366,20 @@ class Caller(tichy.Application):
 
         
     def gui_signals(self,emission, source, param):
-        print "gui_signals"
-        print source
-        print param
+        pass
        
     def add_digit(self,emission, source, param):
-        print "dtmf would be sent"
+        logger.debug("dtmf would be sent")
         
     def func_btn(self,emission, source, param):
-        print "func btn called from ", source
+        logger.debug("func btn called from %s", source)
         state = emission.part_state_get(param)
-        print state[0]
+        logger.debug("%s", state[0])
         if param == 'call-button':
           
             if state[0] == 'default':
                 #self.create_call()
-                print "nothing to be done"
+                logger.debug("nothing to be done")
                 
             elif state[0] == 'incoming':
                 self.accept_call(emission)
@@ -404,47 +392,47 @@ class Caller(tichy.Application):
               
             elif state[0] == 'releasing':
                 #self.accept_call()
-                print "nothing to be done"
+                logger.debug("nothing to be done")
               
             else :
-                print "unknown state for call button"
+                logger.debug("unknown state for call button")
                 
         elif param == 'del-button':
             
             if state[0] == 'default':
-                print "nothing to be done"
+                logger.debug("nothing to be done")
                 
             elif state[0] == 'incoming':
                 #self.accept_call()
-                print "nothing to be done"
+                logger.debug("nothing to be done")
                 
             elif state[0] == 'dialing':  
                 #self.release_call()
-                print "nothing to be done"
+                logger.debug("nothing to be done")
                 
             
             elif state[0] == 'active':
                 #self.mute_call
-                print "would be muting"
+                logger.debug("would be muting")
               
             elif state[0] == 'releasing':
                 #self.accept_call()
-                print "nothing to be done"
+                logger.debug("nothing to be done")
               
             else :
-                print "unknown state for del button"
+                logger.debug("unknown state for del button")
         else :
-            print "unknown button"
+            logger.debug("unknown button")
     
     def release_call(self,emission):
-        print "release call Caller called"
+        logger.debug("release call Caller called")
         emission.signal_emit("release_call", "*")
     
     def accept_call(self,emission):
         #call_id = emission.part_text_get('active_call')
         #print call_id
         #self.gsm.gsm_call.Activate(call_id)
-        print "accept call Caller called"
+        logger.debug("accept call Caller called")
         emission.signal_emit("activate_call", "*")
     
 ##Service called when incoming call detected
@@ -463,11 +451,7 @@ class TextEdit(tichy.Application):
     def run(self, window, text="", name=None, input_method=None):
       
         
-        print "PIN called"
-        print text
-        print name
-        print input_method
-        
+        logger.info("PIN called")
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-dialer.edj')
         self.main = window
@@ -511,7 +495,7 @@ class TextEdit(tichy.Application):
         emission.part_text_set('num_field-text',new_stars)
         
     def number_edit_del(self,emission, source, param):
-        print "number_edit del called"
+        logger.debug("number_edit del called")
         value = emission.part_text_get("active-call")
         star_value = emission.part_text_get("num_field-text")
         if len(value) != 0:
