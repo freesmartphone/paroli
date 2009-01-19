@@ -123,6 +123,18 @@ class InitAll(tichy.Tasklet):
         logger.info("start AutoAnswerCall")
         yield AutoAnswerCall()
 
+class AutoAnswerCall(tichy.Tasklet):
+
+    def run(self):
+        # We don't create any window, just run in the background...
+        # warning; that would only work with gtk or etk backend...
+        gsm_service = tichy.Service('GSM')
+        while True:
+            call = yield tichy.Wait(gsm_service, 'incoming-call')
+            logger.info("got incoming call")
+            caller_service = tichy.Service('Caller')
+            yield caller_service.call(None, call)
+
 
 if __name__ == '__main__':
     options = parse_options()
