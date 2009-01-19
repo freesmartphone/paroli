@@ -1,0 +1,38 @@
+#define _LINK_PROG(link_name, title, y1, y2); \
+part {\
+    name: link_name"-link-box";\
+    type: RECT;\
+    description {\
+      state: "default" 0.0;\
+      color:0 0 0 255;\
+      rel1 {\
+          relative: 0.0  y1;\
+          to:"link-box";\
+        }\
+        rel2 {\
+          relative: 1.0  y2;\
+          to:"link-box";\
+        } \
+    }\
+}\
+part {\
+        name: title"testing_textblock";\
+        type:  TEXTBLOCK;\
+        mouse_events:0;\
+        description {\
+          state:    "default" 0.0;\
+          text {\
+            text:  "<normal>"title"</normal><small>(huhu)</small>";\
+            style: "textblock_style";\
+            min:   0 0;\
+          }\
+        rel1 {\
+          relative: 0.02  0.0;\
+          to:link_name"-link-box";\
+        }\
+        rel2 {\
+          relative: 1.0  1.0;\
+          to:link_name"-link-box";\
+        } \
+        }\
+      }

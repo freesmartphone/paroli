@@ -1,0 +1,372 @@
+#include "paroli-launcher_macros.edc"
+
+styles
+{
+  style {
+    name: "textblock_style";
+    base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
+
+    tag:  "small"    "+ font_size=15";
+    tag:  "normal"    "+ color=#fff";
+    tag:  "br"        "  \n";
+  }
+}
+
+
+collections{
+    group { name: "launcher";
+          min: 480 575;
+          max: 480 575;
+          script {
+        public clock_cb(val) {
+            new buf[11];
+            new lday[100];
+            new day_s[50];
+            new month_s[40];
+            new year, month, day, yearday, weekday, hour, minute;
+            new Float:second;
+            new Float:s;
+            
+            date(year, month, day, yearday, weekday, hour, minute, second);
+      //      timer(60.0 - second, "clock_cb", 1);
+      // update every 5 seconds just for changing actual time in config. no other
+      // way to know unless you poll (and every 5 seconds is better than 60 for
+      // responsiveness to config changes
+            s = 60.0 - second;
+                  while (s < 0.0) s = s + 5.0;
+            timer(60.0 - second, "clock_cb", 1);
+            if ((hour < 10) && (minute < 10)) 
+              {snprintf(buf, 10, "0%i:0%i", hour, minute);}
+            else if ((hour < 10) && (minute >= 10))
+              {snprintf(buf, 10, "0%i:%i", hour, minute);}
+            else if ((hour >= 10) && (minute < 10))
+              {snprintf(buf, 10, "%i:0%i", hour, minute);}
+            else if ((hour >= 10) && (minute >= 10)) 
+              {snprintf(buf, 10, "%i:%i", hour, minute);}
+            set_text(PART:"clock-time", buf);
+
+            
+            switch(weekday){
+              case 0:
+                  snprintf(day_s, 50, "%s", "Monday");
+              case 1:
+                  snprintf(day_s, 50, "%s", "Tuesday");
+              case 2:
+                  snprintf(day_s, 50, "%s", "Wednesday");
+              case 3:
+                  snprintf(day_s, 50, "%s", "Thursday");
+              case 4:
+                  snprintf(day_s, 50, "%s", "Friday");
+              case 5:
+                  snprintf(day_s, 50, "%s", "Saturday");
+              case 6:
+                  snprintf(day_s, 50, "%s", "Sunday");
+            }
+            
+            switch(month){
+              case 1:
+                  snprintf(month_s, 40, "%s", "January");
+              case 2:
+                  snprintf(month_s, 40, "%s", "February");
+              case 3:
+                  snprintf(month_s, 40, "%s", "March");
+              case 4:
+                  snprintf(month_s, 40, "%s", "April");
+              case 5:
+                  snprintf(month_s, 40, "%s", "May");
+              case 6:
+                  snprintf(month_s, 40, "%s", "June");
+              case 7:
+                  snprintf(month_s, 40, "%s", "July");
+              case 8:
+                  snprintf(month_s, 40, "%s", "August");
+              case 9:
+                  snprintf(month_s, 40, "%s", "September");
+              case 10:
+                  snprintf(month_s, 40, "%s", "October");
+              case 11:
+                  snprintf(month_s, 40, "%s", "November");
+              case 12:
+                  snprintf(month_s, 40, "%s", "December");
+            }
+            
+            snprintf(lday, 100, "| %s, %s %i, %i |", day_s, month_s, day, year);
+            set_text(PART:"clock-date", lday);
+        }
+      }     
+          parts {
+              part{
+                name: "base";
+                type: RECT;
+                description{ state: "default" 0.0;
+                  color:0 0 0 255;
+                  rel1{
+                        relative: 0.0 0.0;
+                    }
+                    rel2 {
+                        relative: 0.99 1.0;
+                    }
+                }
+              }
+              part{
+                  name: "top-bar";
+                  type: RECT;
+                  description{ state: "default" 0.0;
+                    color:0 255 0 255;
+                    rel1{
+                        relative: 0.01 0.0;
+                    }
+                    rel2 {
+                        relative: 0.99 0.05;
+                    }
+                  }
+                }
+              part{
+                name: "clock";
+                type: TEXT;
+                mouse_events:0;
+                description { state: "default" 0.0;
+                              color: 255 255 255 255;
+                              text {
+                                      align: 0.5 0.0;
+                                      size: 18;
+                                      text: "20:08";
+                                      font: "Sans";
+                              }
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 1.0 1.0;
+                                      to: "top-bar";
+                              }
+                      }
+              }
+                part {
+                    name:  "clock-box";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                      relative: 0.0  0.06;
+                        }
+                        rel2 {
+                      relative: 1.0  0.36;
+                        } 
+                    }
+                }
+                part{
+                    name: "alarm_button";
+                    type: RECT;
+                    description { 
+                        state: "default" 0.0;
+                        color: 0 0 0 255;
+                        rel1 {
+                            to:"clock-box";
+                            relative: 0.0  0.0;
+                        }
+                        rel2 {
+                            to:"clock-box";
+                            relative: 0.5  1.0;
+                        } 
+                    }
+                }
+                part {
+                    name:  "alarm_button-text";
+                    type: TEXT;
+                    description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                              align: 0.2 0.5;
+                              font: "Sans:style=Bold";
+                              size: 25;
+                              text: "Alarm";
+                      }
+                      rel1 {
+                          to:"alarm_button";
+                          relative: 0.2 0.0;
+                      }
+                      rel2 {
+                          to:"alarm_button";
+                          relative: 1.0 1.0;
+                      } 
+                    }
+                }
+                part{
+                    name: "clock-mover";
+                    type: RECT;
+                    description { 
+                        state: "default" 0.0;
+                        color: 0 0 0 255;
+                        rel1 {
+                            to:"clock-box";
+                            relative: 0.0  0.0;
+                        }
+                        rel2 {
+                            to:"clock-box";
+                            relative: 1.0  1.0;
+                        } 
+                    }
+                    description { 
+                        state: "moved" 0.0;
+                        color: 0 0 0 255;
+                        rel1 {
+                            to:"clock-box";
+                            relative: 0.5  0.0;
+                        }
+                        rel2 {
+                            to:"clock-box";
+                            relative: 1.0  1.0;
+                        } 
+                    }
+                }
+                part {
+                    name: "move-button-open";
+                    type: RECT;
+                    description { 
+                        state: "default" 0.0;
+                        color: 0 0 0 0;
+                        rel1 {
+                            to:"clock-mover";
+                            relative: 0.0  0.0;
+                        }
+                        rel2 {
+                            to:"clock-mover";
+                            relative: 0.5  1.0;
+                        } 
+                    }
+                    description { 
+                        state: "moved" 0.0;
+                        color: 0 0 0 0;
+                        visible:0; 
+                    }
+                }
+                part {
+                    name: "move-button-close";
+                    type: RECT;
+                    description { 
+                        state: "default" 0.0;
+                        color: 0 0 0 0;
+                        visible:0; 
+                    }
+                    description { 
+                        state: "moved" 0.0;
+                        color: 0 0 0 0;
+                        rel1 {
+                            to:"clock-mover";
+                            relative: 0.0  0.0;
+                        }
+                        rel2 {
+                            to:"clock-mover";
+                            relative: 0.5  1.0;
+                        } 
+                    }
+                }
+                part {
+                    name:  "clock-time";
+                    type: TEXT;
+                    mouse_events:0;
+                    description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                              font: "Sans:style=Bold";
+                              size: 135;
+                              text: "20:08";
+                      }
+                      rel1 {
+                      to:"clock-mover";
+                      offset:   0    -30;
+                        }
+                        rel2 {
+                      to:"clock-mover";
+                        } 
+                    }
+                }
+                part {
+                    name:  "clock-date";
+                    type: TEXT;
+                    mouse_events:0;
+                    description { 
+                      state: "default" 0.0;
+                      text {
+                              align: 0.075 0.92;
+                              size: 14;
+                              text: "| Tuesday, October 6, 2008 |";
+                              font: "Sans";
+                      }
+                      rel1 {
+                      relative: 0.0  0.0;
+                      to:"clock-mover";
+                        }
+                        rel2 {
+                      relative: 1.0  1.0;
+                      to:"clock-mover";
+                        } 
+                    }
+                }
+                part {
+                    name:  "link-box";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                      relative: 0.0  0.42;
+                        }
+                        rel2 {
+                      relative: 1.0  1.0;
+                        } 
+                    }
+                }
+                _LINK_PROG("i-o", "I/O", 0.0, 0.2);
+                _LINK_PROG("msgs", "Msgs", 0.2, 0.4);
+                _LINK_PROG("tele", "Tele", 0.4, 0.6);
+                _LINK_PROG("pixels", "Pixels", 0.6, 0.8);
+                _LINK_PROG("people", "People", 0.8, 1.0);
+          }
+          programs {
+              program 
+              { 
+                    name: "init";
+                    signal: "load";
+                    source: "*";
+                    script{
+                        clock_cb(1);
+                    }
+              }
+              program 
+              { 
+                    name: "move-clock";
+                    signal: "mouse,up,1";
+                    source: "move-button-open";
+                    action: STATE_SET "moved" 0.0;
+                    transition: LINEAR 0.32;
+                    target: "clock-mover";
+                    target: "move-button-open";
+                    target: "move-button-close";
+              }
+              program 
+              { 
+                    name: "move-clock-close";
+                    signal: "mouse,up,1";
+                    source: "move-button-close";
+                    action: STATE_SET "default" 0.0;
+                    transition: LINEAR 0.32;
+                    target: "clock-mover";
+                    target: "move-button-open";
+                    target: "move-button-close";
+              }
+              program 
+              {
+                  name: "i-o-launcher";
+                  signal: "mouse,up,1";
+                  source: "i-o-link-box";
+                  action: SIGNAL_EMIT "launch_app" "Paroli-I/O";
+              }
+          }
+    }
+}
