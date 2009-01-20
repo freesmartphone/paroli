@@ -27,6 +27,37 @@ logger = logging.getLogger('Dialog')
 import tichy
 import tichy.gui as gui
 
+# TODO: replace the etk code by something based on Edje
+
+class Dialog(tichy.Application):
+    """Dialog application
+
+    This application does nothing but show a message on the screen
+    """
+    def run(self, parent, title, msg):
+        """Create an etk window and show the message"""
+        import etk
+        self.window = etk.Window(w=480, h=640)
+        box = etk.VBox()
+        self.window.add(box)
+        title_label = etk.Label(title)
+        box.add(title_label)
+        msg_label = etk.Label(msg)
+        box.add(msg_label)
+        button = etk.Button()
+        box.add(button)
+        ok_label = etk.Label("OK")
+        button.add(ok_label)
+        self.window.show_all()
+        button.connect('clicked', self._on_ok_clicked)
+        yield tichy.Wait(self, 'done')
+
+    def _on_ok_clicked(self, *args):
+        """called when we clock the OK button"""
+        self.window.destroy()
+        self.emit('done')
+
+
 class DialogService(tichy.Service):
     """Service that can be used to show dialog to the user"""
     service = 'Dialog'
@@ -47,8 +78,7 @@ class DialogService(tichy.Service):
                 The message
         """
         logger.info("show %s dialog : %s", title, msg)
-        # XXX: implement the dialog here
-        yield None
+        yield Dialog(parent, title, msg)
 
     @tichy.tasklet.tasklet
     def error(self, parent, msg):
