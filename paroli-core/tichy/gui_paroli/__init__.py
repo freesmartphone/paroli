@@ -227,7 +227,11 @@ class entry:
 class edje_box:
 
     def __init__(self,instance,dimension,scrollable):
-        self.box = eval('etk.' + dimension + 'Box()')
+        assert dimension in ['V', 'H']
+        if dimension == 'V':
+            self.box = etk.VBox()
+        else:
+            self.box = etk.HBox()
 
         if scrollable == 1:
             ##create scrolled view
