@@ -190,7 +190,6 @@ class Service(Item):
             name : str or None
                 If given, specify the actual service name we want
         """
-        logger.debug("try to get service %s", service)
 
         if service is None:
             return Item.__new__(cls)
