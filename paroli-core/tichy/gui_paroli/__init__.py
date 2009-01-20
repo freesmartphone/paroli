@@ -26,6 +26,9 @@ import ecore
 import ecore.evas
 import etk
 
+import logging
+logger = logging.getLogger('gui')
+
 import tichy
 
 def Vect(x,y):
@@ -69,7 +72,6 @@ class Widget(tichy.Object):
 
     def destroy(self):
         self.etk_obj.destroy()
-        print "destroy called"
 
     # No tags for this implementation
     def add_tag(self, tag):
@@ -285,7 +287,6 @@ class contact_list:
         #return item_list
 
     def generate_single_item_obj(self,title,subtitle,contact):
-        print "generate_single_item_obj called"
         label_list = [(unicode(title),'label'),(str(subtitle),'label-number')]
 
         canvas_obj = etk.Canvas()
@@ -427,14 +428,12 @@ class edje_window():
         self.parent.etk_obj.show()
 
     def scroller(self):
-        print "scroller"
+        pass
 
     def add(self, child,box, part):
         embed = etk.Embed(self.parent.etk_obj.evas)
         embed.add(child)
         embed.show_all()
-        print embed.is_visible()
-        print self.edj.part_exists(part)
         self.edj.part_swallow(part,embed.object)
         try:
             box.box.show_all()
@@ -442,22 +441,19 @@ class edje_window():
             dir(e)
 
     def self_test(self,emission, source, param):
-        print source
         try:
             eval(source + '(self,self.parent,emission, source, param)')
         except Exception, e:
             dir(e)
 
     def open_edje(self,orig,orig_parent,emission, source, param):
-        print "open_edje called"
-
+        logger.debug("open_edje called")
         new_edje = edje_window(orig_parent,param,orig.gsm,orig.phone_book)
         orig_parent.add(new_edje)
         orig.delete()
 
     def open_edje_above(self,orig,orig_parent,emission, source, param):
-        print "open_edje called"
-
+        logger.debug("open_edje_above called")
         new_edje = edje_window(orig_parent,param,orig.gsm,orig.phone_book)
         orig_parent.add(new_edje)
 
@@ -465,7 +461,7 @@ class edje_window():
         emission.delete()
 
     def number_edit(self,orig,orig_parent,emission, source, param):
-        print "number_edit called"
+        logger.debug("number_edit called")
         value = emission.part_text_get("num_field-label")
         if value == None:
             new = str(param)
@@ -474,31 +470,29 @@ class edje_window():
         emission.part_text_set('num_field-label',new)
 
     def number_edit_del(self,orig,orig_parent,emission, source, param):
-        print "number_edit called"
+        logger.debug("number_edit_del called")
         value = emission.part_text_get("num_field-label")
         emission.part_text_set("num_field-label",value[:-1])
 
     def number_edit_add(self,orig,orig_parent,emission, source, param):
-        print "number_edit_add called"
+        logger.debug("number_edit_add called")
 
     def close_window(self,orig,orig_parent,emission, source, param):
         orig.edj.delete()
         orig_parent.etk_obj.visibility_set(0)
 
     def start_call(self,orig,orig_parent,emission, source, param):
-        print "start call called"
+        logger.debug("start_call called")
         number = emission.part_text_get("num_field-text")
         try:
             call = self.gsm.create_call(number)
             call_id = call.initiate()
             emission.part_text_set("active_call",str(call.id))
-            print emission.part_text_get("active_call")
-            print "start_call called to:", number
         except Exception, e:
-            print e
+            logger.error("Error in start_call : %s", e)
 
     def end_call(self,orig,orig_parent,emission, source, param):
-        print "end call called"
+        logger.debug("end call called")
         call_id = emission.part_text_get("active_call")
         self.gsm.gsm_call_iface.Release(int(call_id))
 
@@ -506,7 +500,7 @@ class edje_window():
         try:
             self.app.save_number(orig,orig_parent,emission, source, param)
         except Exception,e:
-            print e
+            logger.error("Error in save_contact : %s", e)
 
 
     def num_field_pressed(self,orig,orig_parent,emission, source, param):
@@ -514,27 +508,27 @@ class edje_window():
         if curr_num == None or len(curr_num) == 0:
             orig.app.load_phone_book(orig,orig_parent,emission, source, param)
         else:
-            print "num_field not empty"
+            logger.debug("num_field not empty")
             orig.app.add_contact(orig,orig_parent,emission, source, param)
 
     def call_pressed(self,orig,orig_parent,emission, source, param):
         curr_num = self.edj.part_text_get('num_field-text')
         if curr_num == None or len(curr_num) == 0:
-            print "num_field empty"
+            logger.debug("num_field empty")
         else:
-            print "num_field not empty"
+            logger.debug("num_field not empty")
             try:
                 orig.app.calling(orig,orig_parent,emission, source, curr_num)
             except Exception, e:
-                print e
+                logger.error("Error in call_pressed : %s", e)
 
     def del_sign_from(self,orig,orig_parent,emission, source, param):
-        print "del sign from called"
+        logger.debug("del sign from called")
         value = emission.part_text_get(param)
         emission.part_text_set(param,value[:-1])
 
     def add_sign_to(self,orig,orig_parent,emission, source, param):
-        print "add_sign_to called"
+        logger.debug("add_sign_to called")
         part = param.split(',')[0]
         new_sign = param.split(',')[1]
         value = emission.part_text_get(part)
@@ -553,32 +547,30 @@ class edje_window():
         try:
             ecore.timer_add(float(param.split(',')[0]), self.arbitrary_signal,data)
         except Exception,e:
-            print e
+            logger.error("Error in wait_seconds %s", e)
 
     def arbitrary_signal(self,data):
-        print "arbit sig"
+        logger.debug("arbit sig")
         data[1].signal_emit(data[0],"*")
         return 0
 
     def close_extra_child(self,orig,orig_parent,emission, source, param):
-        print "close extra child"
+        logger.debug("close extra child")
         if param != 'none':
-            print "param != none"
-            print param
             try:
                 self.edj.part_swallow_get(param).visible_set(0)
             except Exception,e:
-                print e
+                logger.error("Error in close_extra_child : %s", e)
 
             try:
                 self.edj.part_swallow_get(param).delete()
             except Exception,e:
-                print e
+                logger.error("Error in close_extra_child : %s", e)
 
         try:
             self.edj.delete()
         except Exception,e:
-            print e
+            logger.error("Error in close_extra_child : %s", e)
 
 
 class edje_gui():
@@ -619,12 +611,12 @@ class edje_gui():
     ##more generic
 
     def del_sign_from(self,orig,orig_parent,emission, source, param):
-        print "del sign from called"
+        logger.debug("del_sign_from called")
         value = emission.part_text_get(param)
         emission.part_text_set(param,value[:-1])
 
     def add_sign_to(self,orig,orig_parent,emission, source, param):
-        print "add_sign_to called"
+        logger.debug("add_sign_to called")
         part = param.split(',')[0]
         new_sign = param.split(',')[1]
         value = emission.part_text_get(part)
@@ -644,10 +636,10 @@ class edje_gui():
         try:
             ecore.timer_add(float(param.split(',')[0]), self.arbitrary_signal,data)
         except Exception,e:
-            print e
+            logger.error("error in wait_second : %s", e)
 
     def arbitrary_signal(self,data):
-        print "arbit sig"
+        logger.debug("arbit sig")
         data[1].signal_emit(data[0],"*")
         return 0
 
@@ -655,21 +647,19 @@ class edje_gui():
         self.edj.delete()
 
     def close_extra_child(self,emission, source, param):
-        print "close extra child"
+        logger.debug("close extra child")
         if param != 'none':
-            print "param != none"
-            print param
             try:
                 self.edj.part_swallow_get(param).visible_set(0)
             except Exception,e:
-                print e
+                logger.error("Error in close_extra_child: %s", e)
 
             try:
                 self.edj.part_swallow_get(param).delete()
             except Exception,e:
-                print e
+                logger.error("Error in close_extra_child: %s", e)
 
         try:
             self.edj.delete()
         except Exception,e:
-            print e
+            logger.error("Error in close_extra_child: %s", e)
