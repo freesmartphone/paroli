@@ -154,6 +154,9 @@ class InitAll(tichy.Tasklet):
         messages_service = tichy.Service('Messages')
         yield messages_service.init()
 
+        caller_service = tichy.Service('Caller')
+        yield caller_service.init()
+
         # Finally we can start to listen for incoming calls
         logger.info("start AutoAnswerCall")
         yield AutoAnswerCall()
@@ -169,7 +172,7 @@ class AutoAnswerCall(tichy.Tasklet):
             call = yield tichy.Wait(gsm_service, 'incoming-call')
             logger.info("got incoming call")
             caller_service = tichy.Service('Caller')
-            yield caller_service.call(None, call)
+            yield caller_service.call("None", call)
 
 
 class Launcher(dbus.service.Object):
@@ -285,11 +288,21 @@ if __name__ == '__main__':
     bus_name = dbus.service.BusName('org.tichy.launcher', bus)
 
     logger.info("start InitAll")
-    #print time.ctime()
     InitAll().start()
 
     logger.info("start launcher service")
     launcher = Launcher(bus, '/Launcher')
+
+    if config.has_option('autolaunch','application'):
+        app_name = config.get('autolaunch','application')
+        if config.has_option('standalone','activated'):
+            text = config.get('standalone','activated')
+        else:
+            text = None
+        for app in tichy.Application.subclasses:
+            if app.name == app_name:
+                app("None",text).start()
+
 
     logger.info("starting mainloop")
     tichy.mainloop.run()
