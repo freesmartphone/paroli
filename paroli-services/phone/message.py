@@ -274,7 +274,7 @@ class MessagesService(tichy.Service):
     def delete_message(self,msg):
         current_imsi = tichy.Service('SIM').sim_info['imsi']
         if msg.sim_imsi == current_imsi:
-            print 'deleting message: ' , msg.sim_index
+            logger.info('deleting message: ' + msg.sim_index)
             try:
                 tichy.Service('SIM').remove_message(msg)
             except Exception, e:
