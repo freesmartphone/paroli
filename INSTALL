@@ -1,0 +1,54 @@
+                            INSTALL PAROLI
+
+On the desktop
+--------------
+
+It is possible to run paroli on the desktop even without an actual
+phone.  The only needed things are :
+
+  * python interpreter (>=2.5)
+  * all e python binding (etk, efl, evas, edje)
+  * a few standard python libraries (should already be present)
+
+Once you have all those things (and of course downloaded paroli from
+the git server), you first need to build the edje files (in the
+directory paroli-application):
+  
+  ./build.sh
+
+Then you can start paroli as a standalone application (in
+paroli-scripts):
+
+  ./paroli
+
+You are not supposed to install paroli on your desktop, you can always
+run it directly from the source directory.
+
+
+installing the e python bindings on the desktop
+-----------------------------------------------
+
+This may be the most difficult part, there are no packages I am aware
+of (we need e17), so we need to build from sources.
+
+The sources are situated at :
+
+  svn co http://svn.enlightenment.org/svn/e
+
+Then you need to follow the instructions from the sources to build,
+first all the libraries, then all the python bindings.  To make sure
+the installation did succeed we can try to import efl from a python
+console :
+
+  python
+  > import edje
+
+
+Running on the phone
+--------------------
+
+The best way to do so is to use FSO image, then copy paroli codes into
+any location in the phone and run it the same way than on the desktop.
+
+To avoid having to copy the sources at every change, it is possible to
+keep the source on the desktop and use nfs to run it from the phone.
