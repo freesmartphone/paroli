@@ -254,8 +254,9 @@ class edje_box:
         eval(embed_object + '.show_all()')
 
 class contact_list:
-
-    def __init__(self,items,box,main,edje_file,item_group,app_window,kind='contacts', arbit_window=None):
+    
+    def __init__(self, items, box, main, edje_file, item_group, app_window, kind='contacts', arbit_window=None):
+        #print items
         self.items = items
         self.item_list = []
         self.edje_file = edje_file
@@ -264,7 +265,8 @@ class contact_list:
         self.main = main
         self.box = box
         self.arbit_window = arbit_window
-
+        self.item_status = "ORIGINAL"
+        
         if kind == 'contacts':
             for i in items:
                 name = i.name
@@ -290,6 +292,40 @@ class contact_list:
         box.box.show()
         #return item_list
 
+    def drag(self, emission, source, param):
+        if self.item_status == "ORIGINAL":
+            self.item_status = "DRAGGING"
+
+    def drag_start(self, emission, source, param):
+        if self.item_status == "ORIGINAL":
+            self.item_status = "DRAGGING"
+
+    def drag_stop(self, emission, source, param):
+        part_name = param
+        edje_obj = emission
+        # Get the value to determine it's a rightward slide
+        value = edje_obj.part_drag_value_get(part_name)
+        if value[0] > 100:
+            edje_obj.signal_emit('RIGHTWARD_SLIDE', '*');
+            self.item_status = "OPEN_UP"
+        else:
+            if self.item_status == "DRAGGING":
+                self.item_status = "ORIGINAL"
+            elif self.item_status == "OPEN_UP":
+                self.item_status = "CLOSING"
+
+        # Set the value back to zero
+        edje_obj.part_drag_value_set(part_name, 0.0, 0.0)
+
+
+    def show_details(self, emission, source, param, contact, graphic_objects):
+        if self.item_status == "ORIGINAL":
+            self.app_window.show_details(emission, source, param, contact, graphic_objects)
+        else:
+            if self.item_status == "CLOSING":
+                self.item_status = "ORIGINAL"
+        
+
     def generate_single_item_obj(self,title,subtitle,contact):
         label_list = [(unicode(title),'label'),(str(subtitle),'label-number')]
 
@@ -303,9 +339,12 @@ class contact_list:
         self.box.box.append(canvas_obj, etk.VBox.START, etk.VBox.NONE, 0)
 
         if self.app_window.name == 'Paroli-Contacts':
-            edje_obj.signal_callback_add("contact_details", "*", self.app_window.show_details, contact, [canvas_obj,edje_obj])
+            edje_obj.signal_callback_add("contact_details", "*", self.show_details, contact, [canvas_obj,edje_obj])
             edje_obj.signal_callback_add("create_message", "*", self.app_window.create_message,contact)
-
+            edje_obj.signal_callback_add("drag", "*", self.drag)
+            edje_obj.signal_callback_add("drag,start", "*", self.drag_start)
+            edje_obj.signal_callback_add("drag,stop", "*", self.drag_stop)
+          
         elif self.app_window.name == 'Paroli-Msgs':
             if self.item_group == 'message-contacts_item':
                 edje_obj.signal_callback_add("add_contact", "*", self.app_window.add_recipient, contact, self.arbit_window)
@@ -578,7 +617,7 @@ class edje_window():
 
 
 class edje_gui():
-    def __init__(self, parent,group,edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
+    def __init__(self, parent, group, edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
 
         self.parent = parent
         self.group = group
@@ -598,11 +637,11 @@ class edje_gui():
         self.parent.etk_obj.activate()
         self.parent.etk_obj.show()
 
-    def add(self, child,box, part):
+    def add(self, child, box, part):
         embed = etk.Embed(self.parent.etk_obj.evas)
         embed.add(child)
         embed.show_all()
-        self.edj.part_swallow(part,embed.object)
+        self.edj.part_swallow(part, embed.object)
         try:
             box.box.show_all()
         except Exception,e:
