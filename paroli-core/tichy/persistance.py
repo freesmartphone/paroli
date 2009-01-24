@@ -75,7 +75,7 @@ class Persistance(object):
         
         #config = 
 
-        import random
+        #import random
 
         
 
