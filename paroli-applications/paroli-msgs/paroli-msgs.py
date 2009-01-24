@@ -48,15 +48,16 @@ class ContactsApp(tichy.Application):
     category = 'main' # So that we see the app in the launcher
     
     def run(self, parent, text = ""):
-        if isinstance(text, str):
-            text = tichy.Text(text)
+        self.standalone = tichy.Text.as_type(text)
         
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
         
         ##set the title of the window
-        self.main.etk_obj.title_set('Paroli Msgs')
+        if self.main.etk_obj.title_get() != 'Home':
+            self.main.etk_obj.title_set('Paroli Msgs')
         
+        self.edje_objects = []
         ##direct connection to framework -- ONLY for TESTING
         
         #bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -106,18 +107,26 @@ class ContactsApp(tichy.Application):
         #self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         self.edje_obj.edj.layer_set(2)
+        if self.standalone == 1:
+            self.edje_obj.edj.size_set(480,600)
+        self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.show()
+        self.edje_objects.append(self.edje_obj)
         
         try: 
             contacts_box.box.show()
         except Exception,e:
-            print e      
+            logger.error(e)      
              
-        yield tichy.Wait(self.main, 'back')
+        yield tichy.Wait(self.main, 'back_Paroli-Msgs')
         ##remove all children -- edje elements 
-        for i in self.main.children:
-            i.remove()
-        self.main.etk_obj.hide()   # Don't forget to close the window
+        if self.standalone == 1:
+            for i in self.edje_objects:
+                i.delete(None,None,None)
+        else:    
+            for i in self.main.children:
+                  i.remove()
+            self.main.etk_obj.hide()   # Don't forget to close the window  
     
     ##functions for message app
     ##create new message
@@ -132,6 +141,9 @@ class ContactsApp(tichy.Application):
         new_edje.edj.part_text_set('num_field-text','')
         ## show main gui
         new_edje.edj.layer_set(3)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()   
         ##add num-pad actions
         ##delete digit
@@ -156,6 +168,9 @@ class ContactsApp(tichy.Application):
         new_edje = gui.edje_gui(self.main,'create_message',self.edje_file)
         ## show main gui
         new_edje.edj.layer_set(3)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()  
         self.open_keyboard()
         text = message
@@ -196,6 +211,9 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("top-bar", "*", self.top_bar)
         message.read()
         new_edje.edj.layer_set(3)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()   
 
     def _on_send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
@@ -273,6 +291,9 @@ class ContactsApp(tichy.Application):
         try:
             self.extra_child = new_edje
             new_edje.edj.layer_set(3)
+            if self.standalone == 1:
+                new_edje.edj.size_set(480,600)
+            new_edje.edj.edj.pos_set(0,40)
             new_edje.edj.show()
         except Exception,e:
             print e
@@ -382,6 +403,9 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
     def edit_number(self,emission, source, param, number, contact, details_window,first_window):
@@ -399,6 +423,9 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("save_successful", "*", first_window.delete)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
     def add_number_new_contact(self,emission, source, param):
@@ -415,6 +442,9 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact,first_window=new_edje)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
 
@@ -437,6 +467,9 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
     def edit_name_info(self,emission, source, param, contact, first_window, last_window):
@@ -461,6 +494,9 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
     def add_name_new_contact(self,emission, source, param,first_window=None):
@@ -480,6 +516,9 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
+        if self.standalone == 1:
+            new_edje.edj.size_set(480,600)
+        new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
     
     def save_contact_number(self,emission,source,param, switch ,info, contact, details_window,name=None):
