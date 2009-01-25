@@ -85,8 +85,8 @@ class DialerApp(tichy.Application):
         logger.info("embryo says:" + str(signal))
 
     def call(self, emission, signal, source):
+        number = TelNumber(signal)
         if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
-            number = TelNumber(signal)
             logger.info(number.get_text())
             TeleCaller(emission, number).start()
         elif signal[0] in ['*'] :
@@ -254,6 +254,7 @@ class TeleCaller(tichy.Application):
         self.gsm_service = tichy.Service('GSM')
         self.storage = tichy.Service('Storage')
         self.main = self.storage.window
+	self.audio_service = tichy.Service('Audio')
         self.main.etk_obj.visibility_set(1)
         self.main.etk_obj.title_set('Paroli Call')
 
@@ -267,6 +268,7 @@ class TeleCaller(tichy.Application):
         self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.edj.signal_callback_add("add_digit", "*", self.add_digit)
+	self.edje_obj.edj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
         self.edje_obj_top_bar.edj.signal_callback_add("top-bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("*", "*", self.gui_signals)
 
@@ -308,6 +310,8 @@ class TeleCaller(tichy.Application):
             if i == 0: #activated
                 logger.debug("call activated")
                 #self.storage.status.__set_value("activated")
+                if self.audio_service.muted == 1:
+                    self.audio_service.audio_toggle()
                 
                 self.storage.call = call
                 self.main.emit('call_active')
@@ -362,6 +366,10 @@ class TeleCaller(tichy.Application):
 
     def add_digit(self,emission, source, param):
         logger.debug("dtmf would be sent")
+
+    def mute_toggle(self, emission, signal, source):
+        if self.audio_service.audio_toggle():
+            self.edje_obj.edj.signal_emit("mute-button", "error")
 
     def func_btn(self,emission, source, param):
         logger.debug("func btn called from %s", source)

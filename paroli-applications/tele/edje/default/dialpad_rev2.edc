@@ -146,6 +146,18 @@ group { name: "tele";
                         set_text(PART:"active-call",txt);
                       }
                 }
+		else if (strcmp(state, "incoming") == 0) {
+			emit("mute-toggle", "del-button");
+			set_state(PART:"del-button", "silent", 0.0);
+		}
+		else if (strcmp(state, "active") == 0) {
+			emit("mute-toggle", "del-button");
+			set_state(PART:"del-button", "muted", 0.0);
+		}
+		else if (strcmp(state, "muted") == 0) {
+			emit("mute-toggle", "del-button");
+			set_state(PART:"del-button", "active", 0.0);
+		}
                 else {
                     emit("coming soon to a cinema near you", "embryo");
                 }
@@ -363,7 +375,19 @@ group { name: "tele";
             }
             description
             {
+              state: "silent" 0.0;
+              inherit:"default" 0.0;
+              image.normal: "speaker.png";
+            }
+            description
+            {
               state: "active" 0.0;
+              inherit:"default" 0.0;
+              image.normal: "speaker.png";
+            }
+            description
+            {
+              state: "muted" 0.0;
               inherit:"default" 0.0;
               image.normal: "speaker.png";
             }
@@ -529,5 +553,13 @@ group { name: "tele";
            _PART_KEYPAD_PROG("button-0", "0");
            _PART_KEYPAD_PROG("button-hash", "#");
 
+        program 
+        { 
+            name: "mute-error";
+            signal: "mute-button";
+            source: "error";
+	    action: STATE_SET "active" 0.0;
+            target: "del-button";
+        }
     }
 }
