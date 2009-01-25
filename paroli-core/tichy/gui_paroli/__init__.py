@@ -46,7 +46,7 @@ class Widget(tichy.Object):
         self.expand = expand
         if self.parent:
             self.parent.get_contents_child().add(self)
-        self.show()
+        #self.show()
     def add(self, child):
         self.etk_obj.add(child.etk_obj)
         self.children.append(child)
@@ -80,8 +80,8 @@ class Widget(tichy.Object):
         pass
 
 class Window(Widget):
-    def __init__(self, parent, **kargs):
-        etk_obj = ecore.evas.SoftwareX11(w=480, h=575)
+    def __init__(self, parent, w=480, h=575, **kargs):
+        etk_obj = ecore.evas.SoftwareX11(w=w, h=h)
         Widget.__init__(self, None, etk_obj=etk_obj)
 
     def show(self):
@@ -218,6 +218,91 @@ class EventsLoop(object):
 
 ####ADDED by mirko
 
+class EdjeObject(tichy.Object):
+    def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeWindows=None):
+        #super(EdjeObject, self).__init__()
+        self.Parent = Parent
+        self.EdjeFile = EdjeFile
+        self.EdjeGroup = EdjeGroup
+        self.Evas = Parent.etk_obj.evas
+        self.Edje = edje.Edje(self.Evas, file=self.EdjeFile, group=self.EdjeGroup)
+        self.Edje.data['windows'] = []
+        self.Windows = self.Edje.data['windows']
+        self.EdjeWindows = EdjeWindows
+        if EdjeWindows != None:
+            EdjeWindows.append(self)
+
+    def show(self,layer=2,*args,**kargs):
+        self.Edje.layer_set(layer)
+        self.Edje.show()
+
+    def dehide(self,*args,**kargs):
+        self.Edje.show()
+
+    def add_callback(self, signal, source, callback):
+        self.Edje.signal_callback_add(signal, source, callback)
+
+    def data_add(self, key, data):
+        if not self.Edje.data[key]:
+            self.Edje.data[key] = data
+        else:
+            self.Edje.data[key].append(data)
+
+    def signal(self, signal, source):
+        self.Edje.signal_emit(signal, source)
+
+    def hide(self,*args,**kargs):
+        self.Edje.hide()
+
+    def delete(self, emission=None, source=None, param=None):
+        try:
+          if self.Edje.data['windows'] != None:
+            for i in self.Edje.data['windows']:
+              i.delete()
+        except Exception, e:
+            dialog = tichy.Service('Dialog')
+            logger.error(Exception, " ", e)
+            dialog.error(self.Parent, e)
+        
+        if self.EdjeWindows != None:
+            self.EdjeWindows.remove(self)
+            
+        self.Edje.delete()
+
+class EdjeWSwallow(EdjeObject):
+      def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeSwallow, EdjeWindows=None):
+          self.Swallow = EdjeSwallow
+          super(EdjeWSwallow, self).__init__(Parent, EdjeFile, EdjeGroup, EdjeWindows)
+      
+      def embed(self, child, box, part):
+          embed = etk.Embed(self.Evas)
+          embed.add(child)
+          embed.show_all()
+          self.Edje.part_swallow(part, embed.object)
+          try:
+              box.box.show_all()
+          except Exception,e:
+              dir(e)
+
+      def delete(self, source=None, emission=None, param=None):
+          
+          self.Edje.part_swallow_get(self.Swallow).visible_set(0)
+          self.Edje.part_swallow_get(self.Swallow).delete()
+          
+          try:
+              if self.Edje.data['windows'] != None:
+                for i in self.Edje.data['windows']:
+                  i.delete()
+          except Exception, e:
+              dialog = tichy.Service('Dialog')
+              logger.error(Exception, " ", e)
+              dialog.error(self.Parent, e)
+        
+          if self.EdjeWindows != None:
+              self.EdjeWindows.remove(self)
+             
+          self.Edje.delete()
+      
 class entry:
     def __init__(self,text='Unknown',pw=False):
         self.entry = etk.Entry()
@@ -387,10 +472,104 @@ class lists:
 
         box.box.show()
 
+
+class edje_gui():
+    def __init__(self, parent,group,edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
+
+        self.parent = parent
+        self.group = group
+        self.edje_file = edje_file
+        self.edj = edje.Edje(self.parent.etk_obj.evas, file=self.edje_file, group=group)
+        self.edj.size = parent.etk_obj.evas.size
+        parent.etk_obj.data["edje"] = self.edj
+        edje.frametime_set(1.0/30)
+
+    def get_evas(self):
+        return self.parent.etk_obj.evas
+
+    def show(self):
+        edje.frametime_set(1.0/30)
+        self.edje.layer_set(2)
+        self.edje.show()
+        self.parent.etk_obj.activate()
+        self.parent.etk_obj.show()
+
+    def add(self, child,box, part):
+        embed = etk.Embed(self.parent.etk_obj.evas)
+        embed.add(child)
+        embed.show_all()
+        self.edj.part_swallow(part,embed.object)
+        try:
+            box.box.show_all()
+        except Exception,e:
+            dir(e)
+
+    def close_window(self,orig,orig_parent,emission, source, param):
+        orig.edj.delete()
+        orig_parent.etk_obj.visibility_set(0)
+
+    ##more generic
+
+    def del_sign_from(self,orig,orig_parent,emission, source, param):
+        logger.debug("del_sign_from called")
+        value = emission.part_text_get(param)
+        emission.part_text_set(param,value[:-1])
+
+    def add_sign_to(self,orig,orig_parent,emission, source, param):
+        logger.debug("add_sign_to called")
+        part = param.split(',')[0]
+        new_sign = param.split(',')[1]
+        value = emission.part_text_get(part)
+        if value == None:
+            new = str(new_sign)
+        else:
+            new = str(value)+str(new_sign)
+        emission.part_text_set(part,new)
+
+    def clear_signs_in(self,orig,orig_parent,emission, source, param):
+        emission.part_text_set(param,'')
+
+    def wait_seconds(self,emission, source, param):
+
+        data = [ param.split(',')[1] , emission]
+
+        try:
+            ecore.timer_add(float(param.split(',')[0]), self.arbitrary_signal,data)
+        except Exception,e:
+            logger.error("error in wait_second : %s", e)
+
+    def arbitrary_signal(self,data):
+        logger.debug("arbit sig")
+        data[1].signal_emit(data[0],"*")
+        return 0
+
+    def delete(self,emission=None, source=None, param=None):
+        self.edj.delete()
+
+    def close_extra_child(self,emission, source, param):
+        logger.debug("close extra child")
+        if param != 'none':
+            try:
+                self.edj.part_swallow_get(param).visible_set(0)
+            except Exception,e:
+                logger.error("Error in close_extra_child: %s", e)
+
+            try:
+                self.edj.part_swallow_get(param).delete()
+            except Exception,e:
+                logger.error("Error in close_extra_child: %s", e)
+
+        try:
+            self.edj.delete()
+        except Exception,e:
+            logger.error("Error in close_extra_child: %s", e)
+
+##UNUSED ONLY FOR REFERENCE
+
 class main_edje(Widget):
     def __init__(self, **kargs):
-        etk_obj = ecore.evas.SoftwareX11(w=480, h=575)
-        Widget.__init__(self, None, etk_obj=etk_obj)
+        self.etk_obj = ecore.evas.SoftwareX11(w=480, h=640)
+        #Widget.__init__(self, None, etk_obj=etk_obj)
     def show(self):
         self.etk_obj.show()
         super(main_edje, self).show()
@@ -575,95 +754,3 @@ class edje_window():
             self.edj.delete()
         except Exception,e:
             logger.error("Error in close_extra_child : %s", e)
-
-
-class edje_gui():
-    def __init__(self, parent,group,edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
-
-        self.parent = parent
-        self.group = group
-        self.edje_file = edje_file
-        self.edj = edje.Edje(self.parent.etk_obj.evas, file=self.edje_file, group=group)
-        self.edj.size = parent.etk_obj.evas.size
-        parent.etk_obj.data["edje"] = self.edj
-        edje.frametime_set(1.0/30)
-
-    def get_evas(self):
-        return self.parent.etk_obj.evas
-
-    def show(self):
-        edje.frametime_set(1.0/30)
-        self.edje.layer_set(2)
-        self.edje.show()
-        self.parent.etk_obj.activate()
-        self.parent.etk_obj.show()
-
-    def add(self, child,box, part):
-        embed = etk.Embed(self.parent.etk_obj.evas)
-        embed.add(child)
-        embed.show_all()
-        self.edj.part_swallow(part,embed.object)
-        try:
-            box.box.show_all()
-        except Exception,e:
-            dir(e)
-
-    def close_window(self,orig,orig_parent,emission, source, param):
-        orig.edj.delete()
-        orig_parent.etk_obj.visibility_set(0)
-
-    ##more generic
-
-    def del_sign_from(self,orig,orig_parent,emission, source, param):
-        logger.debug("del_sign_from called")
-        value = emission.part_text_get(param)
-        emission.part_text_set(param,value[:-1])
-
-    def add_sign_to(self,orig,orig_parent,emission, source, param):
-        logger.debug("add_sign_to called")
-        part = param.split(',')[0]
-        new_sign = param.split(',')[1]
-        value = emission.part_text_get(part)
-        if value == None:
-            new = str(new_sign)
-        else:
-            new = str(value)+str(new_sign)
-        emission.part_text_set(part,new)
-
-    def clear_signs_in(self,orig,orig_parent,emission, source, param):
-        emission.part_text_set(param,'')
-
-    def wait_seconds(self,emission, source, param):
-
-        data = [ param.split(',')[1] , emission]
-
-        try:
-            ecore.timer_add(float(param.split(',')[0]), self.arbitrary_signal,data)
-        except Exception,e:
-            logger.error("error in wait_second : %s", e)
-
-    def arbitrary_signal(self,data):
-        logger.debug("arbit sig")
-        data[1].signal_emit(data[0],"*")
-        return 0
-
-    def delete(self,emission, source, param):
-        self.edj.delete()
-
-    def close_extra_child(self,emission, source, param):
-        logger.debug("close extra child")
-        if param != 'none':
-            try:
-                self.edj.part_swallow_get(param).visible_set(0)
-            except Exception,e:
-                logger.error("Error in close_extra_child: %s", e)
-
-            try:
-                self.edj.part_swallow_get(param).delete()
-            except Exception,e:
-                logger.error("Error in close_extra_child: %s", e)
-
-        try:
-            self.edj.delete()
-        except Exception,e:
-            logger.error("Error in close_extra_child: %s", e)

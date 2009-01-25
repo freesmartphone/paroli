@@ -10,7 +10,7 @@ part {\
           to:"link-box";\
         }\
         rel2 {\
-          relative: 1.0  y2;\
+          relative: 0.8  y2;\
           to:"link-box";\
         } \
     }\
