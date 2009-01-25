@@ -85,9 +85,9 @@ class Persistance(object):
         section = 0
         for m in data:
             section += 1
-            self.parser.add_section(section)
+            self.parser.add_section(str(section))
             for k, v in m.iteritems():
-              self.parser.set(section, k, v)
+              self.parser.set(str(section), k, v)
         
         file = self._open('w')
         #file = open('/home/root/test.txt','w')
