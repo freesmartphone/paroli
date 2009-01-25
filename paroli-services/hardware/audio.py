@@ -49,7 +49,7 @@ class FSOAudio(tichy.Service):
 
     @tichy.tasklet.tasklet
     def init(self):
-        if self.audio == None:
+        if self.audio != None:
             self.mic_state = self.get_mic_status()
             self.speaker_volume = self.get_speaker_volume()
         
@@ -73,9 +73,18 @@ class FSOAudio(tichy.Service):
             self.audio.SetSpeakerVolume(val)
         
     def audio_toggle(self):
-        if self.mute == 0:
-            self.audio.SetMicrophoneMuted(True)
-            self.audio.SetSpeakerVolume(0)
-        elif self.mute == 1:
-            self.audio.SetMicrophoneMuted(self.mic_state)
-            self.audio.SetSpeakerVolume(self.speaker_volume)
+        if self.audio != None:
+	    if self.muted == 0:
+                self.muted = 1
+	        self.audio.SetMicrophoneMuted(True)
+                logger.info(self.get_mic_status())
+                # Notice: this does in no way affect the ringtone volume of an incoming call
+	        self.audio.SetSpeakerVolume(0)
+                logger.info(self.get_speaker_volume())
+	    elif self.muted == 1:
+	        self.audio.SetMicrophoneMuted(self.mic_state)
+                self.audio.SetSpeakerVolume(self.speaker_volume)
+                self.muted = 0
+            return 0
+        else:
+            return 1
