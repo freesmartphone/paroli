@@ -31,7 +31,7 @@ class FSOAudio(tichy.Service):
 
     def __init__(self):
         super(FSOAudio, self).__init__()
-        logger.info("connecting to freesmartphone.GSM dbus interface")
+        logger.info("connecting to freesmartphone.GSM dbus audio interface")
         try:
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -73,18 +73,53 @@ class FSOAudio(tichy.Service):
             self.audio.SetSpeakerVolume(val)
         
     def audio_toggle(self):
-        if self.audio != None:
-	    if self.muted == 0:
-                self.muted = 1
-	        self.audio.SetMicrophoneMuted(True)
-                logger.info(self.get_mic_status())
-                # Notice: this does in no way affect the ringtone volume of an incoming call
-	        self.audio.SetSpeakerVolume(0)
-                logger.info(self.get_speaker_volume())
-	    elif self.muted == 1:
-	        self.audio.SetMicrophoneMuted(self.mic_state)
-                self.audio.SetSpeakerVolume(self.speaker_volume)
-                self.muted = 0
-            return 0
-        else:
-            return 1
+      if self.audio != None:
+          if self.muted == 0:
+              self.muted = 1
+              self.audio.SetMicrophoneMuted(True)
+              logger.info(self.get_mic_status())
+              # Notice: this does in no way affect the ringtone volume of an incoming call
+              self.audio.SetSpeakerVolume(0)
+              logger.info(self.get_speaker_volume())
+          elif self.muted == 1:
+              self.audio.SetMicrophoneMuted(self.mic_state)
+              self.audio.SetSpeakerVolume(self.speaker_volume)
+              self.muted = 0
+          return 0
+      else:
+          return 1
+
+class ParoliAudio(tichy.Service):
+
+    service = 'Audio'
+    name = 'Test'
+
+    def __init__(self):
+        
+        self.audio = None        
+        self.muted = 0
+
+    @tichy.tasklet.tasklet
+    def init(self):
+       
+        yield self._do_sth()
+        
+    def _do_sth(self):
+        pass
+        
+    def get_mic_status(self):
+        return 0
+        
+    def set_mic_status(self, val):
+        if self.muted != 1:
+            pass
+    
+    def get_speaker_volume(self):
+        return 100
+        
+    def set_speaker_volume(self, val):
+        if self.muted != 1:
+            pass
+        
+    def audio_toggle(self):
+        return 0
