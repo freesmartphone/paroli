@@ -30,7 +30,7 @@ from tel_number import TelNumber
 class DialerApp(tichy.Application):
     name = 'Tele'
     icon = 'icon.png'
-    category = 'main'
+    category = 'launcher'
 
     def run(self, parent=None, text = ""):
         logger.info("loading")
