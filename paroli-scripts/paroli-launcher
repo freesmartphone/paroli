@@ -230,7 +230,9 @@ class Launcher(dbus.service.Object):
     def create_screen(self):
         #painter = tichy.gui.Painter((480, 640))
         #return tichy.gui.Screen(tichy.mainloop, painter)
-        return tichy.gui.Window(480,580)
+	window = tichy.gui.Window(480,580)
+	window.show()
+        return window
 
     @dbus.service.method("org.tichy.Launcher")
     def Quit(self):
