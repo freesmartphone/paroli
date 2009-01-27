@@ -33,12 +33,14 @@ class DialerApp(tichy.Application):
     category = 'main'
 
     def run(self, parent=None, text = ""):
+        logger.info("loading")
         self.standalone = tichy.Text.as_type(text)
         self.main = parent
         
         ##set title if not in launcher mode
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('Tele')
+            self.main.etk_obj.show()
 
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
@@ -57,8 +59,8 @@ class DialerApp(tichy.Application):
         #self.edje_obj.data_add('windows',self.edje_obj)
         
         if self.standalone == 1:
-            self.edje_obj.Edje.size_set(480,600)
-        self.edje_obj.Edje.pos_set(0,40)
+            self.edje_obj.Edje.size_set(480,550)
+        self.edje_obj.Edje.pos_set(0,30)
         self.edje_obj.Edje.name_set('main_tele_window')
         self.edje_obj.show()
         self.main.connect('hide_Tele',self.edje_obj.hide)
@@ -252,9 +254,9 @@ class TeleCaller(tichy.Application):
         """
         logger.debug("caller run, name : %s", name)
         self.gsm_service = tichy.Service('GSM')
-        self.storage = tichy.Service('Storage')
+        self.storage = tichy.Service('TeleCom')
         self.main = self.storage.window
-	self.audio_service = tichy.Service('Audio')
+        self.audio_service = tichy.Service('Audio')
         self.main.etk_obj.visibility_set(1)
         self.main.etk_obj.title_set('Paroli Call')
 
@@ -263,12 +265,12 @@ class TeleCaller(tichy.Application):
         self.edje_obj_top_bar.edj.size_set(480,40)
         self.edje_obj_top_bar.edj.pos_set(0,0)
         self.edje_obj = gui.edje_gui(self.main,'tele',self.edje_file)
-        self.edje_obj.edj.size_set(480,600)
+        self.edje_obj.edj.size_set(480,550)
         self.edje_obj_top_bar.edj.show()
         self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.edj.signal_callback_add("add_digit", "*", self.add_digit)
-	self.edje_obj.edj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
+        self.edje_obj.edj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
         self.edje_obj_top_bar.edj.signal_callback_add("top-bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("*", "*", self.gui_signals)
 
@@ -444,12 +446,12 @@ class TeleCallerService(tichy.Service):
         pass
 
 ##Service to store some info
-class MyStorageService(tichy.Service):
-    service = 'Storage'
+class TeleComService(tichy.Service):
+    service = 'TeleCom'
 
     def __init__(self):
         dir(self)
-        super(MyStorageService, self).__init__()
+        super(TeleComService, self).__init__()
     
     @tichy.tasklet.tasklet
     def init(self):
@@ -476,9 +478,9 @@ class MyStorageService(tichy.Service):
     def set_active(self,call):
         self.call = call
 
-class TextEdit(tichy.Application):
+class PINApp(tichy.Application):
 
-    name = 'TextEdit'
+    name = 'PINApp'
     icon = 'icon.png'
 
     def run(self, window, text="", name=None, input_method=None):
@@ -488,22 +490,28 @@ class TextEdit(tichy.Application):
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         self.main = window
+        self.main.show()
 
         self.edje_obj = gui.edje_gui(self.main,'tele',self.edje_file)
         self.edje_obj.edj.layer_set(2)
         self.edje_obj.edj.name_set('PIN')
-        self.edje_obj.edj.part_text_set('call-button-text','Enter')
+        self.edje_obj.edj.signal_emit('to_pin_state',"*")
         self.edje_obj.edj.signal_callback_add("func_btn", "*", self.func_btn)
+        self.edje_obj.edj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
+        self.edje_obj.edj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.edj.signal_callback_add("add_digit", "*", self.add_digit)
         self.edje_obj.edj.show()
 
         yield tichy.Wait(self.main, 'value_received')
 
-        number = self.edje_obj.edj.part_text_get("active-call")
+        number = self.edje_obj.edj.part_text_get("pin-text")
         self.edje_obj.edj.delete()
         self.main.etk_obj.visibility_set(0)
         yield number
 
+
+    def embryo(self, emission, signal, source):
+        logger.info('embryo says: ' + signal)
 
     def func_btn(self,emission,source,param):
         if param == 'call-button':
@@ -511,7 +519,8 @@ class TextEdit(tichy.Application):
         elif param == 'del-button':
               self.number_edit_del(emission,source,param)
 
-    def call_btn_pressed(self,emission, source, param):
+    def call_btn_pressed(self,emission, signal, source):
+        logger.info(signal)
         self.main.emit('value_received')
 
     def add_digit(self,emission,source,param):
@@ -544,8 +553,8 @@ class MyTextEditService(tichy.Service):
     of a text editor to use the applicaton we defined previously.
     """
 
-    service = 'TextEdit'
+    service = 'TelePIN'
 
     def edit(self, parent, text="", name=None, input_method=None):
         """The only function defined in the TextEditService"""
-        return TextEdit(parent, text, name=name, input_method=input_method)
+        return PINApp(parent, text, name=name, input_method=input_method)
