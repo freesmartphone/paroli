@@ -289,19 +289,20 @@ if __name__ == '__main__':
         from tichy.service import print_infos
         print_infos()
         sys.exit(0)
+    if config.has_option('dbus','activated'):
+        if config.get('dbus','activated') == "1":
+          logger.info("connect to dbus")
+          if options.bus == 'system':
+              bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+          else:
+              bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+          bus_name = dbus.service.BusName('org.tichy.launcher', bus)
 
-    logger.info("connect to dbus")
-    if options.bus == 'system':
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-    else:
-        bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
-    bus_name = dbus.service.BusName('org.tichy.launcher', bus)
+          logger.info("start launcher service")
+          launcher = Launcher(bus, '/Launcher')
 
     logger.info("start InitAll")
     InitAll().start()
-
-    logger.info("start launcher service")
-    launcher = Launcher(bus, '/Launcher')
 
     if config.has_option('autolaunch','application'):
         app_name = config.get('autolaunch','application')
