@@ -143,7 +143,7 @@ class InitAll(tichy.Tasklet):
 
     def run(self):
 
-        storage_service = tichy.Service('Storage')
+        storage_service = tichy.Service('TeleCom')
         #print "storage in p-launcher"
         yield storage_service.init()
 
@@ -228,8 +228,9 @@ class Launcher(dbus.service.Object):
             self.screen = None
 
     def create_screen(self):
-        painter = tichy.gui.Painter((480, 640))
-        return tichy.gui.Screen(tichy.mainloop, painter)
+        #painter = tichy.gui.Painter((480, 640))
+        #return tichy.gui.Screen(tichy.mainloop, painter)
+        return tichy.gui.Window(480,580)
 
     @dbus.service.method("org.tichy.Launcher")
     def Quit(self):
@@ -305,11 +306,16 @@ if __name__ == '__main__':
     if config.has_option('autolaunch','application'):
         app_name = config.get('autolaunch','application')
         if config.has_option('standalone','activated'):
-            text = config.get('standalone','activated')
+            standalone = config.get('standalone','activated')
         else:
-            text = None
+            standalone = 0
+        if config.has_option('advanced-mode','activated'):
+            advanced_mode = config.get('advanced-mode','activated')
+        else:
+            advanced_mode = 0
         for app in tichy.Application.subclasses:
             if app.name == app_name:
+                text = str(standalone)+str(advanced_mode)
                 app("None",text).start()
 
 

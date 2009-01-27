@@ -32,19 +32,23 @@ from tel_number import TelNumber
 class Launcher_App(tichy.Application):
     name = 'Paroli-Launcher'
     icon = 'icon.png'
-    category = 'main' # So that we see the app in the launcher
+    category = 'hidden' # So that we see the app in the launcher
     
     def run(self, parent=None, text = ""):
         #logger.info('launcher launching')
         if isinstance(text, str):
             text = tichy.Text(text)
-        self.standalone = text
+        self.standalone = text[0]
+        self.advanced = text[1]
+        self.x = 480
         if self.standalone == 1:
-            self.main = gui.Window(None,480,640)
+            self.y = 640
             logger.info('launcher running in standalone mode')
         else:
-            self.main = gui.Window(None)
+            self.y = 580
             logger.info('launcher running in windowed mode')
+
+        self.main = gui.Window(None,self.x,self.y)
 
         self.main.show()
 
@@ -54,38 +58,76 @@ class Launcher_App(tichy.Application):
         
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
 
-        self.edje_obj = gui.EdjeObject(self.main,self.edje_file,'launcher')
+        self.edje_obj = gui.EdjeWSwallow(self.main,self.edje_file,'launcher','link-box')
+        
+        if self.advanced == "0":
+            ##create list of apps from list of registered apps
+            apps = ["I/O","Msgs","Tele","Pixels","People"]
+        else:
+            apps = []
+            for app in tichy.Application.subclasses:
+                if app.category == 'main':
+                    logger.info("adding - %s to launcher", app.name)
+                    apps.append(app.name)
+            
+            box = gui.edje_box(self,'V',1)
+            box.box.show()
+            self.app_objs = {}
+            for a in apps:
+                canvas = gui.etk.Canvas()
+                link_obj = gui.EdjeObject(self.main,self.edje_file,'link')
+                canvas.object_add(link_obj.Edje)
+                box.box.append(canvas, gui.etk.VBox.START, gui.etk.VBox.NONE, 0)
+                link_obj.Edje.part_text_set("texter",a)
+                link_obj.Edje.part_text_set("testing_textblock","<normal>" + a + "</normal><small></small>")
+                link_obj.Edje.layer_set(5)
+                link_obj.Edje.show()
+                link_obj.add_callback("*", "launch_app", self.launch_app)
+                app_obj = [canvas,link_obj]
+                self.app_objs[a] = app_obj
+            self.edje_obj.embed(box.scrolled_view,box,"link-box")
+            box.box.show()
+            ##create list of apps according to specs
+          
         self.edje_obj.show(1)
         
-        self.storage = tichy.Service('Storage')
+        self.edje_obj.Edje.size_set(480,580)
+        
+        self.storage = tichy.Service('TeleCom')
         self.connector = self.storage.window
         self.connector.connect('call_active',self.set_caller)
-        self.edje_obj.add_callback("launch_app", "*", self.launch_app)
+        self.edje_obj.add_callback("*", "launch_app", self.launch_app)
+        self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("test", "*", self.test)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
+        
+        ##current hack
+        self.standalone = 1
         
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
           i.remove()
         self.main.etk_obj.hide()   # Don't forget to close the window
         
-        
-    def launch_app(self, emission, source, name):
-        logging = "launching :" + str(name)
+    def embryo(self, emission, signal, source):
+        logger.info("embryo says:" + str(signal))
+    
+    def launch_app(self, emission, signal, source):
+        logging = "launching :" + str(signal)
         logger.info(str(logging))
-        print name
-        if name == 'Tele' and self.storage.call != None:
+        print signal
+        if signal == 'Tele' and self.storage.call != None:
             self.storage.window.etk_obj.visibility_set(1)
         else:  
             for app in tichy.Application.subclasses:
-                if app.name == name:
+                if app.name == signal:
                     try:
                         app(self.main,self.standalone).start() 
                     except Exception, e:
                         dialog = tichy.Service('Dialog')
                         dialog.error(self.main, e)
             self.edje_obj.signal('app_active',"*")
-        self.active_app = name
+        self.active_app = signal
                
     def quit_app(self, emission, source, name):
     
@@ -123,7 +165,7 @@ class Launcher_App(tichy.Application):
         
         number = TelNumber(self.storage.call.number)
         text = '<normal>Tele</normal> <small>' + str(number.get_text()) +'</small>'
-        self.edje_obj.Edje.part_text_set('Teletesting_textblock',text)
+        self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
     
     def _on_call_released(self,*args,**kargs):
         self.main.emit('show_Tele')
@@ -131,4 +173,4 @@ class Launcher_App(tichy.Application):
             self.edje_obj.signal('app_active',"*")
             
         text = '<normal>Tele</normal> <small></small>'
-        self.edje_obj.Edje.part_text_set('Teletesting_textblock',text)
+        self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
