@@ -180,7 +180,7 @@ class FreeSmartPhoneGSM(GSMService):
     def _ask_pin(self):
         #window = tichy.Service("WindowsManager").get_app_parent()
         window = None
-        editor = tichy.Service('TextEdit')
+        editor = tichy.Service('TelePIN')
         pin = yield editor.edit(window, name="Enter PIN",
                                 input_method='number')
         yield tichy.Service('SIM').send_pin(pin)

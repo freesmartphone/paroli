@@ -80,7 +80,7 @@ class Widget(tichy.Object):
         pass
 
 class Window(Widget):
-    def __init__(self, parent, w=480, h=575, **kargs):
+    def __init__(self, parent, w=480, h=580, **kargs):
         etk_obj = ecore.evas.SoftwareX11(w=w, h=h)
         Widget.__init__(self, None, etk_obj=etk_obj)
 
@@ -302,7 +302,7 @@ class EdjeWSwallow(EdjeObject):
               self.EdjeWindows.remove(self)
              
           self.Edje.delete()
-      
+
 class entry:
     def __init__(self,text='Unknown',pw=False):
         self.entry = etk.Entry()
