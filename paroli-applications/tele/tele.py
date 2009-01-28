@@ -90,7 +90,7 @@ class DialerApp(tichy.Application):
         number = TelNumber(signal)
         if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
             logger.info(number.get_text())
-            TeleCaller(emission, number).start()
+            TeleCaller(self.main, number).start()
         elif signal[0] in ['*'] :
             pass
         else :
