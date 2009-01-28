@@ -66,12 +66,9 @@ class Application(Tasklet, Item):
         """You shouldn't change this, redefine the run method instead"""
         if parent != None:
             window = parent
-            #print "parent != None: ", parent
         else:
             window = tichy.gui.Window(parent, modal=True, expand=True)
-            #print "window in app.py init"
         ret = yield super(Application, self).do_run(window, *args, **kargs)
-        #window.destroy()
         yield ret
 
 
