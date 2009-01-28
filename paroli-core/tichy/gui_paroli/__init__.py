@@ -195,6 +195,10 @@ class ScrollableSlide(Widget):
 
 
 class Painter(object):
+    """We don't use Painter at all
+
+    It doesn't make sense with etk backend.
+    """
     def __init__(self, size, fullscreen = None):
         pass
 
@@ -219,6 +223,7 @@ class EventsLoop(object):
 ####ADDED by mirko
 
 class EdjeObject(tichy.Object):
+    """Base class for edje Elements used to generate application windows """
     def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeWindows=None):
         #super(EdjeObject, self).__init__()
         self.Parent = Parent
@@ -270,6 +275,7 @@ class EdjeObject(tichy.Object):
         self.Edje.delete()
 
 class EdjeWSwallow(EdjeObject):
+      """Use this if your EdjeObject has a swallow part, the delete method will take care of deleting it on close"""
       def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeSwallow, EdjeWindows=None):
           self.Swallow = EdjeSwallow
           super(EdjeWSwallow, self).__init__(Parent, EdjeFile, EdjeGroup, EdjeWindows)
@@ -304,13 +310,14 @@ class EdjeWSwallow(EdjeObject):
           self.Edje.delete()
 
 class entry:
+    """deprecated use Edit instead"""
     def __init__(self,text='Unknown',pw=False):
         self.entry = etk.Entry()
         self.entry.text = text
         self.entry.password_mode_set(False)
 
 class edje_box:
-
+    """deprecated"""
     def __init__(self,instance,dimension,scrollable):
         assert dimension in ['V', 'H']
         if dimension == 'V':
@@ -339,9 +346,8 @@ class edje_box:
         eval(embed_object + '.show_all()')
 
 class contact_list:
-    
+    """deprecated"""
     def __init__(self, items, box, main, edje_file, item_group, app_window, kind='contacts', arbit_window=None):
-        #print items
         self.items = items
         self.item_list = []
         self.edje_file = edje_file
@@ -452,6 +458,7 @@ class contact_list:
 
 
 class lists:
+    """deprecated"""
     def generate_contacts_list(self,instance,main,scroller,box,app_window,item_group):
         item_list = []
         edje_file = '../tichy/gui_paroli/edje/paroli-in-tichy.edj'
@@ -513,6 +520,7 @@ class lists:
 
 
 class edje_gui():
+    """deprecated"""
     def __init__(self, parent,group,edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
 
         self.parent = parent
@@ -606,6 +614,7 @@ class edje_gui():
 ##UNUSED ONLY FOR REFERENCE
 
 class main_edje(Widget):
+    """deprecated"""
     def __init__(self, **kargs):
         self.etk_obj = ecore.evas.SoftwareX11(w=480, h=640)
         #Widget.__init__(self, None, etk_obj=etk_obj)
@@ -614,6 +623,7 @@ class main_edje(Widget):
         super(main_edje, self).show()
 
 class edje_window():
+    """deprecated"""
     def __init__(self, parent,group,app=None,phone=None,phone_book=None,edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
 
         self.parent = parent
@@ -795,6 +805,7 @@ class edje_window():
             logger.error("Error in close_extra_child : %s", e)
 
 class edje_gui():
+    """deprecated"""
     def __init__(self, parent, group, edje_file='../tichy/gui_paroli/design/paroli-in-tichy.edj'):
 
         self.parent = parent

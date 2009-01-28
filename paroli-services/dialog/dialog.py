@@ -25,7 +25,7 @@ import logging
 logger = logging.getLogger('Dialog')
 
 import tichy
-import tichy.gui as gui
+import tichy.gui_paroli as gui
 
 # TODO: replace the etk code by something based on Edje
 
