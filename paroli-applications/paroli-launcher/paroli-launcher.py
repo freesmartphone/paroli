@@ -66,7 +66,7 @@ class Launcher_App(tichy.Application):
         else:
             apps = []
             for app in tichy.Application.subclasses:
-                if app.category == 'main':
+                if app.category == 'launcher':
                     logger.info("adding - %s to launcher", app.name)
                     apps.append(app.name)
             
@@ -115,7 +115,6 @@ class Launcher_App(tichy.Application):
     def launch_app(self, emission, signal, source):
         logging = "launching :" + str(signal)
         logger.info(str(logging))
-        print signal
         if signal == 'Tele' and self.storage.call != None:
             self.storage.window.etk_obj.visibility_set(1)
         else:  

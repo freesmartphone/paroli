@@ -30,7 +30,7 @@ from tel_number import TelNumber
 class DialerApp(tichy.Application):
     name = 'Tele'
     icon = 'icon.png'
-    category = 'main'
+    category = 'launcher'
 
     def run(self, parent=None, text = ""):
         logger.info("loading")
@@ -40,7 +40,7 @@ class DialerApp(tichy.Application):
         ##set title if not in launcher mode
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('Tele')
-            self.main.etk_obj.show()
+            #self.main.etk_obj.show()
 
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
