@@ -36,13 +36,12 @@ class ContactsApp(tichy.Application):
     category = 'main' # So that we see the app in the launcher
     
     def run(self, parent=None, text = ""):
-        if isinstance(text, str):
-            text = tichy.Text(text)
+        self.standalone = tichy.Text.as_type(text)
         
         ##create main edje object, the evas object used to generate edje objects
         #self.main = gui.main_edje()
         self.main = parent
-        
+        #self.main.show()
         ##set the title of the window
         self.main.etk_obj.title_set('Paroli Contacts')
         
@@ -77,6 +76,9 @@ class ContactsApp(tichy.Application):
         self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("mouse,move", "*", self.listen)
+        if self.standalone == 1:
+            self.edje_obj.edj.size_set(480,600)
+        self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.layer_set(2)
         self.edje_obj.edj.show()
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
@@ -86,7 +88,7 @@ class ContactsApp(tichy.Application):
         except Exception,e:
             print e      
              
-        yield tichy.Wait(self.main, 'back')
+        yield tichy.Wait(self.main, 'back_Paroli-Contacts')
         
         ##remove all children -- edje elements 
         for i in self.main.children:
