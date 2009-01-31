@@ -216,9 +216,9 @@ class Launcher(dbus.service.Object):
         kill_on_close = False
         if not self.screen:
             self.screen = self.create_screen()
-            kill_on_close = True
+            kill_on_close = False
         try:
-            yield app(self.screen)
+            yield app(None)
         except Exception, ex:
             logger.error("application %s failed : %s", app.name, ex)
             import traceback
@@ -228,8 +228,9 @@ class Launcher(dbus.service.Object):
             self.screen = None
 
     def create_screen(self):
-        window = tichy.gui.Window(480,580)
-        window.show()
+        #window = tichy.gui.Window(480,580)
+        #window.show()
+        window = None
         return window
 
     @dbus.service.method("org.tichy.Launcher")
