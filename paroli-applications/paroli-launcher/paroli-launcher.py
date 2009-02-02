@@ -34,14 +34,13 @@ class Launcher_App(tichy.Application):
     icon = 'icon.png'
     category = 'hidden' # So that we see the app in the launcher
     
-    def run(self, parent=None, text = ""):
+    def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
-        if isinstance(text, str):
-            text = tichy.Text(text)
-        self.standalone = text[0]
-        self.advanced = text[1]
+        self.standalone = standalone
+        self.advanced = tichy.config.get('advanced-mode', 'activated', False)
+
         self.x = 480
-        if self.standalone == 1:
+        if self.standalone:
             self.y = 640
             logger.info('launcher running in standalone mode')
         else:
@@ -102,7 +101,7 @@ class Launcher_App(tichy.Application):
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         
         ##current hack
-        self.standalone = 1
+        self.standalone = True
         
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
@@ -121,7 +120,7 @@ class Launcher_App(tichy.Application):
             for app in tichy.Application.subclasses:
                 if app.name == signal:
                     try:
-                        app(self.main,self.standalone).start() 
+                        app(self.main, standalone=self.standalone).start() 
                     except Exception, e:
                         dialog = tichy.Service('Dialog')
                         dialog.error(self.main, e)

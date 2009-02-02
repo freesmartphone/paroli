@@ -35,8 +35,8 @@ class ContactsApp(tichy.Application):
     icon = 'icon.png'
     category = 'main' # So that we see the app in the launcher
     
-    def run(self, parent=None, text = ""):
-        self.standalone = tichy.Text.as_type(text)
+    def run(self, parent=None, standalone=False):
+        self.standalone = standalone
         
         ##create main edje object, the evas object used to generate edje objects
         #self.main = gui.main_edje()
@@ -76,7 +76,7 @@ class ContactsApp(tichy.Application):
         self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("mouse,move", "*", self.listen)
-        if self.standalone == 1:
+        if self.standalone:
             self.edje_obj.edj.size_set(480,600)
         self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.layer_set(2)

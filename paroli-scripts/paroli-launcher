@@ -278,12 +278,10 @@ if __name__ == '__main__':
 
     app_name = tichy.config.get('autolaunch', 'application', None)
     if app_name:
-        standalone = tichy.config.get('standalone', 'activated', 0)
-        advanced_mode = tichy.config.get('advanced-mode', 'activated', 0)
+        standalone = tichy.config.get('standalone', 'activated', False)
         for app in tichy.Application.subclasses:
             if app.name == app_name:
-                text = str(standalone)+str(advanced_mode)
-                app("None",text).start()
+                app("None", standalone=standalone).start()
 
 
     logger.info("starting mainloop")

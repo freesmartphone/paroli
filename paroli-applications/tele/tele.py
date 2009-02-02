@@ -32,9 +32,9 @@ class DialerApp(tichy.Application):
     icon = 'icon.png'
     category = 'launcher'
 
-    def run(self, parent=None, text = ""):
+    def run(self, parent=None, standalone=False):
         logger.info("loading")
-        self.standalone = tichy.Text.as_type(text)
+        self.standalone = standalone
         self.main = parent
 
         ##set title if not in launcher mode
@@ -58,7 +58,7 @@ class DialerApp(tichy.Application):
         self.edje_obj = gui.EdjeObject(self.main,self.edje_file,'tele')
         #self.edje_obj.data_add('windows',self.edje_obj)
         
-        if self.standalone == 1:
+        if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
             self.edje_obj.Edje.pos_set(0,30)
         else:
@@ -77,7 +77,7 @@ class DialerApp(tichy.Application):
         yield tichy.Wait(self.main, 'delete_request')
         logger.info('Tele closing')
         ##remove all children -- edje elements if not in launcher mode
-        if self.standalone == 1:
+        if self.standalone:
             print "delete"
             self.edje_obj.delete()
             
