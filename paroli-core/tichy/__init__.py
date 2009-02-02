@@ -35,6 +35,7 @@ from item import Item
 from time import Time
 from persistance import Persistance
 import notifications
+import config
 
 mainloop = None
 gui = None
