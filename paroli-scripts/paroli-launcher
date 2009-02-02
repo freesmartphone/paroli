@@ -102,7 +102,7 @@ def setup_logging():
         filename='/tmp/paroli.log', filemode='w')
 
     formatter = logging.Formatter(
-        '%(name)-8s %(levelname)-8s %(message)s')
+        '%(filename)s %(lineno)d %(name)-8s %(levelname)-8s %(message)s')
     stream_log = logging.StreamHandler()
     stream_log.setFormatter(formatter)
     stream_log.setLevel(logging.INFO)
