@@ -40,6 +40,11 @@ class KeepAliveService(tichy.Service):
     """
     service = 'KeepAlive'
 
+    def _restart(self, daemon):
+        init_script = "/etc/init.d/%s" % daemon
+        LOGGER.error("restarting %s", daemon)
+        call([init_script, 'start'])
+
     @tichy.tasklet.tasklet
     def keep_alive(self, daemon, period=5):
         """Tasklet that will ensure that the daemon stay alive"""
@@ -52,6 +57,20 @@ class KeepAliveService(tichy.Service):
             is_alive = call(['pgrep', '-f', daemon], stdout=PIPE) == 0
             if not is_alive:
                 LOGGER.error("daemon %s is dead", daemon)
-                LOGGER.error("restarting %s", daemon)
-                call([init_script, 'start'])
+                self._restart(daemon)
             yield tichy.tasklet.Sleep(period)
+
+    @tichy.tasklet.tasklet
+    def keep_dbus_service_alive(self, name, daemon):
+        """Same thing but monitoring a daemon that expose a dbus service"""
+        bus_obj = dbus.SystemBus().get_object('org.freedesktop.DBus',
+                                              '/org/freedesktop/DBus')
+        bus_obj_iface = dbus.proxies.Interface(bus_obj,
+                                               'org.freedesktop.DBus')
+        all_bus_names = bus_obj_iface.ListNames()
+        # XXX: maybe the service is not even started yet
+        while True:
+            var = yield tichy.tasklet.WaitDBusSignal(bus_obj_iface, 'NameOwnerChanged')
+            if var[0] == name:
+                LOGGER.error("get NameOwnerChanged for dbus name %s", name)
+                self.restart(dameon)
