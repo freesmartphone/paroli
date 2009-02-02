@@ -1,3 +1,8 @@
+fonts {
+   font: "Inspiration-Regular.ttf" "Sans";
+   font: "Inspiration-Bold.ttf"   "Sans-Bold";
+}
+
 styles
 {
     style 
