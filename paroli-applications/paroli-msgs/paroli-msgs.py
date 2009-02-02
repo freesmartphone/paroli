@@ -47,8 +47,8 @@ class ContactsApp(tichy.Application):
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     
-    def run(self, parent, text = ""):
-        self.standalone = tichy.Text.as_type(text)
+    def run(self, parent, standalone=False):
+        self.standalone = standalone
         
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
@@ -107,7 +107,7 @@ class ContactsApp(tichy.Application):
         #self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         self.edje_obj.edj.layer_set(2)
-        if self.standalone == 1:
+        if self.standalone:
             self.edje_obj.edj.size_set(480,600)
         self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.show()
@@ -120,7 +120,7 @@ class ContactsApp(tichy.Application):
              
         yield tichy.Wait(self.main, 'back_Paroli-Msgs')
         ##remove all children -- edje elements 
-        if self.standalone == 1:
+        if self.standalone:
             for i in self.edje_objects:
                 i.delete(None,None,None)
         else:    
@@ -168,7 +168,7 @@ class ContactsApp(tichy.Application):
         new_edje = gui.edje_gui(self.main,'create_message',self.edje_file)
         ## show main gui
         new_edje.edj.layer_set(3)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()  
@@ -211,7 +211,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("top-bar", "*", self.top_bar)
         message.read()
         new_edje.edj.layer_set(3)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()   
@@ -403,7 +403,7 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
@@ -423,7 +423,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("save_successful", "*", first_window.delete)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
@@ -442,7 +442,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact,first_window=new_edje)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
@@ -467,7 +467,7 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
@@ -494,7 +494,7 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
@@ -516,7 +516,7 @@ class ContactsApp(tichy.Application):
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         
         new_edje.edj.layer_set(4)
-        if self.standalone == 1:
+        if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()

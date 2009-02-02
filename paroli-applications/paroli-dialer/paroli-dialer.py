@@ -31,8 +31,8 @@ class DialerApp(tichy.Application):
     icon = 'icon.png'
     category = 'main'
 
-    def run(self, parent=None, text = ""):
-        self.standalone = tichy.Text.as_type(text)
+    def run(self, parent=None, standalone=False):
+        self.standalone = standalone
         self.main = parent
         
         ##set title if not in launcher mode
@@ -56,7 +56,7 @@ class DialerApp(tichy.Application):
         self.edje_objects = []
         self.edje_objects.append(self.edje_obj)
         self.edje_obj.edj.layer_set(2)
-        if self.standalone == 1:
+        if self.standalone:
             self.edje_obj.edj.size_set(480,600)
         self.edje_obj.edj.pos_set(0,40)
         self.edje_obj.edj.name_set('main_dialer_window')

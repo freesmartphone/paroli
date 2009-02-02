@@ -24,6 +24,7 @@ import edje
 import edje.decorators
 import ecore
 import ecore.evas
+import ecore.x
 import etk
 
 import logging
@@ -82,15 +83,18 @@ class Widget(tichy.Object):
 class Window(Widget):
     def __init__(self, parent, w=480, h=580, **kargs):
         etk_obj = ecore.evas.SoftwareX11(w=w, h=h)
+        etk_obj.callback_delete_request_set(self.delete_request)
         Widget.__init__(self, None, etk_obj=etk_obj)
+
+    def delete_request(self,*args,**kargs):
+        logger.info(str(args))
+        self.emit('delete_request')
 
     def show(self):
         self.etk_obj.show()
-        super(Window, self).show()
 
     def destroy(self):
-        pass
-
+        self.etk_obj.hide()
 
 class Screen(Window):
     """We don't use screen at all
@@ -202,14 +206,23 @@ class Painter(object):
     def __init__(self, size, fullscreen = None):
         pass
 
-
 class EventsLoop(object):
 
     def __init__(self):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
 
     def run(self):
+        #import ecore.x
+        #ecore.c_ecore._event_mapping_register(3,ecore.x.EventWindowDestroy)
+        #ecore.c_ecore.event_handler_add(3,self.moo)
+        #m = ecore.x.on_window_destroy_add(self.moo)
+        #print m.event_cls
+        #print dir(m)
         ecore.main_loop_begin()
+
+    def moo(self,*args,**kargs):
+        print "here"
+        return True
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)

@@ -33,9 +33,7 @@ class I_O_App(tichy.Application):
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     
-    def run(self, parent=None, text = ""):
-        if isinstance(text, str):
-            text = tichy.Text(text)
+    def run(self, parent=None, standalone=False):
         #print dir(parent.etk_obj)
         #parent.etk_obj.title_set('parent')
         #parent.etk_obj.hide_all()

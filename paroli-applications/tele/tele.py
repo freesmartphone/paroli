@@ -32,16 +32,16 @@ class DialerApp(tichy.Application):
     icon = 'icon.png'
     category = 'launcher'
 
-    def run(self, parent=None, text = ""):
+    def run(self, parent=None, standalone=False):
         logger.info("loading")
-        self.standalone = tichy.Text.as_type(text)
+        self.standalone = standalone
         self.main = parent
-        
+
         ##set title if not in launcher mode
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('Tele')
-            #self.main.etk_obj.show()
-
+            self.main.etk_obj.show()
+        
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
 
@@ -58,9 +58,11 @@ class DialerApp(tichy.Application):
         self.edje_obj = gui.EdjeObject(self.main,self.edje_file,'tele')
         #self.edje_obj.data_add('windows',self.edje_obj)
         
-        if self.standalone == 1:
+        if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
-        self.edje_obj.Edje.pos_set(0,30)
+            self.edje_obj.Edje.pos_set(0,30)
+        else:
+            self.edje_obj.Edje.size_set(480,590)
         self.edje_obj.Edje.name_set('main_tele_window')
         self.edje_obj.show()
         self.main.connect('hide_Tele',self.edje_obj.hide)
@@ -70,18 +72,22 @@ class DialerApp(tichy.Application):
         
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
+        
         ##wait until main object emits back signal
-        yield tichy.Wait(self.main, 'back_Tele')
+        yield tichy.Wait(self.main, 'delete_request')
         logger.info('Tele closing')
         ##remove all children -- edje elements if not in launcher mode
-        if self.standalone == 1:
+        if self.standalone:
+            print "delete"
             self.edje_obj.delete()
-            #for i in self.edje_obj.data['windows']:
-                #i.delete(None,None,None)
+            
         else:    
-            for i in self.main.children:
-                i.remove()
+            self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
+
+    def delete_request(self, *args, **kargs):
+        self.main.emit('back_Tele')
+        logger.info('delete_request' + str(args))
 
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))
@@ -160,7 +166,7 @@ class DialerApp(tichy.Application):
             logger.error("Got error in add_contact : %e", e)
 
     def save_number(self,emission, source, param):
-         logger.ebug("save number in dialer")
+         logger.debug("save number in dialer")
          name = self.extra_child.text_field.text_get()
          logger.debug("name is %s", name)
          number = emission.part_text_get('number')
