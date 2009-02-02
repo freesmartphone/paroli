@@ -90,3 +90,13 @@ def get(section, option, *args):
         if not args:
             raise
         return args[0]
+
+
+def getboolean(section, option, *args):
+    assert config, "Config file not parsed yet"
+    try:
+        return config.getboolean(section, option)
+    except:                     # TODO: filter exceptions
+        if not args:
+            raise
+        return args[0]

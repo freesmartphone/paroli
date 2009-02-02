@@ -262,7 +262,7 @@ if __name__ == '__main__':
         from tichy.service import print_infos
         print_infos()
         sys.exit(0)
-    if tichy.config.get('dbus','activated', None):
+    if tichy.config.getboolean('dbus','activated', False):
         logger.info("connect to dbus")
         if options.bus == 'system':
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
 
     app_name = tichy.config.get('autolaunch', 'application', None)
     if app_name:
-        standalone = tichy.config.get('standalone', 'activated', False)
+        standalone = tichy.config.getboolean('standalone', 'activated', False)
         for app in tichy.Application.subclasses:
             if app.name == app_name:
                 app("None", standalone=standalone).start()
