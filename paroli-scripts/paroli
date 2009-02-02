@@ -180,7 +180,8 @@ if __name__ == '__main__':
 
     logger.info("start launcher application")
     launcher = tichy.Application.find_by_name('Paroli-Launcher')
-    launcher(None).start(callback=on_done)
+    # '01' for standalone and advanced-mode
+    launcher(None, '01').start(callback=on_done)
 
     logger.info("starting mainloop")
     tichy.mainloop.run()
