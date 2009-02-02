@@ -64,3 +64,29 @@ def parse(cfg_file=None):
         logger.info("read config file %s", path)
         config.read(path)
     return config
+
+
+def get(section, option, *args):
+    """return a config value
+
+    Warning : it doesn't behave exactly like python config get method,
+    for it can handle default value that is returned if the config
+    option is not found.
+
+    :Parameters:
+
+        section : str
+            the section name
+
+        option : str
+            the option name
+
+        an additional argument would be considered as a defrault value
+    """
+    assert config, "Config file not parsed yet"
+    try:
+        return config.get(section, option)
+    except:                     # TODO: filter exceptions
+        if not args:
+            raise
+        return args[0]
