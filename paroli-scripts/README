@@ -1,19 +1,15 @@
                             PAROLI SCRIPTS
 
-* paroli
+* Standalone application
 
-  The 'paroli' script can be used to run paroli direclty, without
-  starting a d-bus server. It can be run on the phone or the desktop
-  (assuming that all the required modules are installed)
+  To start paroli, first make sure that the edje files have been build
+  (by running ./build in the paroli-applications directory.  Then just
+  start paroli-launcher.
 
-  to get the list of possible options run it with the --help command
-  line argument.
+* With DBUS service
 
-* paroli-launcher
-
-  The launcher is a script that will load tichy and all the servcies
-  and plugins, then start a dbus client that allow clients to start
-  applications by name.
+  To use the DBus service, dbus.activated must be set to True in the
+  configuartion file.
 
   * Run it on the phone
 
