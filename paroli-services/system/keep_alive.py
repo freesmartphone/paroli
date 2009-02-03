@@ -26,8 +26,46 @@ LOGGER = logging.getLogger('keep_alive')
 
 from subprocess import call, PIPE
 import os
+import dbus
 
 import tichy
+from tichy.tasklet import Tasklet, WaitDBusSignal, Sleep
+
+class WaitDBusNameChange(Tasklet):
+    """Tasklet that will wait until a dbus name owner change"""
+    def run(self, name):
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        bus_obj = bus.get_object('org.freedesktop.DBus',
+                                              '/org/freedesktop/DBus')
+        bus_obj_iface = dbus.proxies.Interface(bus_obj,
+                                               'org.freedesktop.DBus')
+        while True:
+            var = yield WaitDBusSignal( bus_obj_iface, 'NameOwnerChanged' )
+            if var[0] == name:
+                yield None
+
+
+def _is_name_present(name):
+    """Check that a dbus name is present"""
+    bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+    bus_obj = bus.get_object('org.freedesktop.DBus',
+                                         '/org/freedesktop/DBus')
+    bus_obj_iface = dbus.proxies.Interface(bus_obj,
+                                           'org.freedesktop.DBus')
+    all_bus_names = bus_obj_iface.ListNames()
+    return name in all_bus_names
+
+
+class WaitDBusNamePresent(Tasklet):
+    """tasklet that waits until a dbus name is present
+
+    If the name is already present, returns immediately.
+    """ 
+    def run(self, name):
+        if _is_name_present(name):
+            yield None
+        else:
+            yield WaitDBusNameChange(name)
 
 class KeepAliveService(tichy.Service):
     """This service can be used to make sure that a given daemon is
@@ -42,7 +80,6 @@ class KeepAliveService(tichy.Service):
 
     def _restart(self, daemon):
         init_script = "/etc/init.d/%s" % daemon
-        LOGGER.error("restarting %s", daemon)
         call([init_script, 'start'], stdout=PIPE)
 
     @tichy.tasklet.tasklet
@@ -62,22 +99,23 @@ class KeepAliveService(tichy.Service):
 
     @tichy.tasklet.tasklet
     def keep_dbus_service_alive(self, name, daemon):
-        """Same thing but monitoring a daemon that expose a dbus service
+        """Same thing but monitoring a daemon that exposes a dbus
+        service
 
         It works by monitoring the NameOwnerChanged signal from
         org.freedesktop.Dbus.
         """
-        import dbus
-        dbus.set_default_main_loop
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-        bus_obj = bus.get_object('org.freedesktop.DBus',
-                                 '/org/freedesktop/DBus')
-        bus_obj_iface = dbus.proxies.Interface(bus_obj,
-                                               'org.freedesktop.DBus')
-        all_bus_names = bus_obj_iface.ListNames()
-        # XXX: maybe the service is not even started yet
+        # We intitialy check that the service is up
+        if not _is_name_present(name):
+            LOGGER.error("dbus name %s not present", name)
+            LOGGER.info("restarting %s", daemon)
+            self._restart(daemon)
+            yield WaitDBusNamePresent(name)
+            LOGGER.info("%s actives", daemon)
         while True:
-            var = yield tichy.tasklet.WaitDBusSignal(bus_obj_iface, 'NameOwnerChanged')
-            if var[0] == name:
-                LOGGER.error("get NameOwnerChanged for dbus name %s", name)
-                self._restart(daemon)
+            yield WaitDBusNameChange(name)
+            LOGGER.error("get NameOwnerChanged for dbus name %s", name)
+            LOGGER.info("restarting %s", daemon)
+            self._restart(daemon)
+            yield WaitDBusNamePresent(name)
+            LOGGER.info("%s actives", daemon)
