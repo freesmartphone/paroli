@@ -27,9 +27,32 @@ LOGGER = logging.getLogger('GSM')
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus
+from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal
 
 from call import Call
+
+# TODO: move this tasklet into paroli-service/phone
+
+class WaitFSOResource(Tasklet):
+    """Wait for a FSO resource to be available"""
+    def run(self, name, time_out=None):
+        yield WaitDBusName('org.freesmartphone.ousaged', time_out=time_out)
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        ousage = bus.get_object('org.freesmartphone.ousaged',
+                                '/org/freesmartphone/Usage')
+        ousage = dbus.Interface(ousage, 'org.freesmartphone.Usage')
+
+        resources = ousage.ListResources()
+        if name in resources:
+            yield None
+
+        while True:
+            r_name, r_status = yield WaitDBusSignal(ousage,
+                                                    'ResourceAvailable',
+                                                    time_out=time_out)
+            if r_name == name:
+                yield None
+
 
 
 class GSMService(tichy.Service):
@@ -90,36 +113,6 @@ class FreeSmartPhoneGSM(GSMService):
 
     def __init__(self):
         super(FreeSmartPhoneGSM, self).__init__()
-
-        LOGGER.info("connecting to freesmartphone.GSM dbus interface")
-        try:
-            # We create the dbus interfaces to org.freesmarphone
-            self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            self.ousage = self.bus.get_object(
-                'org.freesmartphone.ousaged',
-                '/org/freesmartphone/Usage')
-            self.ousage = dbus.Interface(
-                self.ousage,
-                'org.freesmartphone.Usage')
-            self.gsm = self.bus.get_object(
-                'org.freesmartphone.ogsmd',
-                '/org/freesmartphone/GSM/Device')
-            self.gsm_device = dbus.Interface(
-                self.gsm,
-                'org.freesmartphone.GSM.Device')
-            self.gsm_network = dbus.Interface(
-                self.gsm,
-                'org.freesmartphone.GSM.Network')
-            self.gsm_call = dbus.Interface(
-                self.gsm,
-                'org.freesmartphone.GSM.Call')
-            self.gsm.connect_to_signal("Status", self._on_status)
-            self.gsm.connect_to_signal("CallStatus", self._on_call_status)
-        except Exception, ex:
-            LOGGER.warning("can't use freesmartphone GSM : %s", ex)
-            self.gsm = None
-            raise tichy.ServiceUnusable
-
         self.lines = {}
         self.provider = None
         self.network_strength = None
@@ -130,6 +123,29 @@ class FreeSmartPhoneGSM(GSMService):
         :Returns: str
         """
         return self.provider
+
+    @tichy.tasklet.tasklet
+    def _connect_dbus(self):
+        LOGGER.info("connecting to DBus")
+        yield WaitDBusName('org.freesmartphone.ousaged', time_out=30)
+        LOGGER.info("connecting to freesmartphone.GSM dbus interface")
+        # We create the dbus interfaces to org.freesmarphone
+        self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        self.ousage = self.bus.get_object('org.freesmartphone.ousaged',
+                                          '/org/freesmartphone/Usage')
+        self.ousage = dbus.Interface(self.ousage, 'org.freesmartphone.Usage')
+        self.gsm = self.bus.get_object('org.freesmartphone.ogsmd',
+                                       '/org/freesmartphone/GSM/Device')
+        self.gsm_device = dbus.Interface(self.gsm,
+                                         'org.freesmartphone.GSM.Device')
+        self.gsm_network = dbus.Interface(self.gsm,
+                                          'org.freesmartphone.GSM.Network')
+        self.gsm_call = dbus.Interface(self.gsm,
+                                       'org.freesmartphone.GSM.Call')
+        self.gsm_network.connect_to_signal("Status", self._on_status)
+        self.gsm_call.connect_to_signal("CallStatus",
+                                        self._on_call_status)
+
 
     def init(self, on_step=None):
         """Tasklet that registers on the network
@@ -147,8 +163,10 @@ class FreeSmartPhoneGSM(GSMService):
         on_step = on_step or default_on_step
 
         try:
+            yield self._connect_dbus()
             LOGGER.info("Request the GSM resource")
             on_step("Request the GSM resource")
+            yield WaitFSOResource('GSM', time_out=30)
             yield WaitDBus(self.ousage.RequestResource, 'GSM')
             yield self._turn_on(on_step)
             on_step("Register on the network")
