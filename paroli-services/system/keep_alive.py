@@ -21,6 +21,9 @@
 
 __docformat__ = 'reStructuredText'
 
+#XXX: we don't use this service, and the implemtation is not so good,
+#we should remove it until we actually need it
+
 import logging
 LOGGER = logging.getLogger('keep_alive')
 
@@ -29,23 +32,9 @@ import os
 import dbus
 
 import tichy
-from tichy.tasklet import Tasklet, WaitDBusSignal, Sleep
+from tichy.tasklet import Tasklet, WaitDBusSignal, WaitDBusNameChange, WaitDBusName
 
-class WaitDBusNameChange(Tasklet):
-    """Tasklet that will wait until a dbus name owner change"""
-    def run(self, name):
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-        bus_obj = bus.get_object('org.freedesktop.DBus',
-                                              '/org/freedesktop/DBus')
-        bus_obj_iface = dbus.proxies.Interface(bus_obj,
-                                               'org.freedesktop.DBus')
-        while True:
-            var = yield WaitDBusSignal( bus_obj_iface, 'NameOwnerChanged' )
-            if var[0] == name:
-                yield None
-
-
-def _is_name_present(name):
+def _is_dbus_name_present(name):
     """Check that a dbus name is present"""
     bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
     bus_obj = bus.get_object('org.freedesktop.DBus',
@@ -55,17 +44,6 @@ def _is_name_present(name):
     all_bus_names = bus_obj_iface.ListNames()
     return name in all_bus_names
 
-
-class WaitDBusNamePresent(Tasklet):
-    """tasklet that waits until a dbus name is present
-
-    If the name is already present, returns immediately.
-    """ 
-    def run(self, name):
-        if _is_name_present(name):
-            yield None
-        else:
-            yield WaitDBusNameChange(name)
 
 class KeepAliveService(tichy.Service):
     """This service can be used to make sure that a given daemon is
@@ -110,12 +88,12 @@ class KeepAliveService(tichy.Service):
             LOGGER.error("dbus name %s not present", name)
             LOGGER.info("restarting %s", daemon)
             self._restart(daemon)
-            yield WaitDBusNamePresent(name)
+            yield WaitDBusName(name)
             LOGGER.info("%s actives", daemon)
         while True:
             yield WaitDBusNameChange(name)
             LOGGER.error("get NameOwnerChanged for dbus name %s", name)
             LOGGER.info("restarting %s", daemon)
             self._restart(daemon)
-            yield WaitDBusNamePresent(name)
+            yield WaitDBusName(name)
             LOGGER.info("%s actives", daemon)
