@@ -294,9 +294,12 @@ class WaitDBus(Tasklet):
         logger.debug("got error reply from dbus method %s", self.method)
         self.err_callback(type(e), e, sys.exc_info()[2])
 
+# TODO: move all the tichy/dbus related tasklets into
+#       paroli-service/phone because that is the only place where it
+#       is used
 
 class WaitDBusSignal(Tasklet):
-    """A special tasklet that wait for a DBUs event to be emited"""
+    """A special tasklet that waits for a DBUs event to be emited"""
     def __init__(self, obj, event, time_out = None):
         super(WaitDBusSignal, self).__init__()
         self.obj = obj
@@ -304,20 +307,21 @@ class WaitDBusSignal(Tasklet):
         self.time_out = time_out
         self.connection = None
         self.timeout_connection = None
-        
+
     def _callback(self, *args):
         if not self.connection:
             return # We have been closed already
         self.connection.remove()
         # don't forget to remove the timeout callback
         if self.timeout_connection:
-            gobject.source_remove(self.timeout_connection)
+            import tichy
+            tichy.mainloop.source_remove(self.timeout_connection)
             self.timeout_connection = None
-        
+
         if len(args) == 1:  # What is going on here is that if we have a single value, we return it directly,
             args = args[0]  # but if we have several value we pack them in a tuple for the callback
                             # because the callback only accpet a single argument
-                            
+
         try:
             self.callback(args)
         except:
@@ -326,26 +330,28 @@ class WaitDBusSignal(Tasklet):
 
         self.obj = self.callback = None
         return False
-        
+
     def _err_callback(self):
         # can only be called on timeout
         self.timout_connection = None
         e = Exception("TimeOut")
         self.err_callback(type(e), e, sys.exc_info()[2])
-        
-    def start(self, callback, err_callback):    
+
+    def start(self, callback, err_callback):
+        import tichy
         self.callback = callback
         self.err_callback = err_callback
         self.connection = self.obj.connect_to_signal(self.event, self._callback)
         if self.time_out:
-            self.timeout_connection = gobject.timeout_add(self.time_out * 1000, self._err_callback)
-            
+            self.timeout_connection = tichy.mainloop.timeout_add(self.time_out * 1000, self._err_callback)
+
     def close(self):
         # Note : it is not working very well !!!! Why ? I don't know...
         if self.connection:
             self.connection.remove()
         if self.timeout_connection:
-            gobject.source_remove(self.timeout_connection)
+            import tichy
+            tichy.mainloop.source_remove(self.timeout_connection)
         self.obj = self.callback = self.connection = self.timeout_connection = None
 
 
@@ -401,6 +407,46 @@ class Producer(Tasklet):
             self.err_callback(*sys.exc_info())
             return
         self.handle_yielded_value(value)
+
+
+class WaitDBusNameChange(Tasklet):
+    """Tasklet that will wait until a dbus name owner change"""
+    def run(self, name, time_out=None):
+        import dbus
+        import tichy
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        bus_obj = bus.get_object('org.freedesktop.DBus',
+                                              '/org/freedesktop/DBus')
+        bus_obj_iface = dbus.proxies.Interface(bus_obj,
+                                               'org.freedesktop.DBus')
+        while True:
+            var = yield WaitDBusSignal(bus_obj_iface, 'NameOwnerChanged',
+                                       time_out=time_out)
+            if var[0] == name:
+                yield None
+
+class WaitDBusName(Tasklet):
+    """tasklet that waits until a dbus name is present
+
+    If the name is already present, returns immediately.
+    """
+    def _is_dbus_name_present(self, name):
+        import dbus
+        import tichy
+        """Check that a dbus name is present"""
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        bus_obj = bus.get_object('org.freedesktop.DBus',
+                                 '/org/freedesktop/DBus')
+        bus_obj_iface = dbus.proxies.Interface(bus_obj,
+                                               'org.freedesktop.DBus')
+        all_bus_names = bus_obj_iface.ListNames()
+        return name in all_bus_names
+
+    def run(self, name, time_out=None):
+        if self._is_dbus_name_present(name):
+            yield None
+        else:
+            yield WaitDBusNameChange(name, time_out=time_out)
 
 
 if __name__ == '__main__':
