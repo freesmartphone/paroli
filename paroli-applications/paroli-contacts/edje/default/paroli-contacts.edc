@@ -3,6 +3,16 @@ fonts {
    font: "Inspiration-Bold.ttf"   "Sans-Bold";
 }
 
+images {
+   image: "add.png" COMP;
+   image: "Back_button.png" COMP;
+   image: "Done_button.png" COMP;
+   image: "Edit_button.png" COMP;
+   image: "Next_button.png" COMP;
+   image: "Save_button.png" COMP;
+   image: "Delete_button.png" COMP;
+}
+
 styles
 {
     style 

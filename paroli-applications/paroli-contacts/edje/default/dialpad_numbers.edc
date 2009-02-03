@@ -1,11 +1,5 @@
 #include "contacts_macros.edc"
 
-images {
-   image: "back.png" COMP;
-   image: "next.png" COMP;
-   image: "save.png" COMP;
-}
-
 group { name: "dialpad_numbers";
     
     parts
@@ -69,7 +63,7 @@ group { name: "dialpad_numbers";
                   to: "base";
               }
                image {
-                  normal: "back.png";
+                  normal: "Back_button.png";
                }
                visible: 1;
             }
@@ -93,7 +87,7 @@ group { name: "dialpad_numbers";
                     to: "base";
                 }
                image {
-                  normal: "save.png";
+                  normal: "Save_button.png";
                }
                visible: 1;
             }
@@ -123,7 +117,7 @@ group { name: "dialpad_numbers";
                     to: "base";
                 }
                image {
-                  normal: "next.png";
+                  normal: "Next_button.png";
                }
                visible: 1;
             }

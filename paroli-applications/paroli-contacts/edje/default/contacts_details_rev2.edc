@@ -1,9 +1,3 @@
-images {
-   image: "back.png" COMP;
-   image: "edit.png" COMP;
-   image: "done.png" COMP;
-   image: "delete.png" COMP;
-}
 
 group 
 { 
@@ -49,7 +43,7 @@ group
                   to: "base";
               }
                image {
-                  normal: "back.png";
+                  normal: "Back_button.png";
                }
                visible: 1;
             }
@@ -73,7 +67,7 @@ group
                     to: "base";
                 }
                image {
-                  normal: "edit.png";
+                  normal: "Edit_button.png";
                }
                visible: 1;
             }
@@ -108,7 +102,7 @@ group
                     to: "base";
                 }
                image {
-                  normal: "done.png";
+                  normal: "Done_button.png";
                }
                visible: 1;
             }
@@ -496,7 +490,7 @@ group
                     to: "base";
                 }
                image {
-                  normal: "delete.png";
+                  normal: "Delete_button.png";
                }
                visible: 1;
             }
