@@ -19,16 +19,23 @@
 from __future__ import absolute_import
 
 import time
+import logging
 
 import tichy
 
+
+logger = logging.getLogger('')
 
 class Time(tichy.Item):
     """Item that represent a time"""
 
     def __init__(self, value=None):
         if isinstance(value, str):
-            value = time.strptime(value)
+            try:
+                value = time.strptime(value)
+            except Exception, ex:
+                logger.error("can't strptime : %s", ex)
+                
         self.__value = value or time.gmtime()
 
     @classmethod

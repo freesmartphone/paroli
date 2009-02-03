@@ -166,7 +166,7 @@ class DialerApp(tichy.Application):
             logger.error("Got error in add_contact : %e", e)
 
     def save_number(self,emission, source, param):
-         logger.ebug("save number in dialer")
+         logger.debug("save number in dialer")
          name = self.extra_child.text_field.text_get()
          logger.debug("name is %s", name)
          number = emission.part_text_get('number')

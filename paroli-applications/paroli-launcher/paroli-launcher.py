@@ -37,7 +37,8 @@ class Launcher_App(tichy.Application):
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
         self.standalone = standalone
-        self.advanced = tichy.config.get('advanced-mode', 'activated', False)
+        self.advanced = tichy.config.getboolean('advanced-mode',
+                                                'activated', False)
 
         self.x = 480
         if self.standalone:

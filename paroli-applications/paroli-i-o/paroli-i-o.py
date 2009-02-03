@@ -31,7 +31,7 @@ import ecore
 class I_O_App(tichy.Application):
     name = 'Paroli-I/O'
     icon = 'icon.png'
-    category = 'main' # So that we see the app in the launcher
+    category = 'launcher' # So that we see the app in the launcher
     
     def run(self, parent=None, standalone=False):
         #print dir(parent.etk_obj)

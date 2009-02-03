@@ -102,7 +102,7 @@ def setup_logging():
         filename='/tmp/paroli.log', filemode='w')
 
     formatter = logging.Formatter(
-        '%(name)-8s %(levelname)-8s %(message)s')
+        '%(filename)s %(lineno)d %(name)-8s %(levelname)-8s %(message)s')
     stream_log = logging.StreamHandler()
     stream_log.setFormatter(formatter)
     stream_log.setLevel(logging.INFO)
@@ -232,9 +232,6 @@ if __name__ == '__main__':
     setup_logging()
     tichy.config.parse(cfg_file=options.cfg_file)
 
-    logger.info("init gui")
-    tichy.init_gui(None)
-
     # We import all the modules into the plugin directory
     default_plugins_path = '/usr/share/tichy/plugins'
     plugins_dir = tichy.config.get('plugins', 'path', default_plugins_path)
@@ -246,6 +243,9 @@ if __name__ == '__main__':
             tichy.plugins.import_all(plugins_dir)
         except IOError:
             logger.info("failed to load plugins in %s", plugins_dir)
+
+    # Uncomment to Keep the framework alive
+    # tichy.Service('KeepAlive').keep_dbus_service_alive('org.freesmartphone.frameworkd', 'frameworkd').start()
 
     # Set all the default services
     defaults = tichy.config.get('services', 'defaults', None)
@@ -262,7 +262,7 @@ if __name__ == '__main__':
         from tichy.service import print_infos
         print_infos()
         sys.exit(0)
-    if tichy.config.get('dbus','activated', None):
+    if tichy.config.getboolean('dbus','activated', False):
         logger.info("connect to dbus")
         if options.bus == 'system':
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
 
     app_name = tichy.config.get('autolaunch', 'application', None)
     if app_name:
-        standalone = tichy.config.get('standalone', 'activated', False)
+        standalone = tichy.config.getboolean('standalone', 'activated', False)
         for app in tichy.Application.subclasses:
             if app.name == app_name:
                 app("None", standalone=standalone).start()

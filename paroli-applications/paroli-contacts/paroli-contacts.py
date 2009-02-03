@@ -33,7 +33,7 @@ from tichy.service import Service
 class ContactsApp(tichy.Application):
     name = 'Paroli-Contacts'
     icon = 'icon.png'
-    category = 'main' # So that we see the app in the launcher
+    category = 'launcher' # So that we see the app in the launcher
     
     def run(self, parent=None, standalone=False):
         self.standalone = standalone
