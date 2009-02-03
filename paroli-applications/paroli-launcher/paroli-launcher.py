@@ -39,7 +39,6 @@ class Launcher_App(tichy.Application):
         self.standalone = standalone
         self.advanced = tichy.config.getboolean('advanced-mode',
                                                 'activated', False)
-
         self.x = 480
         if self.standalone:
             self.y = 640
@@ -60,9 +59,11 @@ class Launcher_App(tichy.Application):
 
         self.edje_obj = gui.EdjeWSwallow(self.main,self.edje_file,'launcher','link-box')
         
-        if self.advanced == "0":
+        if self.advanced == False:
             ##create list of apps from list of registered apps
-            apps = ["I/O","Msgs","Tele","Pixels","People"]
+            apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Pixels","Paroli-Contacts"]
+            
+            
         else:
             apps = []
             for app in tichy.Application.subclasses:
@@ -70,23 +71,23 @@ class Launcher_App(tichy.Application):
                     logger.info("adding - %s to launcher", app.name)
                     apps.append(app.name)
             
-            box = gui.edje_box(self,'V',1)
-            box.box.show()
-            self.app_objs = {}
-            for a in apps:
-                canvas = gui.etk.Canvas()
-                link_obj = gui.EdjeObject(self.main,self.edje_file,'link')
-                canvas.object_add(link_obj.Edje)
-                box.box.append(canvas, gui.etk.VBox.START, gui.etk.VBox.NONE, 0)
-                link_obj.Edje.part_text_set("texter",a)
-                link_obj.Edje.part_text_set("testing_textblock","<normal>" + a + "</normal><small></small>")
-                link_obj.Edje.layer_set(5)
-                link_obj.Edje.show()
-                link_obj.add_callback("*", "launch_app", self.launch_app)
-                app_obj = [canvas,link_obj]
-                self.app_objs[a] = app_obj
-            self.edje_obj.embed(box.scrolled_view,box,"link-box")
-            box.box.show()
+        box = gui.edje_box(self,'V',1)
+        box.box.show()
+        self.app_objs = {}
+        for a in apps:
+            canvas = gui.etk.Canvas()
+            link_obj = gui.EdjeObject(self.main,self.edje_file,'link')
+            canvas.object_add(link_obj.Edje)
+            box.box.append(canvas, gui.etk.VBox.START, gui.etk.VBox.NONE, 0)
+            link_obj.Edje.part_text_set("texter",a)
+            link_obj.Edje.part_text_set("testing_textblock","<normal>" + a + "</normal><small></small>")
+            link_obj.Edje.layer_set(5)
+            link_obj.Edje.show()
+            link_obj.add_callback("*", "launch_app", self.launch_app)
+            app_obj = [canvas,link_obj]
+            self.app_objs[a] = app_obj
+        self.edje_obj.embed(box.scrolled_view,box,"link-box")
+        box.box.show()
             ##create list of apps according to specs
           
         self.edje_obj.show(1)
