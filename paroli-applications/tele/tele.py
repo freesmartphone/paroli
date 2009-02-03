@@ -73,8 +73,8 @@ class DialerApp(tichy.Application):
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
         
-        ##wait until main object emits back signal
-        yield tichy.Wait(self.main, 'delete_request')
+        ##wait until main object emits back signal or delete is requested
+        yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_Tele'))
         logger.info('Tele closing')
         ##remove all children -- edje elements if not in launcher mode
         if self.standalone:
