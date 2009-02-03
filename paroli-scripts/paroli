@@ -142,9 +142,6 @@ if __name__ == '__main__':
     setup_logging()
     config = parse_config(cfg_file=options.cfg_file)
 
-    logger.info("init gui")
-    tichy.init_gui(None)
-
     # We import all the modules into the plugin directory
     default_plugins_path = '/usr/share/tichy/plugins'
     plugins_dir = config.get('plugins', 'path', default_plugins_path)
