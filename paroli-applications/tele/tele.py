@@ -363,6 +363,7 @@ class TeleCaller(tichy.Application):
             self.edje_obj.edj.delete()
             self.edje_obj_top_bar.edj.delete()
             self.main.etk_obj.visibility_set(0)
+            raise
             
     #def call(self, emission, signal, source):
         #if signal == "accept":
