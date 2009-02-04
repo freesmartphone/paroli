@@ -52,81 +52,84 @@ class ContactsApp(tichy.Application):
         
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
-        
-        ##set the title of the window
-        if self.main.etk_obj.title_get() != 'Home':
-            self.main.etk_obj.title_set('Paroli Msgs')
-        
-        self.edje_objects = []
-        ##direct connection to framework -- ONLY for TESTING
-        
-        #bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-        #self.gsm = bus.get_object('org.freesmartphone.ogsmd','/org/freesmartphone/GSM/Device')
-        #self.gsm_service = tichy.Service('GSM')
-        self.msgs_service = tichy.Service('Messages')
-        inbox = self.msgs_service.inbox
-        outbox = self.msgs_service.outbox
-        all_list = self.msgs_service.messages
-        
-        def comp(m1, m2):
-            return cmp(m2.timestamp, m1.timestamp)
-        
-        all_list.sort(comp)
-        #for e in all_list:
-          #print e
-          
-        messages = all_list
-        
-        ##connect to tichy's contacts service
-        self.contact_service = Service('Contacts')
-        
-        ##get contacts list
-        self.phone_book = self.contact_service.contacts
-        
-        ## list used for messages TODO : Rename
-        self.contact_objects_list = None
-        
-        ##set edje file to be used
-        ##TODO: make one edje file per plugin
-        self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-msgs.edj')
-        
-        ##create application main window
-        self.edje_obj = gui.edje_gui(self.main,'messages',self.edje_file)
-        
-        ##create scrollable box for contacts list
-        contacts_box = gui.edje_box(self,'V',1)
-        
-        ##create list and populate box
-        #print dir(self.phone_book)
-        self.contact_objects_list = gui.contact_list(messages,contacts_box,self.main.etk_obj.evas,self.edje_file,'message_item',self,'msgs')
-        
-        ##add populated box to main window
-        self.edje_obj.add(contacts_box.scrolled_view,contacts_box,"message-items")
-        
-        self.edje_obj.edj.signal_callback_add("create_message", "*", self.create_message)
-        #self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
-        self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
-        self.edje_obj.edj.layer_set(2)
-        if self.standalone:
-            self.edje_obj.edj.size_set(480,600)
-        self.edje_obj.edj.pos_set(0,40)
-        self.edje_obj.edj.show()
-        self.edje_objects.append(self.edje_obj)
-        
-        try: 
-            contacts_box.box.show()
-        except Exception,e:
-            logger.error(e)      
-             
-        yield tichy.Wait(self.main, 'back_Paroli-Msgs')
-        ##remove all children -- edje elements 
-        if self.standalone:
-            for i in self.edje_objects:
-                i.delete(None,None,None)
-        else:    
-            for i in self.main.children:
-                  i.remove()
-            self.main.etk_obj.hide()   # Don't forget to close the window  
+
+        try:
+            ##set the title of the window
+            if self.main.etk_obj.title_get() != 'Home':
+                self.main.etk_obj.title_set('Paroli Msgs')
+
+            self.edje_objects = []
+            ##direct connection to framework -- ONLY for TESTING
+
+            #bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            #self.gsm = bus.get_object('org.freesmartphone.ogsmd','/org/freesmartphone/GSM/Device')
+            #self.gsm_service = tichy.Service('GSM')
+            self.msgs_service = tichy.Service('Messages')
+            inbox = self.msgs_service.inbox
+            outbox = self.msgs_service.outbox
+            all_list = self.msgs_service.messages
+
+            def comp(m1, m2):
+                return cmp(m2.timestamp, m1.timestamp)
+
+            all_list.sort(comp)
+            #for e in all_list:
+              #print e
+
+            messages = all_list
+
+            ##connect to tichy's contacts service
+            self.contact_service = Service('Contacts')
+
+            ##get contacts list
+            self.phone_book = self.contact_service.contacts
+
+            ## list used for messages TODO : Rename
+            self.contact_objects_list = None
+
+            ##set edje file to be used
+            ##TODO: make one edje file per plugin
+            self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-msgs.edj')
+
+            ##create application main window
+            self.edje_obj = gui.edje_gui(self.main,'messages',self.edje_file)
+
+            ##create scrollable box for contacts list
+            contacts_box = gui.edje_box(self,'V',1)
+
+            ##create list and populate box
+            #print dir(self.phone_book)
+            self.contact_objects_list = gui.contact_list(messages,contacts_box,self.main.etk_obj.evas,self.edje_file,'message_item',self,'msgs')
+
+            ##add populated box to main window
+            self.edje_obj.add(contacts_box.scrolled_view,contacts_box,"message-items")
+
+            self.edje_obj.edj.signal_callback_add("create_message", "*", self.create_message)
+            #self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
+            self.edje_obj.edj.layer_set(2)
+            if self.standalone:
+                self.edje_obj.edj.size_set(480,600)
+            self.edje_obj.edj.pos_set(0,40)
+            self.edje_obj.edj.show()
+            self.edje_objects.append(self.edje_obj)
+
+            try:
+                contacts_box.box.show()
+            except Exception,e:
+                logger.error(e)
+
+            yield tichy.Wait(self.main, 'back_Paroli-Msgs')
+            ##remove all children -- edje elements
+
+        finally:
+            if self.standalone:
+                for i in self.edje_objects:
+                    i.delete(None,None,None)
+            else:
+                for i in self.main.children:
+                      i.remove()
+                self.main.etk_obj.hide()   # Don't forget to close the window
+
     
     ##functions for message app
     ##create new message
@@ -218,7 +221,7 @@ class ContactsApp(tichy.Application):
 
         The function will simply start the send_message tasklet
         """
-        self.send_message(emission, source, param, numbers, textbox, step_1, step_2, original_message).start()
+        self.send_message(emission, source, param, numbers, textbox, step_1, step_2, original_message).start(err_callback=self.throw)
     
     @tichy.tasklet.tasklet
     def send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
@@ -245,6 +248,7 @@ class ContactsApp(tichy.Application):
             self.close_keyboard()
         except Exception, ex:
             logger.error("Got error %s", ex)
+            raise
             # XXX: at this point we should show an error box or do something
         
     ##delete message INCOMPLETE
