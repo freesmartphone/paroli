@@ -213,7 +213,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.layer_set(3)
         if self.standalone:
             new_edje.edj.size_set(480,600)
-        new_edje.edj.edj.pos_set(0,40)
+        new_edje.edj.pos_set(0,40)
         new_edje.edj.show()   
 
     def _on_send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
