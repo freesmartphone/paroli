@@ -24,12 +24,14 @@ group { name: "edit-name";
                max: 114 33;
               rel1 
               {
-                  relative: 0.05 0.05;
+                  relative: 0.0 0.0;
+                  offset: 9 20;
                   to: "base";
               }
               rel2 
               {
-                  relative: 0.25 0.15;
+                  relative: 0.0 0.0;
+                  offset: 123 53;
                   to: "base";
               }
                image {
@@ -48,12 +50,14 @@ group { name: "edit-name";
                max: 76 33;
                 rel1 
                 {
-                    relative: 0.75 0.05;
+                    relative: 0.0 0.0;
+                    offset: 395 20;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.15;
+                    relative: 0.0 0.0;
+                    offset: 471 53;
                     to: "base";
                 }
                image {
@@ -78,12 +82,14 @@ group { name: "edit-name";
                max: 76 33;
                 rel1 
                 {
-                    relative: 0.75 0.05;
+                    relative: 0.0 0.0;
+                    offset: 395 20;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.15;
+                    relative: 0.0 0.0;
+                    offset: 471 53;
                     to: "base";
                 }
                image {
@@ -99,11 +105,13 @@ group { name: "edit-name";
               description { state: "default" 0.0;
                   color: 0 0 0 255;
                   rel1 {
-                          relative: 0.0 0.2;
+                          relative: 0.0 0.0;
+                          offset: 18 141;
                           to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.4;
+                          relative: 0.0 0.0;
+                          offset: 303 156;
                           to: "base";
                   }
              }
@@ -124,7 +132,7 @@ group { name: "edit-name";
                           to: "edit-box";
                   }
                   rel2 {
-                          relative: 1.0 1.0;
+                          relative: 0.4 1.0;
                           to: "edit-box";
                   }
              }
@@ -142,11 +150,13 @@ group { name: "edit-name";
                   }
                   rel1 {
                           relative: 0.0 0.0;
-                          to: "edit-box";
+                          offset: 45 0;
+                          to: "Edit-text";
                   }
                   rel2 {
                           relative: 1.0 1.0;
-                          to: "edit-box";
+                          offset: 30 0;
+                          to: "Edit-text";
                   }
              }
             }
@@ -156,12 +166,14 @@ group { name: "edit-name";
               description { state: "default" 0.0;
                   color: 0 0 255 255;
                   rel1 {
-                          relative: 0.0 0.51;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 16 243;
+                     to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.7;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 465 268;
+                     to: "base";
                   }
              }
             }

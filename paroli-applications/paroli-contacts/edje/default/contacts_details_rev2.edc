@@ -2,8 +2,7 @@
 group 
 { 
     name: "contacts_details";
-    min: 480 570;
-    max: 480 570;
+    max: 480 640;
     parts 
     {
         part
@@ -34,12 +33,14 @@ group
                max: 114 33;
               rel1 
               {
-                  relative: 0.05 0.05;
+                  relative: 0.0 0.0;
+                  offset: 9 20;
                   to: "base";
               }
               rel2 
               {
-                  relative: 0.25 0.15;
+                  relative: 0.0 0.0;
+                  offset: 123 53;
                   to: "base";
               }
                image {
@@ -58,12 +59,14 @@ group
                max: 76 33;
                 rel1 
                 {
-                    relative: 0.75 0.05;
+                    relative: 0.0 0.0;
+                    offset: 395 20;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.15;
+                    relative: 0.0 0.0;
+                    offset: 471 53;
                     to: "base";
                 }
                image {
@@ -93,12 +96,14 @@ group
                max: 76 33;
                 rel1 
                 {
-                    relative: 0.75 0.05;
+                    relative: 0.0 0.0;
+                    offset: 395 20;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.15;
+                    relative: 0.0 0.0;
+                    offset: 471 53;
                     to: "base";
                 }
                image {
@@ -116,13 +121,15 @@ group
                 color: 0 0 0 255;
                 rel1 
                 {
-                    relative: 0.05 0.16;
+                    relative: 0.0 0.0;
+                    offset: 16 111;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.30;
-                      to: "base";
+                    relative: 0.0 0.0;
+                    offset: 465 166;
+                    to: "base";
                 }
             }
         }
@@ -137,7 +144,7 @@ group
                 text 
                 {
                     align: 0.0 0.0;
-                    size: 52;
+                    size: 40;
                     text: "Jane Backhouse";
                     font: "Sans";
                 }
@@ -283,13 +290,15 @@ group
                 color: 0 0 0 255;
                 rel1 
                 {
-                    relative: 0.05 0.46;
+                    relative: 0.0 0.0;
+                    offset: 16 236;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.61;
-                      to: "base";
+                    relative: 0.0 0.0;
+                    offset: 465 291;
+                    to: "base";
                 }
             }
         }
@@ -304,7 +313,7 @@ group
                 text 
                 {
                     align: 0.0 0.0;
-                    size: 52;
+                    size: 40;
                     text: "0046756890987";
                     font: "Sans";
                 }
@@ -402,12 +411,12 @@ group
                 color: 0 0 0 0;
                 rel1 
                 {
-                        relative: 0.00 0.8;
-                        to: "number";
+                   relative: 0.0 0.8;
+                   to: "number";
                 }
                 rel2 {
-                        relative: 0.12 1.0;
-                        to: "number";
+                   relative: 0.12 1.0;
+                   to: "number";
                 }
             }
         }
@@ -481,12 +490,14 @@ group
                max: 88 35;
                 rel1 
                 {
-                    relative: 0.05 0.83;
+                    relative: 0.0 0.0;
+                    offset: 16 539;
                     to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.25 0.88;
+                    relative: 0.0 0.0;
+                    offset: 104 574;
                     to: "base";
                 }
                image {

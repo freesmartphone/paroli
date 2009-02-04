@@ -26,12 +26,14 @@ group { name: "edit-number-type";
                max: 114 33;
               rel1 
               {
-                  relative: 0.05 0.05;
+                  relative: 0.0 0.0;
+                  offset: 9 20;
                   to: "base";
               }
               rel2 
               {
-                  relative: 0.25 0.15;
+                  relative: 0.0 0.0;
+                  offset: 123 53;
                   to: "base";
               }
                image {
@@ -46,12 +48,14 @@ group { name: "edit-number-type";
               description { state: "default" 0.0;
                   color: 0 0 0 255;
                   rel1 {
-                          relative: 0.05 0.2;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 20 141;
+                     to: "base";
                   }
                   rel2 {
-                          relative: 0.95 0.3;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 460 159;
+                     to: "base";
                   }
              }
             }
@@ -59,11 +63,11 @@ group { name: "edit-number-type";
              name:"Edit-text";
              type:TEXT;
               description { state: "default" 0.0;
-                  color: 0 255 0 255;
+                  color: 255 255 255 255;
                   text{
                           align: 0.0 0.5;
-                          size: 24;
-                          text: "Edit";
+                          size: 20;
+                          text: "Select phone type";
                           font: "Sans";
                   }
                   rel1 {
@@ -71,33 +75,12 @@ group { name: "edit-number-type";
                           to: "edit-box";
                   }
                   rel2 {
-                          relative: 0.15 1.0;
-                          to: "edit-box";
-                  }
-             }
-            }
-            part{
-             name:"number-text";
-             type:TEXT;
-              description { state: "default" 0.0;
-                  color: 255 255 255 255;
-                  text{
-                          align: 0.0 0.5;
-                          size: 24;
-                          text: "number";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 1.0 0.0;
-                          offset: 0 0;
-                          to: "Edit-text";
-                  }
-                  rel2 {
                           relative: 1.0 1.0;
                           to: "edit-box";
                   }
              }
             }
+
             part{
              name:"type-box";
              type:RECT;
@@ -107,12 +90,13 @@ group { name: "edit-number-type";
                     color: 0 0 0 255;
                     rel1 
                     {
-                            relative: 0.05 0.3;
+                            relative: 0.0 0.0;
+                            offset: 20 235;
                             to: "base";
                     }
                     rel2 
                     {
-                            relative: 0.95 0.9;
+                            relative: 1.0 1.0;
                             to: "base";
                     }
                 }
@@ -127,13 +111,15 @@ group { name: "edit-number-type";
                       color: 0 0 0 255;
                       rel1 
                       {
-                              relative: 0.0 0.0;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 20 235;
+                         to: "base";
                       }
                       rel2 
                       {
-                              relative: 1.0 0.24;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 480 271;
+                         to: "base";
                       }
                   }
               }
@@ -172,13 +158,15 @@ group { name: "edit-number-type";
                       color: 0 0 0 255;
                       rel1 
                       {
-                              relative: 0.0 0.25;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 20 293;
+                         to: "base";
                       }
                       rel2 
                       {
-                              relative: 1.0 0.49;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 480 329; 
+                         to: "base";
                       }
                   }
               }
@@ -217,13 +205,15 @@ group { name: "edit-number-type";
                       color: 0 0 0 255;
                       rel1 
                       {
-                              relative: 0.0 0.50;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 20 350;
+                         to: "base";
                       }
                       rel2 
                       {
-                              relative: 1.0 0.74;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 480 386; 
+                         to: "base";
                       }
                   }
               }
@@ -262,13 +252,15 @@ group { name: "edit-number-type";
                       color: 0 0 0 255;
                       rel1 
                       {
-                              relative: 0.0 0.75;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 20 408;
+                         to: "base";
                       }
                       rel2 
                       {
-                              relative: 1.0 1.0;
-                              to: "type-box";
+                         relative: 0.0 0.0;
+                         offset: 480 444;
+                         to: "base";
                       }
                   }
               }
