@@ -143,7 +143,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.layer_set(3)
         if self.standalone == 1:
             new_edje.edj.size_set(480,600)
-        new_edje.edj.edj.pos_set(0,40)
+        new_edje.edj.pos_set(0,40)
         new_edje.edj.show()   
         ##add num-pad actions
         ##delete digit
@@ -170,7 +170,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.layer_set(3)
         if self.standalone:
             new_edje.edj.size_set(480,600)
-        new_edje.edj.edj.pos_set(0,40)
+        new_edje.edj.pos_set(0,40)
         new_edje.edj.show()  
         self.open_keyboard()
         text = message
