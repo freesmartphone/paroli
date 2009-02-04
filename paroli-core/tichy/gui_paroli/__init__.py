@@ -32,12 +32,6 @@ logger = logging.getLogger('gui')
 
 import tichy
 
-def Vect(x,y):
-    return (x,y)
-
-def Rect(pos, size):
-    return (pos, size)
-
 class Widget(tichy.Object):
     def __init__(self, parent, etk_obj = None, item = None, expand = False, **kargs):
         self.etk_obj = etk_obj or etk.VBox()
