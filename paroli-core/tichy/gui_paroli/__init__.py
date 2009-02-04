@@ -266,7 +266,7 @@ class EdjeObject(tichy.Object):
     def hide(self,*args,**kargs):
         self.Edje.hide()
 
-    def delete(self, emission=None, source=None, param=None):
+    def delete(self, *args, **kargs):
         try:
           if self.Edje.data['windows'] != None:
             for i in self.Edje.data['windows']:
@@ -297,7 +297,7 @@ class EdjeWSwallow(EdjeObject):
           except Exception,e:
               dir(e)
 
-      def delete(self, source=None, emission=None, param=None):
+      def delete(self, *args, **kargs):
           
           self.Edje.part_swallow_get(self.Swallow).visible_set(0)
           self.Edje.part_swallow_get(self.Swallow).delete()
