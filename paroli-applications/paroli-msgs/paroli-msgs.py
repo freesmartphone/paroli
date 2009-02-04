@@ -157,7 +157,6 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
         new_edje.edj.signal_callback_add("next-button", "*", self.create_message_2, new_edje,'num_field-text',text, original_message)
-        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         
     ## step two (enter message)    
     def create_message_2(self, emission, source, param, step_1, part_text_field='num_field-text',message='', original_message=''):
@@ -189,7 +188,6 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("back", "*", new_edje.close_extra_child)
         ##go to next step
         new_edje.edj.signal_callback_add("send", "*", self._on_send_message, numbers, textbox, step_1, new_edje, original_message)
-        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
     
     
     
@@ -208,7 +206,6 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("forward", "*", self.forward, message, new_edje)
         new_edje.edj.signal_callback_add("close_details", "*", self._close)
         new_edje.edj.signal_callback_add("delete_message", "*", self.delete_message, message, new_edje,emission, canvas_obj)
-        new_edje.edj.signal_callback_add("top-bar", "*", self.top_bar)
         message.read()
         new_edje.edj.layer_set(3)
         if self.standalone:
@@ -284,7 +281,6 @@ class ContactsApp(tichy.Application):
         try:
             new_edje = gui.edje_gui(self.main,'messages-people',self.edje_file)
             #new_edje.name = 'messages_phonebook'
-            new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
             new_edje.edj.name_set('contacts_list')
         except Exception,e:
             print e
@@ -341,7 +337,6 @@ class ContactsApp(tichy.Application):
         dial_pad.part_text_set('num_field-text', new)
         self.extra_child.close_extra_child(emission, source, param)
         #self.open_keyboard()
-        #self.top_bar(self.extra_child.edj, source, param)
     
     ##add digit on dialpad like window
     def add_digit(self,emission, source, param):
@@ -361,10 +356,6 @@ class ContactsApp(tichy.Application):
         value = emission.part_text_get("num_field-text")
         if len(value) != 0:
             emission.part_text_set("num_field-text",value[:-1])
-    
-    ##top bar delete calls
-    def top_bar(self,emission,source,param):
-        self.main.emit('back')
     
     def close_keyboard(self,*args):
         print "close keyboard called"
