@@ -41,6 +41,9 @@ class ContactsApp(tichy.Application):
         ##create main edje object, the evas object used to generate edje objects
         #self.main = gui.main_edje()
         self.main = parent
+        self.geometry = self.main.etk_obj.geometry_get()
+        self.y = self.geometry[1]
+
         #self.main.show()
         ##set the title of the window
         self.main.etk_obj.title_set('Paroli Contacts')
@@ -76,9 +79,9 @@ class ContactsApp(tichy.Application):
         self.edje_obj.edj.signal_callback_add("add_contact", "*", self.add_number_new_contact)
         self.edje_obj.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("mouse,move", "*", self.listen)
-        if self.standalone:
-            self.edje_obj.edj.size_set(480,600)
-        self.edje_obj.edj.pos_set(0,40)
+        
+        self.edje_obj.edj.pos_set(0, self.y)
+
         self.edje_obj.edj.layer_set(2)
         self.edje_obj.edj.show()
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
@@ -114,7 +117,13 @@ class ContactsApp(tichy.Application):
             emission.delete()
         except Exception,e:
             print e
+
+    def show_on_layer(self, edje_obj, layer_no):
+        edje_obj.layer_set(layer_no)
+        edje_obj.pos_set(0, self.y)
+        edje_obj.show()   
     
+    # This is called by gui backend. 
     def show_details(self, emission, source, param, contact, graphic_objects):
         print "show details called"
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
@@ -133,8 +142,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("edit_number", "*", self.edit_number_type, contact,new_edje, graphic_objects)
         new_edje.edj.signal_callback_add("edit_name", "*", self.edit_name, contact, new_edje, graphic_objects)
         new_edje.edj.signal_callback_add("delete_contact", "*", self.delete_contact, contact, new_edje,emission, graphic_objects)
-        new_edje.edj.layer_set(3)
-        new_edje.edj.show()   
+        self.show_on_layer(new_edje.edj, 3)
     
     def delete_contact(self,emission, source, param, contact, details_window,contacts_edje_obj, graphic_objects):
         print "delete contact called"
@@ -156,8 +164,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         #new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def edit_number(self,emission, source, param, number, contact, details_window, first_window, graphic_objects):
         print "edit number called"
@@ -174,9 +181,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         new_edje.edj.signal_callback_add("save-button", "*", self.save_contact_number, 'number' , number_type, contact, details_window, name_dummy, graphic_objects)
         new_edje.edj.signal_callback_add("save_successful", "*", first_window.delete)
-        
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def add_number_new_contact(self,emission, source, param):
         print "add new number called"
@@ -191,9 +196,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact,first_window=new_edje)
-        
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def add_digit(self,emission,source,param):
         print "add digit called"
@@ -226,8 +229,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("save_successful", "*", self.close_keyboard)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def edit_name_info(self,emission, source, param, contact, first_window, last_window, graphic_objects):
         print "edit info called"
@@ -252,9 +254,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("save_successful", "*", self.close_keyboard)
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
-        
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def add_name_new_contact(self,emission, source, param,first_window=None):
         print "add new name called"
@@ -274,9 +274,7 @@ class ContactsApp(tichy.Application):
         new_edje.edj.signal_callback_add("save_contact", "*", self.save_new_contact,name_object=new_edje,number=number,first_window=first_window)
         new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
-        
-        new_edje.edj.layer_set(4)
-        new_edje.edj.show()
+        self.show_on_layer(new_edje.edj, 4)
     
     def save_contact_number(self,emission,source,param, switch ,info, contact, details_window,name=None, graphic_objects=None):
         print "save_contact_number called"

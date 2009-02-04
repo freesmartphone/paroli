@@ -39,15 +39,16 @@ class Launcher_App(tichy.Application):
         self.standalone = standalone
         self.advanced = tichy.config.getboolean('advanced-mode',
                                                 'activated', False)
-        self.x = 480
+
+        self.w = 480
         if self.standalone:
-            self.y = 640
+            self.h = 640
             logger.info('launcher running in standalone mode')
         else:
-            self.y = 580
+            self.h = 590
             logger.info('launcher running in windowed mode')
 
-        self.main = gui.Window(None,self.x,self.y)
+        self.main = gui.Window(None, self.w, self.h)
 
         self.main.show()
 
@@ -62,8 +63,6 @@ class Launcher_App(tichy.Application):
         if self.advanced == False:
             ##create list of apps from list of registered apps
             apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Pixels","Paroli-Contacts"]
-            
-            
         else:
             apps = []
             for app in tichy.Application.subclasses:
@@ -92,7 +91,7 @@ class Launcher_App(tichy.Application):
           
         self.edje_obj.show(1)
         
-        self.edje_obj.Edje.size_set(480,580)
+        self.edje_obj.Edje.size_set(self.w, self.h)
         
         self.storage = tichy.Service('TeleCom')
         self.connector = self.storage.window
@@ -131,6 +130,8 @@ class Launcher_App(tichy.Application):
             try:
                 self.active_app = name
                 self.edje_obj.signal('app_active',"*")
+                # minus top-bar, 50, magic number here for now. 
+                self.main.etk_obj.move_resize(0, 50, self.w, self.h)
                 yield app(self.main, standalone=self.standalone)
             except Exception, ex:
                 logger.error("Error from app %s : %s", name, ex)
