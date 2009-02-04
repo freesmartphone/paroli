@@ -88,10 +88,11 @@ setup(name='Paroli',
       # XXX: Those locations may not work on the neo !
       data_files = [('applications',
                      ['data/paroli-launcher.desktop',
-                      'data/paroli-io.desktop',
-                      'data/paroli-contacts.desktop',
-                      'data/paroli-msgs.desktop',
-                      'data/paroli-dialer.desktop']),
+                      #'data/paroli-io.desktop',
+                      #'data/paroli-contacts.desktop',
+                      #'data/paroli-msgs.desktop',
+                      #'data/paroli-dialer.desktop'
+                      ]),
                     (os.path.join(sys.prefix, 'share/pixmaps/'),
                      ['data/tichy']),
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \

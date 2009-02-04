@@ -104,6 +104,13 @@ class Launcher_App(tichy.Application):
         ##current hack
         self.standalone = True
         
+        self.msg = tichy.Service('Messages')
+        logger.info(self.msg.ready)
+        if self.msg.ready == False :
+            self.msg.connect('ready',self.unblock_screen)
+        else:
+            self.unblock_screen()
+        
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
           i.remove()

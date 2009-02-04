@@ -221,10 +221,13 @@ class MessagesService(tichy.Service):
         self.messages = tichy.List()
         # Prepare the future notification
         self.notification = None
+        self.ready = False
 
     @tichy.tasklet.tasklet
     def init(self):
         yield self._load_all()
+        self.emit('ready')
+        self.ready = True
         self.outbox.connect('modified', self._on_lists_modified)
         self.inbox.connect('modified', self._on_lists_modified)
         self.messages.connect('modified', self._on_lists_modified)

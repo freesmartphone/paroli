@@ -45,7 +45,7 @@ import ecore.evas
 class ContactsApp(tichy.Application):
     name = 'Paroli-Msgs'
     icon = 'icon.png'
-    category = 'launcher' # So that we see the app in the launcher
+    category = 'main' # So that we see the app in the launcher
     
     def run(self, parent, standalone=False):
         self.standalone = standalone

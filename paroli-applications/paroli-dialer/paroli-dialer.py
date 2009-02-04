@@ -29,7 +29,7 @@ from tichy.service import Service
 class DialerApp(tichy.Application):
     name = 'Paroli-Dialer'
     icon = 'icon.png'
-    category = 'launcher'
+    category = 'main'
 
     def run(self, parent=None, standalone=False):
         self.standalone = standalone
