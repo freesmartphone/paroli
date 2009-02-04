@@ -54,6 +54,9 @@ class DialerApp(tichy.Application):
             ##get contacts list
             self.phone_book = self.contact_service.contacts
 
+            self.list_label = [('label','name'),('label-number','tel')]
+            self.phone_book_list = gui.EvasList(self.phone_book, self.main, self.edje_file, "tele-contacts_item", self.list_label)
+
             ##create list for edje objects
             self.contact_objects_list = None
 
@@ -115,31 +118,14 @@ class DialerApp(tichy.Application):
             logger.debug("number found")
             self.add_contact( emission, source, param)
 
-    #def func_btn(self,emission,source,param):
-        #if param == 'call-button':
-            #self.call_btn_pressed(emission, source, param)
-
-    #def call_btn_pressed(self,emission, source, param):
-        #number = emission.part_text_get("num_field-text")
-        #emission.part_text_set("num_field-text","")
-        #caller_service = tichy.Service("Caller")
-        #TeleCaller(emission, number ).start()
-
     def top_bar(self,emission,source,param):
         self.main.emit('back_Tele')
 
-    def call_contact(self, emission, source, param):
+    def call_contact(self, emission, source, param, item = None):
         logger.debug("call contact called")
         number = emission.part_text_get('label-number')
         name = emission.part_text_get('label')
-        self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
-        self.extra_child.edj.part_swallow_get('contacts-items').delete()
-        #window = tichy.Service('Storage').window
         TeleCaller("window", number, name).start(self.callback,self.callback)
-        try:
-            self.extra_child.edj.delete()
-        except Exception,e:
-            logger.error("in call_contact, got error : %s", e)
 
     def callback(self,*args,**kargs):
         print "callback called"
@@ -189,49 +175,18 @@ class DialerApp(tichy.Application):
             logger.error("Got error in save_number : %s", e)
          self.contact_service.add(contact)
 
-    def load_phone_book(self, emission, source, param):
+    def load_phone_book(self, emission, signal, source):
         logger.debug("load phone book called")
-        try:
-            new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
-            new_edje.add_callback("top_bar", "*", self.top_bar)
-            new_edje.Edje.name_set('contacts_list')
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s %s", Exception, e)
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
+        new_edje.Edje.name_set('contacts_list')
         new_edje.Edje.size_set(480,600)
         new_edje.Edje.pos_set(0,40)
         new_edje.show(3)
-        try:
-            contacts_box = gui.edje_box(self,'V',1)
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s", e)
-
-        try:
-            self.contact_objects_list = gui.contact_list(self.phone_book,contacts_box,self.main.etk_obj.evas,self.edje_file,'tele-contacts_item',self)
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s", e)
-
-        try:
-            to_2_swallowed = contacts_box.scrolled_view
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s", e)
-
-        try:
-            new_edje.embed(to_2_swallowed,contacts_box,"contacts-items")
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s", e)
-
-        try:
-            contacts_box.box.show()
-        except Exception,e:
-            logger.error("Got error in load_phone_book : %s", e)
-
-
-    #def start_call(self,orig,orig_parent,emission, source, param):
-        #logger.debug("start call called")
-        #number = emission.part_text_get("num_field-text")
-
-        #caller_service = Service('TeleCaller')
-        #yield caller_service.call("None", number)
+        
+        swallow = self.phone_book_list.get_swallow_object()
+        new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
+        self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
+        self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
 
     def self_test(self,emission, source, param):
         print "emission: ", str(emission)

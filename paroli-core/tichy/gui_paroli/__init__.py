@@ -316,6 +316,55 @@ class EdjeWSwallow(EdjeObject):
              
           self.Edje.delete()
 
+class EvasList(tichy.Object):
+      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list ):
+          self.model = model
+          self.parent = Parent
+          self.EdjeFile = EdjeFile
+          self.EdjeGroup = EdjeGroup
+          self.Evas = Parent.etk_obj.evas
+          self.label_list = label_list    
+  
+      def get_swallow_object(self):
+          self.box = etk.VBox()
+          self.items = []
+  
+          for item in self.model:
+              single = self.generate_single_item(item)
+              self.box.append(single[0], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+              single[0].on_destroyed(self.model.remove, item)
+              self.items.append(single)
+              
+          scrollbox = etk.ScrolledView()
+          scrollbox.add_with_viewport(self.box)
+          ## hide scrollbars
+          scrollbox.policy_set(2, 2)
+          ## make it dragable
+          scrollbox.dragable_set(1)
+          ## make it non-bouncing
+          scrollbox.drag_bouncy_set(0)
+          #scrollbox.add_with_viewport(self.box)
+          
+          return scrollbox
+  
+      def generate_single_item(self, item):
+          
+          canvas_obj = etk.Canvas()
+          edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
+          canvas_obj.object_add(edje_obj.Edje)
+          
+          for part, attribute in self.label_list:
+              if hasattr(item, attribute):
+                  txt = str(getattr(item, attribute))
+                  edje_obj.Edje.part_text_set(part,txt)
+      
+          return [canvas_obj,edje_obj,item]
+      
+      def add_callback(self, signal, source, func):
+          print str(func)
+          for i in self.items:
+              i[1].Edje.signal_callback_add(signal, source , func, i)
+
 class entry:
     """deprecated use Edit instead"""
     def __init__(self,text='Unknown',pw=False):
