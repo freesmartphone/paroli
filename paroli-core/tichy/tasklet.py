@@ -156,7 +156,7 @@ class Tasklet(object):
             return
         self.handle_yielded_value(value)
 
-    def throw(self, type, value, traceback):
+    def throw(self, type, value, traceback=None):
         """Throw an exeption into the tasklet generator"""
         try:
             value = self.generator.throw(type, value, traceback)
