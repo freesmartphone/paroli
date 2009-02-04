@@ -113,21 +113,30 @@ class Launcher_App(tichy.Application):
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))
     
-    def launch_app(self, emission, signal, source):
-        logging = "launching :" + str(signal)
-        logger.info(str(logging))
-        if signal == 'Tele' and self.storage.call != None:
+    def launch_app(self, emmision, signal, source):
+        """connected to the 'launch_app' edje signal"""
+        self._launch_app(str(signal)).start()
+
+    @tichy.tasklet.tasklet
+    def _launch_app(self, name):
+        """launch an application, and wait for it to either quit,
+        either raise an exception.
+        """
+        logger.info("launching %s", name)
+        # XXX: The launcher shouldn't know anything about this app
+        if name == 'Tele' and self.storage.call != None:
             self.storage.window.etk_obj.visibility_set(1)
-        else:  
-            for app in tichy.Application.subclasses:
-                if app.name == signal:
-                    try:
-                        app(self.main, standalone=self.standalone).start() 
-                    except Exception, e:
-                        dialog = tichy.Service('Dialog')
-                        dialog.error(self.main, e)
-            self.edje_obj.signal('app_active',"*")
-        self.active_app = signal
+        else:
+            app = tichy.Application.find_by_name(name)
+            try:
+                self.active_app = name
+                self.edje_obj.signal('app_active',"*")
+                yield app(self.main, standalone=self.standalone)
+            except Exception, ex:
+                logger.error("Error from app %s : %s", name, ex)
+                yield tichy.Service('Dialog').error(self.main, ex)
+            finally:
+                self.edje_obj.signal("switch_clock_off","*")
                
     def quit_app(self, emission, source, name):
     
