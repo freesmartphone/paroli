@@ -185,19 +185,14 @@ class FreeSmartPhoneSim(tichy.Service):
 
         ret = []
         for entry in entries:
-            #print entry
             index = int(entry[0])
-            #name = unicode(entry[1])
-            #tel = str(entry[2])
-            status = unicode(entry[1])
-            text = unicode(entry[3]).encode('utf8')
-            if status in  ['read','unread']:
-              timestamp = entry[4]['timestamp']
-              #print timestamp
-            else :
-              timestamp = 'Tue Oct 14 12:01:07 2008'
-            direction = unicode(entry[4]['direction'])
-            peer = unicode(entry[2])
+            status = str(entry[1]) # "read"|"sent"|"unread"|"unsent"
+            peer = str(entry[2])
+            text = unicode(entry[3])
+            properties = entry[4]
+            timestamp = properties.get('timestamp', None)
+            # TODO: make the direction arg a boolean
+            direction = 'out' if status in ['sent', 'unsent'] else 'in'
 
             message = SIMMessage(peer=peer,text=text,timestamp=timestamp,direction=direction,status=status, sim_index=index)
             self.indexes[index] = message
