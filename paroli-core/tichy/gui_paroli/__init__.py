@@ -169,7 +169,12 @@ class Edit(Widget):
     def __init__(self, parent, item = None, **kargs):
         etk_obj = etk.Entry()
         super(Edit, self).__init__(parent, etk_obj=etk_obj, **kargs)
+    
+    def set_text(self,txt):
+        self.etk_obj.text = txt
 
+    def set_pw_mode(self,mode):
+        self.etk_obj.password_mode_set(mode)
 
 class Spring(Widget):
     def __init__(self, parent, expandable = True, **kargs):
@@ -206,17 +211,7 @@ class EventsLoop(object):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
 
     def run(self):
-        #import ecore.x
-        #ecore.c_ecore._event_mapping_register(3,ecore.x.EventWindowDestroy)
-        #ecore.c_ecore.event_handler_add(3,self.moo)
-        #m = ecore.x.on_window_destroy_add(self.moo)
-        #print m.event_cls
-        #print dir(m)
         ecore.main_loop_begin()
-
-    def moo(self,*args,**kargs):
-        print "here"
-        return True
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)
@@ -231,7 +226,7 @@ class EventsLoop(object):
 
 class EdjeObject(tichy.Object):
     """Base class for edje Elements used to generate application windows """
-    def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeWindows=None):
+    def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeWindows=None, Keyboard=None ):
         #super(EdjeObject, self).__init__()
         self.Parent = Parent
         self.EdjeFile = EdjeFile
@@ -244,6 +239,11 @@ class EdjeObject(tichy.Object):
         if EdjeWindows != None:
             EdjeWindows.append(self)
 
+        if Keyboard != None:
+            self.Edje.on_show_add(self.open_keyboard)
+            self.Edje.on_hide_add(self.close_keyboard)
+            self.Edje.on_del_add(self.close_keyboard)
+
     def show(self,layer=2,*args,**kargs):
         self.Edje.layer_set(layer)
         self.Edje.show()
@@ -251,8 +251,8 @@ class EdjeObject(tichy.Object):
     def dehide(self,*args,**kargs):
         self.Edje.show()
 
-    def add_callback(self, signal, source, callback):
-        self.Edje.signal_callback_add(signal, source, callback)
+    def add_callback(self, signal, source, callback, *args, **kargs):
+        self.Edje.signal_callback_add(signal, source, callback, *args, **kargs)
 
     def data_add(self, key, data):
         if not self.Edje.data[key]:
@@ -262,6 +262,14 @@ class EdjeObject(tichy.Object):
 
     def signal(self, signal, source):
         self.Edje.signal_emit(signal, source)
+
+    def close_keyboard(self, *args, **kargs):
+        logger.info("close keyboard called")
+        self.Parent.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+    
+    def open_keyboard(self, *args, **kargs):
+        logger.info("open keyboard called")
+        self.Parent.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
 
     def hide(self,*args,**kargs):
         self.Edje.hide()
@@ -283,9 +291,9 @@ class EdjeObject(tichy.Object):
 
 class EdjeWSwallow(EdjeObject):
       """Use this if your EdjeObject has a swallow part, the delete method will take care of deleting it on close"""
-      def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeSwallow, EdjeWindows=None):
+      def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeSwallow, EdjeWindows=None, Keyboard= None):
           self.Swallow = EdjeSwallow
-          super(EdjeWSwallow, self).__init__(Parent, EdjeFile, EdjeGroup, EdjeWindows)
+          super(EdjeWSwallow, self).__init__(Parent, EdjeFile, EdjeGroup, EdjeWindows, Keyboard)
       
       def embed(self, child, box, part):
           embed = etk.Embed(self.Evas)
