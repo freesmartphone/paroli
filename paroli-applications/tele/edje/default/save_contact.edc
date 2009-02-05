@@ -152,11 +152,11 @@ group { name: "save-number";
               description { state: "default" 0.0;
                   color: 0 0 255 255;
                   rel1 {
-                          relative: 0.0 0.51;
+                          relative: 0.0 0.41;
                           to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.7;
+                          relative: 1.0 0.5;
                           to: "base";
                   }
              }
@@ -219,7 +219,7 @@ group { name: "save-number";
                 name: "close_window";
                 signal: "mouse,clicked,1";
                 source: "back-button";
-                action: SIGNAL_EMIT "close_extra_child" "name-box";
+                action: SIGNAL_EMIT "close_window" "name-box";
           }
 //         program { 
 //           name: "edit_button_click"; 
@@ -235,7 +235,6 @@ group { name: "save-number";
           action: STATE_SET "save" 0.0; 
           target: "save-notice";
           target: "save-notice-text"; 
-          after: "close_window_w_extra";
         }
         program { 
                 name: "close_window_w_extra";

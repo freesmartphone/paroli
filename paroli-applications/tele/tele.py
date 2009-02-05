@@ -93,13 +93,98 @@ class DialerApp(tichy.Application):
                 self.edje_obj.delete()
                 self.main.etk_obj.hide()   # Don't forget to close the window
 
+    ##DEBUG FUNCTIONS 
+    ## msgs from embryo
+    def embryo(self, emission, signal, source):
+        logger.info("embryo says:" + str(signal))
+        
+    ## callback one (used?)
+    def callback(self,*args,**kargs):
+        txt = "callback called with args: ", args, "and kargs: ", kargs
+        logger.info(txt)
+
+    ## general output check
+    def self_test(self, *args, **kargs):
+        txt = "self test called with args: ", args, "and kargs: ", kargs
+        logger.info(txt)
+
+    ## WINDOW FUNCTIONS
+    ## close window
     def delete_request(self, *args, **kargs):
         self.main.emit('back_Tele')
         logger.info('delete_request' + str(args))
 
-    def embryo(self, emission, signal, source):
-        logger.info("embryo says:" + str(signal))
+    ## topbar clicked 
+    def top_bar(self,emission,source,param):
+        self.main.emit('back_Tele')
 
+    ## MISC FUNCTIONS
+    ## switch to either open contacts or save number
+    def num_field(self, emission, source, param):
+        number = emission.part_text_get(param)
+        if number == None or len(number) == 0:
+            self.load_phone_book( emission, source, param )
+        else :
+            logger.debug("number found")
+            self.add_contact_window( emission, source, param )
+
+    def save_contact(self, *args, **kargs ):
+        name = kargs['name_field'].etk_obj.text
+        number = kargs['number']
+        logger.info('saving contact: name: ' + name + " number: " + number)
+        args[0].signal_emit('save-notice','*')
+        args[0].render_op_set(1)
+        contacts_service = tichy.Service('Contacts')
+        try:
+            contact = contacts_service.create(str(name),tel=str(number))
+            self.contact_service.add(contact)
+            ## clear number field on success
+            self.edje_obj.Edje.part_text_set('num_field-text','')
+        except Exception,e:
+            logger.error("Got error in save_number : %s", e)
+        args[0].signal_emit('mouse,clicked,1','back-button')
+         
+
+    ## SUBWINDOW FUNCTIONS
+    ## open subwindow showing contact-list
+    def load_phone_book(self, emission, signal, source):
+        logger.debug("load phone book called")
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
+        new_edje.Edje.name_set('contacts_list')
+        new_edje.Edje.size_set(480,600)
+        new_edje.Edje.pos_set(0,40)
+        new_edje.show(3)
+        swallow = self.phone_book_list.get_swallow_object()
+        new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
+        self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
+        self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
+
+    ## open subwindow showing save-contact-window
+    def add_contact_window(self,emission, source, param):
+        logger.info("add contact in dialer")
+        number = emission.part_text_get('num_field-text')
+        logger.info("number is %s", number)
+        new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'save-number',"name-box", self.edje_obj.Windows, True)
+        new_edje.Edje.size_set(480,600)
+        new_edje.Edje.pos_set(0,40)
+        new_edje.show(3)
+        new_edje.Edje.part_text_set('number',number)
+        name_field = gui.Edit(None)
+        name_field.set_text('Name')
+        box = gui.Box(None,1)
+        box.add(name_field)
+        new_edje.embed(box.etk_obj,box,"name-box")
+        box.etk_obj.show_all()
+        name_field.etk_obj.focus()
+        #print name_field.etk_obj.focus()
+        #value_dict = 
+        
+        new_edje.add_callback('close_window','*', new_edje.delete)
+        new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':name_field,'number':number})
+        
+        
+    ## CALL FUNCTIONS
+    ## call from numpad
     def call(self, emission, signal, source):
         number = TelNumber(signal)
         if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
@@ -109,28 +194,19 @@ class DialerApp(tichy.Application):
             pass
         else :
             pass
-    
-    def num_field(self,emission,source,param):
-        number = emission.part_text_get(param)
-        if number == None or len(number) == 0:
-            self.load_phone_book( emission, source, param)
-        else :
-            logger.debug("number found")
-            self.add_contact( emission, source, param)
-
-    def top_bar(self,emission,source,param):
-        self.main.emit('back_Tele')
-
+            
+    ## call from contact list
     def call_contact(self, emission, source, param, item = None):
         logger.debug("call contact called")
         number = emission.part_text_get('label-number')
         name = emission.part_text_get('label')
         TeleCaller("window", number, name).start(self.callback,self.callback)
+        
+        
 
-    def callback(self,*args,**kargs):
-        print "callback called"
-        print "args: ", args
-        print "kargs: ", kargs
+
+
+
 
     def add_contact(self,emission, source, param):
         logger.debug("add contact in dialer")
@@ -156,7 +232,7 @@ class DialerApp(tichy.Application):
         except Exception, e:
             logger.error("Got error in add_contact : %e", e)
 
-    def save_number(self,emission, source, param):
+    def save_number(self,emission, source, param, ):
          logger.debug("save number in dialer")
          name = self.extra_child.text_field.text_get()
          logger.debug("name is %s", name)
@@ -175,23 +251,8 @@ class DialerApp(tichy.Application):
             logger.error("Got error in save_number : %s", e)
          self.contact_service.add(contact)
 
-    def load_phone_book(self, emission, signal, source):
-        logger.debug("load phone book called")
-        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
-        new_edje.Edje.name_set('contacts_list')
-        new_edje.Edje.size_set(480,600)
-        new_edje.Edje.pos_set(0,40)
-        new_edje.show(3)
-        
-        swallow = self.phone_book_list.get_swallow_object()
-        new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
-        self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
-        self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
+    
 
-    def self_test(self,emission, source, param):
-        print "emission: ", str(emission)
-        print "source: ", str(source)
-        print "param: ", str(param)
 
 # TODO: ??? make the Caller app better, using John idea : we define
 #       for every call status the status of the gui.  Then we just
