@@ -73,7 +73,6 @@ class DialerApp(tichy.Application):
             self.edje_obj.show()
             self.main.connect('hide_Tele',self.edje_obj.hide)
             self.main.connect('show_Tele',self.edje_obj.dehide)
-            #self.edje_obj.add_callback("func_btn", "*", self.func_btn)
             self.edje_obj.add_callback("num_field_pressed", "*", self.num_field)
 
             self.edje_obj.add_callback("*", "embryo", self.embryo)
@@ -176,8 +175,6 @@ class DialerApp(tichy.Application):
         new_edje.embed(box.etk_obj,box,"name-box")
         box.etk_obj.show_all()
         name_field.etk_obj.focus()
-        #print name_field.etk_obj.focus()
-        #value_dict = 
         
         new_edje.add_callback('close_window','*', new_edje.delete)
         new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':name_field,'number':number})
@@ -201,58 +198,6 @@ class DialerApp(tichy.Application):
         number = emission.part_text_get('label-number')
         name = emission.part_text_get('label')
         TeleCaller("window", number, name).start(self.callback,self.callback)
-        
-        
-
-
-
-
-
-    def add_contact(self,emission, source, param):
-        logger.debug("add contact in dialer")
-        try:
-            number = emission.part_text_get('num_field-text')
-            logger.debug("number is %s", number)
-            new_edje = gui.edje_gui(self.main,'save-number',self.edje_file)
-            new_edje.edj.name_set('save_contact')
-            new_edje.edj.signal_callback_add("save_contact", "*", self.save_number)
-            new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
-            new_edje.edj.signal_callback_add("wait_seconds", "*", new_edje.wait_seconds)
-            new_edje.edj.signal_callback_add("close_extra_child", "*", new_edje.close_extra_child)
-            new_edje.edj.part_text_set('number',number)
-            name_field = gui.entry('Name',False)
-            new_edje.text_field = name_field.entry
-            box = gui.edje_box(self,'V',1)
-            box.box.append(name_field.entry, gui.etk.VBox.START, gui.etk.VBox.NONE,0)
-            new_edje.add(box.scrolled_view,box,"name-box")
-            box.box.show_all()
-            new_edje.edj.layer_set(2)
-            new_edje.edj.show()
-            self.extra_child = new_edje
-        except Exception, e:
-            logger.error("Got error in add_contact : %e", e)
-
-    def save_number(self,emission, source, param, ):
-         logger.debug("save number in dialer")
-         name = self.extra_child.text_field.text_get()
-         logger.debug("name is %s", name)
-         number = emission.part_text_get('number')
-         logger.debug("number is %s", number)
-         contacts_service = tichy.Service('Contacts')
-         try:
-            contact = contacts_service.create(str(name),tel=str(number))
-         except Exception,e:
-            logger.error("Got error in save_number : %s", e)
-         self.edje_obj.edj.part_text_set('num_field-text','')
-         emission.signal_emit('save-notice','*')
-         try:
-            emission.render_op_set(1)
-         except Exception,e:
-            logger.error("Got error in save_number : %s", e)
-         self.contact_service.add(contact)
-
-    
-
 
 # TODO: ??? make the Caller app better, using John idea : we define
 #       for every call status the status of the gui.  Then we just
