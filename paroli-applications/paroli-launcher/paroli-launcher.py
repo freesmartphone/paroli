@@ -118,7 +118,11 @@ class Launcher_App(tichy.Application):
         
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))
-    
+
+    def unblock_screen(self, *args, **kargs):
+        logger.info('unblocking screen')
+        self.edje_obj.signal("ready","*")
+
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
         self._launch_app(str(signal)).start()
