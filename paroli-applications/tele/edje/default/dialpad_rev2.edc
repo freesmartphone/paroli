@@ -108,6 +108,9 @@ group { name: "tele";
     script{
         public zero = 0;
         public mytimer = 0;
+        public calltimer_s = 0;
+        public calltimer_m = 0;
+        public calltimer_h = 0;
         
         public start_timer(){
             new local_timer = timer(1.0, "set_flag", 1);
@@ -124,6 +127,53 @@ group { name: "tele";
             if (get_int(mytimer) != 0){
                 cancel_timer(get_int(mytimer));
             }
+        }
+        
+        public calltime(val){
+            new hour[60];
+            new minute[60];
+            new second[60];
+            new all[180];
+            timer(1.0, "calltime", 1);
+            set_state(PART:"duration_timer", "active", 0.0);
+            if (get_int(calltimer_s) < 59){
+                set_int(calltimer_s,get_int(calltimer_s)+1);
+                                
+            }else{
+                set_int(calltimer_s,0);
+                set_int(calltimer_m,get_int(calltimer_m)+1);
+            }
+            
+            
+            if (get_int(calltimer_m) == 60){
+                set_int(calltimer_m,0);
+                set_int(calltimer_h,get_int(calltimer_h)+1);
+            }
+            
+            
+            if (get_int(calltimer_h) == 0){
+                snprintf(hour, 60, "%s", "");
+            }else{
+                snprintf(hour, 60, "%i:", get_int(calltimer_h));
+            }
+            
+            if (get_int(calltimer_m) == 0){
+                snprintf(minute, 60, "%s", "00:");
+            }else if (get_int(calltimer_m) < 10){
+                snprintf(minute, 60, "%s%i:", "0", get_int(calltimer_m));
+            }
+            else{
+                snprintf(minute, 60, "%i:", get_int(calltimer_h));
+            }
+            
+            if (get_int(calltimer_s) < 10){
+                snprintf(second, 60, "%s%i", "0", get_int(calltimer_s));
+            }else{
+                snprintf(second, 60, "%i", get_int(calltimer_s));
+            }
+            
+            snprintf(all, 180, "%s%s%s", hour, minute, second);
+            set_text(PART:"duration_timer",all);
         }
         
         public del_digit() {
@@ -335,6 +385,37 @@ group { name: "tele";
             {
               state: "pin" 0.0;
               inherit:"default" 0.0;
+            }
+        }
+        part{
+            name:"duration_timer";
+            type: TEXT;
+            mouse_events: 0;
+            description
+            {
+              visible:0;
+            }
+            description
+            {
+              state: "active" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.05 1.0;
+                    size: 16;
+                    text: "09";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.82;
+                    to: "num_field";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "num_field";
+                }
             }
         }
          part {
@@ -626,6 +707,15 @@ group { name: "tele";
             source: "error";
             action: STATE_SET "active" 0.0;
             target: "del-button";
+        }
+        program 
+        { 
+            name: "start_counter";
+            signal: "to_active_state";\
+            source: "*";\
+            script{
+                calltime(1);
+            }
         }
     }
 }
