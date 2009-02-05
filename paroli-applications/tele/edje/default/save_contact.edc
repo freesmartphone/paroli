@@ -147,10 +147,32 @@ group { name: "save-number";
              }
             }
             part{
+             name:"name-text-field";
+             type:TEXT;
+              description { state: "default" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                          align: 0.15 0.4;
+                          size: 48;
+                          text: "moo";
+                          font: "Sans";
+                  }
+                  rel1 {
+                          relative: 0.0 0.41;
+                          to: "base";
+                  }
+                  rel2 {
+                          relative: 1.0 0.5;
+                          to: "base";
+                  }
+             }
+            }
+            part{
              name:"name-box";
              type:SWALLOW;
               description { state: "default" 0.0;
                   color: 0 0 255 255;
+                  visible:0;
                   rel1 {
                           relative: 0.0 0.41;
                           to: "base";

@@ -142,7 +142,9 @@ class DialerApp(tichy.Application):
         except Exception,e:
             logger.error("Got error in save_number : %s", e)
         args[0].signal_emit('mouse,clicked,1','back-button')
-         
+        
+    def change_text(self, entry, edje):
+        edje.Edje.part_text_set('name-text-field',entry.text) 
 
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing contact-list
@@ -169,6 +171,7 @@ class DialerApp(tichy.Application):
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
         name_field = gui.Edit(None)
+        name_field.etk_obj.on_text_changed(self.change_text, new_edje)
         name_field.set_text('Name')
         box = gui.Box(None,1)
         box.add(name_field)
