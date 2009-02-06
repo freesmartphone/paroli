@@ -147,16 +147,38 @@ group { name: "save-number";
              }
             }
             part{
+             name:"name-text-field";
+             type:TEXT;
+              description { state: "default" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                          align: 0.15 0.4;
+                          size: 48;
+                          text: "moo";
+                          font: "Sans";
+                  }
+                  rel1 {
+                          relative: 0.0 0.41;
+                          to: "base";
+                  }
+                  rel2 {
+                          relative: 1.0 0.5;
+                          to: "base";
+                  }
+             }
+            }
+            part{
              name:"name-box";
              type:SWALLOW;
               description { state: "default" 0.0;
                   color: 0 0 255 255;
+                  visible:0;
                   rel1 {
-                          relative: 0.0 0.51;
+                          relative: 0.0 0.41;
                           to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.7;
+                          relative: 1.0 0.5;
                           to: "base";
                   }
              }
@@ -219,7 +241,7 @@ group { name: "save-number";
                 name: "close_window";
                 signal: "mouse,clicked,1";
                 source: "back-button";
-                action: SIGNAL_EMIT "close_extra_child" "name-box";
+                action: SIGNAL_EMIT "close_window" "name-box";
           }
 //         program { 
 //           name: "edit_button_click"; 
@@ -235,7 +257,6 @@ group { name: "save-number";
           action: STATE_SET "save" 0.0; 
           target: "save-notice";
           target: "save-notice-text"; 
-          after: "close_window_w_extra";
         }
         program { 
                 name: "close_window_w_extra";
