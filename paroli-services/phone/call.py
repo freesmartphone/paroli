@@ -77,6 +77,7 @@ class Call(tichy.Item):
     def get_text(self):
         return self.number.get_text()
 
+    @tichy.tasklet.tasklet
     def initiate(self):
         """Initiate the call
 
@@ -84,22 +85,24 @@ class Call(tichy.Item):
         method.
         """
         gsm_service = tichy.Service('GSM')
-        gsm_service._initiate(self)
+        yield gsm_service._initiate(self)
         self.status = 'initiating'
         self.emit(self.status)
 
+    @tichy.tasklet.tasklet
     def release(self):
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service('GSM')
-        gsm_service._release(self)
+        yield gsm_service._release(self)
         self.status = 'releasing'
         self.emit(self.status)
 
+    @tichy.tasklet.tasklet
     def activate(self):
         """Activate the call"""
         gsm_service = tichy.Service('GSM')
-        gsm_service._activate(self)
+        yield gsm_service._activate(self)
         self.status = 'activating'
         self.emit(self.status)
 

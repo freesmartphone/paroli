@@ -260,7 +260,8 @@ class TeleCaller(tichy.Application):
                 self.edje_obj.edj.show()
 
                 def make_active(emission, source, param):
-                    call.activate()
+                    # XXX: we should connect to the error callback
+                    call.activate().start()
 
                 self.edje_obj.edj.signal_callback_add("activate", "call", make_active)
 
@@ -271,15 +272,12 @@ class TeleCaller(tichy.Application):
                 self.edje_obj.edj.layer_set(2)
                 self.edje_obj.edj.show()
                 call = self.gsm_service.create_call(number)
-                call.initiate()
+                yield call.initiate()
 
                 def call_release_pre(emission, source, param):
-                    try:
-                        call.release()
-                    except Exception, e:
-                        logger.error("exception here in pre state")
-                        call.emit('released')
-                        self.storage.call = None
+                    # XXX: we should connect to the error callback
+                    call.release().start()
+                    self.storage.call = None
                         
                 self.edje_obj.edj.signal_callback_add("release", "call", call_release_pre)
 
@@ -298,12 +296,9 @@ class TeleCaller(tichy.Application):
                 #self.edje_obj.edj.part_text_set('num_field-text',TelNumber(call.number).get_text())
 
                 def call_release(emission, source, param):
-                    logger.info("call releasing")
-                    try:
-                        call.release()
-                    except Exception,e:
-                        logger.error("Error : %s", e)
-                        call.emit('released')
+                    logger.info("releasing call")
+                    # XXX: we should connect to the error callback
+                    call.release().start()
 
                 self.edje_obj.edj.signal_callback_add("release", "call", call_release)
                 yield tichy.WaitFirst(tichy.Wait(call, 'released'))

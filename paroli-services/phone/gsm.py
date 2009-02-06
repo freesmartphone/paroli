@@ -27,7 +27,7 @@ LOGGER = logging.getLogger('GSM')
 import dbus
 
 import tichy
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal
+from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
 
 from call import Call
 
@@ -267,24 +267,29 @@ class FreeSmartPhoneGSM(GSMService):
         self.logs.insert(0, call)
         return call
 
+    @tichy.tasklet.tasklet
     def _initiate(self, call):
         """Initiate a given call
         """
-        LOGGER.info("initiate call to %s", str(call.number))
-        call_id = int(self.gsm_call.Initiate(str(call.number), "voice"))
+        number = str(call.number)
+        LOGGER.info("initiate call to %s", number)
+        call_id = yield WaitDBus(self.gsm_call.Initiate, number, "voice")
+        call_id = int(call_id)
         LOGGER.info("call id : %d", call_id)
         self.lines[call_id] = call
         # TODO: mabe not good idea to store this in the call itself,
         #       beside, it makes pylint upset.
         call.__id = call_id
 
+    @tichy.tasklet.tasklet
     def _activate(self, call):
         LOGGER.info("activate call %s", str(call.number))
-        self.gsm_call.Activate(call.__id)
+        yield WaitDBus(self.gsm_call.Activate, call.__id)
 
+    @tichy.tasklet.tasklet
     def _release(self, call):
         LOGGER.info("release call %s", str(call.number))
-        self.gsm_call.Release(call.__id)
+        yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
 class TestGsm(GSMService):
@@ -317,17 +322,15 @@ class TestGsm(GSMService):
         self.logs.insert(0, call)
         return call
 
+    @tichy.tasklet.tasklet
     def _initiate(self, call):
+        yield Sleep(2)
+        call.active()
 
-        def after_a_while():
-            call.active()
-        tichy.mainloop.timeout_add(1000, after_a_while)
-
+    @tichy.tasklet.tasklet
     def _release(self, call):
-
-        def after_a_while():
-            call.released()
-        tichy.mainloop.timeout_add(1000, after_a_while)
+        call.released()
+        yield None
 
     def get_provider(self):
         return 'Charlie Telecom'
