@@ -241,7 +241,8 @@ group { name: "edit-name";
                 name: "close_window";
                 signal: "mouse,up,1";
                 source: "back-button";
-                action: SIGNAL_EMIT "save_successful" "name-box";
+                //action: SIGNAL_EMIT "save_successful" "name-box";
+                action: SIGNAL_EMIT "back" "back-button";
           }
       program 
         { 
@@ -266,14 +267,6 @@ group { name: "edit-name";
 //           source: "*";
           action: SIGNAL_EMIT "close_w_textfield" "name-box";
 //           after: "close window before";
-        }
-        program 
-        { 
-          name: "contact_name_edit_saved_signal";
-          signal: "contact_name_edit_saved";
-          source: "*";
-          action: SIGNAL_EMIT "close_w_textfield" "name-box";
-          after: "close_name_window_before";
         }
         program 
         { 
