@@ -288,7 +288,11 @@ class WaitDBus(Tasklet):
 
     def _callback(self, *args):
         logger.debug("got reply from dbus method %s", self.method)
-        self.callback(*args)
+        # Trick to avoid returning a tuple when the method only retrn
+        # one value
+        if len(args) == 1:
+            args = args[0]
+        self.callback(args)
 
     def _err_callback(self, e):
         logger.debug("got error reply from dbus method %s", self.method)
