@@ -204,7 +204,7 @@ class FreeSmartPhoneGSM(GSMService):
         yield tichy.Service('SIM').send_pin(pin)
 
     def _on_call_status(self, call_id, status, properties):
-        LOGGER.info("call status %s %s %s", id, status, properties)
+        LOGGER.info("call status %s %s %s", call_id, status, properties)
         call_id = int(call_id)
         status = str(status)
 
