@@ -20,6 +20,9 @@
 
 __docformat__ = 'reStructuredText'
 
+import logging
+LOGGER = logging.getLogger('Call')
+
 import tichy
 from tel_number import TelNumber
 
@@ -84,6 +87,7 @@ class Call(tichy.Item):
         This will try to get the 'GSM' service and call its 'initiate'
         method.
         """
+        LOGGER.info("initiate call")
         gsm_service = tichy.Service('GSM')
         yield gsm_service._initiate(self)
         self.status = 'initiating'
@@ -91,6 +95,7 @@ class Call(tichy.Item):
 
     @tichy.tasklet.tasklet
     def release(self):
+        LOGGER.info("release call")
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service('GSM')
@@ -101,6 +106,7 @@ class Call(tichy.Item):
     @tichy.tasklet.tasklet
     def activate(self):
         """Activate the call"""
+        LOGGER.info("activate call")
         gsm_service = tichy.Service('GSM')
         yield gsm_service._activate(self)
         self.status = 'activating'
