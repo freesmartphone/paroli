@@ -24,7 +24,6 @@ import edje
 import edje.decorators
 import ecore
 import ecore.evas
-import ecore.x
 import etk
 
 import logging
