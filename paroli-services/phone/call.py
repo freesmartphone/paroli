@@ -112,6 +112,11 @@ class Call(tichy.Item):
         self.status = 'activating'
         self.emit(self.status)
 
+    def mute(self):
+        """mute the call if it is ringing"""
+        LOGGER.info("mute call")
+        LOGGER.warning("mute not implemented yet")
+
     def outgoing(self):
         self.status = 'outgoing'
         self.emit('outgoing')
