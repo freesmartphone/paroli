@@ -1,0 +1,387 @@
+//details for contact
+
+// styles
+// {
+//   style {
+//     name: "textblock_style_2";
+//     base: "font=Sans font_size=20 align=left valign=top color=#fff  wrap=word";
+//   }
+// }
+
+group 
+{ 
+    name: "create_message";
+    min: 480 570;
+    max: 480 570;
+    parts 
+    {
+    
+        part
+        {
+        
+            name:"base";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                }
+            }
+        }
+        part
+        {
+            name:"send-button";
+            type:RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.8 0.05;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.1;
+                    to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"send-button-text";
+            type:TEXT;
+            mouse_events:0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 24;
+                    text: "Send:";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.8 0.05;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.1;
+                    to: "base";
+                }
+            }
+            description
+            {
+                state: "edit-mode" 0.0;
+                visible:0;
+            }
+        }
+        part
+        {
+            name:"close";
+            type:RECT;
+            description
+            {
+              color: 0 0 0 255;
+              rel1 
+              {
+                  relative: 0.05 0.05;
+                  to: "base";
+              }
+              rel2 
+              {
+                  relative: 0.15 0.15;
+                  to: "base";
+              }
+            }
+        }
+        part
+        {
+            name:"close-text";
+            type:TEXT;
+            description
+            {
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.1 0.15;
+                    size: 12;
+                    text: "Back";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+        }
+        part
+        {
+            name:"close-clickable";
+            type:RECT;
+            description
+            {
+                color: 0 235 235 0;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+        }
+        part
+        {
+            name:"message";
+            type:SWALLOW;
+            description
+            {
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.05 0.20;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.95 0.61;
+                      to: "base";
+                }
+            }
+        }
+//         part{
+//              name:"message-block";
+//              type:TEXTBLOCK;
+// //                   multiline:1;
+//              
+//               description { state: "default" 0.0;
+//                   color: 255 255 255 255;
+//                   visible:1;
+//                   text{
+//                           style:"textblock_style_2";
+//                           text_source:"message-text";
+//                   }
+//                   rel1 {
+//                           relative: 0.0 0.0;
+//                           to: "message";
+//                   }
+//                   rel2 {
+//                           relative: 1.0 1.0;
+//                           to: "message";
+//                   }
+//              }
+//             }
+//             part{
+//               name:"message-text";
+//               type:TEXT;
+//               description{ state:"default" 0.0;
+//                   color: 255 255 255 255;
+//                   text{
+//                       align: 0.0 0.0;
+//                       size: 24;
+//                       text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
+//                       font: "Sans";
+//                   }
+//                   rel1 {
+//                           relative: 0.0 0.0;
+//                           to: "base";
+//                   }
+//                   rel2 {
+//                           relative: 0.0 0.0;
+//                           to: "base";
+//                   }
+//                 }
+//                 
+//               }
+//         part
+//         {
+//             name:"del-button";
+//             type:RECT;
+// //             description
+// //             {
+// //                 state:"default" 0.0;
+// //                 visible:0;
+// //             }
+//             description
+//             {
+//                 state:"default" 0.0;
+//                 visible:1;
+//                 color: 73 12 14 255;
+//                 rel1 
+//                 {
+//                     relative: 0.05 0.83;
+//                     to: "base";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 0.25 0.88;
+//                     to: "base";
+//                 }
+//             }
+//         }
+//         part
+//         {
+//             name:"del-text";
+//             type:TEXT;
+//             mouse_events:0;
+//             description
+//             {
+//                 state:"default" 0.0;
+//                 visible:0;
+//             }
+//             description
+//             {
+//                 state:"edit-mode" 0.0;
+//                 visible:1;
+//                 color: 255 255 255 255;
+//                 text 
+//                 {
+//                     align: 0.1 0.0;
+//                     size: 20;
+//                     text: "Delete";
+//                     font: "Sans";
+//                 }
+//                 rel1 
+//                 {
+//                     relative: 0.0 0.0;
+//                     to: "del-button";
+//                 }
+//                 rel2 
+//                 {
+//                     relative: 1.0 1.0;
+//                     to: "del-button";
+//                 }
+//             }
+//         }
+    }
+    programs 
+    {
+//         program
+//         {
+//             name: "close-clickable-pressed";
+//             signal: "mouse,clicked,1";
+//             source: "close-clickable";
+//             action: SIGNAL_EMIT "close_details" "people";
+//         }
+//         program
+//         {
+//             name: "call-contact";
+//             signal: "mouse,up,1";
+//             source: "number-text-button";
+//             action: SIGNAL_EMIT "call_contact" "people";
+//         }
+//           program 
+//           { 
+//               name: "top-bar-tapped";
+//               signal: "mouse,up,1";
+//               source: "top-bar";
+//               action: SIGNAL_EMIT "top_bar" "tapped";
+//           }
+          program
+          {
+              name: "send";
+              signal: "mouse,up,1";
+              source: "send-button";
+              action: SIGNAL_EMIT "send" "message";
+          }
+          program
+          {
+              name: "back";
+              signal: "mouse,up,1";
+              source: "close-clickable";
+              action: SIGNAL_EMIT "back" "message";
+          }
+//         program
+//         {
+//             name: "edit-name";
+//             signal: "mouse,up,1";
+//             source: "name-edit-signaler";
+//             action: SIGNAL_EMIT "edit_name" "people";
+//         }
+//         program
+//         {
+//             name: "del-button-clicked";
+//             signal: "mouse,up,1";
+//             source: "del-button";
+//             action: SIGNAL_EMIT "delete_message" "people";
+//         }
+//         program
+//         {
+//             name: "enable-edit-mode";
+//             signal: "mouse,up,1";
+//             source: "edit-button";
+//             action: STATE_SET "edit-mode" 0.0;
+//             target:"edit-button";
+//             target:"edit-button-text";
+//             target:"done-button";
+//             target:"done-button-text";
+//             target: "name-info";
+//             target: "name-edit-button";
+//             target: "name-edit-button-text";
+//             target: "number-info";
+//             target: "number-edit-button";
+//             target: "number-edit-button-text";
+//             target:"del-button";
+//             target: "del-text";
+//             target: "number-text-button";
+//             target: "number-edit-signaler";
+//             target: "name-edit-signaler";
+// //             target: "name-edit";
+// //             target: "name-edit-text";
+// //             target: "name-edit-edit";
+// //             target: "tel-mobile-text-desc";
+// //             target: "tel-edit-edit";
+//         }
+//         program
+//         {
+//             name: "disable-edit-mode";
+//             signal: "mouse,up,1";
+//             source: "done-button";
+//             action: STATE_SET "default" 0.0;
+//             target:"edit-button";
+//             target:"edit-button-text";
+//             target:"done-button";
+//             target:"done-button-text";
+//             target: "name-info";
+//             target: "name-edit-button";
+//             target: "name-edit-button-text";
+//             target: "number-info";
+//             target: "number-edit-button";
+//             target: "number-edit-button-text";
+//             target: "del-button";
+//             target: "del-text";
+//             target: "number-text-button";
+//             target: "number-edit-signaler";
+//             target: "name-edit-signaler";
+//             /*target: "name-edit";
+//             target: "name-edit-text";
+//             target: "name-edit-edit";
+//             target: "tel-mobile-text-desc";
+//             target: "tel-edit-edit";*/
+//         }
+      
+    }
+}
+

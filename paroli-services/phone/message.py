@@ -68,7 +68,8 @@ class Message(tichy.Item):
         #TODO: fix timestamp to recognize timezones        
         import time
         if timestamp == None:
-            my_time = time.localtime()
+            #my_time = time.localtime()
+            my_time = "Thu Jan 1 12:00:00 1970"
         else:
             my_time = timestamp[:24]
         self.timestamp = tichy.Time.as_time(my_time)
@@ -77,6 +78,7 @@ class Message(tichy.Item):
         self.status = status or direction == 'out' and 'read' or 'unread'
         assert self.status in ['read', 'unread'], status
         self.msg_hash = str(self.sim_imsi)+str(self.sim_index)+str(self.timestamp)
+        print "'" + self.msg_hash + "'"
 
     def get_text(self):
         return tichy.Text("%s" % str(self.msg_hash))

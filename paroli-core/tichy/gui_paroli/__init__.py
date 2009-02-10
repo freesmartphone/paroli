@@ -24,7 +24,7 @@ import edje
 import edje.decorators
 import ecore
 import ecore.evas
-import ecore.x
+#import ecore.x
 import etk
 
 import logging
@@ -81,7 +81,7 @@ class Window(Widget):
         Widget.__init__(self, None, etk_obj=etk_obj)
 
     def delete_request(self,*args,**kargs):
-        logger.info(str(args))
+        #logger.info(str(args))
         self.emit('delete_request')
 
     def show(self):
@@ -191,11 +191,8 @@ class ImageWidget(Widget):
         etk_obj.set_from_file(image.path)
         super(ImageWidget, self).__init__(parent, etk_obj=etk_obj, **kargs)
 
-
-
 class ScrollableSlide(Widget):
     pass
-
 
 class Painter(object):
     """We don't use Painter at all
@@ -224,6 +221,25 @@ class EventsLoop(object):
 
 ####ADDED by mirko
 
+class ScrollerEdje(tichy.Object):
+    
+    def __init__(self, EdjeObject):
+        self.box = etk.VBox()
+        self.scrollbox = etk.c_etk.ScrolledView()
+        self.scrollbox.add_with_viewport(self.box)
+        ## hide scrollbars with (2, 2)
+        self.scrollbox.policy_set(2, 0)
+        ## make it dragable
+        self.scrollbox.dragable_set(True)
+        ## make it non-bouncing with (False)
+        self.scrollbox.drag_bouncy_set(True)
+        
+        self.canvas = etk.Canvas()
+        self.canvas.show_all()
+        #logger.info(self.canvas.geometry_get())
+        self.canvas.object_add(EdjeObject)
+        self.box.append(self.canvas, etk.VBox.START, etk.VBox.EXPAND_FILL, 0)        
+
 class EdjeObject(tichy.Object):
     """Base class for edje Elements used to generate application windows """
     def __init__(self, Parent, EdjeFile, EdjeGroup, EdjeWindows=None, Keyboard=None ):
@@ -234,6 +250,7 @@ class EdjeObject(tichy.Object):
         self.Evas = Parent.etk_obj.evas
         self.Edje = edje.Edje(self.Evas, file=self.EdjeFile, group=self.EdjeGroup)
         self.Edje.data['windows'] = []
+        self.Edje.data['EdjeObject'] = self
         self.Windows = self.Edje.data['windows']
         self.EdjeWindows = EdjeWindows
         if EdjeWindows != None:
@@ -274,18 +291,32 @@ class EdjeObject(tichy.Object):
     def hide(self,*args,**kargs):
         self.Edje.hide()
 
+    def back(self, *args, **kargs):
+        if self.EdjeWindows != None:
+            self.EdjeWindows.remove(self)
+            
+        self.Edje.delete()
+
     def delete(self, *args, **kargs):
+        print "delete called on: ", self
         try:
-          if self.Edje.data['windows'] != None:
-            for i in self.Edje.data['windows']:
-              i.delete()
+            if self.Windows != None:
+                aux_list = self.Windows
+                
+                for i in range(len(aux_list)):  
+                    if isinstance(self.Windows[i-1], edje.Edje):
+                        self.Windows[i-1]['EdjeObject'].delete()
+                    else:    
+                        self.Windows[i-1].delete()
+                    
         except Exception, e:
             dialog = tichy.Service('Dialog')
             logger.error(Exception, " ", e)
             dialog.error(self.Parent, e)
         
         if self.EdjeWindows != None:
-            self.EdjeWindows.remove(self)
+            if self.EdjeWindows.count(self) != 0:
+                self.EdjeWindows.remove(self)
             
         self.Edje.delete()
 
@@ -300,27 +331,40 @@ class EdjeWSwallow(EdjeObject):
           embed.add(child)
           embed.show_all()
           self.Edje.part_swallow(part, embed.object)
-          try:
-              box.box.show_all()
-          except Exception,e:
-              dir(e)
 
-      def delete(self, *args, **kargs):
-          
+      def back(self, *args, **kargs):
+          if self.EdjeWindows != None:
+              self.EdjeWindows.remove(self)
+              
           self.Edje.part_swallow_get(self.Swallow).visible_set(0)
           self.Edje.part_swallow_get(self.Swallow).delete()
           
+          self.Edje.delete()
+
+      def delete(self, *args, **kargs):
+          print "delete called on: ", self
+          
           try:
-              if self.Edje.data['windows'] != None:
-                for i in self.Edje.data['windows']:
-                  i.delete()
+              if self.Windows != None:
+                aux_list = self.Windows
+                
+                for i in range(len(aux_list)):  
+                    if isinstance(self.Windows[i-1], edje.Edje):
+                        self.Windows[i-1]['EdjeObject'].delete()
+                    else:    
+                        self.Windows[i-1].delete()
+                  
           except Exception, e:
               dialog = tichy.Service('Dialog')
               logger.error(Exception, " ", e)
               dialog.error(self.Parent, e)
-        
+          
           if self.EdjeWindows != None:
-              self.EdjeWindows.remove(self)
+              if self.EdjeWindows.count(self) != 0:
+                  self.EdjeWindows.remove(self)
+              
+          self.Edje.part_swallow_get(self.Swallow).visible_set(0)
+          self.Edje.part_swallow_get(self.Swallow).delete()
              
           self.Edje.delete()
 
@@ -343,16 +387,19 @@ class EvasList(tichy.Object):
               single[0].on_destroyed(self.model.remove, item)
               self.items.append(single)
               
-          scrollbox = etk.ScrolledView()
+          scrollbox = etk.c_etk.ScrolledView()
           scrollbox.add_with_viewport(self.box)
+          #print dir(scrollbox)
           ## hide scrollbars
-          scrollbox.policy_set(2, 2)
+          scrollbox.policy_set(2, 0)
           ## make it dragable
-          scrollbox.dragable_set(1)
+          scrollbox.dragable_set(True)
           ## make it non-bouncing
-          scrollbox.drag_bouncy_set(0)
+          scrollbox.drag_bouncy_set(True)
           #scrollbox.add_with_viewport(self.box)
-          
+          #logger.info(scrollbox.dragable_get())
+          scrollbox.drag_damping_set(0)
+          #logger.info(scrollbox.drag_damping_get())
           return scrollbox
   
       def generate_single_item(self, item):
@@ -369,7 +416,7 @@ class EvasList(tichy.Object):
           return [canvas_obj,edje_obj,item]
       
       def add_callback(self, signal, source, func):
-          print str(func)
+          #print str(func)
           for i in self.items:
               i[1].Edje.signal_callback_add(signal, source , func, i)
 

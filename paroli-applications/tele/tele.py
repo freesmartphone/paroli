@@ -85,7 +85,6 @@ class DialerApp(tichy.Application):
         finally:
             ##remove all children -- edje elements if not in launcher mode
             if self.standalone:
-                print "delete"
                 self.edje_obj.delete()
 
             else:
@@ -157,6 +156,7 @@ class DialerApp(tichy.Application):
         new_edje.show(3)
         swallow = self.phone_book_list.get_swallow_object()
         new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
+        #self.phone_book_list.add_callback("*", "*",self.self_test)
         self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
         self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
 

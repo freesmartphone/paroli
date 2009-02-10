@@ -85,7 +85,8 @@ class FreeSmartPhoneSMS(tichy.Service):
         """create a new sms instance"""
         number = TelNumber(number)
         text = tichy.Text(text)
-        return Message(number, text, direction)
+        timestamp = tichy.Time()
+        return Message(number, text, direction, None, str(timestamp) )
 
     @tichy.tasklet.tasklet
     def send(self, sms):

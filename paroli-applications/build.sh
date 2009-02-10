@@ -7,4 +7,5 @@ cd paroli-i-o; ./build.sh; cd ..
 cd paroli-msgs; ./build.sh; cd ..
 cd paroli-launcher; ./build.sh; cd ..
 cd tele; ./build.sh; cd ..
+cd msgs; ./build.sh; cd ..
 
