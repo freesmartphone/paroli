@@ -254,6 +254,7 @@ class TeleCaller(tichy.Application):
             # XXX: we should use an other way to check for a call object !
             if not isinstance(number, (basestring, tichy.Text)):
                 call = number
+                self.storage.call = call
                 self.edje_obj.edj.signal_emit('to_incoming_state',"*")
                 self.edje_obj.edj.part_text_set('num_field-text',str(call.number))
                 self.edje_obj.edj.layer_set(2)
@@ -341,8 +342,12 @@ class TeleCaller(tichy.Application):
         logger.debug("dtmf would be sent")
 
     def mute_toggle(self, emission, signal, source):
-        if self.audio_service.audio_toggle():
-            self.edje_obj.edj.signal_emit("mute-button", "error")
+        """mute/unmute the ringtone"""
+        self.storage.call.mute()
+
+    def speaker_toggle(self):
+        """Toggle the speaker output"""
+        self.audio_service.audio_toggle()
 
     def func_btn(self,emission, source, param):
         logger.debug("func btn called from %s", source)
