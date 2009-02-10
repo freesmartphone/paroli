@@ -328,6 +328,21 @@ class TestGsm(GSMService):
     def _initiate(self, call):
         yield Sleep(2)
         call.active()
+        if call.number == '666':
+            self._start_incoming().start()
+
+    @tichy.tasklet.tasklet
+    def _start_incoming(self):
+        LOGGER.info("simulate incoming call in 5 second")
+        yield Sleep(5)
+        call = self.create_call('01234567', direction='in')
+        self.emit('incoming-call', call)
+
+    @tichy.tasklet.tasklet
+    def _activate(self, call):
+        LOGGER.info("activate call %s", str(call.number))
+        yield Sleep(1)
+        call.active()
 
     @tichy.tasklet.tasklet
     def _release(self, call):
