@@ -7,10 +7,61 @@ program \
             action: STATE_SET state step;\
             target: "num_field";\
             target: "num_field-text";\
-            target: "del-button";\
-            target: "del-button-inner";\
-            target: "del-button-text";\
             target: "blocker";\
+        }
+
+#define _PART_IMAGE_KEYPAD(partname, imagename, off1x, off1y, off2x, off2y ); \
+part\
+        {\
+            name: partname;\
+            type: RECT;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 0 0 0 255;\
+                rel1 \
+                {\
+                    relative: 0.0 0.0;\
+                    offset: off1x off1y;\
+                    to: "base";\
+                }\
+                rel2 \
+                {\
+                    relative: 0.0 0.0;\
+                    offset: off2x off2y;\
+                    to: "base";\
+                }\
+            }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 255 0 0 255;\
+            }\
+        }\
+        part\
+        {\
+            name:partname"-inner";\
+            type: IMAGE;\
+            mouse_events:0;\
+            description\
+            { \
+                state: "default" 0.0;\
+                rel1 \
+                {\
+                    relative: 0.01 0.02;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 0.99 0.98;\
+                    to: partname;\
+                }\
+               image {\
+                  normal: imagename;\
+               }\
+               visible: 1;\
+            }\
         }
 
 #define _PART_KEYPAD(partname, label, subtext, r1x, r1y, r2x, r2y ); \
@@ -115,6 +166,26 @@ part\
                 }\
             }\
         }
+
+#define _PART_KEYPAD_DEL_BUTTON_PROG(partname); \
+        program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+        }\
+        program \
+        { \
+            name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
+            action: STATE_SET "default" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+        }\
 
 #define _PART_KEYPAD_PROG(partname, label ); \
         program \

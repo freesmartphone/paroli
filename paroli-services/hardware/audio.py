@@ -15,7 +15,7 @@
 #    General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
+#    along with paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
 
@@ -35,13 +35,15 @@ class FSOAudio(tichy.Service):
         try:
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            self.bus_object = bus.get_object('org.freesmartphone.ogsmd',
-                                      '/org/freesmartphone/GSM/Device')
-            self.audio = dbus.Interface(self.bus_object,
-                                          'org.freesmartphone.GSM.Device')
+            device = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
+            self.device = dbus.Interface(device, 'org.freesmartphone.GSM.Device')
+
+            audio = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Audio')
+            self.audio = dbus.Interface(audio, 'org.freesmartphone.Device.Audio')
 
         except Exception, e:
             logger.warning("can't use freesmartphone audio : %s", e)
+            self.device = None
             self.audio = None
             raise tichy.ServiceUnusable
         
@@ -49,7 +51,7 @@ class FSOAudio(tichy.Service):
 
     @tichy.tasklet.tasklet
     def init(self):
-        if self.audio != None:
+        if self.device != None:
             self.mic_state = self.get_mic_status()
             self.speaker_volume = self.get_speaker_volume()
         
@@ -59,35 +61,39 @@ class FSOAudio(tichy.Service):
         pass
         
     def get_mic_status(self):
-        return self.audio.GetMicrophoneMuted()
+        return self.device.GetMicrophoneMuted()
         
     def set_mic_status(self, val):
         if self.muted != 1:
-            self.audio.SetMicrophoneMuted(val)
+            self.device.SetMicrophoneMuted(val)
     
     def get_speaker_volume(self):
-        return self.audio.GetSpeakerVolume()
+        return self.device.GetSpeakerVolume()
         
     def set_speaker_volume(self, val):
         if self.muted != 1:
-            self.audio.SetSpeakerVolume(val)
+            self.device.SetSpeakerVolume(val)
         
     def audio_toggle(self):
-      if self.audio != None:
+      if self.device != None:
           if self.muted == 0:
               self.muted = 1
-              self.audio.SetMicrophoneMuted(True)
+              self.device.SetMicrophoneMuted(True)
               logger.info(self.get_mic_status())
               # Notice: this does in no way affect the ringtone volume of an incoming call
-              self.audio.SetSpeakerVolume(0)
+              self.device.SetSpeakerVolume(0)
               logger.info(self.get_speaker_volume())
           elif self.muted == 1:
-              self.audio.SetMicrophoneMuted(self.mic_state)
-              self.audio.SetSpeakerVolume(self.speaker_volume)
+              self.device.SetMicrophoneMuted(self.mic_state)
+              self.device.SetSpeakerVolume(self.speaker_volume)
               self.muted = 0
           return 0
       else:
           return 1
+
+    def stop_all_sounds(self):
+        logger.info("Stop all sounds")
+        self.audio.StopAllSounds()
 
 class ParoliAudio(tichy.Service):
 
@@ -96,7 +102,7 @@ class ParoliAudio(tichy.Service):
 
     def __init__(self):
         
-        self.audio = None        
+        self.device = None
         self.muted = 0
 
     @tichy.tasklet.tasklet
@@ -123,3 +129,7 @@ class ParoliAudio(tichy.Service):
         
     def audio_toggle(self):
         return 0
+
+    def stop_all_sounds(self):
+        logger.info("Stop all sounds")
+

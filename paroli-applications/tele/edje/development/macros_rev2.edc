@@ -139,5 +139,36 @@ part\
             name: partname"-clicked";\
             signal: "mouse,clicked,1";\
             source: partname;\
-            action: SIGNAL_EMIT "add_digit" label"";\
+            script{\
+                new old[40];\
+                old[20] = get_text(PART:"num_field-text",old,40);\
+                new txt[60];\
+                new num[3] = label;\
+                new state[30];\
+                new Float:floaty;\
+                if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0)\
+                {\
+                    if (strcmp(state, "default") == 0)\
+                    {\
+                        if ((strcmp(num,"0") == 0) && (get_int(zero) == 1)){\
+                              num = "+";\
+                              set_int(zero,0);\
+                        }\
+                    }\
+                    else if (strcmp(state, "pin") == 0)\
+                    {\
+                      new pin[40];\
+                      pin[39] = get_text(PART:"pin-text",pin,39);\
+                      emit(pin,"embryo");\
+                      new txt2[60];\
+                      emit(num,"embryo");\
+                      snprintf(txt2, 60, "%s%s", pin, num);\
+                      set_text(PART:"pin-text", txt2);\
+                      emit(txt2,"embryo");\
+                      num = "*";\
+                    }\
+                    snprintf(txt, 60, "%s%s", old, num);\
+                    set_text(PART:"num_field-text", txt);\
+              }\
+           }\
         }

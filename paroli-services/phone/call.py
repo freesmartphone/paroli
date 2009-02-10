@@ -20,6 +20,9 @@
 
 __docformat__ = 'reStructuredText'
 
+import logging
+LOGGER = logging.getLogger('Call')
+
 import tichy
 from tel_number import TelNumber
 
@@ -77,31 +80,43 @@ class Call(tichy.Item):
     def get_text(self):
         return self.number.get_text()
 
+    @tichy.tasklet.tasklet
     def initiate(self):
         """Initiate the call
 
         This will try to get the 'GSM' service and call its 'initiate'
         method.
         """
+        LOGGER.info("initiate call")
         gsm_service = tichy.Service('GSM')
-        gsm_service._initiate(self)
+        yield gsm_service._initiate(self)
         self.status = 'initiating'
         self.emit(self.status)
 
+    @tichy.tasklet.tasklet
     def release(self):
+        LOGGER.info("release call")
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service('GSM')
-        gsm_service._release(self)
+        yield gsm_service._release(self)
         self.status = 'releasing'
         self.emit(self.status)
 
+    @tichy.tasklet.tasklet
     def activate(self):
         """Activate the call"""
+        LOGGER.info("activate call")
         gsm_service = tichy.Service('GSM')
-        gsm_service._activate(self)
+        yield gsm_service._activate(self)
         self.status = 'activating'
         self.emit(self.status)
+
+    def mute(self):
+        """mute the call if it is ringing"""
+        LOGGER.info("mute call")
+        tichy.Service('Audio').stop_all_sounds()
+        tichy.Service('Vibrator').stop()
 
     def outgoing(self):
         self.status = 'outgoing'

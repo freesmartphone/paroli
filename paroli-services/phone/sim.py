@@ -29,6 +29,27 @@ from contact import Contact
 from message import Message
 from tel_number import TelNumber
 
+@tichy.tasklet.tasklet
+def retry_on_sim_busy(method, *args):
+    """Attempt a dbus call the the framework and retry if we get a sim
+    busy error"""
+    # TODO: make a better implementation of this, we should use the
+    #       SIMReady signal
+    for i in range(5):
+        try:
+            ret = yield WaitDBus(method, *args)
+            yield ret
+        except dbus.exceptions.DBusException, ex:
+            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.NotReady':
+                raise
+            logger.info("sim busy, retry in 5 seconds")
+            yield tichy.tasklet.Sleep(5)
+            continue
+    else:
+        logger.error("SIM always busy")
+        raise Exception("SIM too busy")
+
+
 class SIMContact(Contact):
     storage = 'SIM'
 
@@ -132,22 +153,11 @@ class FreeSmartPhoneSim(tichy.Service):
         give up. We need to remove this if the framework correct this
         problem.
         """
-        for i in range(5):
-            try:
-                logger.info("Retrieve Phonebook")
-                entries = yield WaitDBus(self.gsm_sim.RetrievePhonebook,
-                                         'contacts')
-                logger.info("Got %d contacts" % len(entries))
-                logger.debug('get contacts : %s', entries)
-                break
-            except Exception, e:
-                logger.error("can't retrieve phone book : %s" % e)
-                logger.info("retrying in 10 seconds")
-                yield tichy.tasklet.Sleep(10)
-                continue
-        else:
-            logger.error("can't retrieve phone book")
-            raise Exception("can't retrieve phone book")
+        logger.info("Retrieve Phonebook")
+        entries = yield retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
+                                          'contacts')
+        logger.info("Got %d contacts" % len(entries))
+        logger.debug('get contacts : %s', entries)
 
         ret = []
         for entry in entries:
@@ -161,42 +171,46 @@ class FreeSmartPhoneSim(tichy.Service):
 
     def get_messages(self):
         """Return the list of all the messages in the SIM
-
-        The framework may fail, so we try at least 5 times before we
-        give up. We need to remove this if the framework correct this
-        problem.
         """
-        for i in range(5):
-            try:
-                logger.info("Retrieve Messages")
-                entries = yield WaitDBus(self.gsm_sim.RetrieveMessagebook,
-                                         'all')
-                logger.info("Got %d messages" % len(entries))
-                logger.debug('get messages : %s', entries)
-                break
-            except Exception, e:
-                logger.error("can't retrieve message book : %s" % e)
-                logger.info("retrying in 10 seconds")
-                yield tichy.tasklet.Sleep(10)
-                continue
-        else:
-            logger.error("can't retrieve message book")
-            raise Exception("can't retrieve message book")
+        # TODO: Here we really should use the RetrieveMessagebook
+        #       method, but it is currently not working (see tickets
+        #       345 and 346 of freesmartphone.
+        #       So instead we get the messages one by one.
+        logger.info("calling GetMessagebookInfo")
+        info = yield retry_on_sim_busy(self.gsm_sim.GetMessagebookInfo)
+        logger.debug("got info %s", info)
 
+        first = info['first']
+        last = info['last']
         ret = []
-        for entry in entries:
-            index = int(entry[0])
-            status = str(entry[1]) # "read"|"sent"|"unread"|"unsent"
-            peer = str(entry[2])
-            text = unicode(entry[3])
-            properties = entry[4]
+        for index in range(first, last+1):
+            logger.debug("Retrieve Message %d", index)
+            try:
+                entry = yield retry_on_sim_busy(self.gsm_sim.RetrieveMessage,
+                                                index)
+            except dbus.exceptions.DBusException, ex:
+                if ex.get_dbus_name() == 'org.freesmartphone.GSM.SIM.NotFound':
+                    logger.debug("no message at index %d", index)
+                else:
+                    logger.error("can't get message %d : %s", i, ex)
+                continue
+
+            logger.debug("Got message %s", entry)
+            status = str(entry[0]) # "read"|"sent"|"unread"|"unsent"
+            peer = str(entry[1])
+            text = unicode(entry[2])
+            properties = entry[3]
             timestamp = properties.get('timestamp', None)
             # TODO: make the direction arg a boolean
             direction = 'out' if status in ['sent', 'unsent'] else 'in'
 
-            message = SIMMessage(peer=peer,text=text,timestamp=timestamp,direction=direction,status=status, sim_index=index)
+            message = SIMMessage(peer=peer, text=text, timestamp=timestamp,
+                                 direction=direction, status=status,
+                                 sim_index=index)
             self.indexes[index] = message
             ret.append(message)
+
+        logger.info("got %d messages", len(ret))
         yield ret
 
     def add_contact(self, name, number):
