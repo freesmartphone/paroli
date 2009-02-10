@@ -132,10 +132,12 @@ class FreeSmartPhoneGSM(GSMService):
         # We create the dbus interfaces to org.freesmarphone
         self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         self.ousage = self.bus.get_object('org.freesmartphone.ousaged',
-                                          '/org/freesmartphone/Usage')
+                                          '/org/freesmartphone/Usage',
+                                          follow_name_owner_changes=True)
         self.ousage = dbus.Interface(self.ousage, 'org.freesmartphone.Usage')
         self.gsm = self.bus.get_object('org.freesmartphone.ogsmd',
-                                       '/org/freesmartphone/GSM/Device')
+                                       '/org/freesmartphone/GSM/Device',
+                                       follow_name_owner_changes=True)
         self.gsm_device = dbus.Interface(self.gsm,
                                          'org.freesmartphone.GSM.Device')
         self.gsm_network = dbus.Interface(self.gsm,
