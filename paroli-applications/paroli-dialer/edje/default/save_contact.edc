@@ -1,9 +1,3 @@
-
-images {
-   image: "back.png" COMP;
-   image: "save.png" COMP;
-}
-
 group { name: "save-number";
       parts {
           part{
