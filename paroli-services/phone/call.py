@@ -115,7 +115,7 @@ class Call(tichy.Item):
     def mute(self):
         """mute the call if it is ringing"""
         LOGGER.info("mute call")
-        LOGGER.warning("mute not implemented yet")
+        tichy.Service('Audio').stop_all_sounds()
 
     def outgoing(self):
         self.status = 'outgoing'
