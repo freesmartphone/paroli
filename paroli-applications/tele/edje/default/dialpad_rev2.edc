@@ -1,13 +1,5 @@
 #include "macros_rev2.edc"
 
-images {
-   image: "call.png" COMP;
-   image: "end_call.png" COMP;
-   image: "answer.png" COMP;
-   image: "backspace.png" COMP;
-   image: "speaker.png" COMP;
-}
-
 group{
     name: "tb";
     script {
@@ -301,11 +293,15 @@ group { name: "tele";
                 color: 0 0 0 255;
                 rel1 
                 {
-                    relative: 0.0 0.0;
+                   relative:0.0 0.0;
+                   offset: 51 48;
+                   to: "base";
                 }
                 rel2 
                 {
-                    relative: 1.0 0.19;
+                   relative:0.0 0.0;
+                   offset: 430 92;
+                   to: "base";
                 }
             }
             description
@@ -345,14 +341,14 @@ group { name: "tele";
                 color: 255 255 255 255;
                 text 
                 {
-                    align: 0.05 1.0;
+                    align: 0.0 1.0;
                     size: 48;
                     text: "";
                     font: "Sans";
                 }
                 rel1 
                 {
-                    relative: 0.00 0.0;
+                    relative: 0.0 0.0;
                     to: "num_field";
                 }
                 rel2 
@@ -401,20 +397,22 @@ group { name: "tele";
                 color: 255 255 255 255;
                 text 
                 {
-                    align: 0.05 1.0;
+                    align: 0.0 1.0;
                     size: 16;
                     text: "09";
                     font: "Sans";
                 }
                 rel1 
                 {
-                    relative: 0.0 0.82;
-                    to: "num_field";
+                   relative: 0.0 0.0;
+                   offset: 51 93;
+                   to: "base";
                 }
                 rel2 
                 {
-                    relative: 1.0 1.0;
-                    to: "num_field";
+                   relative: 0.0 0.0;
+                   offset: 102 106;
+                   to: "base";
                 }
             }
         }
@@ -425,10 +423,14 @@ group { name: "tele";
             description {
                state: "default" 0.0;
                rel1 {
-                  relative: 0.0 0.20;
+                  relative: 0.0 0.0;
+                  offset: 1 160;
+                  to: "base";
                }
                rel2 {
-                  relative: 0.65 0.35;
+                  relative: 0.0 0.0;
+                  offset: 319 229;
+                  to: "base";
                }
                image {
                   normal: "call.png";
@@ -473,10 +475,14 @@ group { name: "tele";
             description {
                state: "default" 0.0;
                rel1 {
-                  relative: 0.66 0.20;
+                  relative: 0.0 0.0;
+                  offset: 320 160;
+                  to: "base";
                }
                rel2 {
-                  relative: 1.0 0.35;
+                  relative: 0.0 0.0;
+                  offset: 479 229;
+                  to: "base";
                }
                image {
                   normal: "backspace.png";
@@ -525,6 +531,20 @@ group { name: "tele";
             }
          }
 
+        _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 230, 160, 319);
+        _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 230,  319, 319);
+        _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 230,  479, 319);
+        _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 320, 160, 409);
+        _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 320,  319, 409);
+        _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 320,  479, 409);
+        _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 410,  160, 499);
+        _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 410,  319, 499);
+        _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 410,  479, 499);
+        _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 500,  160, 589);
+        _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 500, 319, 589);
+        _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 500, 479, 589);
+
+         /*
 // // //         ROW TWO
         _PART_KEYPAD("button-1", "1", "", 0.0, 0.36,  0.32, 0.51);
         _PART_KEYPAD("button-2", "2", "ABC", 0.33, 0.36,  0.65, 0.51);
@@ -541,6 +561,7 @@ group { name: "tele";
         _PART_KEYPAD("button-star", "*", "", 0.0, 0.84,  0.32, 1.0);
         _PART_KEYPAD("button-0", "0", "+", 0.33, 0.84,  0.65, 1.0);
         _PART_KEYPAD("button-hash", "#", "", 0.66, 0.84,  1.0, 1.0);
+         */
         
         part
         {
@@ -558,11 +579,15 @@ group { name: "tele";
               color: 0 0 0 100;
               rel1 
               {
-                  relative: 0.0 0.36;
+                  relative: 0.0 0.0;
+                  offset: 0 230;
+                  to: "base";
               }
               rel2 
               {
-                  relative: 1.0 1.0;
+                  relative: 0.0 0.0;
+                  offset: 480 640;
+                  to: "base";
               }
             }
             description
