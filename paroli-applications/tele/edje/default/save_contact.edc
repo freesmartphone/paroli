@@ -45,12 +45,14 @@ group { name: "save-number";
                max: 114 33;
               rel1 
               {
-                  relative: 0.05 0.05;
-                  to: "base";
+                 relative: 0.0 0.0;
+                 offset: 9 20;
+                 to: "base";
               }
               rel2 
               {
-                  relative: 0.25 0.15;
+                  relative: 0.0 0.0;
+                  offset: 123 53;
                   to: "base";
               }
                image {
@@ -69,13 +71,15 @@ group { name: "save-number";
                max: 76 33;
                 rel1 
                 {
-                    relative: 0.75 0.05;
-                    to: "base";
+                   relative: 0.0 0.0;
+                   offset: 395 20;
+                   to: "base";
                 }
                 rel2 
                 {
-                    relative: 0.95 0.15;
-                    to: "base";
+                   relative: 0.0 0.0;
+                   offset: 471 53;
+                   to: "base";
                 }
                image {
                   normal: "save.png";
@@ -89,12 +93,14 @@ group { name: "save-number";
               description { state: "default" 0.0;
                   color: 0 0 0 255;
                   rel1 {
-                          relative: 0.0 0.2;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 18 141;
+                     to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.4;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 303 156;
+                     to: "base";
                   }
              }
             }
@@ -114,7 +120,7 @@ group { name: "save-number";
                           to: "edit-box";
                   }
                   rel2 {
-                          relative: 1.0 1.0;
+                          relative: 0.4 1.0;
                           to: "edit-box";
                   }
              }
@@ -131,12 +137,14 @@ group { name: "save-number";
                           font: "Sans";
                   }
                   rel1 {
-                          relative: 0.0 0.0;
-                          to: "edit-box";
+                     relative: 0.0 0.0;
+                     offset: 45 0;
+                     to: "Edit-text";
                   }
                   rel2 {
-                          relative: 1.0 1.0;
-                          to: "edit-box";
+                     relative: 1.0 1.0;
+                     offset: 30 0;
+                     to: "Edit-text";
                   }
              }
             }
@@ -146,18 +154,20 @@ group { name: "save-number";
               description { state: "default" 0.0;
                   color: 255 255 255 255;
                   text{
-                          align: 0.15 0.4;
+                          align: 0.0 0.4;
                           size: 48;
                           text: "moo";
                           font: "Sans";
                   }
                   rel1 {
-                          relative: 0.0 0.41;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 16 243;
+                     to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.5;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 465 268;
+                     to: "base";
                   }
              }
             }
