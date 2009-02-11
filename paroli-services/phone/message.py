@@ -233,6 +233,7 @@ class MessagesService(tichy.Service):
         self.outbox.connect('modified', self._on_lists_modified)
         self.inbox.connect('modified', self._on_lists_modified)
         self.messages.connect('modified', self._on_lists_modified)
+        yield self._save_all()
 
     def _on_lists_modified(self, box):
         yield self._save_all()
