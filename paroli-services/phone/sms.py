@@ -118,8 +118,7 @@ class TestSms(tichy.Service):
     name = 'Test'
 
     def __init__(self):
-        # Add a test message
-        self.create('0123456789', 'Hello')
+        pass
 
     def create(self, number='', text='', direction='out'):
         number = TelNumber(number)
