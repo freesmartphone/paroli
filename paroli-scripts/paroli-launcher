@@ -22,23 +22,8 @@
 
 """DBus launcher paroli main script
 
-This script will load all the plugins, then start a DBus server
-listening that we can use to start any application.
-
-It is still experimental.
-
-To use it, start it (./launcher.py), then use for example dbus-send to
-start an application, e.g. : dbus-send --session   \
---dest='org.tichy.launcher' /Launcher --print-reply \
-org.tichy.Launcher.Launch string:Contacts
-
-Note for neo : We need to remember to set DISPLAY=:0 even when we call
-the dbus method !
+Main script to start paroli.
 """
-
-#import time
-
-#print time.ctime()
 
 import os
 import sys
@@ -46,20 +31,13 @@ import dbus
 import dbus.service
 from optparse import OptionParser
 import logging
-#import profile
-#print time.ctime()
 
 # This is to make sure that we use the local tichy lib if run from the
 # test directory
 sys.path.insert(0, '../paroli-core/')
 sys.path.insert(0, '../paroli-graphics-backend/')
 
-#def profiling():
 import tichy
-
-#profile.run('profiling()','mirko.txt')
-
-#print time.ctime()
 
 logger = logging.getLogger('')
 
@@ -115,7 +93,6 @@ class InitAll(tichy.Tasklet):
     def run(self):
 
         storage_service = tichy.Service('TeleCom')
-        #print "storage in p-launcher"
         yield storage_service.init()
 
         # Register on the GSM Network
