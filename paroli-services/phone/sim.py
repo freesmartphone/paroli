@@ -29,6 +29,10 @@ from contact import Contact
 from message import Message
 from tel_number import TelNumber
 
+class PINError(Exception):
+    def __init__(self, pin):
+        super(PINError, self).__init__("wrong PIN : %s" % pin)
+
 @tichy.tasklet.tasklet
 def retry_on_sim_busy(method, *args):
     """Attempt a dbus call the the framework and retry if we get a sim
@@ -120,6 +124,8 @@ class SIMMessage(Message):
 class FreeSmartPhoneSim(tichy.Service):
 
     service = 'SIM'
+
+    PINError = PINError         # Expose the PINError exception
 
     def __init__(self):
         logger.info("connecting to freesmartphone.GSM dbus interface")
@@ -245,13 +251,20 @@ class FreeSmartPhoneSim(tichy.Service):
 
     def send_pin(self, pin):
         logger.info("sending pin")
-        yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
+        try:
+            yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
+        except dbus.exceptions.DBusException, ex:
+            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
+                raise
+            raise PINError(pin)
 
 
 class TestSim(tichy.Service):
 
     service = 'SIM'
     name = 'Test'
+
+    PINError = PINError
 
     def __init__(self):
         pass
@@ -280,3 +293,9 @@ class TestSim(tichy.Service):
     def set_info(self):
         self.sim_info = {'imsi':'0123456789012345'}
         yield None
+
+    @tichy.tasklet.tasklet
+    def send_pin(self, pin):
+        logger.info("sending pin")
+        yield None
+
