@@ -105,6 +105,23 @@ class GSMService(tichy.Service):
             logs.append(call)
         self.logs[:] = logs
 
+    @tichy.tasklet.tasklet
+    def _ask_pin(self):
+        #window = tichy.Service("WindowsManager").get_app_parent()
+        window = None
+        editor = tichy.Service('TelePIN')
+        sim = tichy.Service('SIM')
+        for i in range(4):
+            pin = yield editor.edit(window, name="Enter PIN",
+                                    input_method='number')
+            try:
+                yield sim.send_pin(pin)
+                break
+            except sim.PINError:
+                if i == 4: # after 3 times we give up
+                    raise
+                LOGGER.info("pin wrong : %s", pin)
+
 
 class FreeSmartPhoneGSM(GSMService):
     """GSMService that uses freesmartphone DBUS API"""
@@ -180,6 +197,11 @@ class FreeSmartPhoneGSM(GSMService):
             raise
 
     def _turn_on(self, on_step):
+        """turn on the antenna
+
+        We need to check if the SIM PIN is required and if so start
+        the PIN input application.
+        """
         LOGGER.info("Check antenna power")
         power = yield WaitDBus(self.gsm_device.GetAntennaPower)
         LOGGER.info("antenna power is %d", power)
@@ -187,23 +209,12 @@ class FreeSmartPhoneGSM(GSMService):
             yield None
         LOGGER.info("turn on antenna power")
         on_step("Turn on antenna power")
-        for i in range(3):
-            try:
-                yield WaitDBus(self.gsm_device.SetAntennaPower, True)
-            except dbus.exceptions.DBusException, ex:
-                if ex.get_dbus_name() != \
-                        'org.freesmartphone.GSM.SIM.AuthFailed':
-                    raise
-                # We ask for the PIN
-                yield self._ask_pin()
-
-    def _ask_pin(self):
-        #window = tichy.Service("WindowsManager").get_app_parent()
-        window = None
-        editor = tichy.Service('TelePIN')
-        pin = yield editor.edit(window, name="Enter PIN",
-                                input_method='number')
-        yield tichy.Service('SIM').send_pin(pin)
+        try:
+            yield WaitDBus(self.gsm_device.SetAntennaPower, True)
+        except dbus.exceptions.DBusException, ex:
+            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
+                raise
+            yield self._ask_pin()
 
     def _on_call_status(self, call_id, status, properties):
         LOGGER.info("call status %s %s %s", call_id, status, properties)
