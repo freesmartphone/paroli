@@ -72,33 +72,16 @@ class Persistance(object):
                 Any kind of python structure that can be
                 serialized. Usually dictionary or list.
         """
-        
-        #config = 
-
-        #import random
-
-        
-
-        
-        #print dir(data)
-        #print data
         section = 0
         for m in data:
             section += 1
             self.parser.add_section(str(section))
             for k, v in m.iteritems():
-              self.parser.set(str(section), k, v)
+                v = unicode(v).encode('utf-8')
+                self.parser.set(str(section), k, v)
         
         file = self._open('w')
-        #file = open('/home/root/test.txt','w')
-        #file.write(yaml.dump(data,
-                             #default_flow_style=False,
-                             #Dumper=Dumper))
-        
-        #print config
         self.parser.write(file)
-
-
 
     def load(self):
         """Load data from the file
@@ -118,11 +101,9 @@ class Persistance(object):
         
         for s in self.parser.sections():
             sub_result = {}
-            #print s
             for k, v in self.parser.items(s):
-                #print g
                 #d = [k, v]<<<d
-                sub_result[k]=v
+                sub_result[k]=v.decode('utf-8')
             
             result.append(sub_result)
         
