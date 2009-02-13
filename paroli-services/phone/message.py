@@ -195,8 +195,11 @@ class PhoneMessage(Message):
         ret = []
         data = tichy.Persistance('messages/phone').load()
         for kargs in data:
-            message = PhoneMessage(**kargs)
-            ret.append(message)
+            try:
+                message = PhoneMessage(**kargs)
+                ret.append(message)
+            except Exception, ex:
+                logger.error("can't create message : %s", ex)
         yield ret
         
     def __get_number(self):
