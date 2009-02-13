@@ -23,7 +23,7 @@ styles
 
 collections{
     group { name: "launcher";
-          min: 480 640;
+          min: 480 580;
           max: 480 640;
           script {
              public check_slider_action(val) {

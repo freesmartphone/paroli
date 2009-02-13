@@ -65,10 +65,13 @@ class DialerApp(tichy.Application):
             #self.edje_obj.data_add('windows',self.edje_obj)
 
             if self.standalone:
-                self.edje_obj.Edje.size_set(480,550)
+                self.edje_obj.Edje.size_set(480,520)
                 self.edje_obj.Edje.pos_set(0,30)
             else:
                 self.edje_obj.Edje.size_set(480,590)
+                
+            logger.info(self.edje_obj.Edje.size_get())    
+            logger.info(self.edje_obj.Edje.pos_get())
             self.edje_obj.Edje.name_set('main_tele_window')
             self.edje_obj.show()
             self.main.connect('hide_Tele',self.edje_obj.hide)
@@ -151,7 +154,7 @@ class DialerApp(tichy.Application):
         logger.debug("load phone book called")
         new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
         new_edje.Edje.name_set('contacts_list')
-        new_edje.Edje.size_set(480,600)
+        new_edje.Edje.size_set(480,560)
         new_edje.Edje.pos_set(0,40)
         new_edje.show(3)
         swallow = self.phone_book_list.get_swallow_object()

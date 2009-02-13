@@ -95,8 +95,8 @@ group{
 }
 
 group { name: "tele";
-    min: 480 550;
-    min: 480 640;
+    min: 480 520;
+    max: 480 640;
     script{
         public zero = 0;
         public mytimer = 0;

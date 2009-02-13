@@ -142,7 +142,7 @@ class Launcher_App(tichy.Application):
                 self.active_app = name
                 self.edje_obj.signal('app_active',"*")
                 # minus top-bar, 50, magic number here for now. 
-                self.main.etk_obj.move_resize(0, 50, self.w, self.h)
+                #self.main.etk_obj.move_resize(0, 50, self.w, self.h-50)
                 yield app(self.main, standalone=self.standalone)
             except Exception, ex:
                 logger.error("Error from app %s : %s", name, ex)
