@@ -54,7 +54,7 @@ class List(list, Item):
         """Add a new item in the list"""
         assert isinstance(value, Item), type(value)
         list.append(self, value)
-        self.emit('appened', value)
+        self.emit('appended', value)
         self.emit('modified')
 
     def insert(self, index, value):
