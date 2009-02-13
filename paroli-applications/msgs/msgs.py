@@ -126,7 +126,7 @@ class MsgsApp(tichy.Application):
         ##generate text field edje
         text_obj = gui.EdjeObject(self.main, self.edje_file, 'text_grp', new_edje.Windows )
         ##set text field in edje
-        text_obj.Edje.part_text_set('message-block',str(message.text).encode('utf8'))
+        text_obj.Edje.part_text_set('message-block', unicode(message.text).encode('utf8'))
         ##show edje object
         text_obj.show()
         ##get text size - hack to make scrollable
