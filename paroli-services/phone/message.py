@@ -142,7 +142,7 @@ class Message(tichy.Item):
         """return the message attributes in a python dict"""
         service = tichy.Service('SIM')
         return {'peer': str(self.peer),
-                'text': str(self.text),
+                'text': unicode(self.text),
                 'timestamp': str(self.timestamp),
                 'direction': self.direction,
                 'status': self.status,
