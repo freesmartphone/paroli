@@ -91,10 +91,11 @@ class InitAll(tichy.Tasklet):
     """Perform all basic initialization of services"""
 
     def run(self):
+        # TODO: make this automatic. That would mean restructuring the
+        #       service module, but we need to do it anyway.
 
         storage_service = tichy.Service('TeleCom')
         yield storage_service.init()
-
         # Register on the GSM Network
         gsm_service = tichy.Service('GSM')
         yield gsm_service.init()
@@ -104,8 +105,12 @@ class InitAll(tichy.Tasklet):
         # Get all the contacts
         contacts = tichy.Service('Contacts')
         yield contacts.init()
+        # The message service
         messages_service = tichy.Service('Messages')
         yield messages_service.init()
+        # The SMS service
+        sms_service = tichy.Service('SMS')
+        yield sms_service.init()
 
         caller_service = tichy.Service('TeleCaller')
         yield caller_service.init()

@@ -27,6 +27,7 @@ logger = logging.getLogger('SIM')
 
 from contact import Contact
 from message import Message
+from sms import SMS
 from tel_number import TelNumber
 
 class PINError(Exception):
@@ -84,41 +85,6 @@ class SIMContact(Contact):
     def load(cls):
         sim = tichy.Service('SIM')
         ret = yield sim.get_contacts()
-        yield ret
-
-class SIMMessage(Message):
-
-    storage = 'SIM'
-
-    #peer = TelNumber.as_type(peer)
-    #text = tichy.Text.as_type(text)
-    #timestamp = tichy.Time.as_time(timestamp)
-    #direction = tichy.Text.as_type(text)
-    #status = tichy.Text.as_type(text)
-    #fields = [name, text, timestamp, direction, status]
-
-    def __init__(self, sim_index=None, **kargs):
-        super(SIMMessage, self).__init__(sim_index=sim_index, **kargs)
-        self.sim_index = sim_index
-        #self.icon = 'pics/sim.png'
-
-    @classmethod
-    def import_(cls, contact):
-        """create a new contact from an other contact)
-        """
-        assert not isinstance(message, PhoneMessage)
-        ret = PhoneMessage(peer=message.peer,text=message.text,timestamp=message.timestamp,direction=message.direction,status=message.status)
-        yield ret
-
-    #def delete(self):
-        #sim = tichy.Service('SIM')
-        #yield sim.remove_contact(self)
-
-    @classmethod
-    @tichy.tasklet.tasklet
-    def load(cls):
-        sim = tichy.Service('SIM')
-        ret = yield sim.get_messages()
         yield ret
 
 class FreeSmartPhoneSim(tichy.Service):
@@ -210,9 +176,8 @@ class FreeSmartPhoneSim(tichy.Service):
             # TODO: make the direction arg a boolean
             direction = 'out' if status in ['sent', 'unsent'] else 'in'
 
-            message = SIMMessage(peer=peer, text=text, timestamp=timestamp,
-                                 direction=direction, status=status,
-                                 sim_index=index)
+            message = SMS(peer, text, direction, status=status,
+                          timestamp=timestamp, sim_index=index)
             self.indexes[index] = message
             ret.append(message)
 
@@ -246,7 +211,7 @@ class FreeSmartPhoneSim(tichy.Service):
 
     def remove_message(self, message):
         logger.info("remove message %s from sim", message.sim_index)
-        self.gsm_sim.DeleteMessage(int(message.sim_index))
+        yield WaitDBus(self.gsm_sim.DeleteMessage, int(message.sim_index))
 
 
     def send_pin(self, pin):

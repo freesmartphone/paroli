@@ -31,27 +31,47 @@ logger = logging.getLogger('SMS')
 from message import Message
 
 
-#class SMS(Message):
+class SMS(Message):
 
-    #def __init__(self, number, text, direction='out'):
-        #super(SMS, self).__init__(number, text, direction)
+    storage = 'SIM'
 
-    #def __get_number(self):
-        #return self.peer
-    #number = property(__get_number)
+    def __init__(self, peer, text, direction, status=None, timestamp=None,
+                 sim_index=None, **kargs):
+        super(SMS, self).__init__(peer, text, direction,
+                                         status=status, timestamp=timestamp,
+                                         sim_index=sim_index, **kargs)
+        self.sim_index = sim_index
 
-    #@tichy.tasklet.tasklet
-    #def send(self):
-        #"""Tasklet that will send the message"""
-        #sms_service = tichy.Service('SMS')
-        #yield sms_service.send(self)
+    @classmethod
+    def import_(cls, contact):
+        """create a new contact from an other contact)
+        """
+        assert not isinstance(message, PhoneMessage)
+        ret = PhoneMessage(peer=message.peer,text=message.text,timestamp=message.timestamp,direction=message.direction,status=message.status)
+        yield ret
+
+    def delete(self):
+        sim = tichy.Service('SIM')
+        yield sim.remove_message(self)
+
+    def save(self):
+        logger.warning("save SIM message not implemented yet")
+        yield None
+
+    @classmethod
+    @tichy.tasklet.tasklet
+    def load_all(cls):
+        sim = tichy.Service('SIM')
+        ret = yield sim.get_messages()
+        yield ret
 
 
 class FreeSmartPhoneSMS(tichy.Service):
 
     service = 'SMS'
 
-    def __init__(self):
+    @tichy.tasklet.tasklet
+    def init(self):
         logger.info("connecting to freesmartphone.GSM dbus interface")
         try:
             # We create the dbus interfaces to org.freesmarphone
@@ -67,6 +87,7 @@ class FreeSmartPhoneSMS(tichy.Service):
             logger.warning("can't use freesmartphone SMS : %s", e)
             self.sim_iface = None
             raise tichy.ServiceUnusable
+        yield None
 
     def update(self):
         logger.info("update sms inbox")
@@ -83,10 +104,9 @@ class FreeSmartPhoneSMS(tichy.Service):
 
     def create(self, number='', text='', direction='out'):
         """create a new sms instance"""
-        number = TelNumber(number)
-        text = tichy.Text(text)
-        timestamp = tichy.Time()
-        return Message(number, text, direction, None, str(timestamp) )
+        number = TelNumber.as_type(number)
+        text = tichy.Text.as_type(text)
+        return SMS(number, text, direction)
 
     @tichy.tasklet.tasklet
     def send(self, sms):
@@ -100,7 +120,7 @@ class FreeSmartPhoneSMS(tichy.Service):
         # We store a copy cause we don't want to modify the stored sms.
         logger.info("Store message into messages")
         #sms = SMS(sms.peer, sms.text, 'out')
-        tichy.Service('Messages').add_to_messages(sms)
+        yield tichy.Service('Messages').add(sms)
 
     def on_incoming_message(self, index):
         logger.info("Incoming message %d", index)
@@ -108,8 +128,10 @@ class FreeSmartPhoneSMS(tichy.Service):
         status = str(message[0])
         peer = str(message[1])
         text = unicode(message[2])
-        sms = Message(peer, text, 'in')
-        tichy.Service('Messages').add_to_messages(sms)
+        # XXX: It would be better to use a PhoneMessage here, and
+        #      never store messages on the SIM.
+        sms = SMS(peer, text, 'in')
+        tichy.Service('Messages').add(sms).start()
 
 
 class TestSms(tichy.Service):
@@ -123,7 +145,7 @@ class TestSms(tichy.Service):
     def create(self, number='', text='', direction='out'):
         number = TelNumber(number)
         text = tichy.Text(text)
-        return Message(number, text, direction)
+        return SMS(number, text, direction)
 
     def update(self):
         yield None
@@ -133,11 +155,11 @@ class TestSms(tichy.Service):
         logger.info("Sending message to %s", sms.peer)
         yield tichy.tasklet.Sleep(2)
         logger.info("Store message into messages")
-        tichy.Service('Messages').add_to_messages(sms)
+        yield tichy.Service('Messages').add(sms)
 
         yield None
 
     def fake_incoming_message(self, msg):
         logger.info("Incoming message %d", 0)
         sms = self.create('0123456789', msg, 'in')
-        tichy.Service('Messages').add_to_inbox(sms)
+        tichy.Service('Messages').add(sms).start()

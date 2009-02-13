@@ -74,7 +74,7 @@ class Call(tichy.Item):
         """
         self.number = TelNumber.as_type(number)
         self.direction = direction
-        self.timestamp = tichy.Time.as_time(timestamp)
+        self.timestamp = tichy.Time.as_type(timestamp)
         self.status = status
 
     def get_text(self):

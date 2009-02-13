@@ -214,10 +214,10 @@ class MsgsApp(tichy.Application):
         logger.debug("send message called")
 
         try:
-            message_service = tichy.Service('SMS')
+            message_service = tichy.Service('Messages')
             message = message_service.create(number=sms.number, text=sms.text, direction='out')
             logger.info("sending message: %s to : %s", sms.text, sms.number)
-            yield message_service.send(message)
+            yield message.send()
 
         except Exception, ex:
             # XXX: we should differentiate between different errors
@@ -241,7 +241,7 @@ class MsgsApp(tichy.Application):
         
         try:
             messages_service = Service('Messages')
-            messages_service.delete_message(message)
+            messages_service.remove(message).start()
         except Exception, ex:
             logger.error("Got error %s", str(ex))
             #yield tichy.Service('Dialog').error(self.main, ex)
@@ -371,7 +371,7 @@ class empty_sms():
             for i in numbers:
                 message = message_service.create(number=i, text=text, direction='out')
                 logger.info("would send message: %s to : %s", text, i)
-                yield message_service.send(message)
+                yield message.send()
                 self.contact_objects_list.generate_single_item_obj(i,text,message)
 
             self.contact_objects_list.box.box.redraw_queue()
@@ -389,7 +389,7 @@ class empty_sms():
         details_window.edj.delete()
         messages_service = Service('Messages')
         #if message.direction == 'in':
-        messages_service.delete_message(message)
+        messages_service.remove(message).start()
         #else:
             #messages_service.outbox.remove(message)
     

@@ -39,7 +39,7 @@ class Time(tichy.Item):
         self.__value = value or time.gmtime()
 
     @classmethod
-    def as_time(self, value):
+    def as_type(self, value):
         if isinstance(value, Time):
             return value
         return Time(value)

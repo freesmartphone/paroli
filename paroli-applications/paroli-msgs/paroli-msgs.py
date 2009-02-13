@@ -258,7 +258,7 @@ class ContactsApp(tichy.Application):
         details_window.edj.delete()
         messages_service = Service('Messages')
         #if message.direction == 'in':
-        messages_service.delete_message(message)
+        messages_service.remove(message)
         #else:
             #messages_service.outbox.remove(message)
     
