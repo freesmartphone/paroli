@@ -107,9 +107,9 @@ class MsgsApp(tichy.Application):
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing message-details
     def open_msg_detail_window(self, emission, signal, source, item):
-        canvas = item[0]
+        canvas = item[2]
         edje_obj = item[1]
-        message = item[2]
+        message = item[0]
         
         new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'message_details', 'message', self.edje_obj.Windows )
         
@@ -235,9 +235,9 @@ class MsgsApp(tichy.Application):
     #deleting
     def delete_sms(self, emission, signal, source, item):
         logger.info("delete message called")
-        canvas = item[0]
+        canvas = item[2]
         edje_obj = item[1]
-        message = item[2]
+        message = item[0]
         
         try:
             messages_service = Service('Messages')
@@ -246,7 +246,7 @@ class MsgsApp(tichy.Application):
             logger.error("Got error %s", str(ex))
             #yield tichy.Service('Dialog').error(self.main, ex)
         else:    
-            canvas.remove_all()
+            #canvas.remove_all()
             emission.data['EdjeObject'].delete()
   
 class empty_sms():

@@ -375,15 +375,18 @@ class EvasList(tichy.Object):
           self.EdjeGroup = EdjeGroup
           self.Evas = Parent.etk_obj.evas
           self.label_list = label_list    
-  
+          
+          self.model.connect('appended',self._append_new)
+          self.model.connect('removed',self._remove_item)
+    
       def get_swallow_object(self):
           self.box = etk.VBox()
           self.items = []
   
           for item in self.model:
               single = self.generate_single_item(item)
-              self.box.append(single[0], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-              single[0].on_destroyed(self.model.remove, item)
+              self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+              #single[2].on_destroyed(self.model.remove, item)
               self.items.append(single)
               
           scrollbox = etk.c_etk.ScrolledView()
@@ -412,12 +415,36 @@ class EvasList(tichy.Object):
                   txt = unicode(getattr(item, attribute)).encode('utf-8')
                   edje_obj.Edje.part_text_set(part,txt)
       
-          return [canvas_obj,edje_obj,item]
+          return [item,edje_obj,canvas_obj]
       
       def add_callback(self, signal, source, func):
-          #print str(func)
           for i in self.items:
               i[1].Edje.signal_callback_add(signal, source , func, i)
+
+      def _append_new(self,*args,**kargs):
+          logger.info('append called')
+          new_item = self.generate_single_item(args[1])
+          self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+          #new_item[0].on_destroyed(self.model.remove, new_item)
+          self.items.insert(0,new_item)
+          self._redraw_box()
+          
+      def _remove_item(self,*args,**kargs):
+          logger.info('remove called')
+          for item in self.items:
+              if item[0] == args[1]:
+                  index = item
+                  #item[1].delete()
+                  item[2].remove_all()
+          
+          #index = self.items.index(index)
+          self.items.remove(index)
+          self._redraw_box()
+
+      def _redraw_box(self,*args,**kargs):
+          logger.info('redrawing called')
+          self.box.redraw_queue()
+          self.box.show_all()
 
 class entry:
     """deprecated use Edit instead"""
