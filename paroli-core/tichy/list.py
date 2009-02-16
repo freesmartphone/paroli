@@ -23,7 +23,7 @@ from tichy.item import Item
 from tichy.service import Service
 
 
-# XXX: We need to remove the removed, appened and cleared signal
+# XXX: We need to remove the removed, appended and cleared signal
 
 
 class List(list, Item):
@@ -36,7 +36,7 @@ class List(list, Item):
         'modified' : emitted any time the list has been modified
         'cleared' : emitted when the list has been cleared
         'removed' : emitted when an item has been removed
-        'appened' : emitted when an item has been appened
+        'appended' : emitted when an item has been appened
     """
 
     def __init__(self, values=[]):
