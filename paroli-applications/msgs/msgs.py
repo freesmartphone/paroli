@@ -58,7 +58,7 @@ class MsgsApp(tichy.Application):
         
         ##sort messages by date
         def comp(m1, m2):
-            return cmp(m2.timestamp, m1.timestamp)
+            return cmp(m1.timestamp, m2.timestamp)
             
             #return cmp(len(m2.text), len(m1.text))
         
@@ -67,7 +67,9 @@ class MsgsApp(tichy.Application):
 
         self.messages_swallow = self.messages_list.get_swallow_object()
 
-        self.messages_list.add_callback("contact_details", "contacts", self.open_msg_detail_window)
+        self.messages_list.add_callback("details", "*", self.open_msg_detail_window)
+
+        self.messages_list.add_callback("save", "*", self.open_save_contact_window)
 
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
         
@@ -207,6 +209,28 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.show()
         tview.focus()
         
+    ## open window to save unknown contact
+    def open_save_contact_window(self, emission, signal, source, item):
+        logger.info("add contact in msgs")
+        number = str(item[0].peer)
+        logger.info("number is %s", number)
+        new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'save-number',"name-box", self.edje_obj.Windows, True)
+        new_edje.Edje.size_set(480,600)
+        new_edje.Edje.pos_set(0,40)
+        new_edje.show(3)
+        new_edje.Edje.part_text_set('number',number)
+        name_field = gui.Edit(None)
+        name_field.etk_obj.on_text_changed(self.change_text, new_edje)
+        name_field.set_text('Name')
+        box = gui.Box(None,1)
+        box.add(name_field)
+        new_edje.embed(box.etk_obj,box,"name-box")
+        box.etk_obj.show_all()
+        name_field.etk_obj.focus()
+        
+        new_edje.add_callback('close_window','*', new_edje.delete)
+        new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':name_field,'number':number,'item':item[0]})
+        
     ##MISC FUNCTIONS
     #sending
     def _on_send_sms(self, emission, signal, source, sms, window):
@@ -259,6 +283,28 @@ class MsgsApp(tichy.Application):
         else:    
             #canvas.remove_all()
             emission.data['EdjeObject'].delete()
+  
+    ## save contact
+    def save_contact(self, *args, **kargs ):
+        name = kargs['name_field'].etk_obj.text
+        number = kargs['number']
+        logger.info('saving contact: name: ' + name + " number: " + number)
+        args[0].signal_emit('save-notice','*')
+        args[0].render_op_set(1)
+        contacts_service = tichy.Service('Contacts')
+        try:
+            contact = contacts_service.create(str(name),tel=str(number))
+            contacts_service.add(contact)
+            ## clear number field on success
+            self.edje_obj.Edje.part_text_set('num_field-text','')
+        except Exception,e:
+            logger.error("Got error in save_number : %s", e)
+        else:
+            kargs['item'].emit('modified')
+            args[0].signal_emit('mouse,clicked,1','back-button')
+        
+    def change_text(self, entry, edje):
+        edje.Edje.part_text_set('name-text-field',entry.text)
   
 class empty_sms():
     def __init__(self):

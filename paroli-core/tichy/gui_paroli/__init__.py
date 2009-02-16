@@ -420,6 +420,25 @@ class EvasList(tichy.Object):
                   txt = unicode(getattr(item, attribute)).encode('utf-8')
                   edje_obj.Edje.part_text_set(part,txt)
       
+          if edje_obj.Edje.data_get('attribute1') != None:
+              attribute = edje_obj.Edje.data_get('attribute1')
+              if edje_obj.Edje.data_get('attribute2') != None:
+                  item_cp = getattr(item,attribute)
+                  attribute = edje_obj.Edje.data_get('attribute2')
+              else:  
+                  item_cp = item
+              if edje_obj.Edje.data_get('value') == 'None':
+                  value = None
+              else:
+                  value = edje_obj.Edje.data_get('value')
+              signal = edje_obj.Edje.data_get('signal')
+              if attribute[-2] == "(":
+                  test = getattr(item_cp,attribute[:-2])()
+              else:
+                  test = getattr(item_cp,attribute)
+              if test == value:
+                  edje_obj.Edje.signal_emit(signal,'*')
+              
           return [item,edje_obj,canvas_obj]
       
       def add_callback(self, signal, source, func):

@@ -1,7 +1,4 @@
-
-group { name: "edit-name";
-      min: 480 575;
-      max: 480 575;
+group { name: "save-number";
       parts {
           part{
             name: "base";
@@ -17,37 +14,15 @@ group { name: "edit-name";
             }
               }
           part{
-            name:"save-button";
-            type:RECT;
-            description { state: "default" 0.0;
-                  visible:1;
-                  color: 0 0 0 255;
-                  rel1 {
-                          relative: 0.8 0.05;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 1.0 0.1;
-                          to: "base";
-                  }
-            }
-            description { state: "new_contact" 0.0;
-                  visible:0;
-            }
-            description { state: "wait" 0.0;
-                  inherit:"default" 0.0;
-            }
-           }
-           part{
-            name:"save-button-text";
+            name:"number";
             type:TEXT;
-            mouse_events:0;
             description { state: "default" 0.0;
                   color: 255 255 255 255;
+                  visible:0;
                   text {
                           align: 0.0 0.0;
                           size: 24;
-                          text: "Save";
+                          text: "00000";
                           font: "Sans";
                   }
                   rel1 {
@@ -59,90 +34,73 @@ group { name: "edit-name";
                           to: "base";
                   }
             }
-            description { state: "new_contact" 0.0;
-                  visible:0;
+          }
+         part {
+            name: "back-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               min: 114 33;
+               max: 114 33;
+              rel1 
+              {
+                 relative: 0.0 0.0;
+                 offset: 9 20;
+                 to: "base";
+              }
+              rel2 
+              {
+                  relative: 0.0 0.0;
+                  offset: 123 53;
+                  to: "base";
+              }
+               image {
+                  normal: "Back_button.png";
+               }
+               visible: 1;
             }
-           }
-           part{
-            name:"next-button";
-            type:RECT;
-            description { state: "default" 0.0;
-                  visible:0;
+         }
+         part {
+            name: "save-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               min: 76 33;
+               max: 76 33;
+                rel1 
+                {
+                   relative: 0.0 0.0;
+                   offset: 395 20;
+                   to: "base";
+                }
+                rel2 
+                {
+                   relative: 0.0 0.0;
+                   offset: 471 53;
+                   to: "base";
+                }
+               image {
+                  normal: "Save_button.png";
+               }
+               visible: 1;
             }
-            description { state: "new_contact" 0.0;
-                  visible:1;
-                  color: 0 0 0 255;
-                  rel1 {
-                          relative: 0.8 0.05;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 1.0 0.1;
-                          to: "base";
-                  }
-            }
-            description { state: "wait" 0.0;
-                  inherit:"default" 0.0;
-            }
-           }
-           part{
-            name:"next-button-text";
-            type:TEXT;
-            mouse_events:0;
-            description { state: "default" 0.0;
-                  visible:0;
-            }
-            description { state: "new_contact" 0.0;
-                  color: 255 255 255 255;
-                  text {
-                          align: 0.0 0.0;
-                          size: 24;
-                          text: "next";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.8 0.05;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 1.0 0.1;
-                          to: "base";
-                  }
-            }
-           }
-           part{
-            name:"back-button";
-            type:TEXT;
-            description { state: "default" 0.0;
-                  color: 255 255 255 255;
-                  text {
-                          align: 0.0 0.0;
-                          size: 24;
-                          text: "back";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.0 0.05;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 0.4 0.1;
-                          to: "base";
-                  }
-            }
-           }
+         }
            part{
              name:"edit-box";
              type:RECT;
               description { state: "default" 0.0;
                   color: 0 0 0 255;
                   rel1 {
-                          relative: 0.0 0.2;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 18 141;
+                     to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.4;
-                          to: "base";
+                     relative: 0.0 0.0;
+                     offset: 303 156;
+                     to: "base";
                   }
              }
             }
@@ -162,7 +120,7 @@ group { name: "edit-name";
                           to: "edit-box";
                   }
                   rel2 {
-                          relative: 1.0 1.0;
+                          relative: 0.4 1.0;
                           to: "edit-box";
                   }
              }
@@ -179,12 +137,37 @@ group { name: "edit-name";
                           font: "Sans";
                   }
                   rel1 {
-                          relative: 0.0 0.0;
-                          to: "edit-box";
+                     relative: 0.0 0.0;
+                     offset: 45 0;
+                     to: "Edit-text";
                   }
                   rel2 {
-                          relative: 1.0 1.0;
-                          to: "edit-box";
+                     relative: 1.0 1.0;
+                     offset: 30 0;
+                     to: "Edit-text";
+                  }
+             }
+            }
+            part{
+             name:"name-text-field";
+             type:TEXT;
+              description { state: "default" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                          align: 0.0 0.4;
+                          size: 48;
+                          text: "moo";
+                          font: "Sans";
+                  }
+                  rel1 {
+                     relative: 0.0 0.0;
+                     offset: 16 243;
+                     to: "base";
+                  }
+                  rel2 {
+                     relative: 0.0 0.0;
+                     offset: 465 268;
+                     to: "base";
                   }
              }
             }
@@ -193,12 +176,13 @@ group { name: "edit-name";
              type:SWALLOW;
               description { state: "default" 0.0;
                   color: 0 0 255 255;
+                  visible:0;
                   rel1 {
-                          relative: 0.0 0.51;
+                          relative: 0.0 0.41;
                           to: "base";
                   }
                   rel2 {
-                          relative: 1.0 0.7;
+                          relative: 1.0 0.5;
                           to: "base";
                   }
              }
@@ -250,63 +234,19 @@ group { name: "edit-name";
              }
             }
            }
-      programs {/*  
-      program { 
-                name: "top-bar-tapped";
-                signal: "mouse,clicked,1";
-                source: "top-bar";
-                action: SIGNAL_EMIT "self.close_window" "launcher";
-          }*/
+      programs {  
       program { 
                 name: "save_signal";
-                signal: "mouse,up,1";
+                signal: "mouse,clicked,1";
                 source: "save-button";
                 action: SIGNAL_EMIT "save_contact" "send-button";
           }
       program { 
-                name: "next_signal";
-                signal: "mouse,up,1";
-                source: "next-button";
-                action: SIGNAL_EMIT "next_step" "next-button";
-          }
-      program { 
                 name: "close_window";
-                signal: "mouse,up,1";
+                signal: "mouse,clicked,1";
                 source: "back-button";
-                action: SIGNAL_EMIT "close_w_textfield" "name-box";
+                action: SIGNAL_EMIT "close_window" "name-box";
           }
-          program 
-        { 
-          name: "contact_saved_signal";
-          signal: "contact_saved";
-          source: "*";
-          action: SIGNAL_EMIT "save_successful" "back-button";
-          after: "close_window_before";
-        }
-        program 
-        { 
-          name: "close_window_before";
-//           signal: "contact_saved";
-//           source: "*";
-          action: SIGNAL_EMIT "close_w_textfield" "name-box";
-//           after: "close window before";
-        }
-        program 
-        { 
-          name: "contact_name_edit_saved_signal";
-          signal: "contact_name_edit_saved";
-          source: "*";
-          action: SIGNAL_EMIT "close_w_textfield" "name-box";
-          after: "close_name_window_before";
-        }
-        program 
-        { 
-          name: "close_name_window_before";
-//           signal: "contact_saved";
-//           source: "*";
-          action: SIGNAL_EMIT "save_successful" "back-button";
-//           after: "close window before";
-        }
 //         program { 
 //           name: "edit_button_click"; 
 //           signal: "mouse,clicked,1"; 
@@ -315,35 +255,12 @@ group { name: "edit-name";
 //       } 
         program 
         { 
-          name: "new_contact_signal";
-          signal: "new_contact_mode";
-          source: "*";
-          action: STATE_SET "new_contact" 0.0; 
-          target: "save-button";
-          target: "save-button-text";  
-          target: "next-button";
-          target: "next-button-text";
-//           after: "close_window_w_extra";
-        }
-        program 
-        { 
           name: "show_save_notice";
           signal: "save-notice";
           source: "*";
           action: STATE_SET "save" 0.0; 
           target: "save-notice";
           target: "save-notice-text"; 
-          after: "close_window_w_extra";
         }
-        program { 
-                name: "close_window_w_extra";
-                action: SIGNAL_EMIT "wait_seconds" "2,close_save_window";
-          }
-        program{
-                name: "really_close_window_w_extra";
-                signal: "close_save_window";
-                source: "*";
-                action: SIGNAL_EMIT "close_extra_child" "name-box";
-          }
       }
 }

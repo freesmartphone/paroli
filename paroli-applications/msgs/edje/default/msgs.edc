@@ -6,6 +6,12 @@ styles
       base: "font=Sans font_size=24 align=left valign=top color=#0ff  wrap=word";
     }
 }
+
+images {
+   image: "Back_button.png" COMP;
+   image: "Save_button.png" COMP;
+}
+
 collections
 {
     #include "dialpad.edc"
