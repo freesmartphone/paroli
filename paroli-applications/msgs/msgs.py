@@ -53,16 +53,18 @@ class MsgsApp(tichy.Application):
 
         ##get message service and list of all messages
         self.msgs_service = tichy.Service('Messages')
+        
         self.messages = self.msgs_service.messages
-
+        
         ##sort messages by date
         def comp(m1, m2):
-            return cmp(m2.timestamp, m1.timestamp)
+            #return cmp(m2.timestamp, m1.timestamp)
+            return cmp(len(m2.text), len(m1.text))
 
-        self.messages.sort(comp)
-
+        #self.messages.sort(comp)
+        
         self.list_label = [('label','peer'),('label-number','text')]
-        self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label)
+        self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label, comp)
 
         self.messages_swallow = self.messages_list.get_swallow_object()
 

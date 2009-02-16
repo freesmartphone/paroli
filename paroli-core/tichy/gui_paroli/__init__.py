@@ -297,7 +297,6 @@ class EdjeObject(tichy.Object):
         self.Edje.delete()
 
     def delete(self, *args, **kargs):
-        print "delete called on: ", self
         try:
             if self.Windows != None:
                 aux_list = self.Windows
@@ -341,7 +340,7 @@ class EdjeWSwallow(EdjeObject):
           self.Edje.delete()
 
       def delete(self, *args, **kargs):
-          print "delete called on: ", self
+          #print "delete called on: ", self
           
           try:
               if self.Windows != None:
@@ -368,16 +367,24 @@ class EdjeWSwallow(EdjeObject):
           self.Edje.delete()
 
 class EvasList(tichy.Object):
-      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list ):
+      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct ):
           self.model = model
           self.parent = Parent
           self.EdjeFile = EdjeFile
           self.EdjeGroup = EdjeGroup
           self.Evas = Parent.etk_obj.evas
           self.label_list = label_list    
-          
+          self._comp_fct = comp_fct
           self.model.connect('appended',self._append_new)
           self.model.connect('removed',self._remove_item)
+          self.model.connect('modified',self._modified)
+          self.callbacks = []
+          self.sort()
+    
+      def _modified(self, *args, **kargs):
+          logger.info('list modified')
+          logger.info(args)
+          logger.info(kargs)
     
       def get_swallow_object(self):
           self.box = etk.VBox()
@@ -386,12 +393,11 @@ class EvasList(tichy.Object):
           for item in self.model:
               single = self.generate_single_item(item)
               self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-              #single[2].on_destroyed(self.model.remove, item)
               self.items.append(single)
+              item.connect('modified',self._redraw_view)
               
           scrollbox = etk.c_etk.ScrolledView()
           scrollbox.add_with_viewport(self.box)
-          #print dir(scrollbox)
           ## hide scrollbars
           scrollbox.policy_set(2, 0)
           ## make it dragable
@@ -399,7 +405,6 @@ class EvasList(tichy.Object):
           ## make it non-bouncing
           scrollbox.drag_bouncy_set(True)
           #scrollbox.add_with_viewport(self.box)
-          #logger.info(scrollbox.dragable_get())
           scrollbox.drag_damping_set(0)
           #logger.info(scrollbox.drag_damping_get())
           return scrollbox
@@ -418,33 +423,55 @@ class EvasList(tichy.Object):
           return [item,edje_obj,canvas_obj]
       
       def add_callback(self, signal, source, func):
+          self.callbacks.append([signal, source, func])
           for i in self.items:
               i[1].Edje.signal_callback_add(signal, source , func, i)
+
+      def _renew_callbacks(self, *args, **kargs):
+          for cb in self.callbacks:
+                for i in self.items:
+                    i[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], i)
 
       def _append_new(self,*args,**kargs):
           logger.info('append called')
           new_item = self.generate_single_item(args[1])
           self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-          #new_item[0].on_destroyed(self.model.remove, new_item)
           self.items.insert(0,new_item)
-          self._redraw_box()
+          self._redraw_view()
           
       def _remove_item(self,*args,**kargs):
           logger.info('remove called')
           for item in self.items:
               if item[0] == args[1]:
                   index = item
-                  #item[1].delete()
                   item[2].remove_all()
           
-          #index = self.items.index(index)
           self.items.remove(index)
           self._redraw_box()
+
+      def _redraw_view(self,*args,**kargs):
+          logger.info("list redrawing")
+          
+          self.sort()
+          self.box.remove_all()
+          del self.items
+          self.items = []
+          for item in self.model:
+              single = self.generate_single_item(item)
+              self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+              self.items.append(single)
+
+          self._redraw_box()
+          self._renew_callbacks()
 
       def _redraw_box(self,*args,**kargs):
           logger.info('redrawing called')
           self.box.redraw_queue()
           self.box.show_all()
+
+      def sort(self,*args,**kargs):
+          logger.info("list sorting")
+          self.model.sort(self._comp_fct)
 
 class entry:
     """deprecated use Edit instead"""

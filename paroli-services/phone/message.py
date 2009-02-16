@@ -26,6 +26,8 @@ logger = logging.getLogger('Messages')
 import tichy
 from tel_number import TelNumber
 
+
+
 class Message(tichy.Item):
     """Base class for all messages
     """
