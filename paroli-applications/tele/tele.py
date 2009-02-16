@@ -135,9 +135,8 @@ class DialerApp(tichy.Application):
         logger.info('saving contact: name: ' + name + " number: " + number)
         args[0].signal_emit('save-notice','*')
         args[0].render_op_set(1)
-        contacts_service = tichy.Service('Contacts')
         try:
-            contact = contacts_service.create(str(name),tel=str(number))
+            contact = self.contact_service.create(str(name),tel=str(number))
             self.contact_service.add(contact)
             ## clear number field on success
             self.edje_obj.Edje.part_text_set('num_field-text','')
