@@ -149,6 +149,8 @@ class MsgsApp(tichy.Application):
         
         ##add callbacks for reply button
         new_edje.Edje.signal_callback_add("reply", "*", self.open_new_msg_text_entry, sms)
+        ##add callbacks for forward function
+        new_edje.Edje.signal_callback_add("forward", "*", self.open_enter_number, sms)
         ##add callback for delete button
         new_edje.Edje.signal_callback_add("delete_message", "*", self.delete_sms, item)
         ##set layer of edje object
@@ -174,7 +176,7 @@ class MsgsApp(tichy.Application):
         ##add window actions
         ##close window
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
-        ##add contact from phonebook
+        ##add contact from phonebook UNFINISHED
         #new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
         new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
@@ -187,11 +189,11 @@ class MsgsApp(tichy.Application):
         
         if window:
             new_edje.Windows.append(window)
-        #new_edje.Edje.part_text_set("reply-button-text",'send')
         ##embed scroll object
         tview = gui.etk.TextView()
         tview.theme_file_set(self.edje_file)
         tview.theme_group_set("text_view")
+        tview.textblock_get().text_set(sms.text,1)
         new_edje.embed(tview, None, 'message')
         ##add callback for back button and send
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
