@@ -278,13 +278,13 @@ group
     }
     programs 
     {
-//         program
-//         {
-//             name: "close-clickable-pressed";
-//             signal: "mouse,clicked,1";
-//             source: "close-clickable";
-//             action: SIGNAL_EMIT "close_details" "people";
-//         }
+        program
+        {
+            name: "close-clickable-pressed";
+            signal: "mouse,clicked,1";
+            source: "close-clickable";
+            action: SIGNAL_EMIT "close_details" "people";
+        }
 //         program
 //         {
 //             name: "call-contact";

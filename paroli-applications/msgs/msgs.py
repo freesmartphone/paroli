@@ -58,10 +58,9 @@ class MsgsApp(tichy.Application):
         
         ##sort messages by date
         def comp(m1, m2):
-            #return cmp(m2.timestamp, m1.timestamp)
-            return cmp(len(m2.text), len(m1.text))
-
-        #self.messages.sort(comp)
+            return cmp(m2.timestamp, m1.timestamp)
+            
+            #return cmp(len(m2.text), len(m1.text))
         
         self.list_label = [('label','peer'),('label-number','text')]
         self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label, comp)
@@ -73,7 +72,6 @@ class MsgsApp(tichy.Application):
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
         
         self.edje_obj.embed(self.messages_swallow,self.messages_list.box,"message-items")
-        #sms_service = tichy.Service('SMS')
         sms = empty_sms()
         self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         
@@ -143,6 +141,14 @@ class MsgsApp(tichy.Application):
         text_obj_scroller.box.show_all()
         ##add callback for back button
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
+        
+        ## initialize empty sms for reply or forward
+        sms = empty_sms()
+        sms.number = message.peer.value
+        sms.text = unicode(message.text).encode('utf8')
+        
+        ##add callbacks for reply button
+        new_edje.Edje.signal_callback_add("reply", "*", self.open_new_msg_text_entry, sms)
         ##add callback for delete button
         new_edje.Edje.signal_callback_add("delete_message", "*", self.delete_sms, item)
         ##set layer of edje object
@@ -175,12 +181,13 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
     
     ## open subwindow to create new message (text entry)
-    def open_new_msg_text_entry(self, emission, signal, source, sms, window):
+    def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
         logger.info('got empty_sms with number ' + str(sms.number))
-        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'message_details', 'message', self.edje_obj.Windows, True)
-            
-        new_edje.Windows.append(window)
-        new_edje.Edje.part_text_set("reply-button-text",'send')
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'create_message', 'message', self.edje_obj.Windows, True)
+        
+        if window:
+            new_edje.Windows.append(window)
+        #new_edje.Edje.part_text_set("reply-button-text",'send')
         ##embed scroll object
         tview = gui.etk.TextView()
         tview.theme_file_set(self.edje_file)
@@ -188,8 +195,8 @@ class MsgsApp(tichy.Application):
         new_edje.embed(tview, None, 'message')
         ##add callback for back button and send
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
-        new_edje.Edje.signal_callback_add("reply", "*", sms.set_text_from_obj, tview.textblock_get())
-        new_edje.Edje.signal_callback_add("reply", "*", self._on_send_sms, sms, new_edje )
+        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_obj, tview.textblock_get())
+        new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
@@ -329,7 +336,7 @@ class empty_sms():
     
     ##show message details
     def show_details(self, emission, source, param, message, canvas_obj):
-        print "show details called"
+        #print "show details called"
         time = message.timestamp
         text = str(message.text).encode('utf8')
         print text

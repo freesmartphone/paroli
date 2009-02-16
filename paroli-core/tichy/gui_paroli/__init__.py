@@ -383,8 +383,8 @@ class EvasList(tichy.Object):
     
       def _modified(self, *args, **kargs):
           logger.info('list modified')
-          logger.info(args)
-          logger.info(kargs)
+          #logger.info(args)
+          #logger.info(kargs)
     
       def get_swallow_object(self):
           self.box = etk.VBox()
@@ -468,6 +468,7 @@ class EvasList(tichy.Object):
           logger.info('redrawing called')
           self.box.redraw_queue()
           self.box.show_all()
+          self.sort()
 
       def sort(self,*args,**kargs):
           logger.info("list sorting")
