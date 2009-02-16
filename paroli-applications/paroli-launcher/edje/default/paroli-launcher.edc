@@ -55,8 +55,10 @@ collections{
                       get_state(PART:"clock-box-background", state_name, 30, dummy);
                       if (!strcmp(state_name, "default")) {
                          set_state(PART:"clock-box-background", "to-red", 0.0);
+                         run_program(PROGRAM:"on_home-clock-colon_blink");
                       } else {
                          set_state(PART:"clock-box-background", "default", 0.0);
+                         run_program(PROGRAM:"on_home-clock-colon_blink_stop");
                       }
                    }
                 }
@@ -423,6 +425,11 @@ collections{
                          to:"invisible-slider";
                       } 
                    }
+                   description {
+                      state: "invisible" 0.0;
+                      inherit: "default" 0.0;
+                      visible: 0; 
+                   }
                    description { 
                       state: "fade-out" 0.0;
                       inherit: "default" 0.0;
@@ -612,6 +619,50 @@ collections{
                   action: STATE_SET "unblocked" 0.0;
                   target: "blocker";
               }
+
+              // for colon to blink
+              program { name: "on_home-clock-colon_blink";
+                 action: ACTION_STOP;
+                 target: "home-clock-colon_blink";
+                 target: "home-clock-colon_hide";
+                 target: "home-clock-colon_blink_timer";
+                 target: "home-clock-colon_hide_timer";
+                 after: "home-clock-colon_blink";
+              }
+              program { name: "on_home-clock-colon_blink_stop";
+                 action: ACTION_STOP;
+                 target: "home-clock-colon_blink";
+                 target: "home-clock-colon_hide";
+                 target: "home-clock-colon_blink_timer";
+                 target: "home-clock-colon_hide_timer";
+                 after: "home-clock-colon_show";
+              }
+              program 
+              {
+                  name: "home-clock-colon_show";
+                  action: STATE_SET "default" 0.0;
+                  target: "home-clock-colon";
+              }
+              program { name: "home-clock-colon_blink";
+                 action: STATE_SET "invisible" 0.0;
+                 target: "home-clock-colon";
+                 after: "home-clock-colon_blink_timer";
+              }
+              program { name: "home-clock-colon_hide";
+                 action: STATE_SET "default" 0.0;
+                 target: "home-clock-colon";
+                 transition: SINUSOIDAL 0.2;
+                 after: "home-clock-colon_hide_timer";
+              }
+              program { name: "home-clock-colon_blink_timer";
+                 in: 0.55 0.0;
+                 after: "home-clock-colon_hide";
+              }
+              program { name: "home-clock-colon_hide_timer";
+                 in: 0.2 0.0;
+                 after: "home-clock-colon_blink";
+              }
+
 //               program 
 //               {
 //                   name: "i-o-launcher";
