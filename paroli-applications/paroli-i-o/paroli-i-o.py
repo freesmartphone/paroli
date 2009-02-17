@@ -32,69 +32,67 @@ class I_O_App(tichy.Application):
     name = 'Paroli-I/O'
     icon = 'icon.png'
     category = 'main' # So that we see the app in the launcher
+    layer = 0
     
     def run(self, parent=None, standalone=False):
-        #print dir(parent.etk_obj)
-        #parent.etk_obj.title_set('parent')
-        #parent.etk_obj.hide_all()
         self.main = parent
-        self.main.etk_obj.title_set('Paroli I/O')
+        self.geometry = self.main.etk_obj.geometry_get()
+        self.y = self.geometry[1]
+        #self.main.etk_obj.title_set('Paroli I/O')
         self.history_items = []
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-i-o.edj')
-        #dir(main.etk_obj)
-        #print dir(main)
-        #self.window = gui.Window(parent, modal=True)
-        #self.window.etk_obj.theme_file_set('../tichy/gui_p/edje/paroli-in-tichy.edj')
-        #print self.window.etk_obj.theme_file_get()
-        #self.window.etk_obj.theme_group_set('tele')
-        #print self.window.etk_obj.theme_group_get()
-        #self.window.etk_obj.title_set('paroli dialer')
-        #self.window.etk_obj.show_all()
-        #print dir(self.window.etk_obj)
-        #self.window.show()
-        #self.window.etk_obj.propagate_color_set(0)
-        #print self.window.etk_obj.children_get()
+        self.layerdict = {}
         self.gsm_service = tichy.Service('GSM')
-        #print dir(gsm_service.logs)
-        #print "printing of dir done"
-        #print str(gsm_service.logs)
-        #for i in gsm_service.logs:
-            #print dir(i)
             
-        print "logs done"
-        #self.history = [('Ali', '099872394'),('bachus', '098953214'),('julius', '059321894'),('zacharias', '04326953214'),('zuberio', '09922153214'),('oliver', '03322153214'),('Paula', '0225623614')]
+        self.missedCalls = []
+        self.incomingCalls = []
+        self.outgoingCalls = []
+
         self.history = self.gsm_service.logs
+        for call in self.history:
+            if call.status == "inactive" and call.direction == "in":
+                self.missedCalls.append(call)
+            elif call.status != "inactive" and call.direction == "in":
+                self.incomingCalls.append(call)
+            else: 
+                self.outgoingCalls.append(call)
         
-        #self.history_scroller = ['one','two','three','four','five','six','seven','i']
-        #,'i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i'
+        
         self.edje_obj = gui.edje_gui(self.main,'i-o',self.edje_file)
-        self.edje_obj.edj.layer_set(2)
-        self.edje_obj.edj.show()
-        
         self.edje_obj.edj.signal_callback_add("edit_btn_clicked", "*", self.edit_mode)
-        self.edje_obj.edj.signal_callback_add("top-bar", "*", self.top_bar)
         
         history_box = gui.edje_box(self,'V',1)
         self.lists = gui.lists()
         try:
           #self.lists.generate_list(self,self.main.etk_obj.evas,self.history_scroller,history_edje,self.edje_obj,'history_item')
-          self.history_objects_list = gui.contact_list(self.history,history_box,self.main.etk_obj.evas,self.edje_file,'history_item',self,kind='history')
+ 
+          self.history_objects_list = gui.contact_list(self.history, history_box, self.main.etk_obj.evas, self.edje_file, 'history_item', self, kind='history')
         except Exception,e:
           print e
-        to_2_swallowed = history_box.scrolled_view
 
         try:
-          self.edje_obj.add(to_2_swallowed,history_box,"history-items")
+            self.edje_obj.add(history_box.scrolled_view, history_box, "history-items")
         except Exception,e:
           print e
-        history_box.box.show()
 
-     
-        yield tichy.Wait(self.main, 'back')
-        print dir(self.main.children)
-        for i in self.main.children:
-          i.remove()
-        self.main.etk_obj.hide()   # Don't forget to close the window
+        self.edje_obj.edj.layer_set(1)
+        self.edje_obj.edj.show()
+        self.edje_obj.edj.pos_set(0, self.y)
+
+        yield tichy.Wait(self.main, 'back_Paroli-I/O')
+
+        if self.main.etk_obj.title_get() != 'Home':
+            for i in self.main.children:
+                i.remove()
+            self.main.etk_obj.hide()   
+        else:
+            print "Deleting Paroli-I/O...."
+            for i in self.layerdict:
+                if i <= self.layer:
+                    edj_obj = self.layerdict[i]
+                    edj_obj.edj.delete()
+            self.edje_obj.delete(None, None, None)
+        self.close_keyboard()
         
     
     def edit_mode(self, emission, source, param):
@@ -133,11 +131,13 @@ class I_O_App(tichy.Application):
         
         print "edit-mode emitted"
     
+    """ 
     def top_bar(self,emission, source, param):
         print "top bar pressed"
         print dir(self.main)
         self.main.emit('back')
         #emission.delete()
+    """
     
     def call_contact(self, emission, source, param, contact):
         print "call contact called"
@@ -197,7 +197,7 @@ class I_O_App(tichy.Application):
           to_2_swallowed = contacts_edje.scrolled_view
         except Exception,e:
           print e 
-        
+       
         try: 
           print "new_edje.add(to_2_swallowed,contacts_edje)"
           new_edje.add(to_2_swallowed,contacts_edje)
@@ -318,7 +318,7 @@ class I_O_App(tichy.Application):
         new_edje.edj.signal_callback_add("back", "*", new_edje.close_extra_child)
         ##go to next step
         new_edje.edj.signal_callback_add("send", "*", self.send_message, numbers, textbox, new_edje)
-        new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
+        #new_edje.edj.signal_callback_add("top_bar", "*", self.top_bar)
     
     ##send message INCOMPLETE
     def send_message(self, emission, source, param, numbers, textbox, step_2):

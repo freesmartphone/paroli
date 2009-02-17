@@ -16,6 +16,7 @@ group { name: "i-o";
               }
             }
               }
+            /*
             part{
               name: "top-bar";
               type: RECT;
@@ -51,6 +52,7 @@ group { name: "i-o";
                           }
                   }
           }
+            */
            part{
             name:"edit-button";
             type:RECT;
@@ -185,12 +187,14 @@ group { name: "i-o";
                 source: "edit-button";
                 action: SIGNAL_EMIT "edit_btn_clicked" "edit-button";
           }
+      /*
       program { 
                 name: "top-bar-tapped";
                 signal: "mouse,clicked,1";
                 source: "top-bar";
                 action: SIGNAL_EMIT "top-bar" "launcher";
           }
+            */
 //         program { 
 //           name: "edit_button_click"; 
 //           signal: "mouse,clicked,1"; 
