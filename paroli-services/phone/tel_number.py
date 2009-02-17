@@ -59,9 +59,6 @@ class TelNumber(tichy.Text):
         self.update_view_text()
         return self.view_text
 
-    def __unicode__(self):
-        return unicode(self.get_text())
-
     def update_view_text(self):
         # We check if the number is from a contact.  If so we set the
         # view text
