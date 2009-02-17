@@ -54,8 +54,12 @@ class DialerApp(tichy.Application):
             ##get contacts list
             self.phone_book = self.contact_service.contacts
 
+            ##cmp function for list sorting
+            def comp(m1, m2):
+                return cmp(str(m1.name).lower(), str(m2.name).lower())
+            
             self.list_label = [('label','name'),('label-number','tel')]
-            self.phone_book_list = gui.EvasList(self.phone_book, self.main, self.edje_file, "tele-contacts_item", self.list_label)
+            self.phone_book_list = gui.EvasList(self.phone_book, self.main, self.edje_file, "tele-contacts_item", self.list_label, comp)
 
             ##create list for edje objects
             self.contact_objects_list = None
