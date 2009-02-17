@@ -142,6 +142,10 @@ class TestSms(tichy.Service):
     def __init__(self):
         pass
 
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield None
+
     def create(self, number='', text='', direction='out'):
         number = TelNumber(number)
         text = tichy.Text(text)
