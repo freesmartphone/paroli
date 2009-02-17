@@ -54,7 +54,7 @@ collections{
                    else {
                       get_state(PART:"clock-box-background", state_name, 30, dummy);
                       if (!strcmp(state_name, "default")) {
-                         set_state(PART:"clock-box-background", "to-red", 0.0);
+                         set_state(PART:"clock-box-background", "to-blink", 0.0);
                          run_program(PROGRAM:"on_home-clock-colon_blink");
                       } else {
                          set_state(PART:"clock-box-background", "default", 0.0);
@@ -241,9 +241,8 @@ collections{
                       } 
                    }
                    description { 
-                      state: "to-red" 0.0;
+                      state: "to-blink" 0.0;
                       inherit: "default" 0.0;
-                      color:255 0 0 255;
                    }
                 }
                 part {
