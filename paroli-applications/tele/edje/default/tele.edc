@@ -12,6 +12,7 @@ images {
    image: "answer.png" COMP;
    image: "backspace.png" COMP;
    image: "speaker.png" COMP;
+   image: "enter.png" COMP;
 
    image: "1.png" COMP;
    image: "2.png" COMP;
@@ -42,6 +43,5 @@ collections
     #include "save_contact.edc"
     #include "contacts_item.edc"
     #include "contacts_list.edc"
-
 
 }
