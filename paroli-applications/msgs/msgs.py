@@ -119,7 +119,7 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.part_text_set('name-text',str(message.peer).encode('utf8'))
         
         ##set time of message sent/received
-        new_edje.Edje.part_text_set('name-info',str(message.timestamp))
+        new_edje.Edje.part_text_set('name-info', message.timestamp.local_repr())
     
         ##set number
         new_edje.Edje.part_text_set('number-text',str(message.peer.value).encode('utf8'))
