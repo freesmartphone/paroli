@@ -58,7 +58,7 @@ class MsgsApp(tichy.Application):
         
         ##sort messages by date
         def comp(m1, m2):
-            return cmp(m1.timestamp, m2.timestamp)
+            return cmp(m2.timestamp, m1.timestamp)
             
             #return cmp(len(m2.text), len(m1.text))
         

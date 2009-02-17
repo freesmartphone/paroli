@@ -438,7 +438,7 @@ class EvasList(tichy.Object):
                   test = getattr(item_cp,attribute)
               if test == value:
                   edje_obj.Edje.signal_emit(signal,'*')
-              
+
           return [item,edje_obj,canvas_obj]
       
       def add_callback(self, signal, source, func):
