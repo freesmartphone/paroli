@@ -417,7 +417,10 @@ class EvasList(tichy.Object):
           
           for part, attribute in self.label_list:
               if hasattr(item, attribute):
-                  txt = unicode(getattr(item, attribute)).encode('utf-8')
+                  value = getattr(item, attribute)
+                  if isinstance(value, tichy.Item):
+                      value = unicode(value.get_text())
+                  txt = unicode(value).encode('utf-8')
                   edje_obj.Edje.part_text_set(part,txt)
       
           if edje_obj.Edje.data_get('attribute1') != None:
