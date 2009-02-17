@@ -19,6 +19,7 @@
 from __future__ import absolute_import
 
 import time
+import calendar
 import logging
 
 import tichy
@@ -27,16 +28,23 @@ import tichy
 logger = logging.getLogger('')
 
 class Time(tichy.Item):
-    """Item that represent a time"""
+    """Item that represent a time
+
+    Internally the value is stored as a floating point number
+    expressed in seconds since the epoch, in UTC (that is the value
+    returned by time.time() )
+    """
 
     def __init__(self, value=None):
-        if isinstance(value, str):
-            try:
-                value = time.strptime(value)
-            except Exception, ex:
-                logger.error("can't strptime : %s", ex)
-                
-        self.__value = value or time.gmtime()
+        # TODO: maybe deprecate creating time from a string ?
+        if isinstance(value, basestring):
+            value = float(calendar.timegm(time.strptime(value)))
+        self.__value = value or time.time()
+        assert isinstance(self.__value, float)
+
+    @property
+    def value(self):
+        return self.__value
 
     @classmethod
     def as_type(self, value):
@@ -45,14 +53,13 @@ class Time(tichy.Item):
         return Time(value)
 
     def __str__(self):
-        #TODO: fix only a very dirty solution
-        if len(self.__value) == 9:
-          return time.asctime(self.__value)
-        else :
-          return self.__value
+        return time.asctime(time.gmtime(self.__value))
+
+    def local_repr(self):
+        return time.asctime(time.localtime(self.__value))
 
     def get_text(self):
-        return tichy.Text(str(self))
+        return tichy.Text(self.local_repr())
 
     def __cmp__(self, other):
         if isinstance(other, Time):
