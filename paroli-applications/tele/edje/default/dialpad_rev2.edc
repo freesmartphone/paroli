@@ -447,7 +447,7 @@ group { name: "tele";
             {
               state: "pin" 0.0;
               inherit:"default" 0.0;
-              image.normal: "answer.png";
+              image.normal: "enter.png";
             }
             description
             {
