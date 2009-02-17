@@ -203,9 +203,10 @@ class DialerApp(tichy.Application):
             
     ## call from contact list
     def call_contact(self, emission, source, param, item = None):
+        contact = item[0]
         logger.debug("call contact called")
-        number = emission.part_text_get('label-number')
-        name = emission.part_text_get('label')
+        number = str(contact.tel)
+        name = unicode(contact)
         TeleCaller("window", number, name).start(self.callback,self.callback)
 
 # TODO: ??? make the Caller app better, using John idea : we define
