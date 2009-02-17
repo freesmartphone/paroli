@@ -195,7 +195,7 @@ class DialerApp(tichy.Application):
         number = TelNumber(signal)
         #if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
         #if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and )
-        if ((number[0].isdigit() or number[0] == '+') and number[1:].isdigit()):
+        if ((number[0].isdigit() or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
             logger.info(number.get_text())
             TeleCaller(self.main, number).start(err_callback=self.throw)
         elif signal[0] in ['*'] :
