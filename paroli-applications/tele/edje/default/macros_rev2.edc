@@ -34,12 +34,6 @@ part\
                     to: "base";\
                 }\
             }\
-            description \
-            { \
-                state: "clicked" 0.0;\
-                inherit: "default" 0.0;\
-                color: 255 0 0 255;\
-            }\
         }\
         part\
         {\
@@ -191,15 +185,6 @@ part\
         }
 
 #define _PART_KEYPAD_PROG(partname, label ); \
-        program \
-        { \
-            name: partname"-pressed";\
-            signal: "mouse,down,1";\
-            source: partname;\
-            action: STATE_SET "clicked" 0.0;\
-            transition: LINEAR 0.16667;\
-            target: partname;\
-        }\
         program \
         { \
             name: partname"-unpressed";\
