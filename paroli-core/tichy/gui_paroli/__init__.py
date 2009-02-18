@@ -378,6 +378,7 @@ class EvasList(tichy.Object):
           self.model.connect('appended',self._append_new)
           self.model.connect('removed',self._remove_item)
           self.model.connect('modified',self._modified)
+          self.box = etk.VBox()
           self.callbacks = []
           self.sort()
     
@@ -387,7 +388,6 @@ class EvasList(tichy.Object):
           #logger.info(kargs)
     
       def get_swallow_object(self):
-          self.box = etk.VBox()
           self.items = []
   
           for item in self.model:
