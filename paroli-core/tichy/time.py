@@ -36,8 +36,14 @@ class Time(tichy.Item):
     """
 
     def __init__(self, value=None):
+        self.timeshift = None
         # TODO: maybe deprecate creating time from a string ?
         if isinstance(value, basestring):
+            logger.debug("create Time from string : '%s'", value)
+            # We check for timezone information (e.g '+0800')
+            if value[-5] == '+':
+                self.timeshift = value[-5:]
+                value = value[:-5].strip()
             value = float(calendar.timegm(time.strptime(value)))
         self.__value = value or time.time()
         assert isinstance(self.__value, float)
