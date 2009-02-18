@@ -80,6 +80,9 @@ class FreeSmartPhoneSMS(tichy.Service):
                                  '/org/freesmartphone/GSM/Device')
             self.sim_iface = dbus.Interface(gsm,
                                             'org.freesmartphone.GSM.SIM')
+            self.sms_iface = dbus.Interface(gsm,
+                                            'org.freesmartphone.GSM.SMS')
+
             logger.info("Listening to incoming SMS")
             self.sim_iface.connect_to_signal("IncomingStoredMessage",
                                              self.on_incoming_message)
@@ -110,16 +113,12 @@ class FreeSmartPhoneSMS(tichy.Service):
 
     @tichy.tasklet.tasklet
     def send(self, sms):
-        logger.info("Storing message to %s", sms.peer)
-        message_id = yield WaitDBus(self.sim_iface.StoreMessage,
-                                    str(sms.peer), unicode(sms.text), {})
-        logger.info("Done, id : %s", message_id)
-        logger.info("Sending message")
-        yield WaitDBus(self.sim_iface.SendStoredMessage, message_id)
-        logger.info("Done")
-        # We store a copy cause we don't want to modify the stored sms.
+        logger.info("Sending message to %s", sms.peer)
+        properties = dict(type='sms-submit', alphabet='gsm_default')
+        index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
+                                          str(sms.peer), unicode(sms.text),
+                                          properties)
         logger.info("Store message into messages")
-        #sms = SMS(sms.peer, sms.text, 'out')
         yield tichy.Service('Messages').add(sms)
 
     def on_incoming_message(self, index):
