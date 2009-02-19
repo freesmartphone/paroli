@@ -176,14 +176,14 @@ collections{
               }
               part{
                   name: "top-bar";
-                  type: RECT;
+                  type: RECT;/*
                   description { 
                     state: "default" 0.0;
                     visible:0;
-                  }
+                  }*/
                   description{ 
-                      state: "visible" 0.0;
-                      color:0 255 0 255;
+                      state: "default" 0.0;
+                      color:0 0 0 255;
                       rel1{
                           relative: 0.0 0.0;
                           offset: 0 0;
@@ -210,6 +210,58 @@ collections{
                                       align: 0.5 0.0;
                                       size: 18;
                                       text: "20:08";
+                                      font: "Sans";
+                              }
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 1.0 1.0;
+                                      to: "top-bar";
+                              }
+                      }
+              }
+              part{
+                name: "gsm";
+                type: TEXT;
+                mouse_events:0;/*
+                description { 
+                  state: "default" 0.0;
+                  visible:0;
+                }*/
+                description { state: "default" 0.0;
+                              color: 255 255 255 255;
+                              text {
+                                      align: 0.7 0.0;
+                                      size: 18;
+                                      text: "0";
+                                      font: "Sans";
+                              }
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 1.0 1.0;
+                                      to: "top-bar";
+                              }
+                      }
+              }
+              part{
+                name: "battery";
+                type: TEXT;
+                mouse_events:0;/*
+                description { 
+                  state: "default" 0.0;
+                  visible:0;
+                }*/
+                description { state: "default" 0.0;
+                              color: 255 255 255 255;
+                              text {
+                                      align: 0.9 0.0;
+                                      size: 18;
+                                      text: "0";
                                       font: "Sans";
                               }
                               rel1 {
@@ -707,7 +759,7 @@ collections{
                   source: "*";
                   action: STATE_SET "visible" 0.0;
                   target: "clock";
-                  target: "top-bar";
+//                   target: "top-bar";
               }
               program
               {
@@ -716,7 +768,27 @@ collections{
                   source: "*";
                   action: STATE_SET "default" 0.0;
                   target: "clock";
-                  target: "top-bar";
+//                   target: "top-bar";
+              }
+              program
+              {
+                  name: "set_gsm";
+                  signal: "*";
+                  source: "gsm_change";
+                  script{
+                      set_text(PART:"gsm",sig)
+                  }
+                  
+              }
+              program
+              {
+                  name: "set_battery";
+                  signal: "*";
+                  source: "battery_change";
+                  script{
+                      set_text(PART:"battery",sig)
+                  }
+                  
               }
           }
     }

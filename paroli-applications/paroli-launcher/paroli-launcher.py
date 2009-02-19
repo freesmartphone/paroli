@@ -101,6 +101,12 @@ class Launcher_App(tichy.Application):
         self.edje_obj.add_callback("test", "*", self.test)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         
+        self.gsm = tichy.Service('GSM')
+        self.gsm.connect('network-strength', self.network_strength)
+        
+        self.power = tichy.Service('Power')
+        self.power.connect('battery_capacity', self.battery_capacity)
+        self.battery_capacity(0, self.power.battery_capacity)
         ##current hack
         self.standalone = True
         
@@ -152,7 +158,8 @@ class Launcher_App(tichy.Application):
                
     def quit_app(self, emission, source, name):
     
-        emitted = 'back_'+self.active_app    
+        emitted = 'back_'+str(self.active_app)    
+        logger.debug('closing' + str(self.active_app))
         self.main.emit(emitted)
                 
         self.edje_obj.signal("switch_clock_off","*")
@@ -182,16 +189,22 @@ class Launcher_App(tichy.Application):
         except Exception, e:
             print e
     
-    def _on_call_activated(self,*args,**kargs):
+    def _on_call_activated(self, *args, **kargs):
         
         number = TelNumber(self.storage.call.number)
         text = '<normal>Tele</normal> <small>' + str(number.get_text()) +'</small>'
         self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
     
-    def _on_call_released(self,*args,**kargs):
+    def _on_call_released(self, *args, **kargs):
         self.main.emit('show_Tele')
         if self.active_app == 'Tele':
             self.edje_obj.signal('app_active',"*")
             
         text = '<normal>Tele</normal> <small></small>'
         self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
+
+    def network_strength(self, *args, **kargs):
+        self.edje_obj.Edje.signal_emit(str(args[1]), "gsm_change")
+        
+    def battery_capacity(self, *args, **kargs):
+        self.edje_obj.Edje.signal_emit(str(args[1]), "battery_change")
