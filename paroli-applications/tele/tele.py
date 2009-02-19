@@ -236,14 +236,13 @@ class TeleCaller(tichy.Application):
                 number to call, otherwise we consider it to be a Call
                 object that is already active.
         """
-        logger.debug("caller run, name : %s", name)
+        logger.debug("caller run, names : %s", name)
         self.gsm_service = tichy.Service('GSM')
         self.storage = tichy.Service('TeleCom')
         self.main = self.storage.window
         self.audio_service = tichy.Service('Audio')
         self.main.etk_obj.visibility_set(1)
         self.main.etk_obj.title_set('Paroli Call')
-
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         self.edje_obj_top_bar = gui.edje_gui(self.main,'tb',self.edje_file)
         self.edje_obj_top_bar.edj.size_set(480,40)
@@ -264,6 +263,7 @@ class TeleCaller(tichy.Application):
             if not isinstance(number, (basestring, tichy.Text)):
                 call = number
                 self.storage.call = call
+                self.main.emit('call_active')
                 self.edje_obj.edj.signal_emit('to_incoming_state',"*")
                 self.edje_obj.edj.part_text_set('num_field-text',str(call.number))
                 self.edje_obj.edj.layer_set(2)
@@ -282,6 +282,8 @@ class TeleCaller(tichy.Application):
                 self.edje_obj.edj.layer_set(2)
                 self.edje_obj.edj.show()
                 call = self.gsm_service.create_call(number)
+                self.storage.call = call
+                self.main.emit('call_active')
                 yield call.initiate()
 
                 def call_release_pre(emission, source, param):
@@ -298,8 +300,6 @@ class TeleCaller(tichy.Application):
                 if self.audio_service.muted == 1:
                     self.audio_service.audio_toggle()
                 
-                self.storage.call = call
-                self.main.emit('call_active')
                 
                 #self.storage.main_window.emit('call_activated')
                 self.edje_obj.edj.signal_emit('to_active_state',"*")
