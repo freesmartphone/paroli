@@ -411,9 +411,15 @@ group { name: "tele";
                 rel2 
                 {
                    relative: 0.0 0.0;
-                   offset: 102 106;
+                   offset: 162 106;
                    to: "base";
                 }
+            }
+            description
+            {
+              state: "incoming" 0.0;
+              inherit: "active" 0.0;
+              text.text: "incoming...";
             }
         }
          part {
@@ -732,6 +738,14 @@ group { name: "tele";
             source: "error";
             action: STATE_SET "active" 0.0;
             target: "del-button";
+        }
+        program 
+        { 
+            name: "incoming";
+            signal: "to_incoming_state";
+            source: "*";
+            action: STATE_SET "incoming" 0.0;
+            target: "duration_timer";
         }
         program 
         { 
