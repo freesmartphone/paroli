@@ -44,7 +44,10 @@ class Time(tichy.Item):
             if value[-5] == '+':
                 self.timeshift = value[-5:]
                 value = value[:-5].strip()
-            value = float(calendar.timegm(time.strptime(value)))
+                value = time.mktime(time.strptime(value))
+            else:
+                # if we don't have a timezone, then we assume UTC time
+                value = float(calendar.timegm(time.strptime(value)))
         self.__value = value or time.time()
         assert isinstance(self.__value, float)
 
