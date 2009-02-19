@@ -132,14 +132,14 @@ class FreeSmartPhoneSMS(tichy.Service):
         #      never store messages on the SIM.
         logger.info("Incoming message %d", index)
         message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
-        # We immediately delete the message from the SIM
-        yield WaitDBus(self.sim_iface.DeleteMessage, index)
         status = str(message[0])
         peer = str(message[1])
         text = unicode(message[2])
         messages_service = tichy.Service('Messages')
         message = messages_service.create(peer, text, 'in')
         yield messages_service.add(message)
+        # We delete the message from the SIM
+        yield WaitDBus(self.sim_iface.DeleteMessage, index)
 
 
 class TestSms(tichy.Service):
