@@ -84,6 +84,8 @@ class FreeSmartPhoneSMS(tichy.Service):
                                             'org.freesmartphone.GSM.SMS')
 
             logger.info("Listening to incoming SMS")
+            # XXX: we should use the IncomigMessage method, but there
+            #      is a bug in the framework.
             self.sim_iface.connect_to_signal("IncomingStoredMessage",
                                              self.on_incoming_message)
         except Exception, e:
@@ -122,15 +124,22 @@ class FreeSmartPhoneSMS(tichy.Service):
         yield tichy.Service('Messages').add(sms)
 
     def on_incoming_message(self, index):
+        self._on_incoming_message(index).start()
+
+    @tichy.tasklet.tasklet
+    def _on_incoming_message(self, index):
+        # XXX: It would be better to use a PhoneMessage here, and
+        #      never store messages on the SIM.
         logger.info("Incoming message %d", index)
-        message = self.sim_iface.RetrieveMessage(index)
+        message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
+        # We immediately delete the message from the SIM
+        yield WaitDBus(self.sim_iface.DeleteMessage, index)
         status = str(message[0])
         peer = str(message[1])
         text = unicode(message[2])
-        # XXX: It would be better to use a PhoneMessage here, and
-        #      never store messages on the SIM.
-        sms = SMS(peer, text, 'in')
-        tichy.Service('Messages').add(sms).start()
+        messages_service = tichy.Service('Messages')
+        message = messages_service.create(peer, text, 'in')
+        yield messages_service.add(message)
 
 
 class TestSms(tichy.Service):
