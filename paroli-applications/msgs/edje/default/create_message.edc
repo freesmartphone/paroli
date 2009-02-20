@@ -172,10 +172,34 @@ group
                 }
             }
         }*/
+            part{
+              name:"length-text";
+              type:TEXT;
+              description{ state:"default" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                      align: 0.0 0.0;
+                      size: 18;
+                      text: "0/160";
+                      font: "Sans";
+                  }
+                  rel1 
+                  {
+                      relative: 0.60 0.17;
+                      to: "base";
+                  }
+                  rel2 
+                  {
+                      relative: 0.95 0.20;
+                        to: "base";
+                  }
+                }
+                
+              }
         part{
              name:"message-block";
              type:TEXTBLOCK;
-              multiline:1;
+//               multiline:1;
               entry_mode:EDITABLE;
               description { state: "default" 0.0;
                   color: 255 255 255 255;
@@ -323,6 +347,29 @@ group
               source: "*";
               action: FOCUS_SET;
               target: "message-block";
+          }
+          program
+          {
+              name: "sign_changed";
+              signal: "entry,changed";
+              source: "message-block";
+              script{
+                  new buf[1000];
+                  buf[999] = get_text(PART:"message-block", buf, 1000);
+                  emit(buf,"embryo")
+                  new len = strlen(buf);
+                  new buf2[1000];
+                  if (len > 160){
+                      strcut(buf2, buf, -1, 160);
+                      len = strlen(buf2);
+                      set_text(PART:"message-block", buf2);
+                      emit(buf2,"embryo")
+                  }else{
+                      snprintf(buf, 100, "%i/160", len);
+                      set_text(PART:"length-text", buf);
+                  }
+                  
+              }
           }
           
 //         program

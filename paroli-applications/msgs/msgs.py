@@ -201,7 +201,8 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
         new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
-        
+        #new_edje.Edje.signal_callback_add("*", "*", self.self_test)
+        new_edje.Edje.signal_callback_add("*", "embryo", self.self_test)
         mb = new_edje.Edje.part_object_get("message-block")
         
         ##set layer of edje object

@@ -8,7 +8,7 @@ styles
 {
   style {
     name: "textblock_style_2";
-    base: "font=Sans font_size=20 align=left valign=top color=#fff  wrap=word";
+    base: "font=Sans font_size=20 align=left valign=top color=#fff  wrap=char";
   }
 }
 
