@@ -256,6 +256,7 @@ class TeleCaller(tichy.Application):
         self.edje_obj.edj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.edj.signal_callback_add("add_digit", "*", self.add_digit)
         self.edje_obj.edj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
+        self.edje_obj.edj.signal_callback_add("audio-toggle", "del-button", self.speaker_toggle)
         self.edje_obj_top_bar.edj.signal_callback_add("top-bar", "*", self.top_bar)
         #self.edje_obj.edj.signal_callback_add("*", "*", self.gui_signals)
 
@@ -364,8 +365,8 @@ class TeleCaller(tichy.Application):
         """mute/unmute the ringtone"""
         self.storage.call.mute()
 
-    def speaker_toggle(self):
-        """Toggle the speaker output"""
+    def speaker_toggle(self, emission, signal, source):
+        """Toggle the speaker output - mute mic and speaker"""
         self.audio_service.audio_toggle()
 
     def func_btn(self,emission, source, param):
