@@ -22,7 +22,7 @@ __docformat__ = 'reStructuredText'
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus
+from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
 logger = logging.getLogger('power')
@@ -39,16 +39,29 @@ class PowerService(tichy.Service):
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
         super(PowerService, self).__init__()
+        logger.info('power service init')
+        self.battery_capacity = 50
+        self._connect_dbus().start()        
+        #self.battery = None
+
+    @tichy.tasklet.tasklet
+    def _connect_dbus(self):
+        logger.info('here pre')
         try:
+            
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=None)
+            logger.info('here')
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             battery = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerSupply/battery')
             self.battery = dbus.Interface(battery, 'org.freesmartphone.Device.PowerSupply')
             self.battery.connect_to_signal('Capacity', self._on_capacity_change)
-            self.battery_capacity = self.battery.GetCapacity()
+            #self.battery_capacity = self.battery.GetCapacity()
         except Exception, e:
             logger.warning("can't use freesmartphone power service : %s", e)
             self.battery = None
-            
+        else:
+            self._on_capacity_change(self.battery.GetCapacity())
+
     def _on_capacity_change(self, percent):
         logger.info("capacity change")
         print percent

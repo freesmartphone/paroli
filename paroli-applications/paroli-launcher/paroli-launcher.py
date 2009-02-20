@@ -106,7 +106,7 @@ class Launcher_App(tichy.Application):
         
         self.power = tichy.Service('Power')
         self.power.connect('battery_capacity', self.battery_capacity)
-        self.battery_capacity(0, self.power.battery_capacity)
+        #self.battery_capacity(0, 50)
         ##current hack
         self.standalone = True
         
@@ -207,4 +207,5 @@ class Launcher_App(tichy.Application):
         self.edje_obj.Edje.signal_emit(str(args[1]), "gsm_change")
         
     def battery_capacity(self, *args, **kargs):
+        logger.info("capacity change in launcher")
         self.edje_obj.Edje.signal_emit(str(args[1]), "battery_change")
