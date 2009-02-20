@@ -99,8 +99,15 @@ class Call(tichy.Item):
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service('GSM')
-        yield gsm_service._release(self)
-        self.status = 'releasing'
+        try:
+            yield gsm_service._release(self)
+        except Exception, e:
+            #XXX should the call get a 
+            #logger.debug('call error')
+            self.emit("error", e)
+            self.status = 'released'
+        else:
+            self.status = 'releasing'
         self.emit(self.status)
 
     @tichy.tasklet.tasklet

@@ -26,6 +26,7 @@ from tichy import gui
 import sys
 from tichy.service import Service
 from tel_number import TelNumber
+from dialog import Dialog
 
 class DialerApp(tichy.Application):
     name = 'Tele'
@@ -238,6 +239,7 @@ class TeleCaller(tichy.Application):
         """
         logger.debug("caller run, names : %s", name)
         self.gsm_service = tichy.Service('GSM')
+        self.dialog = tichy.Service('Dialog')
         self.storage = tichy.Service('TeleCom')
         self.main = self.storage.window
         self.audio_service = tichy.Service('Audio')
@@ -282,18 +284,20 @@ class TeleCaller(tichy.Application):
                 self.edje_obj.edj.layer_set(2)
                 self.edje_obj.edj.show()
                 call = self.gsm_service.create_call(number)
+                call.connect("error", self.dialog.error)
                 self.storage.call = call
                 self.main.emit('call_active')
                 yield call.initiate()
 
                 def call_release_pre(emission, source, param):
                     # XXX: we should connect to the error callback
+                    logger.info('call_release_pre')
                     call.release().start()
                     self.storage.call = None
                         
                 self.edje_obj.edj.signal_callback_add("release", "call", call_release_pre)
 
-            i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'))
+            i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
             if i == 0: #activated
                 logger.debug("call activated")
                 #self.storage.status.__set_value("activated")
@@ -308,16 +312,22 @@ class TeleCaller(tichy.Application):
                 def call_release(emission, source, param):
                     logger.info("releasing call")
                     # XXX: we should connect to the error callback
-                    call.release().start()
+                    try:
+                        call.release().start()
+                    except Exception, e:
+                        self.main.emit('call_error')
 
                 self.edje_obj.edj.signal_callback_add("release", "call", call_release)
-                yield tichy.WaitFirst(tichy.Wait(call, 'released'))
+                yield tichy.WaitFirst(tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
 
             if call.status not in ['released', 'releasing']:
                 #text.value = "releasing %s" % call.number
                 try:
-                    call.release()
-                    yield tichy.Wait(call, 'released')
+                    try:
+                        call.release().start()
+                        yield tichy.Wait(call, 'released')
+                    except Exception, e:
+                        self.main.emit('call_error')
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
             #self.storage.main_window.emit('call_released')
