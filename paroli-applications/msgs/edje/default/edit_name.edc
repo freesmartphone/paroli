@@ -150,14 +150,18 @@ group { name: "save-number";
             }
             part{
              name:"name-text-field";
-             type:TEXT;
+             type:TEXTBLOCK;
+              entry_mode:EDITABLE;
               description { state: "default" 0.0;
                   color: 255 255 255 255;
+                  color2: 0 255 255 255;
+                  color3: 0 255 0 255;
+//                   color4: 0 255 125 255;
+//                   color5: 125 255 125 255;
+//                   color5: 125 255 255 255;
                   text{
-                          align: 0.0 0.4;
-                          size: 48;
+                          style:"textblock_style_2";
                           text: "moo";
-                          font: "Sans";
                   }
                   rel1 {
                      relative: 0.0 0.0;
@@ -170,6 +174,10 @@ group { name: "save-number";
                      to: "base";
                   }
              }
+              source3:"cursor1";
+              source4:"cursor2";
+              source5:"cursor1";
+              source6:"cursor2";
             }
             part{
              name:"name-box";
@@ -253,6 +261,14 @@ group { name: "save-number";
 //           source: "edit-button"; 
 //           action: SIGNAL_EMIT "edit" ""; 
 //       } 
+        program
+        {
+            name: "load";
+            signal: "load";
+            source: "*";
+            action: FOCUS_SET;
+            target: "name-text-field";
+        }
         program 
         { 
           name: "show_save_notice";
@@ -263,4 +279,44 @@ group { name: "save-number";
           target: "save-notice-text"; 
         }
       }
+}
+
+group{
+    name:"cursor1";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 255 255 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 32;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
+}
+
+group{
+    name:"cursor2";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 0 0 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 48;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
 }

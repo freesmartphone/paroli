@@ -187,7 +187,7 @@ class MsgsApp(tichy.Application):
     ## open subwindow to create new message (text entry)
     def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
         logger.info('got empty_sms with number ' + str(sms.number))
-        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'create_message', 'message', self.edje_obj.Windows, True)
+        new_edje = gui.EdjeObject(self.main, self.edje_file, 'create_message', self.edje_obj.Windows, True)
         
         if window:
             new_edje.Windows.append(window)
@@ -219,22 +219,27 @@ class MsgsApp(tichy.Application):
         logger.info("add contact in msgs")
         number = str(item[0].peer)
         logger.info("number is %s", number)
-        new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'save-number',"name-box", self.edje_obj.Windows, True)
+        new_edje = gui.EdjeObject(self.main,self.edje_file,'save-number', self.edje_obj.Windows, True)
         new_edje.Edje.size_set(480,600)
         new_edje.Edje.pos_set(0,40)
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
-        name_field = gui.Edit(None)
-        name_field.etk_obj.on_text_changed(self.change_text, new_edje)
-        name_field.set_text('Name')
-        box = gui.Box(None,1)
-        box.add(name_field)
-        new_edje.embed(box.etk_obj,box,"name-box")
-        box.etk_obj.show_all()
-        name_field.etk_obj.focus()
+        #name_field = gui.Edit(None)
+        #name_field.etk_obj.on_text_changed(self.change_text, new_edje)
+        #name_field.set_text('Name')
+        #box = gui.Box(None,1)
+        #box.add(name_field)
+        #new_edje.embed(box.etk_obj,box,"name-box")
+        #box.etk_obj.show_all()
+        #name_field.etk_obj.focus()
+        tb = new_edje.Edje.part_object_get("name-text-field")
+        new_edje.Edje.show()
+        new_edje.Edje.focus_set(True)
+        tb.focus_set(True)
+        
         
         new_edje.add_callback('close_window','*', new_edje.delete)
-        new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':name_field,'number':number,'item':item[0]})
+        new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':'name-text-field','number':number,'item':item[0]})
         
     ##MISC FUNCTIONS
     #sending
@@ -291,7 +296,7 @@ class MsgsApp(tichy.Application):
   
     ## save contact
     def save_contact(self, *args, **kargs ):
-        name = kargs['name_field'].etk_obj.text
+        name = args[0].part_text_get(kargs['name_field'])
         number = kargs['number']
         logger.info('saving contact: name: ' + name + " number: " + number)
         args[0].signal_emit('save-notice','*')
