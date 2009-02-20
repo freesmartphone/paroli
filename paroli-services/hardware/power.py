@@ -48,6 +48,7 @@ class PowerService(tichy.Service):
         except Exception, e:
             logger.warning("can't use freesmartphone power service : %s", e)
             self.battery = None
+            self.battery_capacity = 0
             
     def _on_capacity_change(self, percent):
         logger.info("capacity change")
