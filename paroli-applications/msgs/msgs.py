@@ -192,22 +192,27 @@ class MsgsApp(tichy.Application):
         if window:
             new_edje.Windows.append(window)
         ##embed scroll object
-        tview = gui.etk.TextView()
-        tview.theme_file_set(self.edje_file)
-        tview.theme_group_set("text_view")
-        tview.textblock_get().text_set(sms.text,1)
-        new_edje.embed(tview, None, 'message')
+        #tview = gui.etk.TextView()
+        #tview.theme_file_set(self.edje_file)
+        #tview.theme_group_set("text_view")
+        #tview.textblock_get().text_set(sms.text,1)
+        #new_edje.embed(tview, None, 'message')
         ##add callback for back button and send
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
-        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_obj, tview.textblock_get())
+        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
+        
+        mb = new_edje.Edje.part_object_get("message-block")
+        
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
         new_edje.Edje.pos_set(0,40)
         ##show edje window
         new_edje.Edje.show()
-        tview.focus()
+        new_edje.Edje.focus_set(True)
+        mb.focus_set(True)
+        #tview.focus()
         
     ## open window to save unknown contact
     def open_save_contact_window(self, emission, signal, source, item):
@@ -314,8 +319,8 @@ class empty_sms():
     def set_number(self, emission, source, signal, part):
         self.number = emission.part_text_get(part)
       
-    def set_text_from_obj(self, emission, source, signal, text_obj):
-        self.text = text_obj.text_get(0)
+    def set_text_from_part(self, emission, source, signal, part):
+        self.text = emission.part_text_get(part)
 
         
     ##BELOW    --->     TO BE REPLACED / REWRITTEN

@@ -24,7 +24,7 @@ group
             description
             { 
                 state: "default" 0.0;
-                color:0 0 0 255;
+                color:0 0 255 255;
                 rel1 
                 {
                     relative: 0.0 0.0;
@@ -158,6 +158,7 @@ group
             type:SWALLOW;
             description
             {
+                visible:0;
                 color: 0 0 0 255;
                 rel1 
                 {
@@ -171,28 +172,30 @@ group
                 }
             }
         }
-//         part{
-//              name:"message-block";
-//              type:TEXTBLOCK;
-// //                   multiline:1;
-//              
-//               description { state: "default" 0.0;
-//                   color: 255 255 255 255;
-//                   visible:1;
-//                   text{
-//                           style:"textblock_style_2";
-//                           text_source:"message-text";
-//                   }
-//                   rel1 {
-//                           relative: 0.0 0.0;
-//                           to: "message";
-//                   }
-//                   rel2 {
-//                           relative: 1.0 1.0;
-//                           to: "message";
-//                   }
-//              }
-//             }
+        part{
+             name:"message-block";
+             type:TEXTBLOCK;
+              multiline:1;
+              entry_mode:EDITABLE;
+              description { state: "default" 0.0;
+                  color: 255 255 255 255;
+                  visible:1;
+                  text{
+                          text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
+                          style:"textblock_style_2";
+                  }
+                rel1 
+                {
+                    relative: 0.05 0.20;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.95 0.61;
+                      to: "base";
+                }
+             }
+            }
 //             part{
 //               name:"message-text";
 //               type:TEXT;
@@ -313,6 +316,15 @@ group
               source: "close-clickable";
               action: SIGNAL_EMIT "back" "message";
           }
+          program
+          {
+              name: "load";
+              signal: "load";
+              source: "*";
+              action: FOCUS_SET;
+              target: "message-block";
+          }
+          
 //         program
 //         {
 //             name: "edit-name";
