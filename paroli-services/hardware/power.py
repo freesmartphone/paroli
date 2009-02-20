@@ -61,7 +61,8 @@ class PowerService(tichy.Service):
             self.battery = None
         else:
             self._on_capacity_change(self.battery.GetCapacity())
-
+            self.battery_capacity = 0
+            
     def _on_capacity_change(self, percent):
         logger.info("capacity change")
         print percent

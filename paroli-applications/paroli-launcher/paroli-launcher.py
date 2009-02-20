@@ -177,7 +177,7 @@ class Launcher_App(tichy.Application):
         logger.info('call logged')
         self.storage.call.connect('released', self._on_call_released)
         self.main.emit('hide_Tele')
-        logger.info( "active app: ", str(self.active_app))
+        logger.info("active app: %s", self.active_app)
         if self.active_app == 'Tele':
             self.edje_obj.signal('switch_clock_off',"*")
         self._on_call_activated() 
