@@ -103,8 +103,9 @@ class MsgsApp(tichy.Application):
     ##DEBUG FUNCTIONS 
     ## general output check
     def self_test(self, *args, **kargs):
-        txt = "self test called with args: ", args, "and kargs: ", kargs
-        logger.info(txt)
+        #txt = "self test called with args: ", args, "and kargs: ", kargs
+        logger.info(args[1])
+        logger.info(args[2])
     
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing message-details
@@ -191,19 +192,16 @@ class MsgsApp(tichy.Application):
         
         if window:
             new_edje.Windows.append(window)
-        ##embed scroll object
-        #tview = gui.etk.TextView()
-        #tview.theme_file_set(self.edje_file)
-        #tview.theme_group_set("text_view")
-        #tview.textblock_get().text_set(sms.text,1)
-        #new_edje.embed(tview, None, 'message')
         ##add callback for back button and send
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
         new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
         #new_edje.Edje.signal_callback_add("*", "*", self.self_test)
-        new_edje.Edje.signal_callback_add("*", "embryo", self.self_test)
+        new_edje.Edje.signal_callback_add("*", "*", self.self_test)
+        new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
+        te = new_edje.Edje.part_object_get("length-text")
+        print mb.evas.object_name_find("message-block")
         
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
@@ -225,14 +223,6 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.pos_set(0,40)
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
-        #name_field = gui.Edit(None)
-        #name_field.etk_obj.on_text_changed(self.change_text, new_edje)
-        #name_field.set_text('Name')
-        #box = gui.Box(None,1)
-        #box.add(name_field)
-        #new_edje.embed(box.etk_obj,box,"name-box")
-        #box.etk_obj.show_all()
-        #name_field.etk_obj.focus()
         tb = new_edje.Edje.part_object_get("name-text-field")
         new_edje.Edje.show()
         new_edje.Edje.focus_set(True)
@@ -277,6 +267,15 @@ class MsgsApp(tichy.Application):
             #self.contact_objects_list.box.box.redraw_queue()
             #self.contact_objects_list.box.box.show_all()
             window.delete()
+  
+    # editing
+    def sign_counter(self, emission, signal, source):
+        text = emission.part_text_get(source)
+        length = len(text)
+        if length > 160:
+            #obj = emission.part_object_get('message-text')
+            #obj.text_set(text[0:17])
+            emission.part_text_set(source, text[0:159])
   
     #deleting
     def delete_sms(self, emission, signal, source, item):

@@ -197,17 +197,18 @@ group
                 
               }
         part{
-             name:"message-block";
-             type:TEXTBLOCK;
-//               multiline:1;
-              entry_mode:EDITABLE;
-              description { state: "default" 0.0;
-                  color: 255 255 255 255;
-                  visible:1;
-                  text{
-                          text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
-                          style:"textblock_style_2";
-                  }
+            name:"message-block";
+            type:TEXTBLOCK;
+            multiline:0;
+            entry_mode:EDITABLE;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                visible:1;
+                text{
+                        text_source: "message-text";
+                        style:"textblock_style_2";
+                }
                 rel1 
                 {
                     relative: 0.05 0.20;
@@ -219,29 +220,34 @@ group
                       to: "base";
                 }
              }
+              source3:"cursor1";
+              source4:"cursor2";
+              source5:"cursor1";
+              source6:"cursor2";
             }
-//             part{
-//               name:"message-text";
-//               type:TEXT;
-//               description{ state:"default" 0.0;
-//                   color: 255 255 255 255;
-//                   text{
-//                       align: 0.0 0.0;
-//                       size: 24;
-//                       text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
-//                       font: "Sans";
-//                   }
-//                   rel1 {
-//                           relative: 0.0 0.0;
-//                           to: "base";
-//                   }
-//                   rel2 {
-//                           relative: 0.0 0.0;
-//                           to: "base";
-//                   }
-//                 }
-//                 
-//               }
+            part{
+              name:"message-text";
+              type:TEXT;
+              description{ state:"default" 0.0;
+                  color: 255 255 255 255;
+                  visible:0;
+                  text{
+                      align: 0.0 0.0;
+                      size: 24;
+                      text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
+                      font: "Sans";
+                  }
+                  rel1 {
+                          relative: 0.0 0.0;
+                          to: "base";
+                  }
+                  rel2 {
+                          relative: 0.0 0.0;
+                          to: "base";
+                  }
+                }
+                
+              }
 //         part
 //         {
 //             name:"del-button";
@@ -358,16 +364,8 @@ group
                   buf[999] = get_text(PART:"message-block", buf, 1000);
                   emit(buf,"embryo")
                   new len = strlen(buf);
-                  new buf2[1000];
-                  if (len > 160){
-                      strcut(buf2, buf, -1, 160);
-                      len = strlen(buf2);
-                      set_text(PART:"message-block", buf2);
-                      emit(buf2,"embryo")
-                  }else{
-                      snprintf(buf, 100, "%i/160", len);
-                      set_text(PART:"length-text", buf);
-                  }
+                  snprintf(buf, 100, "%i/160", len);
+                  set_text(PART:"length-text", buf);
                   
               }
           }
@@ -444,3 +442,42 @@ group
     }
 }
 
+group{
+    name:"cursor1";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 255 255 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 32;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
+}
+
+group{
+    name:"cursor2";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 0 0 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 48;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
+}
