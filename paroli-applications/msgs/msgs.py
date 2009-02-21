@@ -33,6 +33,7 @@ class MsgsApp(tichy.Application):
     name = 'Msgs'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
+    launcher_info = [tichy.Service('Messages').unread]
     
     def run(self, parent, standalone=False):
         
@@ -161,7 +162,9 @@ class MsgsApp(tichy.Application):
         ##move edje object down to show top-bar
         new_edje.Edje.pos_set(0,40)
         ##show edje window
-        new_edje.Edje.show()   
+        new_edje.Edje.show()
+        ##mark message as read if unread
+        message.read()
     
     ## open subwindow to create new message (enter recipients)
     def open_enter_number(self, emission, signal, source, sms):
@@ -200,8 +203,11 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.signal_callback_add("*", "*", self.self_test)
         new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
-        te = new_edje.Edje.part_object_get("length-text")
-        print mb.evas.object_name_find("message-block")
+        #te = new_edje.Edje.part_object_get("length-text")
+        #print dir(mb)
+        #print dir(mb.evas.viewport_get())
+        #print mb.evas.viewport_get().count()
+        #print mb.evas.viewport_get().index()
         
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
