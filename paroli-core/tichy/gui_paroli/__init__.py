@@ -377,13 +377,13 @@ class EvasList(tichy.Object):
           self._comp_fct = comp_fct
           self.model.connect('appended',self._append_new)
           self.model.connect('removed',self._remove_item)
-          self.model.connect('modified',self._modified)
+          #self.model.connect('modified',self._modified)
           self.box = etk.VBox()
           self.callbacks = []
           self.sort()
     
-      def _modified(self, *args, **kargs):
-          logger.info('list modified')
+      #def _modified(self, *args, **kargs):
+          #logger.info('list modified')
           #logger.info(args)
           #logger.info(kargs)
     
@@ -415,6 +415,7 @@ class EvasList(tichy.Object):
           edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
           canvas_obj.object_add(edje_obj.Edje)
           
+          ## set text in text parts
           for part, attribute in self.label_list:
               if hasattr(item, attribute):
                   value = getattr(item, attribute)
@@ -423,6 +424,7 @@ class EvasList(tichy.Object):
                   txt = unicode(value).encode('utf-8')
                   edje_obj.Edje.part_text_set(part,txt)
       
+          ##check for optional display elements
           if edje_obj.Edje.data_get('attribute1') != None:
               attribute = edje_obj.Edje.data_get('attribute1')
               if edje_obj.Edje.data_get('attribute2') != None:
@@ -457,6 +459,9 @@ class EvasList(tichy.Object):
       def _append_new(self,*args,**kargs):
           logger.info('append called')
           new_item = self.generate_single_item(args[1])
+          for cb in self.callbacks:
+              new_item[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
+              args[1].connect('modified',self._redraw_view)
           self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
           self.items.insert(0,new_item)
           self._redraw_view()
@@ -482,6 +487,7 @@ class EvasList(tichy.Object):
               single = self.generate_single_item(item)
               self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
               self.items.append(single)
+              #item.connect('modified',self._redraw_view)
 
           self._redraw_box()
           self._renew_callbacks()

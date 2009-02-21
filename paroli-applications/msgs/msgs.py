@@ -63,7 +63,7 @@ class MsgsApp(tichy.Application):
             
             #return cmp(len(m2.text), len(m1.text))
         
-        self.list_label = [('label','peer'),('label-number','text')]
+        self.list_label = [('label','peer'),('label-number','text'),('status','status'),('direction','direction')]
         self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label, comp)
 
         self.messages_swallow = self.messages_list.get_swallow_object()
@@ -71,7 +71,7 @@ class MsgsApp(tichy.Application):
         self.messages_list.add_callback("details", "*", self.open_msg_detail_window)
 
         self.messages_list.add_callback("save", "*", self.open_save_contact_window)
-
+        #self.messages_list.add_callback("*", "embryo", self.self_test)
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
         
         self.edje_obj.embed(self.messages_swallow,self.messages_list.box,"message-items")
@@ -164,7 +164,8 @@ class MsgsApp(tichy.Application):
         ##show edje window
         new_edje.Edje.show()
         ##mark message as read if unread
-        message.read()
+        if message.direction == 'in':
+            message.read()
     
     ## open subwindow to create new message (enter recipients)
     def open_enter_number(self, emission, signal, source, sms):
@@ -199,15 +200,9 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
         new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
-        #new_edje.Edje.signal_callback_add("*", "*", self.self_test)
         new_edje.Edje.signal_callback_add("*", "*", self.self_test)
         new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
-        #te = new_edje.Edje.part_object_get("length-text")
-        #print dir(mb)
-        #print dir(mb.evas.viewport_get())
-        #print mb.evas.viewport_get().count()
-        #print mb.evas.viewport_get().index()
         
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
@@ -217,7 +212,6 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.show()
         new_edje.Edje.focus_set(True)
         mb.focus_set(True)
-        #tview.focus()
         
     ## open window to save unknown contact
     def open_save_contact_window(self, emission, signal, source, item):

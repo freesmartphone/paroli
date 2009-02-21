@@ -82,6 +82,7 @@ class Message(tichy.Item):
             return
         self.status = 'read'
         self.emit('read')
+        self.emit('modified')
 
     def save(self):
         raise NotImplementedError('save not implemeted for %s' % type(self))
@@ -122,7 +123,7 @@ class PhoneMessage(Message):
 
     @classmethod
     def save(cls):
-        """Save all the phone contacts"""
+        """Save all the phone messages"""
         logger.info("Saving phone messages")
         messages = tichy.Service('Messages').messages
         data = [c.to_dict() for c in messages if isinstance(c, PhoneMessage)]
@@ -138,7 +139,7 @@ class PhoneMessage(Message):
 
     @classmethod
     def load_all(cls):
-        """Load all the phone contacts
+        """Load all the phone msgs
 
         Return a list of all the contacts
         """
@@ -167,6 +168,8 @@ class MessagesService(tichy.Service):
 
     def __init__(self):
         self.messages = tichy.List()
+        self.unread = tichy.Text(0)
+        self.messages.connect('appended',self._update_unread)
         self.ready = False
 
     @tichy.tasklet.tasklet
@@ -220,6 +223,7 @@ class MessagesService(tichy.Service):
                 continue
             assert all(isinstance(x, Message) for x in messages)
         self.messages[:] = all_messages
+        self._update_unread()
         logger.info("Totally got %d messages", len(self.messages))
 
 
@@ -234,4 +238,17 @@ class MessagesService(tichy.Service):
         """Create a new message
         The arguments are the same as `Message.__init__`
         """
-        return PhoneMessage(number, text, direction, **kargs)
+        msg = PhoneMessage(number, text, direction, **kargs)
+        if msg.status == 'unread':
+            msg.connect('read',self._update_unread)
+        return msg
+
+    def _update_unread(self, *args, **kargs):
+        self.unread.value = int(0)
+        for msg in self.messages:
+            if msg.status == 'unread':
+                msg.connect('read',self._update_unread)
+                self.unread.value = int(self.unread.value)+1
+                
+        self.unread.emit('updated')
+        logger.debug("unread message count now: %s in total", self.unread)
