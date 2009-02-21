@@ -70,23 +70,27 @@ class Launcher_App(tichy.Application):
             for app in tichy.Application.subclasses:
                 if app.category == 'launcher':
                     logger.info("adding - %s to launcher", app.name)
-                    apps.append(app.name)
+                    apps.append(app)
             
         box = gui.edje_box(self,'V',1)
         box.box.show()
         self.app_objs = {}
-        for a in apps:
+        for app in apps:
             canvas = gui.etk.Canvas()
             link_obj = gui.EdjeObject(self.main,self.edje_file,'link')
             canvas.object_add(link_obj.Edje)
             box.box.append(canvas, gui.etk.VBox.START, gui.etk.VBox.NONE, 0)
-            link_obj.Edje.part_text_set("texter",a)
-            link_obj.Edje.part_text_set("testing_textblock","<normal>" + a + "</normal><small></small>")
+            link_obj.Edje.part_text_set("texter",app.name)
+            link_obj.Edje.part_text_set("testing_textblock","<normal>" + app.name + "</normal><small></small>")
+            if hasattr(app,'launcher_info'):
+                attr = app.launcher_info
+            else:
+                attr = 0
             link_obj.Edje.layer_set(5)
             link_obj.Edje.show()
             link_obj.add_callback("*", "launch_app", self.launch_app)
-            app_obj = [canvas,link_obj]
-            self.app_objs[a] = app_obj
+            app_obj = [canvas,link_obj,attr]
+            self.app_objs[app.name] = app_obj
         self.edje_obj.embed(box.scrolled_view,box,"link-box")
         box.box.show()
             ##create list of apps according to specs
@@ -125,13 +129,26 @@ class Launcher_App(tichy.Application):
         for i in self.main.children:
           i.remove()
         self.main.etk_obj.hide()   # Don't forget to close the window
-        
-    def embryo(self, emission, signal, source):
-        logger.info("embryo says:" + str(signal))
 
     def unblock_screen(self, *args, **kargs):
         logger.info('unblocking screen')
+        for app in self.app_objs:
+            if self.app_objs[app][2] != 0:
+                connector = self.app_objs[app][2][0]
+                connector.connect('modified', self._set_subtext, app)
+                self._set_subtext(self.app_objs[app][2][0].value, app)
+                
         self.edje_obj.signal("ready","*")
+
+    def _set_subtext(self, *args, **kargs):
+        if args[0] != 0:
+          value = args[0]
+        else:
+          value = ''
+        app = args[1]
+        edje_obj = self.app_objs[app][1]
+        text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
+        edje_obj.Edje.part_text_set('testing_textblock',text)
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
@@ -185,21 +202,8 @@ class Launcher_App(tichy.Application):
         if self.active_app == 'Tele':
             self.edje_obj.signal('switch_clock_off',"*")
         self._on_call_activated() 
-    
-    ##DEBUG FUNCTIONS
-    def test(self, emission, source, param):
-        logger.info('test called')
-        try:
-            self.connector.emit('call_active')
-        except Exception, e:
-            print e
-    
-    #write version number on home-screen
-    def _get_paroli_version(self):
-        wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error= wo.communicate()
-        m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
-        self.edje_obj.Edje.part_text_set('version',m.group(1))
+        
+    ##MAIN FUNCTIONS
     
     def _on_call_activated(self, *args, **kargs):
         
@@ -221,3 +225,26 @@ class Launcher_App(tichy.Application):
     def battery_capacity(self, *args, **kargs):
         logger.info("capacity change in launcher")
         self.edje_obj.Edje.signal_emit(str(args[1]), "battery_change")
+    
+    ##DEBUG FUNCTIONS
+    def test(self, emission, source, param):
+        logger.info('test called')
+        try:
+            self.connector.emit('call_active')
+        except Exception, e:
+            print e
+    
+            
+    def embryo(self, emission, signal, source):
+        logger.info("embryo says:" + str(signal))
+    
+    def general_test(self, *args, **kargs):
+        logger.info("general test called with args: %s and kargs: %s", args, kargs)
+    
+    #write version number on home-screen
+    def _get_paroli_version(self):
+        wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error= wo.communicate()
+        m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
+        self.edje_obj.Edje.part_text_set('version',m.group(1))
+    
