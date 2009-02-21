@@ -73,7 +73,7 @@ class MsgsApp(tichy.Application):
         self.messages_list.add_callback("save", "*", self.open_save_contact_window)
         #self.messages_list.add_callback("*", "embryo", self.self_test)
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
-        
+        self.edje_obj.Windows.connect('modified', self._blocker, self.edje_obj )
         self.edje_obj.embed(self.messages_swallow,self.messages_list.box,"message-items")
         sms = empty_sms()
         self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
@@ -107,6 +107,16 @@ class MsgsApp(tichy.Application):
         #txt = "self test called with args: ", args, "and kargs: ", kargs
         logger.info(args[1])
         logger.info(args[2])
+    
+    def _blocker(self, *args, **kargs):
+        logger.info("_blocker called with args %s and kargs: %s", str(args), str(kargs))
+        windows = args[0]
+        if len(windows) == 0:
+            args[1].signal('deactivate-blocker', '*')
+            args[1].Edje.thaw()
+        else:
+            args[1].signal('activate-blocker', '*')
+            args[1].Edje.freeze()
     
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing message-details

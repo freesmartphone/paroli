@@ -218,6 +218,9 @@ class EventsLoop(object):
     def quit(self):
         ecore.main_loop_quit()
 
+    def iterate(self):
+        ecore.main_loop_iterate()
+
 ####ADDED by mirko
 
 class ScrollerEdje(tichy.Object):
@@ -248,7 +251,7 @@ class EdjeObject(tichy.Object):
         self.EdjeGroup = EdjeGroup
         self.Evas = Parent.etk_obj.evas
         self.Edje = edje.Edje(self.Evas, file=self.EdjeFile, group=self.EdjeGroup)
-        self.Edje.data['windows'] = []
+        self.Edje.data['windows'] = tichy.List()
         self.Edje.data['EdjeObject'] = self
         self.Windows = self.Edje.data['windows']
         self.EdjeWindows = EdjeWindows
