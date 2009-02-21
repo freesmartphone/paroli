@@ -28,6 +28,8 @@ from tichy.service import Service
 import ecore
 import dbus
 from tel_number import TelNumber
+import subprocess
+import re
 
 class Launcher_App(tichy.Application):
     name = 'Paroli-Launcher'
@@ -117,6 +119,8 @@ class Launcher_App(tichy.Application):
         else:
             self.unblock_screen()
         
+        self._get_paroli_version()
+        
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
           i.remove()
@@ -181,13 +185,21 @@ class Launcher_App(tichy.Application):
         if self.active_app == 'Tele':
             self.edje_obj.signal('switch_clock_off',"*")
         self._on_call_activated() 
-            
+    
+    ##DEBUG FUNCTIONS
     def test(self, emission, source, param):
         logger.info('test called')
         try:
             self.connector.emit('call_active')
         except Exception, e:
             print e
+    
+    #write version number on home-screen
+    def _get_paroli_version(self):
+        wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error= wo.communicate()
+        m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
+        self.edje_obj.Edje.part_text_set('version',m.group(1))
     
     def _on_call_activated(self, *args, **kargs):
         
