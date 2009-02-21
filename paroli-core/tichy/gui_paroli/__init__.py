@@ -458,13 +458,13 @@ class EvasList(tichy.Object):
 
       def _append_new(self,*args,**kargs):
           logger.info('append called')
+          args[1].connect('modified',self._redraw_view)
           new_item = self.generate_single_item(args[1])
           for cb in self.callbacks:
               new_item[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
-              args[1].connect('modified',self._redraw_view)
           self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
           self.items.insert(0,new_item)
-          self._redraw_view()
+          self._redraw_box()
           
       def _remove_item(self,*args,**kargs):
           logger.info('remove called')
