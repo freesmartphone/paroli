@@ -94,8 +94,6 @@ class Launcher_App(tichy.Application):
         self.edje_obj.embed(box.scrolled_view,box,"link-box")
         box.box.show()
             ##create list of apps according to specs
-          
-        self.edje_obj.show(1)
         
         self.edje_obj.Edje.size_set(self.w, self.h)
         
@@ -106,24 +104,25 @@ class Launcher_App(tichy.Application):
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("test", "*", self.test)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
+        #self.battery_capacity(0, 50)
+        ##current hack
+        self.standalone = True
+        
+        self.msg = tichy.Service('Messages')
+        if self.msg.ready == False :
+            self.msg.connect('ready',self.unblock_screen)
+        else:
+            self.unblock_screen()
         
         self.gsm = tichy.Service('GSM')
         self.gsm.connect('network-strength', self.network_strength)
         
         self.power = tichy.Service('Power')
         self.power.connect('battery_capacity', self.battery_capacity)
-        #self.battery_capacity(0, 50)
-        ##current hack
-        self.standalone = True
-        
-        self.msg = tichy.Service('Messages')
-        logger.info(self.msg.ready)
-        if self.msg.ready == False :
-            self.msg.connect('ready',self.unblock_screen)
-        else:
-            self.unblock_screen()
-        
+        self.battery_capacity(0,10)
         self._get_paroli_version()
+          
+        self.edje_obj.show(1)
         
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
@@ -141,7 +140,7 @@ class Launcher_App(tichy.Application):
         self.edje_obj.signal("ready","*")
 
     def _set_subtext(self, *args, **kargs):
-        if args[0] != 0:
+        if args[0] != "0":
           value = args[0]
         else:
           value = ''
