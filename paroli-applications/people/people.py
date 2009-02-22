@@ -18,7 +18,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import logging
-logger = logging.getLogger('app.msgs')
+logger = logging.getLogger('app.people')
 
 import tichy
 from tichy import gui
@@ -29,11 +29,10 @@ import ecore
 import ecore.evas
       
 
-class MsgsApp(tichy.Application):
-    name = 'Msgs'
+class PeopleApp(tichy.Application):
+    name = 'People'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
-    launcher_info = [tichy.Service('Messages').unread]
     
     def run(self, parent, standalone=False):
         
@@ -45,38 +44,35 @@ class MsgsApp(tichy.Application):
     #try:
         ##set the title of the window
         if self.main.etk_obj.title_get() != 'Home':
-            self.main.etk_obj.title_set('Msgs')
+            self.main.etk_obj.title_set('People')
 
       
         ##set edje file to be used
         ##TODO: make one edje file per plugin
-        self.edje_file = os.path.join(os.path.dirname(__file__),'msgs.edj')
+        self.edje_file = os.path.join(os.path.dirname(__file__),'people.edj')
 
         ##get message service and list of all messages
-        self.msgs_service = tichy.Service('Messages')
+        self.contact_service = tichy.Service('Contacts')
         
-        self.messages = self.msgs_service.messages
+        self.contacts = self.contact_service.contacts
         
-        ##sort messages by date
+        ##sort contact by date
         def comp(m1, m2):
-            return cmp(m2.timestamp, m1.timestamp)
-            
-            #return cmp(len(m2.text), len(m1.text))
+            return cmp(str(m1.name).lower(), str(m2.name).lower())
         
-        self.list_label = [('label','peer'),('label-number','text'),('status','status'),('direction','direction')]
-        self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label, comp)
+        self.list_label = [('label','name')]
+        self.contacts_list = gui.EvasList(self.contacts, self.main, self.edje_file, "contacts_item", self.list_label, comp)
 
-        self.messages_swallow = self.messages_list.get_swallow_object()
+        self.contacts_swallow = self.contacts_list.get_swallow_object()
 
-        self.messages_list.add_callback("details", "*", self.open_msg_detail_window)
+        self.contacts_list.add_callback("contact_details", "contacts", self.open_detail_window)
 
-        self.messages_list.add_callback("save", "*", self.open_save_contact_window)
-        #self.messages_list.add_callback("*", "embryo", self.self_test)
-        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
-        self.edje_obj.Windows.connect('modified', self._blocker, self.edje_obj )
-        self.edje_obj.embed(self.messages_swallow, self.messages_list.box, "message-items")
-        sms = empty_sms()
-        self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
+        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'people', "contacts-items")
+        
+        self.edje_obj.embed(self.contacts_swallow,self.contacts_list.box,"contacts-items")
+        #sms_service = tichy.Service('SMS')
+        #sms = empty_sms()
+        #self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
@@ -87,8 +83,8 @@ class MsgsApp(tichy.Application):
         self.edje_obj.show()
 
         ##wait until main object emits back signal or delete is requested
-        yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_Msgs'))
-        logger.info('Msgs closing')
+        yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_People'))
+        logger.info('People closing')
         ##remove all children -- edje elements
 
     #finally:
@@ -104,78 +100,76 @@ class MsgsApp(tichy.Application):
     ##DEBUG FUNCTIONS 
     ## general output check
     def self_test(self, *args, **kargs):
-        #txt = "self test called with args: ", args, "and kargs: ", kargs
-        logger.info(args[1])
-        logger.info(args[2])
+        txt = "self test called with args: ", args, "and kargs: ", kargs
+        logger.info(txt)
     
-    def _blocker(self, *args, **kargs):
-        logger.info("_blocker called with args %s and kargs: %s", str(args), str(kargs))
-        windows = args[0]
-        if len(windows) == 0:
-            args[1].signal('deactivate-blocker', '*')
-            args[1].Edje.thaw()
-        else:
-            args[1].signal('activate-blocker', '*')
-            args[1].Edje.freeze()
+    
+    ##MISC FUNCTIONS 
+    def change_text(self, entry, edje, part):
+        edje.Edje.part_text_set(part, entry.text) 
+    
+    def update_contact(self, *args, **kargs):
+        name = kargs['name_field'].etk_obj.text
+        
+        if kargs['contact'].name != name:
+            kargs['contact'].name = name
+        
+        args[0].signal_emit('back','*')
+    
+    def delete_callback(self, emission, signal, source, item, oid):
+        item.disconnect(oid)
     
     ## SUBWINDOW FUNCTIONS
-    ## open subwindow showing message-details
-    def open_msg_detail_window(self, emission, signal, source, item):
-        canvas = item[2]
-        edje_obj = item[1]
-        message = item[0]
+    ## open subwindow showing contact's-details
+    def open_detail_window(self, emission, signal, source, item):
+        number = str(item[0].tel)
+        name = str(item[0].name)
+        info = str(item[0].note) if hasattr(item[0], 'note') else ""
         
-        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'message_details', 'message', self.edje_obj.Windows )
-        
+        new_edje = gui.EdjeObject(self.main, self.edje_file, 'contact_details', self.edje_obj.Windows )
+        new_edje.show(3)
         ##set sender/recipient
-        new_edje.Edje.part_text_set('name-text',str(message.peer).encode('utf8'))
+        new_edje.Edje.part_text_set('name-text',str(name).encode('utf8'))
         
-        ##set time of message sent/received
-        new_edje.Edje.part_text_set('name-info', message.timestamp.local_repr())
+        def _update_values(*args, **kargs):
+            value = args[0]
+            print type(value)
+            edje = args[1].Edje
+            edje.part_text_set('name-text',str(value).encode('utf8'))
+        
+        oid = item[0].connect('modified', _update_values, new_edje)
     
         ##set number
-        new_edje.Edje.part_text_set('number-text',str(message.peer.value).encode('utf8'))
-    
-        ##set text
-        ##generate text field edje
-        text_obj = gui.EdjeObject(self.main, self.edje_file, 'text_grp', new_edje.Windows )
-        ##set text field in edje
-        text_obj.Edje.part_text_set('message-block', unicode(message.text).encode('utf8'))
-        ##show edje object
-        text_obj.show()
-        ##get text size - hack to make scrollable
-        message_length = text_obj.Edje.part_object_get("message-block").size_get()
-        ##set edje obj size to make scrollable
-        text_obj.Edje.size_set(message_length[0],message_length[1])
-        ##create scroll object
-        text_obj_scroller = gui.ScrollerEdje(text_obj.Edje)
-        ##embed scroll object
-        new_edje.embed(text_obj_scroller.scrollbox, text_obj_scroller.box, 'message')
-        ##show contents of scroll object - Needed?
-        text_obj_scroller.box.show_all()
+        new_edje.Edje.part_text_set('number-text',str(number).encode('utf8'))
         ##add callback for back button
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
-        
-        ## initialize empty sms for reply or forward
-        sms = empty_sms()
-        sms.number = message.peer.value
-        sms.text = unicode(message.text).encode('utf8')
-        
-        ##add callbacks for reply button
-        new_edje.Edje.signal_callback_add("reply", "*", self.open_new_msg_text_entry, sms)
-        ##add callbacks for forward function
-        new_edje.Edje.signal_callback_add("forward", "*", self.open_enter_number, sms)
+        new_edje.Edje.signal_callback_add("close_details", "*", self.delete_callback, item[0], oid)
         ##add callback for delete button
-        new_edje.Edje.signal_callback_add("delete_message", "*", self.delete_sms, item)
+        new_edje.Edje.signal_callback_add("edit_name", "*", self.edit_name, item[0])
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
         new_edje.Edje.pos_set(0,40)
         ##show edje window
-        new_edje.Edje.show()
-        ##mark message as read if unread
-        if message.direction == 'in':
-            message.read()
+        new_edje.Edje.show()   
+    
+    def edit_name(self, emission, signal, source, contact):
+        new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'edit-name',"name-box", self.edje_obj.Windows, True)
+        new_edje.Edje.size_set(480,600)
+        new_edje.Edje.pos_set(0,40)
+        new_edje.show(3)
+        #new_edje.Edje.part_text_set('number',number)
+        name_field = gui.Edit(None)
+        name_field.etk_obj.on_text_changed(self.change_text, new_edje, "name-box-text")
+        name_field.set_text(str(contact.name))
+        box = gui.Box(None,1)
+        box.add(name_field)
+        new_edje.embed(box.etk_obj,box,"name-box")
+        box.etk_obj.show_all()
+        name_field.etk_obj.focus()
+        new_edje.add_callback('back','*', new_edje.delete)
+        new_edje.add_callback('save_contact','*', self.update_contact, **{'name_field':name_field, "contact" : contact})
+        
     
     ## open subwindow to create new message (enter recipients)
     def open_enter_number(self, emission, signal, source, sms):
@@ -193,52 +187,35 @@ class MsgsApp(tichy.Application):
         ##add window actions
         ##close window
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
-        ##add contact from phonebook UNFINISHED
+        ##add contact from phonebook
         #new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
         new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
         new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
     
     ## open subwindow to create new message (text entry)
-    def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
+    def open_new_msg_text_entry(self, emission, signal, source, sms, window):
         logger.info('got empty_sms with number ' + str(sms.number))
-        new_edje = gui.EdjeObject(self.main, self.edje_file, 'create_message', self.edje_obj.Windows, True)
-        
-        if window:
-            new_edje.Windows.append(window)
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'message_details', 'message', self.edje_obj.Windows, True)
+            
+        new_edje.Windows.append(window)
+        new_edje.Edje.part_text_set("reply-button-text",'send')
+        ##embed scroll object
+        tview = gui.etk.TextView()
+        tview.theme_file_set(self.edje_file)
+        tview.theme_group_set("text_view")
+        new_edje.embed(tview, None, 'message')
         ##add callback for back button and send
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
-        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
-        new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
-        new_edje.Edje.signal_callback_add("*", "*", self.self_test)
-        new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
-        mb = new_edje.Edje.part_object_get("message-block")
-        
+        new_edje.Edje.signal_callback_add("reply", "*", sms.set_text_from_obj, tview.textblock_get())
+        new_edje.Edje.signal_callback_add("reply", "*", self._on_send_sms, sms, new_edje )
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
         new_edje.Edje.pos_set(0,40)
         ##show edje window
         new_edje.Edje.show()
-        new_edje.Edje.focus_set(True)
-        mb.focus_set(True)
-        
-    ## open window to save unknown contact
-    def open_save_contact_window(self, emission, signal, source, item):
-        logger.info("add contact in msgs")
-        number = str(item[0].peer)
-        logger.info("number is %s", number)
-        new_edje = gui.EdjeObject(self.main,self.edje_file,'save-number', self.edje_obj.Windows, True)
-        new_edje.Edje.size_set(480,600)
-        new_edje.Edje.pos_set(0,40)
-        new_edje.show(3)
-        new_edje.Edje.part_text_set('number',number)
-        tb = new_edje.Edje.part_object_get("name-text-field")
-        new_edje.Edje.show()
-        new_edje.Edje.focus_set(True)
-        tb.focus_set(True)
-        new_edje.add_callback('close_window','*', new_edje.delete)
-        new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':'name-text-field','number':number,'item':item[0]})
+        tview.focus()
         
     ##MISC FUNCTIONS
     #sending
@@ -276,15 +253,6 @@ class MsgsApp(tichy.Application):
             #self.contact_objects_list.box.box.show_all()
             window.delete()
   
-    # editing
-    def sign_counter(self, emission, signal, source):
-        text = emission.part_text_get(source)
-        length = len(text)
-        if length > 160:
-            #obj = emission.part_object_get('message-text')
-            #obj.text_set(text[0:17])
-            emission.part_text_set(source, text[0:159])
-  
     #deleting
     def delete_sms(self, emission, signal, source, item):
         logger.info("delete message called")
@@ -302,28 +270,6 @@ class MsgsApp(tichy.Application):
             #canvas.remove_all()
             emission.data['EdjeObject'].delete()
   
-    ## save contact
-    def save_contact(self, *args, **kargs ):
-        name = args[0].part_text_get(kargs['name_field'])
-        number = kargs['number']
-        logger.info('saving contact: name: ' + name + " number: " + number)
-        args[0].signal_emit('save-notice','*')
-        args[0].render_op_set(1)
-        contacts_service = tichy.Service('Contacts')
-        try:
-            contact = contacts_service.create(str(name),tel=str(number))
-            contacts_service.add(contact)
-            ## clear number field on success
-            self.edje_obj.Edje.part_text_set('num_field-text','')
-        except Exception,e:
-            logger.error("Got error in save_number : %s", e)
-        else:
-            kargs['item'].emit('modified')
-            args[0].signal_emit('mouse,clicked,1','back-button')
-        
-    def change_text(self, entry, edje):
-        edje.Edje.part_text_set('name-text-field',entry.text)
-  
 class empty_sms():
     def __init__(self):
         self.number = None
@@ -332,8 +278,8 @@ class empty_sms():
     def set_number(self, emission, source, signal, part):
         self.number = emission.part_text_get(part)
       
-    def set_text_from_part(self, emission, source, signal, part):
-        self.text = emission.part_text_get(part)
+    def set_text_from_obj(self, emission, source, signal, text_obj):
+        self.text = text_obj.text_get(0)
 
         
     ##BELOW    --->     TO BE REPLACED / REWRITTEN
@@ -402,7 +348,7 @@ class empty_sms():
     
     ##show message details
     def show_details(self, emission, source, param, message, canvas_obj):
-        #print "show details called"
+        print "show details called"
         time = message.timestamp
         text = str(message.text).encode('utf8')
         print text

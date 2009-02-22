@@ -8,4 +8,5 @@ cd paroli-msgs; ./build.sh; cd ..
 cd paroli-launcher; ./build.sh; cd ..
 cd tele; ./build.sh; cd ..
 cd msgs; ./build.sh; cd ..
+cd people; ./build.sh; cd ..
 
