@@ -60,7 +60,7 @@ class Launcher_App(tichy.Application):
         
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
 
-        self.edje_obj = gui.EdjeWSwallow(self.main,self.edje_file,'launcher','link-box')
+        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'launcher', 'link-box')
         
         if self.advanced == False:
             ##create list of apps from list of registered apps
@@ -240,7 +240,11 @@ class Launcher_App(tichy.Application):
             new = available[0]
         else:
             new = available[current_index+1]
-            
+        edje_obj = gui.EdjeObject(self.main, self.edje_file, 'profile')    
+        edje_obj.Edje.part_text_set('text',new)
+        edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
+        edje_obj.Edje.size_set(480, 600)
+        edje_obj.show()
         self.prefs.set_profile(new)
         
         logger.info("current: %s new: %s", current, new)
