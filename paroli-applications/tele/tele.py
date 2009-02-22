@@ -268,7 +268,7 @@ class TeleCaller(tichy.Application):
                 self.storage.call = call
                 self.main.emit('call_active')
                 self.edje_obj.edj.signal_emit('to_incoming_state',"*")
-                self.edje_obj.edj.part_text_set('num_field-text',str(call.number))
+                self.edje_obj.edj.part_text_set('num_field-text',str(call.number.get_text()))
                 self.edje_obj.edj.layer_set(2)
                 self.edje_obj.edj.show()
 
@@ -322,7 +322,6 @@ class TeleCaller(tichy.Application):
                 yield tichy.WaitFirst(tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
 
             if call.status not in ['released', 'releasing']:
-                #text.value = "releasing %s" % call.number
                 try:
                     try:
                         call.release().start()
@@ -331,8 +330,7 @@ class TeleCaller(tichy.Application):
                         self.main.emit('call_error')
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
-            #self.storage.main_window.emit('call_released')
-            #self.storage.status.__set_value('None')
+                    
             self.storage.call = None
             
             self.edje_obj.edj.delete()
@@ -343,11 +341,7 @@ class TeleCaller(tichy.Application):
             self.edje_obj.edj.delete()
             self.edje_obj_top_bar.edj.delete()
             self.main.etk_obj.visibility_set(0)
-            raise
-            
-    #def call(self, emission, signal, source):
-        #if signal == "accept":
-            
+            raise    
     
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))

@@ -74,7 +74,7 @@ class MsgsApp(tichy.Application):
         #self.messages_list.add_callback("*", "embryo", self.self_test)
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'messages', "message-items")
         self.edje_obj.Windows.connect('modified', self._blocker, self.edje_obj )
-        self.edje_obj.embed(self.messages_swallow,self.messages_list.box,"message-items")
+        self.edje_obj.embed(self.messages_swallow, self.messages_list.box, "message-items")
         sms = empty_sms()
         self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         
