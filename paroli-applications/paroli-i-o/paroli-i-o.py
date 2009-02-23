@@ -28,6 +28,19 @@ import sys
 from tichy.service import Service
 import ecore
 
+class CallLog(tichy.Item):
+    """Class that represents a call log"""
+    def __init__(self, number, direction, timestamp, type):
+        self.number = number
+        self.direction = direction
+        self.timestamp = timestamp
+        self.type = type
+        self.description = self.type + " at " + unicode(self.timestamp.get_text())
+
+    def get_text(self):
+        return self.number.get_text()
+
+
 class I_O_App(tichy.Application):
     name = 'Paroli-I/O'
     icon = 'icon.png'
@@ -44,40 +57,33 @@ class I_O_App(tichy.Application):
         self.layerdict = {}
         self.gsm_service = tichy.Service('GSM')
             
-        self.missedCalls = []
-        self.incomingCalls = []
-        self.outgoingCalls = []
-
         self.history = self.gsm_service.logs
+        self.callLogs = tichy.List()
         for call in self.history:
             if call.status == "inactive" and call.direction == "in":
-                self.missedCalls.append(call)
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Missed"))
             elif call.status != "inactive" and call.direction == "in":
-                self.incomingCalls.append(call)
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Incoming"))
             else: 
-                self.outgoingCalls.append(call)
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Outgoing"))
         
-        
-        self.edje_obj = gui.edje_gui(self.main,'i-o',self.edje_file)
-        self.edje_obj.edj.signal_callback_add("edit_btn_clicked", "*", self.edit_mode)
-        
-        history_box = gui.edje_box(self,'V',1)
-        self.lists = gui.lists()
-        try:
-          #self.lists.generate_list(self,self.main.etk_obj.evas,self.history_scroller,history_edje,self.edje_obj,'history_item')
- 
-          self.history_objects_list = gui.contact_list(self.history, history_box, self.main.etk_obj.evas, self.edje_file, 'history_item', self, kind='history')
-        except Exception,e:
-          print e
+        #history_box = gui.edje_box(self, 'V', 1)
 
-        try:
-            self.edje_obj.add(history_box.scrolled_view, history_box, "history-items")
-        except Exception,e:
-          print e
+        def comp(m1, m2):
+            return cmp(m2.timestamp, m1.timestamp)
 
-        self.edje_obj.edj.layer_set(1)
-        self.edje_obj.edj.show()
-        self.edje_obj.edj.pos_set(0, self.y)
+        #self.lists = gui.lists()
+
+        #  We use Call object to represent call log 
+        self.list_label = [('label', 'number'), ('subtext', 'description')]
+        self.history_list = gui.EvasList(self.callLogs, self.main, self.edje_file, "history_item", self.list_label, comp)
+        self.history_swallow = self.history_list.get_swallow_object()
+        self.history_list.add_callback("edit_btn_clicked", "*", self.edit_mode)
+
+        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
+        self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
+        self.edje_obj.Edje.size_set(480, 590)
+        self.edje_obj.show()
 
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
 
