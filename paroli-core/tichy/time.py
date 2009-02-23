@@ -39,7 +39,6 @@ class Time(tichy.Item):
         self.timeshift = None
         # TODO: maybe deprecate creating time from a string ?
         if isinstance(value, basestring):
-            logger.debug("create Time from string : '%s'", value)
             # We check for timezone information (e.g '+0800')
             if value[-5] == '+':
                 self.timeshift = value[-5:]
