@@ -70,10 +70,10 @@
     filters: HasAttr(status, "charging")
     actions: SetLed("gta02_power_orange", "light")
 
-#-
-#    while: PowerStatus()
-#    filters: Not(HasAttr(status, "discharging"))
-#    actions: OccupyResource(Display)
+-
+   while: PowerStatus()
+   filters: Not(HasAttr(status, "discharging"))
+   actions: OccupyResource(Display)
 
 -
     while: PowerStatus()
