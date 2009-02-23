@@ -113,7 +113,7 @@ class FreeSmartPhoneSim(tichy.Service):
         self.indexes = {}       # map sim_index -> contact
 
     @tichy.tasklet.tasklet
-    def set_info(self):
+    def init(self):
         #set sim info variable to be used by various apps
         logger.debug("Get sim info")
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
@@ -255,7 +255,7 @@ class TestSim(tichy.Service):
         yield None
 
     @tichy.tasklet.tasklet
-    def set_info(self):
+    def init(self):
         self.sim_info = {'imsi':'0123456789012345'}
         yield None
 

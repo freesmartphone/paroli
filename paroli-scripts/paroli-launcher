@@ -94,29 +94,15 @@ class InitAll(tichy.Tasklet):
         # TODO: make this automatic. That would mean restructuring the
         #       service module, but we need to do it anyway.
 
-        storage_service = tichy.Service('TeleCom')
-        yield storage_service.init()
-        # Register on the GSM Network
-        gsm_service = tichy.Service('GSM')
-        yield gsm_service.init()
-        # Set SIM info
-        gsm_sim = tichy.Service('SIM')
-        yield gsm_sim.set_info()
-        # Get all the contacts
-        contacts = tichy.Service('Contacts')
-        yield contacts.init()
-        # The message service
-        messages_service = tichy.Service('Messages')
-        yield messages_service.init()
-        # The SMS service
-        sms_service = tichy.Service('SMS')
-        yield sms_service.init()
-
-        caller_service = tichy.Service('TeleCaller')
-        yield caller_service.init()
-
-        audio_service = tichy.Service('Audio')
-        yield audio_service.init()
+        for service_name in ['TeleCom', 'GSM', 'SIM', 'Contacts', 'Messages',
+                             'SMS', 'TeleCaller', 'Audio']:
+            logger.debug("init service %s", service_name)
+            service = tichy.Service(service_name)
+            try:
+                yield service.init()
+            except Exception, ex:
+                logger.error("can't init service %s : %s", service_name, ex)
+                yield tichy.Service("Dialog").error(None, "can't init %s : %s" % (service_name, ex))
 
         # Finally we can start to listen for incoming calls
         logger.info("start AutoAnswerCall")
