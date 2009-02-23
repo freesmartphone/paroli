@@ -45,6 +45,7 @@ class PeopleApp(tichy.Application):
         ##set the title of the window
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('People')
+            self.main.etk_obj.show()
 
       
         ##set edje file to be used

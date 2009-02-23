@@ -46,6 +46,7 @@ class MsgsApp(tichy.Application):
         ##set the title of the window
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('Msgs')
+            self.main.etk_obj.show()
 
       
         ##set edje file to be used
