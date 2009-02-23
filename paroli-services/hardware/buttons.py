@@ -41,6 +41,7 @@ class ButtonService(tichy.Service):
         super(ButtonService, self).__init__()
         logger.info('button service init')
         self._connect_dbus().start() 
+        self.last = None
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
@@ -58,6 +59,17 @@ class ButtonService(tichy.Service):
     def _on_button_press(self, name, action, seconds):
         logger.debug("button pressed name: %s action: %s seconds %i", name, action, seconds)
         text = tichy.Text()
-        text = "%s_button_%s" % (name.lower(), action.lower())
+        if action.lower() == 'pressed':
+            self.last = 'pressed'
+        elif action.lower() == 'released':
+            if self.last == 'pressed':
+                text = "%s_button_%s" % (name.lower(), self.last)
+            elif self.last == 'held':
+                text = "%s_button_%s_%i" % (name.lower(), self.last, seconds)
+            self.last = None
+        if action.lower() == 'held':
+            self.last = 'held'
+            text = "%s_button_%s_%i" % (name.lower(), self.last, seconds)
+            
         self.emit(text)
 
