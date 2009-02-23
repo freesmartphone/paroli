@@ -52,7 +52,8 @@ class List(list, Item):
 
     def append(self, value):
         """Add a new item in the list"""
-        assert isinstance(value, Item), type(value)
+        # This assertion is not true anymore ?
+        # assert isinstance(value, Item), type(value)
         list.append(self, value)
         self.emit('appended', value)
         self.emit('modified')
