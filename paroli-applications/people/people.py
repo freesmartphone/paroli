@@ -76,7 +76,7 @@ class PeopleApp(tichy.Application):
         
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
-            self.edje_obj.Edje.pos_set(0,30)
+            self.edje_obj.Edje.pos_set(0, 50)
         else:
             self.edje_obj.Edje.size_set(480,590)
         
