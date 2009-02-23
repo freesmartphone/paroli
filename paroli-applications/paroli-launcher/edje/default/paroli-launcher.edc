@@ -855,15 +855,16 @@ collections{
                   script{
                       new val;
                       val = atoi(sig);
-                      if(val == 3) {
+                      if(val >= 66) {
                          set_state(PART:"battery", "battery_3", 0.0);
                       }
-                      else if(val == 2) {
+                      else if(val >= 33 && val < 66) {
                          set_state(PART:"battery", "battery_2", 0.0);
                       }
-                      else if(val == 1) {
+                      else if(val < 33){
                          set_state(PART:"battery", "battery_1", 0.0);
                       }
+                      emit(sig,"embryo");
                   }
                   
               }
