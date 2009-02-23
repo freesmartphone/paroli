@@ -267,8 +267,12 @@ class Launcher_App(tichy.Application):
     
     #write version number on home-screen
     def _get_paroli_version(self):
-        wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error= wo.communicate()
-        m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
-        self.edje_obj.Edje.part_text_set('version',m.group(1))
+        try:
+            wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, error= wo.communicate()
+            m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
+            self.edje_obj.Edje.part_text_set('version',m.group(1))
+        except Exception, ex:
+            logger.warning("Can't get paroli version : %s", ex)
+            self.edje_obj.Edje.part_text_set('version', '????')
     
