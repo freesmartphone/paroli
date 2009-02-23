@@ -270,7 +270,7 @@ class Launcher_App(tichy.Application):
         try:
             wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output, error= wo.communicate()
-            m = re.search('Version:\s.*gitr[0-9][+](.*)-[r][0-9]',output)
+            m = re.search('Version:\s.*[+].*[+](.*)-[r5]',output)
             self.edje_obj.Edje.part_text_set('version',m.group(1))
         except Exception, ex:
             logger.warning("Can't get paroli version : %s", ex)

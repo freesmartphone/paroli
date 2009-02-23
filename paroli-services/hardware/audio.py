@@ -20,7 +20,7 @@
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus
+from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
 logger = logging.getLogger('audio')
@@ -31,8 +31,25 @@ class FSOAudio(tichy.Service):
 
     def __init__(self):
         super(FSOAudio, self).__init__()
+        self.device = None
+        self.audio = None
+        self.muted = 0
+        
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield self._connect_dbus()
+        if self.device != None:
+            self.mic_state = self.get_mic_status()
+            self.speaker_volume = self.get_speaker_volume()
+        
+        #yield self._do_sth()
+        
+    @tichy.tasklet.tasklet
+    def _connect_dbus(self):
+        
         logger.info("connecting to freesmartphone.GSM dbus audio interface")
         try:
+            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=None)
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             device = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
@@ -43,20 +60,8 @@ class FSOAudio(tichy.Service):
 
         except Exception, e:
             logger.warning("can't use freesmartphone audio : %s", e)
-            self.device = None
-            self.audio = None
             raise tichy.ServiceUnusable
-        
-        self.muted = 0
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        if self.device != None:
-            self.mic_state = self.get_mic_status()
-            self.speaker_volume = self.get_speaker_volume()
-        
-        yield self._do_sth()
-        
+    
     def _do_sth(self):
         pass
         
@@ -79,14 +84,14 @@ class FSOAudio(tichy.Service):
           if self.muted == 0:
               self.muted = 1
               self.device.SetMicrophoneMuted(True)
-              logger.info(self.get_mic_status())
               # Notice: this does in no way affect the ringtone volume of an incoming call
               self.device.SetSpeakerVolume(0)
-              logger.info(self.get_speaker_volume())
+              logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
           elif self.muted == 1:
               self.device.SetMicrophoneMuted(self.mic_state)
               self.device.SetSpeakerVolume(self.speaker_volume)
               self.muted = 0
+              logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
           return 0
       else:
           return 1
