@@ -12,6 +12,7 @@ images {
    image: "answer.png" COMP;
    image: "backspace.png" COMP;
    image: "speaker.png" COMP;
+   image: "mute.png" COMP;
    image: "enter.png" COMP;
 
    image: "1.png" COMP;

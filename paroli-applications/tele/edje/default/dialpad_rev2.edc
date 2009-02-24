@@ -528,7 +528,7 @@ group { name: "tele";
             {
               state: "muted" 0.0;
               inherit:"default" 0.0;
-              image.normal: "speaker.png";
+              image.normal: "mute.png";
             }
             description
             {
