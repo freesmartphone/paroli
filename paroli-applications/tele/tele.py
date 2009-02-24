@@ -482,11 +482,8 @@ class PINApp(tichy.Application):
         self.main = window
         self.main.show()
 
-        self.edje_obj = gui.edje_gui(self.main,'tele',self.edje_file)
+        self.edje_obj = gui.edje_gui(self.main, 'pin_enter', self.edje_file)
         self.edje_obj.edj.layer_set(2)
-        self.edje_obj.edj.name_set('PIN')
-        self.edje_obj.edj.signal_emit('to_pin_state',"*")
-        self.edje_obj.edj.signal_callback_add("func_btn", "*", self.func_btn)
         self.edje_obj.edj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         self.edje_obj.edj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.edj.signal_callback_add("add_digit", "*", self.add_digit)

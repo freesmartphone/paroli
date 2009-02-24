@@ -232,3 +232,39 @@ part\
               }\
            }\
         }
+
+#define _PART_PIN_ENTER_KEYPAD_PROG(partname, label ); \
+        program \
+        { \
+            name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
+            action: STATE_SET "default" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+        }\
+        program \
+        { \
+            name: partname"-clicked";\
+            signal: "mouse,clicked,1";\
+            source: partname;\
+            script{\
+                new old[40];\
+                old[20] = get_text(PART:"num_field-text",old,40);\
+                new txt[60];\
+                new num[3] = label;\
+                new pin[40];\
+                pin[39] = get_text(PART:"pin-text",pin,39);\
+                emit(pin,"embryo");\
+                new txt2[60];\
+                emit(num,"embryo");\
+                snprintf(txt2, 60, "%s%s", pin, num);\
+                num = "*";\
+                snprintf(txt, 60, "%s%s", old, num);\
+                if(strlen(pin) < 4) {\
+                   set_text(PART:"pin-text", txt2);\
+                   emit(txt2,"embryo");\
+                   set_text(PART:"num_field-text", txt);\
+                }\
+           }\
+        }

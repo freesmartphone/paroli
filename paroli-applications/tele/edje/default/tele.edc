@@ -43,5 +43,6 @@ collections
     #include "save_contact.edc"
     #include "contacts_item.edc"
     #include "contacts_list.edc"
+    #include "pin_enter.edc"
 
 }
