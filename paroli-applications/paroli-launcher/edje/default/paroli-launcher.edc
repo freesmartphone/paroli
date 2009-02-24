@@ -75,6 +75,24 @@ collections{
                 set_drag(PART:"invisible-slider", 0.0, 0.0);
 
              }
+             public switch_alarm(val) {
+                new state_name[30];
+                new Float:dummy;
+                get_state(PART:"alarm_switch_text", state_name, 30, dummy);
+                if (!strcmp(state_name, "default")) {
+                   set_state(PART:"alarm_switch_text", "alarm_on", 0.0);
+                   set_state(PART:"alarm_icon", "alarm_on", 0.0);
+                } else {
+                   set_state(PART:"alarm_switch_text", "default", 0.0);
+                   set_state(PART:"alarm_icon", "default", 0.0);
+                }
+                set_state(PART:"clock-box", "default", 0.0);
+                set_state(PART:"home-clock-hour-digit-1", "default", 0.0);
+                set_state(PART:"home-clock-hour-digit-0", "default", 0.0);
+                set_state(PART:"home-clock-colon", "default", 0.0);
+                set_state(PART:"home-clock-minute-digit-1", "default", 0.0);
+                set_state(PART:"home-clock-minute-digit-0", "default", 0.0);
+             }
         public clock_cb(val) {
             new buf[11];
             new lday[100];
@@ -344,10 +362,30 @@ collections{
                       } 
                    }
                 }
-                // TODO: alarm button action
+
                 part {
                     name:  "alarm_switch_button";
+                    type: RECT;
+                    mouse_events:1;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                         relative: 0.0 0.0;
+                         offset: 23 140;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 207 186;
+                         to: "base";
+                      } 
+                   }
+                }
+                part {
+                    name:  "alarm_switch_text";
                     type: TEXT;
+                    mouse_events:0;
                     description { 
                       state: "default" 0.0;
                       color: 255 255 255 255;
@@ -359,14 +397,19 @@ collections{
                       }
                       rel1 {
                          relative: 0.0 0.0;
-                         offset: 23 150;
-                         to: "base";
+                         to: "alarm_switch_button";
                       }
                       rel2 {
-                         relative: 0.0 0.0;
-                         offset: 217 176;
-                         to: "base";
+                         relative: 1.0 1.0;
+                         to: "alarm_switch_button";
                       } 
+                    }
+                    description { 
+                      state: "alarm_on" 0.0;
+                      inherit: "default" 0.0;
+                      text {
+                         text: "Alarm Off";
+                      }
                     }
                 }
 
@@ -621,12 +664,12 @@ collections{
                         image {
                            normal: "alarm.png";
                         }
-                       visible: 1;
+                       visible: 0;
                     }
                     description { 
                        state: "alarm_on" 0.0;
                        inherit:"default" 0.0;
-                       visible: 0;
+                       visible: 1;
                     }
                 }
 
@@ -724,6 +767,15 @@ collections{
                   source: "*";
                   action: STATE_SET "unblocked" 0.0;
                   target: "blocker";
+              }
+              program 
+              {
+                  name: "alarm-switch";
+                  signal: "mouse,up,1";
+                  source: "alarm_switch_button";
+                  script {
+                     switch_alarm(1)
+                  }
               }
 
               // for colon to blink
