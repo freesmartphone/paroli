@@ -1,16 +1,19 @@
 README
 
-  Paroli is a fullscreen user interface for open devices.
+  Paroli is a fullscreen user interface for open devices written in
+  python and edje.
 
+COMPILE
 
-HOW TO RUN IT
+  The python sources don't need to be compiled, but the edje files for
+  the application do. To do so run build.sh in the paroli-application
+  directory.
 
-  paroli run as a dbus service waiting for client to send commands to
-  start applicatons.  The starting script is in the 'paroli-script'
-  directory.  See the instructions in paroli-script/README.
+RUN
 
+  See the instruction in the README file in paroli-script.
 
-AUTHORS:
+AUTHORS
 
   Mirko Lindler <mirko@openmoko.org>
   Guillaume 'Charlie' Chereau <charlie@openmoko.org>
