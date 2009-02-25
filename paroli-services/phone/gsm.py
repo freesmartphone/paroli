@@ -300,6 +300,12 @@ class FreeSmartPhoneGSM(GSMService):
         yield WaitDBus(self.gsm_call.Activate, call.__id)
 
     @tichy.tasklet.tasklet
+    def _send_dtmf(self, call, code):
+        LOGGER.info("send dtmf %s to call %s", code, str(call.number))
+        assert call.status == 'active'
+        yield WaitDBus(self.gsm_call.SendDtmf, code)
+
+    @tichy.tasklet.tasklet
     def _release(self, call):
         LOGGER.info("release call %s", str(call.number))
         yield WaitDBus(self.gsm_call.Release, call.__id)
@@ -356,6 +362,12 @@ class TestGsm(GSMService):
         LOGGER.info("activate call %s", str(call.number))
         yield Sleep(1)
         call.active()
+
+    @tichy.tasklet.tasklet
+    def _send_dtmf(self, call, code):
+        LOGGER.info("send dtmf %s to call %s", code, str(call.number))
+        assert call.status == 'active'
+        yield Sleep(1)
 
     @tichy.tasklet.tasklet
     def _release(self, call):
