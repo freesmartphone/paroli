@@ -237,12 +237,12 @@ collections{
                               }
                               rel1 {
                                       relative: 0.0 0.0;
-                                      offset: 215 29;
+                                      offset: 200 29;
                                       to: "top-bar";
                               }
                               rel2 {
                                       relative: 0.0 0.0;
-                                      offset: 267 41;
+                                      offset: 283 41;
                                       to: "top-bar";
                               }
                       }
