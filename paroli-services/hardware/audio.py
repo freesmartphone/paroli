@@ -49,7 +49,7 @@ class FSOAudio(tichy.Service):
         
         logger.info("connecting to freesmartphone.GSM dbus audio interface")
         try:
-            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=None)
+            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=30)
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             device = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
