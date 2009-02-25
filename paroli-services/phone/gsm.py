@@ -337,10 +337,12 @@ class TestGsm(GSMService):
 
     @tichy.tasklet.tasklet
     def _initiate(self, call):
-        yield Sleep(2)
-        call.active()
-        if call.number == '666':
-            self._start_incoming().start()
+        def on_timeout():
+            call.active()
+            if call.number == '666':
+                self._start_incoming().start()
+        tichy.mainloop.timeout_add(1000, on_timeout)
+        yield None
 
     @tichy.tasklet.tasklet
     def _start_incoming(self):
