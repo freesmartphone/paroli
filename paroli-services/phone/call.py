@@ -125,6 +125,16 @@ class Call(tichy.Item):
         tichy.Service('Audio').stop_all_sounds()
         tichy.Service('Vibrator').stop()
 
+    def mute(self):
+        """Mute an active call"""
+        LOGGER.info("mute call")
+        tichy.Service('Audio').set_mic_status(False)
+
+    def unmute(self):
+        """Un Mute an active call"""
+        LOGGER.info("mute call")
+        tichy.Service('Audio').set_mic_status(True)
+
     @tichy.tasklet.tasklet
     def send_dtmf(self, code):
         """Send one or more Dual Tone Multiple Frequency (DTMF)
