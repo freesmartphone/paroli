@@ -48,6 +48,7 @@ class I_O_App(tichy.Application):
     layer = 0
     
     def run(self, parent=None, standalone=False):
+        self.standalone = standalone
         self.main = parent
         self.geometry = self.main.etk_obj.geometry_get()
         self.y = self.geometry[1]
@@ -82,23 +83,22 @@ class I_O_App(tichy.Application):
 
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
         self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
-        self.edje_obj.Edje.size_set(480, 590)
+        if self.standalone:
+            self.edje_obj.Edje.size_set(480,550)
+            self.edje_obj.Edje.pos_set(0, 50)
+        else:
+            self.edje_obj.Edje.size_set(480,590)
+              
+        logger.info(self.edje_obj.Edje.size_get())    
+        logger.info(self.edje_obj.Edje.pos_get())
         self.edje_obj.show()
 
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
-
-        if self.main.etk_obj.title_get() != 'Home':
-            for i in self.main.children:
-                i.remove()
-            self.main.etk_obj.hide()   
+        if self.standalone:
+            self.edje_obj.delete()
         else:
-            print "Deleting Paroli-I/O...."
-            for i in self.layerdict:
-                if i <= self.layer:
-                    edj_obj = self.layerdict[i]
-                    edj_obj.edj.delete()
-            self.edje_obj.delete(None, None, None)
-        self.close_keyboard()
+            self.edje_obj.delete()
+            self.main.etk_obj.hide()   # Don't forget to close the window
         
     
     def edit_mode(self, emission, source, param):
