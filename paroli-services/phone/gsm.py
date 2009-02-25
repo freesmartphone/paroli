@@ -194,6 +194,7 @@ class FreeSmartPhoneGSM(GSMService):
             yield tichy.Wait(self, 'provider-modified')
         except Exception, ex:
             LOGGER.error("Error : %s", ex)
+            self.gsm_call = None
             raise
 
     def _turn_on(self, on_step):
@@ -284,6 +285,8 @@ class FreeSmartPhoneGSM(GSMService):
     def _initiate(self, call):
         """Initiate a given call
         """
+        if not self.gsm_call:
+            raise Exception("No connectivity")
         number = str(call.number)
         LOGGER.info("initiate call to %s", number)
         call_id = yield WaitDBus(self.gsm_call.Initiate, number, "voice")
