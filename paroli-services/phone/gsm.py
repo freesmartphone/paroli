@@ -241,11 +241,11 @@ class FreeSmartPhoneGSM(GSMService):
             self.emit('incoming-call', call)
 
         elif status == 'outgoing':
-            self.lines[call_id].outgoing()
+            self.lines[call_id]._outgoing()
         elif status == 'active':
-            self.lines[call_id].active()
+            self.lines[call_id]._active()
         elif status == 'release':
-            self.lines[call_id].released()
+            self.lines[call_id]._released()
             del self.lines[call_id]
         else:
             LOGGER.warning("Unknown status : %s", status)
@@ -344,7 +344,7 @@ class TestGsm(GSMService):
     @tichy.tasklet.tasklet
     def _initiate(self, call):
         def on_timeout():
-            call.active()
+            call._active()
             if call.number == '666':
                 self._start_incoming().start()
         tichy.mainloop.timeout_add(1000, on_timeout)
@@ -361,7 +361,7 @@ class TestGsm(GSMService):
     def _activate(self, call):
         LOGGER.info("activate call %s", str(call.number))
         yield Sleep(1)
-        call.active()
+        call._active()
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
@@ -371,7 +371,7 @@ class TestGsm(GSMService):
 
     @tichy.tasklet.tasklet
     def _release(self, call):
-        call.released()
+        call._released()
         yield None
 
     def get_provider(self):

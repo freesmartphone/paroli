@@ -145,15 +145,17 @@ class Call(tichy.Item):
             raise Exception("Can't send DMTF to a call that is not active")
         yield gsm_service._send_dtmf(self, code)
 
-    def outgoing(self):
+    # Those methods are only supposed to be called by the gsm service
+
+    def _outgoing(self):
         self.status = 'outgoing'
         self.emit('outgoing')
 
-    def active(self):
+    def _active(self):
         self.status = 'active'
         self.emit('activated')
 
-    def released(self):
+    def _released(self):
         self.status = 'released'
         self.emit('released')
 
