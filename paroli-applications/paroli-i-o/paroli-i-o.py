@@ -50,9 +50,11 @@ class I_O_App(tichy.Application):
     def run(self, parent=None, standalone=False):
         self.standalone = standalone
         self.main = parent
+        if self.main.etk_obj.title_get() != 'Home':
+            self.main.etk_obj.title_set('I/O')
+            self.main.etk_obj.show()
         self.geometry = self.main.etk_obj.geometry_get()
         self.y = self.geometry[1]
-        #self.main.etk_obj.title_set('Paroli I/O')
         self.history_items = []
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-i-o.edj')
         self.layerdict = {}
@@ -60,13 +62,16 @@ class I_O_App(tichy.Application):
             
         self.history = self.gsm_service.logs
         self.callLogs = tichy.List()
+        i = 0
         for call in self.history:
+            if (i == 30): break
             if call.status == "inactive" and call.direction == "in":
                 self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Missed"))
             elif call.status != "inactive" and call.direction == "in":
                 self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Incoming"))
             else: 
                 self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Outgoing"))
+            i = i + 1
         
         #history_box = gui.edje_box(self, 'V', 1)
 
@@ -79,9 +84,9 @@ class I_O_App(tichy.Application):
         self.list_label = [('label', 'number'), ('subtext', 'description')]
         self.history_list = gui.EvasList(self.callLogs, self.main, self.edje_file, "history_item", self.list_label, comp)
         self.history_swallow = self.history_list.get_swallow_object()
-        self.history_list.add_callback("edit_btn_clicked", "*", self.edit_mode)
 
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
+        self.edje_obj.add_callback("edit_btn_clicked", "*", self.edit_mode)
         self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
@@ -104,10 +109,9 @@ class I_O_App(tichy.Application):
     def edit_mode(self, emission, source, param):
         #for i in self.history_objects_list.item_list:
             #print i[0]
+        print "Go to edit mode!!!!!"
         if emission.part_state_get(param)[0] == 'default' or emission.part_state_get(param)[0] == '':
             signal = 'edit'
-            #emission.signal_emit('wait-mode',"*")
-            
             emission.signal_emit('edit-mode',"*")
             
         else:
@@ -135,15 +139,6 @@ class I_O_App(tichy.Application):
         for i in self.history_objects_list.item_list:
             i[1].signal_emit(signal,"")
         
-        print "edit-mode emitted"
-    
-    """ 
-    def top_bar(self,emission, source, param):
-        print "top bar pressed"
-        print dir(self.main)
-        self.main.emit('back')
-        #emission.delete()
-    """
     
     def call_contact(self, emission, source, param, contact):
         print "call contact called"
@@ -230,6 +225,11 @@ class I_O_App(tichy.Application):
     def on_call(self, b):
         yield Caller(self.window, self.text.value)
        
+    def self_test(self, *args, **kargs):
+        logger.info(args[1])
+        logger.info(args[2])
+
+    """
     def self_test(self,emission, source, param):
         print "emission: ", str(emission)
         print "source: ", str(source)
@@ -238,14 +238,17 @@ class I_O_App(tichy.Application):
             #eval(source + '(self,self.parent,emission, source, param)')
         #except Exception, e:
             #dir(e)
-
+    """
+    """
     def wait_mode(self,instance,edje_object, emission, source,param):
         emission.signal_emit('wait-mode',"*")
         #print dir(emission.part_object_get('layover'))
         print emission.part_object_get('layover').render_op_get()
         print "wait-mode emitted"
         emission.part_object_get('layover').render_op()
+    """
     
+    """
     def edit_btn_clicked(self,instance,edje_object, emission, source,param):
         #print "edit_btn in paroli-i-o"
         #print len(self.history_items)
@@ -295,6 +298,7 @@ class I_O_App(tichy.Application):
               print e
         
         print "edit-mode emitted"
+    """
 
     
      ## step two (enter message)    

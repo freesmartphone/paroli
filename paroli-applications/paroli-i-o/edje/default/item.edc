@@ -1,7 +1,7 @@
 
 group { name: "history_item";
-       min: 470 80;
-       max: 470 80;
+       min: 420 69;
+       max: 420 69;
        parts {
         part
         {
@@ -102,11 +102,11 @@ group { name: "history_item";
                 state: "default" 0.0;
                 color:0 0 0 255;
                 rel1{
-                    relative: 0.01 0.01;
+                    relative: 0.0 0.0;
                     to:"main_base";
                 }
                 rel2 {
-                    relative: 0.78 0.99;
+                    relative: 1.0 1.0;
                     to:"main_base";
                 }
             }
@@ -166,8 +166,8 @@ group { name: "history_item";
                 color: 255 255 255 255;
                 text {
                     align: 0.0 0.0;
-                    size: 40;
-                    text: "Testos";
+                    size: 48;
+                    text: "Testtos";
                     font: "Sans";
                 }
                 rel1 {
@@ -180,6 +180,7 @@ group { name: "history_item";
                 }
             }
         }
+          /*
         part
         {
             name: "label-action";
@@ -200,6 +201,7 @@ group { name: "history_item";
                 }
             }
          }
+            */
             part{
             name: "subtext";
             type: TEXT;
@@ -209,13 +211,13 @@ group { name: "history_item";
                 state: "default" 0.0;
                 color: 255 255 255 255;
                 text {
-                    align: 0.1 0.15;
-                    size: 20;
-                    text: "0000-00-0000000";
+                    align: 0.0 0.0;
+                    size: 16;
+                    text: "";
                     font: "Sans";
                 }
                 rel1 {
-                    relative: 0.0 0.51;
+                    relative: 0.0 0.75;
                     to: "base";
                 }
                 rel2 {

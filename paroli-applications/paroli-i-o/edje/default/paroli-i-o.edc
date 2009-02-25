@@ -1,3 +1,14 @@
+fonts {
+   font: "Inspiration-Bold.ttf"   "Sans";
+}
+
+images {
+   image: "Edit.png" COMP;
+   image: "Save.png" COMP;
+   image: "Done.png" COMP;
+   image: "Delete.png" COMP;
+}
+
 styles
 {
     style 
@@ -6,10 +17,11 @@ styles
       base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
     }
 }
+
 collections
 {
     #include "list.edc"
     #include "item.edc"
     #include "create_message.edc"
-
 }
+
