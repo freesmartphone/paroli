@@ -357,7 +357,7 @@ class TeleCaller(tichy.Application):
 
     def mute_toggle(self, emission, signal, source):
         """mute/unmute the ringtone"""
-        self.storage.call.mute()
+        self.storage.call.mute_ringtone()
 
     def speaker_toggle(self, emission, signal, source):
         """Toggle the speaker output - mute mic and speaker"""

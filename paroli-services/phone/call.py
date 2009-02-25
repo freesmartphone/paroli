@@ -119,8 +119,8 @@ class Call(tichy.Item):
         self.status = 'activating'
         self.emit(self.status)
 
-    def mute(self):
-        """mute the call if it is ringing"""
+    def mute_ringtone(self):
+        """mute the call ringtone if it is ringing"""
         LOGGER.info("mute call")
         tichy.Service('Audio').stop_all_sounds()
         tichy.Service('Vibrator').stop()
