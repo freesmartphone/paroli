@@ -119,9 +119,11 @@ class Call(tichy.Item):
         self.status = 'activating'
         self.emit(self.status)
 
+    # XXX: those methods should be tasklets
+
     def mute_ringtone(self):
         """mute the call ringtone if it is ringing"""
-        LOGGER.info("mute call")
+        LOGGER.info("mute ring tone")
         tichy.Service('Audio').stop_all_sounds()
         tichy.Service('Vibrator').stop()
 
