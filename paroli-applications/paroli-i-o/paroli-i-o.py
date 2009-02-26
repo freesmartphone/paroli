@@ -247,8 +247,8 @@ class I_O_App(tichy.Application):
         print "wait-mode emitted"
         emission.part_object_get('layover').render_op()
     """
-    
-    """
+
+    """ 
     def edit_btn_clicked(self,instance,edje_object, emission, source,param):
         #print "edit_btn in paroli-i-o"
         #print len(self.history_items)
