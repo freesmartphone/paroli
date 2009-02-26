@@ -99,7 +99,8 @@ class FreeSmartPhoneSim(tichy.Service):
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             self.gsm = bus.get_object('org.freesmartphone.ogsmd',
-                                      '/org/freesmartphone/GSM/Device')
+                                      '/org/freesmartphone/GSM/Device',
+                                      follow_name_owner_changes=True)
             self.gsm_sim = dbus.Interface(self.gsm,
                                           'org.freesmartphone.GSM.SIM')
 
