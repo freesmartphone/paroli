@@ -44,7 +44,8 @@ class CallLog(tichy.Item):
 class I_O_App(tichy.Application):
     name = 'Paroli-I/O'
     icon = 'icon.png'
-    category = 'main' # So that we see the app in the launcher
+    #category = 'main' # So that we see the app in the launcher
+    category = 'launcher' # So that we see the app in the launcher
     layer = 0
     
     def run(self, parent=None, standalone=False):
@@ -86,7 +87,8 @@ class I_O_App(tichy.Application):
         self.history_swallow = self.history_list.get_swallow_object()
 
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
-        self.edje_obj.add_callback("edit_btn_clicked", "*", self.edit_mode)
+        self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
+        self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
         self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
@@ -96,6 +98,7 @@ class I_O_App(tichy.Application):
               
         logger.info(self.edje_obj.Edje.size_get())    
         logger.info(self.edje_obj.Edje.pos_get())
+        self.set_list(self.history_list)
         self.edje_obj.show()
 
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
@@ -104,44 +107,28 @@ class I_O_App(tichy.Application):
         else:
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
-        
-    
-    def edit_mode(self, emission, source, param):
-        #for i in self.history_objects_list.item_list:
-            #print i[0]
-        print "Go to edit mode!!!!!"
-        if emission.part_state_get(param)[0] == 'default' or emission.part_state_get(param)[0] == '':
-            signal = 'edit'
-            emission.signal_emit('edit-mode',"*")
-            
-        else:
-            #print "button pressed"
-            emission.signal_emit('edit_button_to_wait',"")
-            #print emission.part_state_get(edje_object)[0]
-            signal = 'normal'
-            #ecore.MainLoop.iterate()
-            for i in self.history_objects_list.item_list:
-                    
-              #if edje object state edit
-              if i[1].part_state_get('edit-base')[0] == 'edit':
-                    #destroy text in info field (missed etc)
-                    self.remove_entry(i[3])
-                    #i[1].signal_emit("remove_called","")
-                    #i[1].destroy()
-                    
-                    #remove all edje stuff from history item to be deleted
-                    i[2].remove_all()
-                    
-              #TODO: add "real delete" on SIM  
-                    
-            emission.signal_emit('edit_button_to_default',"")
 
-        for i in self.history_objects_list.item_list:
-            i[1].signal_emit(signal,"")
+    def set_list(self, list):
+        for item in list.items:
+            self.set_item(item)
         
+    def set_item(self, item):
+        item[1].Edje.signal_emit("to_default_mode", "")
+        item[1].Edje.signal_callback_add("new_call", "*", self.create_call, item[0])
+        item[1].Edje.signal_callback_add("new_msg", "*", self.create_message, item[0])
+        item[1].Edje.signal_callback_add("save_number", "*", self.save_number, item[0])
+        item[1].Edje.signal_callback_add("delete_log", "*", self.delete_log, item)
     
-    def call_contact(self, emission, source, param, contact):
-        print "call contact called"
+    def to_edit_mode(self, emission, source, param):
+        for item in self.history_list.items:
+            item[1].Edje.signal_emit("to_edit_mode", "")
+        
+    def to_default_mode(self, emission, source, param):
+        for item in self.history_list.items:
+            item[1].Edje.signal_emit("to_default_mode", "")
+    
+    def create_call(self, emission, source, param, contact):
+        print "Create Call ", contact
         number = contact.number.value
         name = unicode(contact)
         #self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
@@ -154,7 +141,33 @@ class I_O_App(tichy.Application):
         #except Exception,e:
             #print e
     
-    def remove_entry(self,entry):
+    def save_number(self, emission, source, param, contact):
+        print "Save number ", contact
+
+    def delete_log(self, emission, source, param, log):
+        print "Delete Log ", log
+        #TODO: delete log data
+        self.history_list.items.remove(log)
+        self.refresh_list()
+
+    def refresh_list(self):
+        print "refresh list"
+        self.history_swallow = self.history_list.get_swallow_object()
+        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
+        self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
+        self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
+        self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
+        if self.standalone:
+            self.edje_obj.Edje.size_set(480,550)
+            self.edje_obj.Edje.pos_set(0, 50)
+        else:
+            self.edje_obj.Edje.size_set(480,590)
+              
+        self.set_list(self.history_list)
+        self.edje_obj.show()
+        
+
+    def remove_entry(self, entry):
         print "remove called"
         assert entry in self.history
         self.history.remove(entry)
@@ -303,6 +316,7 @@ class I_O_App(tichy.Application):
     
      ## step two (enter message)    
     def create_message(self, emission, source, param, contact):
+        print "Create message ", contact
         ##get numbers from dialpad
         numbers = contact.number
         print numbers

@@ -8,6 +8,7 @@ group { name: "history_item";
          new Float:dy;
          new state_name[30];
          new Float:dummy;
+
          get_drag(PART:"invisible-slider", dx, dy);
          get_state(PART:"item", state_name, 30, dummy);
                 
@@ -21,6 +22,9 @@ group { name: "history_item";
                set_state(PART:"item", "to-the-right", 0.0);
                set_state(PART:"label", "fade-out", 0.0);
                set_state(PART:"subtext", "fade-out", 0.0);
+            }
+            else {
+               emit("new_call", "label");
             }
          }
          set_drag(PART:"invisible-slider", 0.0, 0.0);
@@ -75,6 +79,7 @@ group { name: "history_item";
             } 
          }
       }
+
       part {
          name: "msg_button_label";
          type: TEXT;
@@ -118,14 +123,18 @@ group { name: "history_item";
             state: "to-the-right" 0.0;
             inherit: "default" 0.0;
             rel1 {
-               relative: 0.2 0.0;
-               to: "item";
+               relative: 0.25 0.0;
+               to: "item_bg";
             }
             rel2 {
                relative: 1.0 1.0;
                offset: 200 0;
-               to: "item";
+               to: "item_bg";
             }
+         }
+         description {
+            state: "edit_mode" 0.0;
+            inherit: "to-the-right" 0.0;
          }
       }
       part{
@@ -190,17 +199,23 @@ group { name: "history_item";
             }
             rel1 {
                relative: 0.0 0.0;
-               to: "label-bg";
+               to: "item";
             }
             rel2 {
                relative: 1.0 1.0;
-               to: "label-bg";
+               to: "item";
             }
          }
          description { 
             state: "fade-out" 0.0;
             inherit: "default" 0.0;
+            rel1.to: "item";
+            rel2.to: "item";
             color: 220 220 220 220;
+         }
+         description { 
+            state: "edit_mode" 0.0;
+            inherit: "fade-out" 0.0;
          }
       }
       part {
@@ -225,6 +240,41 @@ group { name: "history_item";
          }
          description { 
             state: "unsaved" 0.0;
+            visible: 1;
+         }
+      }
+      part {
+         name: "delete_button";
+         type: IMAGE;
+         description { 
+            state: "default" 0.0;
+            min: 88 35;
+            max: 88 35;
+            rel1 {
+               relative: 0.0 0.0;
+               to: "item_bg";
+            }
+            rel2 {
+               relative: 0.25 1.0;
+               to: "item_bg";
+            } 
+            image {
+               normal: "Delete.png";
+            }
+            visible: 0;
+         }
+         description { 
+            state: "edit_mode" 0.0;
+            min: 88 35;
+            max: 88 35;
+            rel1 {
+               relative: 0.0 0.0;
+               to: "item_bg";
+            }
+            rel2 {
+               relative: 0.25 1.0;
+               to: "item_bg";
+            } 
             visible: 1;
          }
       }
@@ -253,7 +303,13 @@ group { name: "history_item";
          description { 
             state: "fade-out" 0.0;
             inherit: "default" 0.0;
+            rel1.to: "item";
+            rel2.to: "item";
             color: 220 220 220 220;
+         }
+         description { 
+            state: "edit_mode" 0.0;
+            inherit: "fade-out" 0.0;
          }
       }
    }
@@ -270,7 +326,39 @@ group { name: "history_item";
          name: "msg-pressed";
          signal: "mouse,up,1";
          source: "msg_button";
-         action: SIGNAL_EMIT "create_message" "contacts";
+         action: SIGNAL_EMIT "new_msg" "msg_button";
+      }
+      program {
+         name: "save-number";
+         signal: "mouse,up,1";
+         source: "save_button";
+         action: SIGNAL_EMIT "save_number" "save_button";
+      }
+      program {
+         name: "delete-log";
+         signal: "mouse,up,1";
+         source: "delete_button";
+         action: SIGNAL_EMIT "delete_log" "delete_button";
+      }
+      program {
+         name: "to-edit-mode";
+         signal: "to_edit_mode";
+         source: "*";
+         action: STATE_SET "edit_mode" 0.0; 
+         target: "item";
+         target: "delete_button";
+         target: "label";
+         target: "subtext";
+      }
+      program {
+         name: "to-default-mode";
+         signal: "to_default_mode";
+         source: "*";
+         action: STATE_SET "default" 0.0; 
+         target: "item";
+         target: "label";
+         target: "subtext";
+         target: "delete_button";
       }
    }
 }

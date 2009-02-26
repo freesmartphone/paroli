@@ -2,6 +2,20 @@ group {
    name: "i-o";
    min: 480 590;
    max: 480 590;
+   script {
+      public edit_done_button_clicked(val) {
+         new state_name[30];
+         new Float:dummy;
+         get_state(PART:"edit-done-button", state_name, 30, dummy);
+         if (!strcmp(state_name, "default")) {
+            set_state(PART:"edit-done-button", "edit_mode", 1.0);
+            emit("to_edit_mode", "edit-done-button");
+         } else {
+            set_state(PART:"edit-done-button", "default", 0.0);
+            emit("to_default_mode", "edit-done-button");
+         }
+      }
+   }
    parts {
       part{
          name: "base";
@@ -17,7 +31,7 @@ group {
          }
       }
       part {
-         name: "edit-button";
+         name: "edit-done-button";
          type: IMAGE;
          description {
             state: "default" 0.0;
@@ -94,24 +108,11 @@ group {
       program { 
          name: "edit_clicked";
          signal: "mouse,up,1";
-         source: "edit-button";
-         action: SIGNAL_EMIT "edit_btn_clicked" "edit-button";
-         after: "to_edit_mode";
+         source: "edit-done-button";
+         script {
+            edit_done_button_clicked(1);
+         }
       }
-      program { 
-         name: "to_edit_mode";
-         action: STATE_SET "edit_mode" 0.0; 
-         target: "layover";
-         target: "edit-button"; 
-      }
-      program { 
-          name: "edit_button_to_default"; 
-          signal: "edit_button_to_default";
-          source: "*";
-          action: STATE_SET "default" 0.0; 
-          target: "layover";
-          target: "edit-button"; 
-        }
    }
 }
 
