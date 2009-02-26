@@ -20,6 +20,7 @@
 import tichy
 import tichy.item as item
 from tichy.service import Service, ServiceUnusable
+from tichy.tasklet import WaitDBusName
 
 import logging
 logger = logging.getLogger('prefs')
@@ -59,11 +60,12 @@ class FreeSmartPhonePrefs(PrefsService):
         def __getitem__(self, key):
             return self.service.GetValue(key)
 
-    def __init__(self):
+    @tichy.tasklet.tasklet
+    def init(self):
         logger.info(
             "connecting to freesmartphone.Preferences dbus interface")
         try:
-            yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=None)
+            yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=30)
             # We create the dbus interfaces to org.freesmarphone
             self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             self.prefs = self.bus.get_object(

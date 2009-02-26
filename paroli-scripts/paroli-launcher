@@ -94,7 +94,7 @@ class InitAll(tichy.Tasklet):
         # TODO: make this automatic. That would mean restructuring the
         #       service module, but we need to do it anyway.
 
-        for service_name in ['TeleCom', 'TeleCaller', 'GSM', 'Audio', 'SIM', 'Contacts', 'Messages', 'SMS']:
+        for service_name in ['TeleCom', 'TeleCaller', 'GSM', 'Audio', 'SIM', 'Contacts', 'Messages', 'SMS', 'Prefs']:
             logger.debug("init service %s", service_name)
             service = tichy.Service(service_name)
             try:
