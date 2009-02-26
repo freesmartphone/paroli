@@ -630,7 +630,7 @@ collections{
                       text {
                               align: 0.075 0.92;
                               size: 14;
-                              text: "| Tuesday, October 6, 2008 |";
+                              text: "";
                               font: "Sans";
                       }
                       rel1 {
@@ -640,7 +640,7 @@ collections{
                       }
                       rel2 {
                          relative: 0.0 0.0;
-                         offset: 230 258;
+                         offset: 270 258;
                          to: "base";
                       } 
                     }
@@ -651,14 +651,16 @@ collections{
                     type: IMAGE;
                     description { 
                         state: "default" 0.0;
+                        min: 14 13;
+                        max: 14 13;
                         rel1 {
                            relative: 0.0 0.0;
-                           offset: 238 241;
+                           offset: 280 241;
                            to: "base";
                         }
                         rel2 {
                            relative: 0.0 0.0;
-                           offset: 252 254;
+                           offset: 294 254;
                            to: "base";
                         } 
                         image {
