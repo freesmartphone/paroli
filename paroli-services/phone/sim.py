@@ -219,7 +219,7 @@ class FreeSmartPhoneSim(tichy.Service):
         try:
             yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
         except dbus.exceptions.DBusException, ex:
-            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
+            if ex.get_dbus_name() not in ['org.freesmartphone.GSM.SIM.AuthFailed', 'org.freesmartphone.GSM.SIM.InvalidIndex']:
                 raise
             raise PINError(pin)
 
