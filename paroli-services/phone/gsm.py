@@ -27,7 +27,7 @@ LOGGER = logging.getLogger('GSM')
 import dbus
 
 import tichy
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
+from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 
 from call import Call
 
@@ -165,6 +165,13 @@ class FreeSmartPhoneGSM(GSMService):
         self.gsm_call.connect_to_signal("CallStatus",
                                         self._on_call_status)
 
+    @tichy.tasklet.tasklet
+    def _keep_alive(self):
+        """Reinit the dbus connection if the framework crashes"""
+        yield WaitDBusNameChange('org.freesmartphone.ogsmd')
+        LOGGER.error("org.freesmartphone.ogsmd crashed")
+        LOGGER.info("Attempt to re-init the service")
+        yield self.init()
 
     def init(self, on_step=None):
         """Tasklet that registers on the network
@@ -192,6 +199,7 @@ class FreeSmartPhoneGSM(GSMService):
             LOGGER.info("register on the network")
             yield WaitDBus(self.gsm_network.Register)
             yield tichy.Wait(self, 'provider-modified')
+            self._keep_alive().start()
         except Exception, ex:
             LOGGER.error("Error : %s", ex)
             self.gsm_call = None
