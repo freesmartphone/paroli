@@ -31,6 +31,7 @@ import plugins
 
 from list import List
 from text import Text
+from int import Int
 from item import Item
 from time import Time
 from persistance import Persistance
