@@ -139,7 +139,7 @@ class Object(object):
                `event` : str
                    The name of the event to emit.
         """
-        for callback, obj, extra_args in self.__listeners.get(event, []):
+        for callback, obj, extra_args in self.__listeners.get(event, [])[:]:
             eargs = args + extra_args
             call = callback(obj, *eargs)
             # Now in case the callback is a generator, we turn it into a task
