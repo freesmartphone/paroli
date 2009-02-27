@@ -137,6 +137,13 @@ class Call(tichy.Item):
         LOGGER.info("mute call")
         tichy.Service('Audio').set_mic_status(True)
 
+    def mute_toggle(self):
+        LOGGER.info("mute call toggle")
+        if tichy.Service('Audio').get_mic_status() == 1:
+            tichy.Service('Audio').set_mic_status(0)
+        else:
+            tichy.Service('Audio').set_mic_status(1)
+
     @tichy.tasklet.tasklet
     def send_dtmf(self, code):
         """Send one or more Dual Tone Multiple Frequency (DTMF)

@@ -245,6 +245,9 @@ class TeleCaller(tichy.Application):
         self.audio_service = tichy.Service('Audio')
         self.main.etk_obj.visibility_set(1)
         self.main.etk_obj.title_set('Paroli Call')
+        if self.audio_service.muted == 1:
+            self.audio_service.audio_toggle()
+            
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         self.edje_obj_top_bar = gui.edje_gui(self.main,'tb',self.edje_file)
         self.edje_obj_top_bar.edj.size_set(480,40)
@@ -360,8 +363,8 @@ class TeleCaller(tichy.Application):
         self.storage.call.mute_ringtone()
 
     def speaker_toggle(self, emission, signal, source):
-        """Toggle the speaker output - mute mic and speaker"""
-        self.audio_service.audio_toggle()
+        """Toggle the mic output - (un)mute mic"""
+        self.storage.call.mute_toggle()
 
     def func_btn(self,emission, source, param):
         logger.debug("func btn called from %s", source)
