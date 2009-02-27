@@ -90,12 +90,12 @@ class Message(tichy.Item):
     @tichy.tasklet.tasklet
     def send(self):
         """Tasklet that will send the message"""
-        ret = yield tichy.Service('SMS').send(self)
+        ret = yield tichy.Service.get('SMS').send(self)
         yield ret
 
     def to_dict(self):
         """return the message attributes in a python dict"""
-        service = tichy.Service('SIM')
+        service = tichy.Service.get('SIM')
         return {'peer': str(self.peer),
                 'text': unicode(self.text),
                 'timestamp': str(self.timestamp),
@@ -125,7 +125,7 @@ class PhoneMessage(Message):
     def save(cls):
         """Save all the phone messages"""
         logger.info("Saving phone messages")
-        messages = tichy.Service('Messages').messages
+        messages = tichy.Service.get('Messages').messages
         data = [c.to_dict() for c in messages if isinstance(c, PhoneMessage)]
         tichy.Persistance('messages/phone').save(data)
         yield None

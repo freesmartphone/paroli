@@ -24,7 +24,6 @@ import os
 import tichy
 from tichy import gui
 import sys
-from tichy.service import Service
 
 class DialerApp(tichy.Application):
     name = 'Paroli-Dialer'
@@ -43,7 +42,7 @@ class DialerApp(tichy.Application):
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-dialer.edj')
 
         ##connect to tichy's contacts service
-        self.contact_service = Service('Contacts')
+        self.contact_service = tichy.Service.get('Contacts')
 
         ##get contacts list
         self.phone_book = self.contact_service.contacts
@@ -110,7 +109,7 @@ class DialerApp(tichy.Application):
     def call_btn_pressed(self,emission, source, param):
         number = emission.part_text_get("num_field-text")
         emission.part_text_set("num_field-text","")
-        #caller_service = tichy.Service("Caller")
+        #caller_service = tichy.Service.get("Caller")
         Caller(emission, number ).start()
 
     def top_bar(self,emission,source,param):
@@ -122,7 +121,7 @@ class DialerApp(tichy.Application):
         name = emission.part_text_get('label')
         self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
         self.extra_child.edj.part_swallow_get('contacts-items').delete()
-        #window = tichy.Service('Storage').window
+        #window = tichy.Service.get('Storage').window
         Caller("window", number, name).start(self.callback,self.callback)
         try:
             self.extra_child.edj.delete()
@@ -164,7 +163,7 @@ class DialerApp(tichy.Application):
          logger.debug("name is %s", name)
          number = emission.part_text_get('number')
          logger.debug("number is %s", number)
-         contacts_service = tichy.Service('Contacts')
+         contacts_service = tichy.Service.get('Contacts')
          try:
             contact = contacts_service.create(str(name),tel=str(number))
          except Exception,e:
@@ -220,7 +219,7 @@ class DialerApp(tichy.Application):
         logger.debug("start call called")
         number = emission.part_text_get("num_field-text")
 
-        caller_service = Service('Caller')
+        caller_service = tichy.Service.get('Caller')
         yield caller_service.call("None", number)
 
     def self_test(self,emission, source, param):
@@ -254,8 +253,8 @@ class Caller(tichy.Application):
                 object that is already active.
         """
         logger.debug("caller run, name : %s", name)
-        self.gsm_service = tichy.Service('GSM')
-        self.storage = tichy.Service('Storage')
+        self.gsm_service = tichy.Service.get('GSM')
+        self.storage = tichy.Service.get('Storage')
         self.main = self.storage.window
         self.main.etk_obj.visibility_set(1)
         #me = self.blub.etk_obj

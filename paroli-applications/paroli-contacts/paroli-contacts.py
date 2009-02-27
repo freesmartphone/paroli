@@ -28,7 +28,6 @@ import sys
 #import dbus
 #from dbus.mainloop.glib import DBusGMainLoop
 #DBusGMainLoop(set_as_default=True)
-from tichy.service import Service
 
 class ContactsApp(tichy.Application):
     name = 'Paroli-Contacts'
@@ -47,7 +46,7 @@ class ContactsApp(tichy.Application):
         self.layerdict = {}
         
         ##connect to tichy contacts service
-        self.contact_service = Service('Contacts')
+        self.contact_service = tichy.Service.get('Contacts')
         self.phone_book = self.contact_service.contacts
         def cmp_by_name(x, y):
             return cmp(x.name, y.name)
@@ -151,7 +150,7 @@ class ContactsApp(tichy.Application):
     def call_contact(self, emission, source, param):
         number = emission.part_text_get('number-text')
         name = emission.part_text_get('name-text')
-        caller_service = Service('Caller')
+        caller_service = tichy.Service.get('Caller')
         my_call = caller_service.call(emission, number, name)
         my_call.start()
         try:
@@ -181,7 +180,7 @@ class ContactsApp(tichy.Application):
         print "delete contact called"
         contact_list_item[0].remove_all()
         details_window.edj.delete()
-        contacts_service = Service('Contacts')
+        contacts_service = tichy.Service.get('Contacts')
         contacts_service.remove(contact)
         
     def edit_number_type(self,emission, source, param, contact, details_window, contact_list_item):
@@ -313,7 +312,7 @@ class ContactsApp(tichy.Application):
         ui_obj = self.get_current_ui_obj()
         name = ui_obj.text_field.text_get()
         number = number
-        contacts_service = Service('Contacts')
+        contacts_service = tichy.Service.get('Contacts')
         try:
             contact = contacts_service.create(name=str(name),tel=str(number))
         except Exception,e:
@@ -369,7 +368,7 @@ class ContactsApp(tichy.Application):
         print "send message called"
         number = numbers
         text = textbox.textblock_get().text_get(0)
-        message_service = tichy.Service('SMS')
+        message_service = tichy.Service.get('SMS')
         #for i in numbers:
         message = message_service.create(number,text,'out')
         #print type(message)

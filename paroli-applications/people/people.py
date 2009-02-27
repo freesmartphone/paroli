@@ -23,7 +23,6 @@ logger = logging.getLogger('app.people')
 import tichy
 from tichy import gui
 import sys
-from tichy.service import Service
 import dbus
 import ecore
 import ecore.evas
@@ -53,7 +52,7 @@ class PeopleApp(tichy.Application):
         self.edje_file = os.path.join(os.path.dirname(__file__),'people.edj')
 
         ##get message service and list of all messages
-        self.contact_service = tichy.Service('Contacts')
+        self.contact_service = tichy.Service.get('Contacts')
         
         self.contacts = self.contact_service.contacts
         
@@ -71,7 +70,7 @@ class PeopleApp(tichy.Application):
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'people', "contacts-items")
         
         self.edje_obj.embed(self.contacts_swallow,self.contacts_list.box,"contacts-items")
-        #sms_service = tichy.Service('SMS')
+        #sms_service = tichy.Service.get('SMS')
         #sms = empty_sms()
         #self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         
@@ -236,7 +235,7 @@ class PeopleApp(tichy.Application):
         logger.debug("send message called")
 
         try:
-            message_service = tichy.Service('Messages')
+            message_service = tichy.Service.get('Messages')
             message = message_service.create(number=sms.number, text=sms.text, direction='out')
             logger.info("sending message: %s to : %s", sms.text, sms.number)
             yield message.send()
@@ -245,7 +244,7 @@ class PeopleApp(tichy.Application):
             # XXX: we should differentiate between different errors
             # DON'T raise here, as it will close the app and that only half way
             logger.error("Got error %s", ex)
-            yield tichy.Service('Dialog').error(self.main, ex)
+            yield tichy.Service.get('Dialog').error(self.main, ex)
             # XXX: at this point we should show an error box or do something
             
         else:
@@ -262,11 +261,11 @@ class PeopleApp(tichy.Application):
         message = item[0]
         
         try:
-            messages_service = Service('Messages')
+            messages_service = tichy.Service.get('Messages')
             messages_service.remove(message).start()
         except Exception, ex:
             logger.error("Got error %s", str(ex))
-            #yield tichy.Service('Dialog').error(self.main, ex)
+            #yield tichy.Service.get('Dialog').error(self.main, ex)
         else:    
             #canvas.remove_all()
             emission.data['EdjeObject'].delete()
@@ -389,7 +388,7 @@ class empty_sms():
             if original_message != None:
                 original_message.delete(emission, source, param)
             
-            message_service = tichy.Service('SMS')
+            message_service = tichy.Service.get('SMS')
             for i in numbers:
                 message = message_service.create(number=i, text=text, direction='out')
                 logger.info("would send message: %s to : %s", text, i)
@@ -409,7 +408,7 @@ class empty_sms():
         print "delete message called"
         canvas_obj.remove_all()
         details_window.edj.delete()
-        messages_service = Service('Messages')
+        messages_service = tichy.Service.get('Messages')
         #if message.direction == 'in':
         messages_service.remove(message).start()
         #else:
@@ -531,7 +530,7 @@ class empty_sms():
     def call_contact(self, emission, source, param):
         number = emission.part_text_get('number-text')
         name = emission.part_text_get('name-text')
-        caller_service = Service('Caller')
+        caller_service = tichy.Service.get('Caller')
         my_call = caller_service.call(emission, number, name)
         my_call.start()
         try:
@@ -691,12 +690,12 @@ class empty_sms():
         number = number
         
         try:
-            contact = tichy.Service('Contacts').create(name=str(name), number=str(number))
+            contact = tichy.Service.get('Contacts').create(name=str(name), number=str(number))
         except Exception,e:
             print e
         #emission.signal_emit('save-notice','*')
         name_object.edj.delete()
-        #contacts_service = Service('Contacts')
+        #contacts_service = tichy.Service.get('Contacts')
         #contacts_service.add(contact)
         #print dir (self.contact_objects_list)
         self.contact_objects_list.generate_single_item_obj(name,number,contact)

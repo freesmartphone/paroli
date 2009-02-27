@@ -72,18 +72,19 @@ class SIMContact(Contact):
         """create a new contact from an other contact)
         """
         assert not isinstance(contact, SIMContact)
-        sim = tichy.Service('SIM')
+        sim = tichy.Service.get('SIM')
         ret = yield sim.add_contact(contact.name, contact.tel)
         yield ret
 
     def delete(self):
-        sim = tichy.Service('SIM')
+        sim = tichy.Service.get('SIM')
         yield sim.remove_contact(self)
 
     @classmethod
     @tichy.tasklet.tasklet
     def load(cls):
-        sim = tichy.Service('SIM')
+        sim = tichy.Service.get('SIM')
+        yield sim.wait_initialized()
         ret = yield sim.get_contacts()
         yield ret
 
@@ -94,6 +95,7 @@ class FreeSmartPhoneSim(tichy.Service):
     PINError = PINError         # Expose the PINError exception
 
     def __init__(self):
+        super(FreeSmartPhoneSim, self).__init__()
         logger.info("connecting to freesmartphone.GSM dbus interface")
         try:
             # We create the dbus interfaces to org.freesmarphone
@@ -109,12 +111,12 @@ class FreeSmartPhoneSim(tichy.Service):
         except Exception, e:
             logger.warning("can't use freesmartphone GSM : %s", e)
             self.gsm = None
-            raise tichy.ServiceUnusable
 
         self.indexes = {}       # map sim_index -> contact
 
     @tichy.tasklet.tasklet
     def init(self):
+        yield tichy.Service.get('GSM').wait_initialized()
         #set sim info variable to be used by various apps
         logger.debug("Get sim info")
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)

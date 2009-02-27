@@ -63,9 +63,6 @@ def parse_options():
     parser.add_option("", "--cfgfile", dest="cfg_file",
                       help="specigy the configuration file to use",
                       metavar="FILE", default=None)
-    parser.add_option("", "--show-services", dest='show_services',
-                      action='store_true', default=False,
-                      help="print some info about the services and exit")
 
     (options, args) = parser.parse_args()
     return options
@@ -90,20 +87,25 @@ def setup_logging():
 class InitAll(tichy.Tasklet):
     """Perform all basic initialization of services"""
 
+    def get_default_services(self):
+        """Get the dict of all default services"""
+        defaults = tichy.config.get('services', 'defaults', None)
+        if not defaults:
+            return {}
+        defaults = defaults.split(',')
+        ret = {}
+        for default in defaults:
+            if not default:
+                continue
+            service, name = default.strip().split(':')
+            ret[service] = name
+        return ret
+
     def run(self):
-        # TODO: make this automatic. That would mean restructuring the
-        #       service module, but we need to do it anyway.
+        defaults = self.get_default_services()
+        yield tichy.Service.init_all(defaults=defaults)
+#         for service_name in ['TeleCom', 'TeleCaller', 'GSM', 'Audio', 'SIM', 'Contacts', 'Messages', 'SMS', 'Prefs']:
 
-        for service_name in ['TeleCom', 'TeleCaller', 'GSM', 'Audio', 'SIM', 'Contacts', 'Messages', 'SMS', 'Prefs']:
-            logger.debug("init service %s", service_name)
-            service = tichy.Service(service_name)
-            try:
-                yield service.init()
-            except Exception, ex:
-                logger.error("can't init service %s : %s", service_name, ex)
-                yield tichy.Service("Dialog").error(None, "can't init %s : %s" % (service_name, ex))
-
-        # Finally we can start to listen for incoming calls
         logger.info("start AutoAnswerCall")
         yield AutoAnswerCall()
 
@@ -113,11 +115,11 @@ class AutoAnswerCall(tichy.Tasklet):
     def run(self):
         # We don't create any window, just run in the background...
         # warning; that would only work with gtk or etk backend...
-        gsm_service = tichy.Service('GSM')
+        gsm_service = tichy.Service.get('GSM')
         while True:
             call = yield tichy.Wait(gsm_service, 'incoming-call')
             logger.info("got incoming call")
-            caller_service = tichy.Service('TeleCaller')
+            caller_service = tichy.Service.get('TeleCaller')
             yield caller_service.call("None", call)
 
 
@@ -210,21 +212,6 @@ if __name__ == '__main__':
         except IOError:
             logger.info("failed to load plugins in %s", plugins_dir)
 
-    # Set all the default services
-    defaults = tichy.config.get('services', 'defaults', None)
-    if defaults:
-        defaults = defaults.split(',')
-        for default in defaults:
-            if not default:
-                continue
-            service, name = default.strip().split(':')
-            logger.info("set service %s to %s", service, name)
-            tichy.Service.set_default(service, name)
-
-    if options.show_services:
-        from tichy.service import print_infos
-        print_infos()
-        sys.exit(0)
     if tichy.config.getboolean('dbus','activated', False):
         logger.info("connect to dbus")
         if options.bus == 'system':
