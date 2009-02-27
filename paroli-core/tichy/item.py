@@ -25,15 +25,6 @@ import sys
 
 import tichy
 
-# Set to true if we register experimental Items
-EXPERIMENTAL = False
-
-# Check the globale options for experimental support
-if hasattr(sys.modules['__main__'], 'options'):
-    options = sys.modules['__main__'].options
-    if getattr(options, 'experimental', None):
-        EXPERIMENTAL = True
-
 
 class ItemMetaClass(type):
     """The Meta class for Item class
@@ -47,11 +38,10 @@ class ItemMetaClass(type):
         super(ItemMetaClass, cls).__init__(name, bases, dict)
         for base in bases:
             if base is tichy.Object:
-                return
-            if issubclass(base, Item):
-                if cls.experimental and not EXPERIMENTAL:
-                    return
+                continue
+            while issubclass(base, tichy.item.Item):
                 base.subclasses.append(cls)
+                base = base.__base__
 
 
 class Item(tichy.Object):
