@@ -7,6 +7,7 @@ fonts {
 
 images {
    image: "alarm.png" COMP;
+   image: "gsm_no_service.png" COMP;
    image: "gsm_0.png" COMP;
    image: "gsm_1.png" COMP;
    image: "gsm_2.png" COMP;
@@ -16,6 +17,7 @@ images {
    image: "battery_1.png" COMP;
    image: "battery_2.png" COMP;
    image: "battery_3.png" COMP;
+   image: "battery_charging.png" COMP;
 }
 
 styles
@@ -265,7 +267,7 @@ collections{
                                       to: "top-bar";
                               }
                         image {
-                           normal: "gsm_0.png";
+                           normal: "gsm_no_service.png";
                         }
                         visible: 1;
                       }
@@ -284,6 +286,10 @@ collections{
                  description { state: "gsm_strengh_4" 0.0;
                      inherit: "default" 0.0;
                      image.normal: "gsm_4.png";
+                 }
+                 description { state: "gsm_no_service" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_no_service.png";
                  }
               }
               part{
@@ -319,6 +325,10 @@ collections{
                  description { state: "battery_3" 0.0;
                      inherit: "default" 0.0;
                      image.normal: "battery_3.png";
+                 }
+                 description { state: "charging" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "battery_charging.png";
                  }
               }
                // Show the red rim
@@ -896,14 +906,25 @@ collections{
                       else if( val >= 40 && val < 60) {
                          set_state(PART:"gsm", "gsm_strengh_2", 0.0);
                       }
-                      else if( val >= 10 && val < 40) {
+                      else if( val > 20 && val < 40) {
                          set_state(PART:"gsm", "gsm_strengh_1", 0.0);
                       }
-                      else if( val < 10) {
-                         set_state(PART:"gsm", "default", 0.0);
+                      else if( val > 0 && val < 20) {
+                         set_state(PART:"gsm", "gsm_strengh_0", 0.0);
+                      }
+                      else {
+                         set_state(PART:"gsm", "gsm_no_service", 0.0);
                       }
                   }
                   
+              }
+              program
+              {
+                  name: "set_battery_status_charging";
+                  signal: "*";
+                  source: "battery_status_charging";
+                  action: STATE_SET "charging" 0.0;
+                  target: "battery";
               }
               program
               {

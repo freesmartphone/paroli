@@ -118,6 +118,7 @@ class Launcher_App(tichy.Application):
         
         self.power = tichy.Service.get('Power')
         self.power.connect('battery_capacity', self.battery_capacity)
+        self.power.connect('battery_status', self.battery_status)
         self.battery_capacity(0,10)
         
         self.button = tichy.Service.get('Buttons')
@@ -229,6 +230,18 @@ class Launcher_App(tichy.Application):
     def battery_capacity(self, *args, **kargs):
         logger.info("capacity change in launcher")
         self.edje_obj.Edje.signal_emit(str(args[1]), "battery_change")
+
+    def battery_status(self, *args, **kargs):
+        logger.info("battery status change in launcher")
+        if args[1] == "charging":
+            self.edje_obj.Edje.signal_emit(args[1], "battery_status_charging")
+        elif args[1] == "discharging":
+            bat_value = self.power.get_battery_capacity() 
+            self.edje_obj.Edje.signal_emit(str(bat_value), "battery_change")
+        elif args[1] == "full":
+            #TODO: We may do something here.
+            pass
+            
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)
