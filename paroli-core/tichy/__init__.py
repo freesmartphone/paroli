@@ -37,6 +37,7 @@ from ttime import Time
 from persistance import Persistance
 import notifications
 import config
+from settings import Setting
 
 mainloop = None
 
