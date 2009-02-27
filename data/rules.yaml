@@ -42,7 +42,7 @@
     filters:
              - HasAttr(switch, "POWER")
              - HasAttr(event, "held")
-             - HasAttr(duration, 5)
+             - HasAttr(duration, 2)
     actions: Command('poweroff')
 -
     #
