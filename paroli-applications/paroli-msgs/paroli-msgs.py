@@ -26,7 +26,6 @@ import sys
 #import dbus
 #from dbus.mainloop.glib import DBusGMainLoop
 #DBusGMainLoop(set_as_default=True)
-from tichy.service import Service
 import dbus
 import ecore
 import ecore.evas
@@ -63,8 +62,8 @@ class ContactsApp(tichy.Application):
 
             #bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             #self.gsm = bus.get_object('org.freesmartphone.ogsmd','/org/freesmartphone/GSM/Device')
-            #self.gsm_service = tichy.Service('GSM')
-            self.msgs_service = tichy.Service('Messages')
+            #self.gsm_service = tichy.Service.get('GSM')
+            self.msgs_service = tichy.Service.get('Messages')
             inbox = self.msgs_service.inbox
             outbox = self.msgs_service.outbox
             all_list = self.msgs_service.messages
@@ -79,7 +78,7 @@ class ContactsApp(tichy.Application):
             messages = all_list
 
             ##connect to tichy's contacts service
-            self.contact_service = Service('Contacts')
+            self.contact_service = tichy.Service.get('Contacts')
 
             ##get contacts list
             self.phone_book = self.contact_service.contacts
@@ -236,7 +235,7 @@ class ContactsApp(tichy.Application):
             if original_message != None:
                 original_message.delete(emission, source, param)
             
-            message_service = tichy.Service('SMS')
+            message_service = tichy.Service.get('SMS')
             for i in numbers:
                 message = message_service.create(number=i, text=text, direction='out')
                 logger.info("would send message: %s to : %s", text, i)
@@ -256,7 +255,7 @@ class ContactsApp(tichy.Application):
         print "delete message called"
         canvas_obj.remove_all()
         details_window.edj.delete()
-        messages_service = Service('Messages')
+        messages_service = tichy.Service.get('Messages')
         #if message.direction == 'in':
         messages_service.remove(message)
         #else:
@@ -378,7 +377,7 @@ class ContactsApp(tichy.Application):
     def call_contact(self, emission, source, param):
         number = emission.part_text_get('number-text')
         name = emission.part_text_get('name-text')
-        caller_service = Service('Caller')
+        caller_service = tichy.Service.get('Caller')
         my_call = caller_service.call(emission, number, name)
         my_call.start()
         try:
@@ -538,12 +537,12 @@ class ContactsApp(tichy.Application):
         number = number
         
         try:
-            contact = tichy.Service('Contacts').create(name=str(name), number=str(number))
+            contact = tichy.Service.get('Contacts').create(name=str(name), number=str(number))
         except Exception,e:
             print e
         #emission.signal_emit('save-notice','*')
         name_object.edj.delete()
-        #contacts_service = Service('Contacts')
+        #contacts_service = tichy.Service.get('Contacts')
         #contacts_service.add(contact)
         #print dir (self.contact_objects_list)
         self.contact_objects_list.generate_single_item_obj(name,number,contact)

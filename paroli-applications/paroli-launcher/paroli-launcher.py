@@ -24,7 +24,6 @@ import os
 import tichy
 from tichy import gui
 import sys
-from tichy.service import Service
 import ecore
 import dbus
 from tel_number import TelNumber
@@ -97,7 +96,7 @@ class Launcher_App(tichy.Application):
         
         self.edje_obj.Edje.size_set(self.w, self.h)
         
-        self.storage = tichy.Service('TeleCom')
+        self.storage = tichy.Service.get('TeleCom')
         self.connector = self.storage.window
         self.connector.connect('call_active',self.set_caller)
         self.edje_obj.add_callback("*", "launch_app", self.launch_app)
@@ -108,23 +107,24 @@ class Launcher_App(tichy.Application):
         ##current hack
         self.standalone = True
         
-        self.msg = tichy.Service('Messages')
+        self.msg = tichy.Service.get('Messages')
         if self.msg.ready == False :
             self.msg.connect('ready',self.unblock_screen)
         else:
             self.unblock_screen()
         
-        self.gsm = tichy.Service('GSM')
+        self.gsm = tichy.Service.get('GSM')
         self.gsm.connect('network-strength', self.network_strength)
         
-        self.power = tichy.Service('Power')
+        self.power = tichy.Service.get('Power')
         self.power.connect('battery_capacity', self.battery_capacity)
+        self.power.connect('battery_status', self.battery_status)
         self.battery_capacity(0,10)
         
-        self.button = tichy.Service('Buttons')
+        self.button = tichy.Service.get('Buttons')
         self.button.connect('aux_button_pressed', self.switch_profile)
         
-        self.prefs = tichy.Service('Prefs')
+        self.prefs = tichy.Service.get('Prefs')
         
         self._get_paroli_version()
           
@@ -178,7 +178,7 @@ class Launcher_App(tichy.Application):
                 yield app(self.main, standalone=self.standalone)
             except Exception, ex:
                 logger.error("Error from app %s : %s", name, ex)
-                yield tichy.Service('Dialog').error(self.main, ex)
+                yield tichy.Service.get('Dialog').error(self.main, ex)
             finally:
                 self.edje_obj.signal("switch_clock_off","*")
                
@@ -230,6 +230,18 @@ class Launcher_App(tichy.Application):
     def battery_capacity(self, *args, **kargs):
         logger.info("capacity change in launcher")
         self.edje_obj.Edje.signal_emit(str(args[1]), "battery_change")
+
+    def battery_status(self, *args, **kargs):
+        logger.info("battery status change in launcher")
+        if args[1] == "charging":
+            self.edje_obj.Edje.signal_emit(args[1], "battery_status_charging")
+        elif args[1] == "discharging":
+            bat_value = self.power.get_battery_capacity() 
+            self.edje_obj.Edje.signal_emit(str(bat_value), "battery_change")
+        elif args[1] == "full":
+            #TODO: We may do something here.
+            pass
+            
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)

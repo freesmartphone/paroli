@@ -26,16 +26,18 @@ from tichy.object import Object
 from tasklet import Tasklet, Wait, WaitFirst
 
 from application import Application, Gadget
-from service import Service, ServiceUnusable
+from service import Service
 import plugins
 
 from list import List
 from text import Text
+from int import Int
 from item import Item
-from time import Time
+from ttime import Time
 from persistance import Persistance
 import notifications
 import config
+from settings import Setting
 
 mainloop = None
 

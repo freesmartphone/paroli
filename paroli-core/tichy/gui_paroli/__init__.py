@@ -311,7 +311,7 @@ class EdjeObject(tichy.Object):
                         self.Windows[i-1].delete()
                     
         except Exception, e:
-            dialog = tichy.Service('Dialog')
+            dialog = tichy.Service.get('Dialog')
             logger.error(Exception, " ", e)
             dialog.error(self.Parent, e)
         
@@ -356,7 +356,7 @@ class EdjeWSwallow(EdjeObject):
                         self.Windows[i-1].delete()
                   
           except Exception, e:
-              dialog = tichy.Service('Dialog')
+              dialog = tichy.Service.get('Dialog')
               logger.error(Exception, " ", e)
               dialog.error(self.Parent, e)
           

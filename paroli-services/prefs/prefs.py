@@ -19,7 +19,7 @@
 
 import tichy
 import tichy.item as item
-from tichy.service import Service, ServiceUnusable
+from tichy.service import Service
 from tichy.tasklet import WaitDBusName
 
 import logging
@@ -77,7 +77,6 @@ class FreeSmartPhonePrefs(PrefsService):
         except Exception, e:
             logger.warning("can't use freesmartphone Preferences : %s", e)
             self.prefs = None
-            raise ServiceUnusable
 
     def get_profile(self):
         ret = self.prefs.GetProfile()
@@ -127,7 +126,6 @@ class TestPrefs(PrefsService):
         self.services = {'phone': phone}
         self.profiles = ['default', 'silent', 'outdoor']
         self.activated_profiles = ['default']
-        # raise ServiceUnusable
 
     def __getitem__(self, name):
         return self.services[name]

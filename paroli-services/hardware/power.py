@@ -41,6 +41,7 @@ class PowerService(tichy.Service):
         super(PowerService, self).__init__()
         logger.info('power service init')
         self.battery_capacity = 50
+        self.battery_status = ""
         self._connect_dbus().start()        
         #self.battery = None
 
@@ -52,6 +53,7 @@ class PowerService(tichy.Service):
             battery = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerSupply/battery')
             self.battery = dbus.Interface(battery, 'org.freesmartphone.Device.PowerSupply')
             self.battery.connect_to_signal('Capacity', self._on_capacity_change)
+            self.battery.connect_to_signal('PowerStatus', self._on_status_change)
             self._on_capacity_change(self.battery.GetCapacity()) 
         except Exception, e:
             logger.warning("can't use freesmartphone power service : %s", e)
@@ -64,6 +66,14 @@ class PowerService(tichy.Service):
         logger.info("capacity changed to %i", percent)
         self.battery_capacity = percent
         self.emit('battery_capacity', self.battery_capacity)
+
+    def _on_status_change(self, status):
+        self.battery_status = status
+        self.emit('battery_status', self.battery_status)
+
+    def get_battery_capacity(self):
+        bat_value = self.battery.GetCapacity()
+        return bat_value
 
     #def start(self):
         #"""Start the vibrator"""

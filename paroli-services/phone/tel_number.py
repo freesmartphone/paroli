@@ -48,7 +48,7 @@ class TelNumber(tichy.Text):
 
         :Returns: `Contact` | None
         """
-        contacts_service = tichy.Service('Contacts')
+        contacts_service = tichy.Service.get('Contacts')
         contacts = contacts_service.find_by_number(self.value)
         return contacts[0] if contacts else None
 
@@ -69,7 +69,7 @@ class TelNumber(tichy.Text):
             self.view_text.value = self.value
 
     def edit(self, window, name='number', **kargs):
-        text_edit = tichy.Service('TextEdit')
+        text_edit = tichy.Service.get('TextEdit')
         return text_edit.edit(window, self, input_method='number',
                               name=name, **kargs)
 
@@ -77,7 +77,7 @@ class TelNumber(tichy.Text):
         ret = super(TelNumber, self).create_actor()
 
         def on_contact(actor, item, view):
-            select_contact = tichy.Service('SelectContact')
+            select_contact = tichy.Service.get('SelectContact')
             contact = yield select_contact.select(view.window)
             if contact and contact.tel:
                 item.value = str(contact.tel)

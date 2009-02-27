@@ -223,7 +223,7 @@ class Contact(tichy.Item):
     def _on_copy_to(self, action, contact, view, cls):
         try:
             contact = yield cls.import_(self)
-            tichy.Service('Contacts').add(contact)
+            tichy.Service.get('Contacts').add(contact)
         except Exception, ex:
             LOGGER.error("can't import contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
@@ -233,17 +233,17 @@ class Contact(tichy.Item):
         if not self.tel:
             yield tichy.Dialog(view.window, "Error", "Contact has no tel")
         else:
-            caller = tichy.Service('Caller')
+            caller = tichy.Service.get('Caller')
             yield caller.call(view.window, contact.tel)
 
     def _on_edit(self, item, contact, view):
-        editor = tichy.Service('EditContact')
+        editor = tichy.Service.get('EditContact')
         yield editor.edit(self, view.window)
 
     def _on_delete(self, item, contact, view):
         try:
             yield contact.delete()
-            yield tichy.Service('Contacts').remove(contact)
+            yield tichy.Service.get('Contacts').remove(contact)
         except Exception, ex:
             LOGGER.error("can't delete contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
@@ -298,7 +298,7 @@ class PhoneContact(Contact):
     def save(cls):
         """Save all the phone contacts"""
         LOGGER.info("Saving phone contacts")
-        contacts = tichy.Service('Contacts').contacts
+        contacts = tichy.Service.get('Contacts').contacts
         data = [c.to_dict() for c in contacts if isinstance(c, PhoneContact)]
         tichy.Persistance('contacts/phone').save(data)
         yield None

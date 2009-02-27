@@ -37,6 +37,7 @@ class FSOAudio(tichy.Service):
         
     @tichy.tasklet.tasklet
     def init(self):
+        yield tichy.Service.get('GSM').wait_initialized()
         yield self._connect_dbus()
         if self.device != None:
             self.mic_state = self.get_mic_status()
@@ -46,7 +47,6 @@ class FSOAudio(tichy.Service):
         
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
-        
         logger.info("connecting to freesmartphone.GSM dbus audio interface")
         try:
             yield WaitDBusName('org.freesmartphone.ogsmd', time_out=30)

@@ -107,10 +107,10 @@ class GSMService(tichy.Service):
 
     @tichy.tasklet.tasklet
     def _ask_pin(self):
-        #window = tichy.Service("WindowsManager").get_app_parent()
+        #window = tichy.Service.get("WindowsManager").get_app_parent()
         window = None
-        editor = tichy.Service('TelePIN')
-        sim = tichy.Service('SIM')
+        editor = tichy.Service.get('TelePIN')
+        sim = tichy.Service.get('SIM')
         for i in range(4):
             pin = yield editor.edit(window, name="Enter PIN",
                                     input_method='number')
@@ -198,7 +198,8 @@ class FreeSmartPhoneGSM(GSMService):
             on_step("Register on the network")
             LOGGER.info("register on the network")
             yield WaitDBus(self.gsm_network.Register)
-            yield tichy.Wait(self, 'provider-modified')
+            provider = yield tichy.Wait(self, 'provider-modified')
+            LOGGER.info("provider is '%s'", provider)
             self._keep_alive().start()
         except Exception, ex:
             LOGGER.error("Error : %s", ex)

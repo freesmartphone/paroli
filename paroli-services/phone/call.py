@@ -88,7 +88,7 @@ class Call(tichy.Item):
         method.
         """
         LOGGER.info("initiate call")
-        gsm_service = tichy.Service('GSM')
+        gsm_service = tichy.Service.get('GSM')
         yield gsm_service._initiate(self)
         self.status = 'initiating'
         self.emit(self.status)
@@ -98,7 +98,7 @@ class Call(tichy.Item):
         LOGGER.info("release call")
         if self.status in ['releasing', 'released']:
             return
-        gsm_service = tichy.Service('GSM')
+        gsm_service = tichy.Service.get('GSM')
         try:
             yield gsm_service._release(self)
         except Exception, e:
@@ -114,7 +114,7 @@ class Call(tichy.Item):
     def activate(self):
         """Activate the call"""
         LOGGER.info("activate call")
-        gsm_service = tichy.Service('GSM')
+        gsm_service = tichy.Service.get('GSM')
         yield gsm_service._activate(self)
         self.status = 'activating'
         self.emit(self.status)
@@ -124,25 +124,25 @@ class Call(tichy.Item):
     def mute_ringtone(self):
         """mute the call ringtone if it is ringing"""
         LOGGER.info("mute ring tone")
-        tichy.Service('Audio').stop_all_sounds()
-        tichy.Service('Vibrator').stop()
+        tichy.Service.get('Audio').stop_all_sounds()
+        tichy.Service.get('Vibrator').stop()
 
     def mute(self):
         """Mute an active call"""
         LOGGER.info("mute call")
-        tichy.Service('Audio').set_mic_status(False)
+        tichy.Service.get('Audio').set_mic_status(False)
 
     def unmute(self):
         """Un Mute an active call"""
         LOGGER.info("mute call")
-        tichy.Service('Audio').set_mic_status(True)
+        tichy.Service.get('Audio').set_mic_status(True)
 
     def mute_toggle(self):
         LOGGER.info("mute call toggle")
-        if tichy.Service('Audio').get_mic_status() == 1:
-            tichy.Service('Audio').set_mic_status(0)
+        if tichy.Service.get('Audio').get_mic_status() == 1:
+            tichy.Service.get('Audio').set_mic_status(0)
         else:
-            tichy.Service('Audio').set_mic_status(1)
+            tichy.Service.get('Audio').set_mic_status(1)
 
     @tichy.tasklet.tasklet
     def send_dtmf(self, code):

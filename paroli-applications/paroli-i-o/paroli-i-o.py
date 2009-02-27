@@ -25,7 +25,6 @@ import os
 import tichy
 from tichy import gui
 import sys
-from tichy.service import Service
 import ecore
 
 class CallLog(tichy.Item):
@@ -59,7 +58,7 @@ class I_O_App(tichy.Application):
         self.history_items = []
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-i-o.edj')
         self.layerdict = {}
-        self.gsm_service = tichy.Service('GSM')
+        self.gsm_service = tichy.Service.get('GSM')
             
         self.history = self.gsm_service.logs
         self.callLogs = tichy.List()
@@ -133,7 +132,7 @@ class I_O_App(tichy.Application):
         name = unicode(contact)
         #self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
         #self.extra_child.edj.part_swallow_get('contacts-items').delete()
-        caller_service = Service('Caller')
+        caller_service = tichy.Service.get('Caller')
         my_call = caller_service.call(emission, number, name)
         my_call.start()
         #try:
@@ -354,7 +353,7 @@ class I_O_App(tichy.Application):
         except Exception,e : 
             print e
             
-        message_service = tichy.Service('SMS')
+        message_service = tichy.Service.get('SMS')
         #for i in numbers:
         message = message_service.create(number,text,'out')
           #print type(message)

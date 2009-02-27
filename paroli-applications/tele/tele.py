@@ -24,7 +24,6 @@ import os
 import tichy
 from tichy import gui
 import sys
-from tichy.service import Service
 from tel_number import TelNumber
 from dialog import Dialog
 
@@ -50,7 +49,7 @@ class DialerApp(tichy.Application):
             self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
 
             ##connect to tichy's contacts service
-            self.contact_service = Service('Contacts')
+            self.contact_service = tichy.Service.get('Contacts')
 
             ##get contacts list
             self.phone_book = self.contact_service.contacts
@@ -238,11 +237,11 @@ class TeleCaller(tichy.Application):
                 object that is already active.
         """
         logger.debug("caller run, names : %s", name)
-        self.gsm_service = tichy.Service('GSM')
-        self.dialog = tichy.Service('Dialog')
-        self.storage = tichy.Service('TeleCom')
+        self.gsm_service = tichy.Service.get('GSM')
+        self.dialog = tichy.Service.get('Dialog')
+        self.storage = tichy.Service.get('TeleCom')
         self.main = self.storage.window
-        self.audio_service = tichy.Service('Audio')
+        self.audio_service = tichy.Service.get('Audio')
         self.main.etk_obj.visibility_set(1)
         self.main.etk_obj.title_set('Paroli Call')
         if self.audio_service.muted == 1:
