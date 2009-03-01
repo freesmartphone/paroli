@@ -255,6 +255,9 @@ class EdjeObject(tichy.Object):
         self.Edje.data['EdjeObject'] = self
         self.Windows = self.Edje.data['windows']
         self.EdjeWindows = EdjeWindows
+        
+        #self.Edje.on_del_add(self.delete)
+        
         if EdjeWindows != None:
             EdjeWindows.append(self)
 
@@ -385,10 +388,10 @@ class EvasList(tichy.Object):
           self.callbacks = []
           self.sort()
     
-      #def _modified(self, *args, **kargs):
-          #logger.info('list modified')
-          #logger.info(args)
-          #logger.info(kargs)
+      def _modified(self, *args, **kargs):
+          logger.info('scrolled')
+          logger.info(args)
+          logger.info(kargs)
     
       def get_swallow_object(self):
           self.items = []
@@ -409,9 +412,11 @@ class EvasList(tichy.Object):
           scrollbox.drag_bouncy_set(True)
           #scrollbox.add_with_viewport(self.box)
           scrollbox.drag_damping_set(0)
+          #get scrollbar value
+          scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
           #logger.info(scrollbox.drag_damping_get())
           return scrollbox
-  
+   
       def generate_single_item(self, item):
           
           canvas_obj = etk.Canvas()
@@ -467,7 +472,9 @@ class EvasList(tichy.Object):
               new_item[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
           self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
           self.items.insert(0,new_item)
-          self._redraw_box()
+          self._redraw_view()
+          #self.sort()
+          #self._redraw_box()
           
       def _remove_item(self,*args,**kargs):
           logger.info('remove called')
@@ -497,9 +504,9 @@ class EvasList(tichy.Object):
 
       def _redraw_box(self,*args,**kargs):
           logger.info('redrawing called')
+          self.sort()
           self.box.redraw_queue()
           self.box.show_all()
-          self.sort()
 
       def sort(self,*args,**kargs):
           logger.info("list sorting")

@@ -173,7 +173,7 @@ group
                 {
                     align: 0.0 0.0;
                     size: 20;
-                    text: "";
+                    text: "name";
                     font: "Sans";
                 }
                 rel1 
@@ -367,7 +367,7 @@ group
                 {
                     align: 0.0 0.0;
                     size: 20;
-                    text: "mobile";
+                    text: "phone";
                     font: "Sans";
                 }
                 rel1 

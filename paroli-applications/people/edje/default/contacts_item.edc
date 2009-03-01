@@ -236,67 +236,67 @@ group { name: "contacts_item";
     }
 }
     programs {
-        program{
-            name: "list-item-move-in-effect";
-            signal: "mouse,in";
-            source: "move_button";
-            action: STATE_SET "move_in" 0.0;
-            target: "effect-rect";
-            after: "list-item-label-highlighted";
-        }
-        program{
-            name: "list-item-label-highlighted";
-            action: STATE_SET "highlighted" 0.0;
-            target: "label";
-        }
-        program{
-            name: "list-item-mouse-out-effect";
-            signal: "mouse,out";
-            source: "move_button";
-            action: STATE_SET "default" 0.0;
-            target: "label";
-            after: "list-item-mouse-out-effect_2";
-        }
-        program{
-            name: "list-item-mouse-out-effect_2";
-            action: STATE_SET "move_out" 0.0;
-            transition: LINEAR 0.32;
-            target: "effect-rect";
-            after: "list-item-mouse-out-effect_3";
-        }
-        program{
-            name: "list-item-mouse-out-effect_3";
-            action: STATE_SET "default" 0.0;
-            target: "effect-rect";
-        }
-        program{
-            name: "rightward-slide";
-            signal: "RIGHTWARD_SLIDE";
-            source: "*";
-            action: STATE_SET "changed" 0.0;
-            transition: LINEAR 0.32;
-            target:"base";
-            target: "move_button";
-            target:"msgs-button-blocker";
-        }
-        program{
-            name: "fold-back";
-            signal: "mouse,up,1";
-            source: "move_button";
-            action: STATE_SET "default" 0.0;
-            transition: LINEAR 0.32;
-            target:"base";
-            target:"msgs-button-blocker";
-            target: "move_button";
-        }
-         
-            
-        program{
-            name: "msg-pressed";
-            signal: "mouse,up,1";
-            source: "msgs-button-base";
-            action: SIGNAL_EMIT "create_message" "contacts";
-        }
+//         program{
+//             name: "list-item-move-in-effect";
+//             signal: "mouse,in";
+//             source: "move_button";
+//             action: STATE_SET "move_in" 0.0;
+//             target: "effect-rect";
+//             after: "list-item-label-highlighted";
+//         }
+//         program{
+//             name: "list-item-label-highlighted";
+//             action: STATE_SET "highlighted" 0.0;
+//             target: "label";
+//         }
+//         program{
+//             name: "list-item-mouse-out-effect";
+//             signal: "mouse,out";
+//             source: "move_button";
+//             action: STATE_SET "default" 0.0;
+//             target: "label";
+//             after: "list-item-mouse-out-effect_2";
+//         }
+//         program{
+//             name: "list-item-mouse-out-effect_2";
+//             action: STATE_SET "move_out" 0.0;
+//             transition: LINEAR 0.32;
+//             target: "effect-rect";
+//             after: "list-item-mouse-out-effect_3";
+//         }
+//         program{
+//             name: "list-item-mouse-out-effect_3";
+//             action: STATE_SET "default" 0.0;
+//             target: "effect-rect";
+//         }
+//         program{
+//             name: "rightward-slide";
+//             signal: "RIGHTWARD_SLIDE";
+//             source: "*";
+//             action: STATE_SET "changed" 0.0;
+//             transition: LINEAR 0.32;
+//             target:"base";
+//             target: "move_button";
+//             target:"msgs-button-blocker";
+//         }
+//         program{
+//             name: "fold-back";
+//             signal: "mouse,up,1";
+//             source: "move_button";
+//             action: STATE_SET "default" 0.0;
+//             transition: LINEAR 0.32;
+//             target:"base";
+//             target:"msgs-button-blocker";
+//             target: "move_button";
+//         }
+//          
+//             
+//         program{
+//             name: "msg-pressed";
+//             signal: "mouse,up,1";
+//             source: "msgs-button-base";
+//             action: SIGNAL_EMIT "create_message" "contacts";
+//         }
 
         program{
             name: "clickable-pressed";
