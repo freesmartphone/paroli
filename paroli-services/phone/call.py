@@ -81,6 +81,10 @@ class Call(tichy.Item):
     def get_text(self):
         return self.number.get_text()
 
+    @property
+    def description(self):
+        return self.status + " at " + unicode(self.timestamp.get_text())
+
     @tichy.tasklet.tasklet
     def initiate(self):
         """Initiate the call
