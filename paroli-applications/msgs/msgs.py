@@ -100,13 +100,6 @@ class MsgsApp(tichy.Application):
         else:
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
-
-    ##DEBUG FUNCTIONS 
-    ## general output check
-    def self_test(self, *args, **kargs):
-        #txt = "self test called with args: ", args, "and kargs: ", kargs
-        logger.info(args[1])
-        logger.info(args[2])
     
     def _blocker(self, *args, **kargs):
         logger.info("_blocker called with args %s and kargs: %s", str(args), str(kargs))
@@ -210,7 +203,6 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
         new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
-        new_edje.Edje.signal_callback_add("*", "*", self.self_test)
         new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
         
@@ -774,7 +766,3 @@ class empty_sms():
     def on_call(self, b):
         yield Caller(self.window, self.text.value)
        
-    #def self_test(self,emission, source, param):
-        #print "emission: ", str(emission)
-        #print "source: ", str(source)
-        #print "param: ", str(param)
