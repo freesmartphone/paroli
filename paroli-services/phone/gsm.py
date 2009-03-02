@@ -249,6 +249,7 @@ class FreeSmartPhoneGSM(GSMService):
 
             assert call_id in self.lines
             self.emit('incoming-call', call)
+            call._incoming()
 
         elif status == 'outgoing':
             self.lines[call_id]._outgoing()

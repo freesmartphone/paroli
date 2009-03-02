@@ -327,7 +327,7 @@ group { name: "edit-name";
           action: STATE_SET "save" 0.0; 
           target: "save-notice";
           target: "save-notice-text"; 
-          after: "close_window_w_extra";
+//           after: "close_window_w_extra";
         }
         program { 
                 name: "close_window_w_extra";

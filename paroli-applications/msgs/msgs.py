@@ -26,18 +26,19 @@ import sys
 import dbus
 import ecore
 import ecore.evas
-      
+
+from tichy.tasklet import Wait, WaitFirst
 
 class MsgsApp(tichy.Application):
     name = 'Msgs'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     launcher_info = [tichy.Service.get('Messages').unread]
-    
+
     def run(self, parent, standalone=False):
-        
+
         self.standalone = standalone
-        
+
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
 
@@ -47,22 +48,22 @@ class MsgsApp(tichy.Application):
             self.main.etk_obj.title_set('Msgs')
             self.main.etk_obj.show()
 
-      
+
         ##set edje file to be used
         ##TODO: make one edje file per plugin
         self.edje_file = os.path.join(os.path.dirname(__file__),'msgs.edj')
 
         ##get message service and list of all messages
         self.msgs_service = tichy.Service.get('Messages')
-        
+
         self.messages = self.msgs_service.messages
-        
+
         ##sort messages by date
         def comp(m1, m2):
             return cmp(m2.timestamp, m1.timestamp)
-            
+
             #return cmp(len(m2.text), len(m1.text))
-        
+
         self.list_label = [('label','peer'),('label-number','text'),('status','status'),('direction','direction')]
         self.messages_list = gui.EvasList(self.messages, self.main, self.edje_file, "message_item", self.list_label, comp)
 
@@ -77,18 +78,19 @@ class MsgsApp(tichy.Application):
         self.edje_obj.embed(self.messages_swallow, self.messages_list.box, "message-items")
         sms = empty_sms()
         self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
-        
+
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
             self.edje_obj.Edje.pos_set(0, 50)
         else:
             self.edje_obj.Edje.size_set(480,590)
-        
+
         self.edje_obj.show()
 
         ##wait until main object emits back signal or delete is requested
         yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_Msgs'))
         logger.info('Msgs closing')
+        self.main.emit('closed')
         ##remove all children -- edje elements
 
     #finally:
@@ -101,13 +103,6 @@ class MsgsApp(tichy.Application):
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
 
-    ##DEBUG FUNCTIONS 
-    ## general output check
-    def self_test(self, *args, **kargs):
-        #txt = "self test called with args: ", args, "and kargs: ", kargs
-        logger.info(args[1])
-        logger.info(args[2])
-    
     def _blocker(self, *args, **kargs):
         logger.info("_blocker called with args %s and kargs: %s", str(args), str(kargs))
         windows = args[0]
@@ -117,25 +112,25 @@ class MsgsApp(tichy.Application):
         else:
             args[1].signal('activate-blocker', '*')
             args[1].Edje.freeze()
-    
+
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing message-details
     def open_msg_detail_window(self, emission, signal, source, item):
         canvas = item[2]
         edje_obj = item[1]
         message = item[0]
-        
+
         new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'message_details', 'message', self.edje_obj.Windows )
-        
+
         ##set sender/recipient
         new_edje.Edje.part_text_set('name-text',str(message.peer).encode('utf8'))
-        
+
         ##set time of message sent/received
         new_edje.Edje.part_text_set('name-info', message.timestamp.local_repr())
-    
+
         ##set number
         new_edje.Edje.part_text_set('number-text',str(message.peer.value).encode('utf8'))
-    
+
         ##set text
         ##generate text field edje
         text_obj = gui.EdjeObject(self.main, self.edje_file, 'text_grp', new_edje.Windows )
@@ -155,12 +150,12 @@ class MsgsApp(tichy.Application):
         text_obj_scroller.box.show_all()
         ##add callback for back button
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
-        
+
         ## initialize empty sms for reply or forward
         sms = empty_sms()
         sms.number = message.peer.value
         sms.text = unicode(message.text).encode('utf8')
-        
+
         ##add callbacks for reply button
         new_edje.Edje.signal_callback_add("reply", "*", self.open_new_msg_text_entry, sms)
         ##add callbacks for forward function
@@ -176,12 +171,12 @@ class MsgsApp(tichy.Application):
         ##mark message as read if unread
         if message.direction == 'in':
             message.read()
-    
+
     ## open subwindow to create new message (enter recipients)
     def open_enter_number(self, emission, signal, source, sms):
         ##load main gui
         new_edje = gui.EdjeObject(self.main,self.edje_file,'dialpad', self.edje_obj.Windows)
-        
+
         ##set dialpad value to '' to not have NoneType problems
         new_edje.Edje.part_text_set('num_field-text','')
         ## show main gui
@@ -189,7 +184,7 @@ class MsgsApp(tichy.Application):
         #if self.standalone == 1:
         new_edje.Edje.size_set(480,540)
         new_edje.Edje.pos_set(0,40)
-        new_edje.Edje.show()   
+        new_edje.Edje.show()
         ##add window actions
         ##close window
         new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
@@ -198,31 +193,11 @@ class MsgsApp(tichy.Application):
         ##go to next step
         new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
         new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
-    
+
     ## open subwindow to create new message (text entry)
     def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
-        logger.info('got empty_sms with number ' + str(sms.number))
-        new_edje = gui.EdjeObject(self.main, self.edje_file, 'create_message', self.edje_obj.Windows, True)
-        
-        if window:
-            new_edje.Windows.append(window)
-        ##add callback for back button and send
-        new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
-        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
-        new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms, new_edje )
-        new_edje.Edje.signal_callback_add("*", "*", self.self_test)
-        new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
-        mb = new_edje.Edje.part_object_get("message-block")
-        
-        ##set layer of edje object
-        new_edje.Edje.layer_set(3)
-        ##move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,40)
-        ##show edje window
-        new_edje.Edje.show()
-        new_edje.Edje.focus_set(True)
-        mb.focus_set(True)
-        
+        WriteMessage(self.main, sms).start()
+
     ## open window to save unknown contact
     def open_save_contact_window(self, emission, signal, source, item):
         logger.info("add contact in msgs")
@@ -239,69 +214,23 @@ class MsgsApp(tichy.Application):
         tb.focus_set(True)
         new_edje.add_callback('close_window','*', new_edje.delete)
         new_edje.add_callback('save_contact','*', self.save_contact, **{'name_field':'name-text-field','number':number,'item':item[0]})
-        
-    ##MISC FUNCTIONS
-    #sending
-    def _on_send_sms(self, emission, signal, source, sms, window):
-        """Called when the user click the send button
 
-        The function will simply start the send_message tasklet
-        """
-        sending = self.send_sms(emission, signal, source, sms, window).start(err_callback=self.throw)
-
-    @tichy.tasklet.tasklet
-    def send_sms(self, emission, signal, source, sms, window):
-        """tasklet that performs the sending process
-        
-        connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
-        """
-        logger.debug("send message called")
-
-        try:
-            message_service = tichy.Service.get('Messages')
-            message = message_service.create(number=sms.number, text=sms.text, direction='out')
-            logger.info("sending message: %s to : %s", sms.text, sms.number)
-            yield message.send()
-
-        except Exception, ex:
-            # XXX: we should differentiate between different errors
-            # DON'T raise here, as it will close the app and that only half way
-            logger.error("Got error %s", ex)
-            yield tichy.Service.get('Dialog').error(self.main, ex)
-            # XXX: at this point we should show an error box or do something
-            
-        else:
-            
-            #self.contact_objects_list.box.box.redraw_queue()
-            #self.contact_objects_list.box.box.show_all()
-            window.delete()
-  
-    # editing
-    def sign_counter(self, emission, signal, source):
-        text = emission.part_text_get(source)
-        length = len(text)
-        if length > 160:
-            #obj = emission.part_object_get('message-text')
-            #obj.text_set(text[0:17])
-            emission.part_text_set(source, text[0:159])
-  
-    #deleting
     def delete_sms(self, emission, signal, source, item):
         logger.info("delete message called")
         canvas = item[2]
         edje_obj = item[1]
         message = item[0]
-        
+
         try:
             messages_service = tichy.Service.get('Messages')
             messages_service.remove(message).start()
         except Exception, ex:
             logger.error("Got error %s", str(ex))
             #yield tichy.Service.get('Dialog').error(self.main, ex)
-        else:    
+        else:
             #canvas.remove_all()
             emission.data['EdjeObject'].delete()
-  
+
     ## save contact
     def save_contact(self, *args, **kargs ):
         name = args[0].part_text_get(kargs['name_field'])
@@ -320,10 +249,74 @@ class MsgsApp(tichy.Application):
         else:
             kargs['item'].emit('modified')
             args[0].signal_emit('mouse,clicked,1','back-button')
-        
+
     def change_text(self, entry, edje):
         edje.Edje.part_text_set('name-text-field',entry.text)
-  
+
+
+class WriteMessage(tichy.Application):
+    """Allow the user to write the text of a message and send it"""
+    def run(self, parent, sms):
+        self.main = parent
+
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
+        new_edje = gui.EdjeObject(parent, self.edje_file, 'create_message')
+        mb = new_edje.Edje.part_object_get("message-block")
+
+        # add callback for back button and send
+        # new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
+        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
+        new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms)
+        new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
+        mb = new_edje.Edje.part_object_get("message-block")
+
+        new_edje.Edje.layer_set(3)
+        # move edje object down to show top-bar
+        new_edje.Edje.pos_set(0,40)
+        # show edje window
+        new_edje.Edje.show()
+        new_edje.Edje.focus_set(True)
+        mb.focus_set(True)
+
+        # We wait for either the parent app or ourself to close
+        self_close, _ = yield WaitFirst(Wait(parent, 'closed'),
+                                        Wait(self, 'close'))
+        new_edje.delete()
+
+    def _on_send_sms(self, emission, signal, source, sms):
+        """Called when the user click the send button
+
+        The function will simply start the send_message tasklet
+        """
+        self.send_sms(emission, signal, source, sms).start(err_callback=self.throw)
+
+    @tichy.tasklet.tasklet
+    def send_sms(self, emission, signal, source, sms):
+        """tasklet that performs the sending process
+
+        connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
+        """
+        logger.info("send message called")
+        try:
+            message_service = tichy.Service.get('Messages')
+            message = message_service.create(number=sms.number, text=sms.text, direction='out')
+            logger.info("sending message: %s to : %s", sms.text, sms.number)
+            yield message.send()
+        except Exception, ex:
+            logger.error("Got error %s", ex)
+            yield tichy.Service.get('Dialog').error(self.main, ex)
+        # Requiere that we close the Application
+        self.emit('close')
+
+    def sign_counter(self, emission, signal, source):
+        text = emission.part_text_get(source)
+        length = len(text)
+        if length > 160:
+            #obj = emission.part_object_get('message-text')
+            #obj.text_set(text[0:17])
+            emission.part_text_set(source, text[0:159])
+
+
 class empty_sms():
     def __init__(self):
         self.number = None
@@ -331,11 +324,11 @@ class empty_sms():
 
     def set_number(self, emission, source, signal, part):
         self.number = emission.part_text_get(part)
-      
+
     def set_text_from_part(self, emission, source, signal, part):
         self.text = emission.part_text_get(part)
 
-        
+
     ##BELOW    --->     TO BE REPLACED / REWRITTEN
     ##functions for message app
     ##create new message
@@ -345,7 +338,7 @@ class empty_sms():
         #print "create message called"
         ##load main gui
         new_edje = gui.edje_gui(self.main,'dialpad_numbers',self.edje_file)
-        
+
         ##set dialpad value to '' to not have NoneType problems
         new_edje.edj.part_text_set('num_field-text','')
         ## show main gui
@@ -353,7 +346,7 @@ class empty_sms():
         if self.standalone == 1:
             new_edje.edj.size_set(480,600)
         new_edje.edj.pos_set(0,40)
-        new_edje.edj.show()   
+        new_edje.edj.show()
         ##add num-pad actions
         ##delete digit
         new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
@@ -366,8 +359,8 @@ class empty_sms():
         new_edje.edj.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
         new_edje.edj.signal_callback_add("next-button", "*", self.create_message_2, new_edje,'num_field-text',text, original_message)
-        
-    ## step two (enter message)    
+
+    ## step two (enter message)
     def create_message_2(self, emission, source, param, step_1, part_text_field='num_field-text',message='', original_message=''):
         ##get numbers from dialpad
         numbers = emission.part_text_get(part_text_field).split(' ')
@@ -379,7 +372,7 @@ class empty_sms():
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.pos_set(0,40)
-        new_edje.edj.show()  
+        new_edje.edj.show()
         self.open_keyboard()
         text = message
         textbox = gui.etk.TextView()
@@ -391,15 +384,15 @@ class empty_sms():
         new_edje.add(box.scrolled_view,box,"message")
         textbox.focus()
         box.box.show_all()
-        
+
         ##set window actions
         ##close window
         new_edje.edj.signal_callback_add("back", "*", new_edje.close_extra_child)
         ##go to next step
         new_edje.edj.signal_callback_add("send", "*", self._on_send_message, numbers, textbox, step_1, new_edje, original_message)
-    
-    
-    
+
+
+
     ##show message details
     def show_details(self, emission, source, param, message, canvas_obj):
         #print "show details called"
@@ -420,7 +413,7 @@ class empty_sms():
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.pos_set(0,40)
-        new_edje.edj.show()   
+        new_edje.edj.show()
 
     def _on_send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
         """Called when the user click the send button
@@ -428,7 +421,7 @@ class empty_sms():
         The function will simply start the send_message tasklet
         """
         self.send_message(emission, source, param, numbers, textbox, step_1, step_2, original_message).start(err_callback=self.throw)
-    
+
     @tichy.tasklet.tasklet
     def send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):
         """tasklet that performs the sending process"""
@@ -441,7 +434,7 @@ class empty_sms():
             step_1.delete(emission,source,param)
             if original_message != None:
                 original_message.delete(emission, source, param)
-            
+
             message_service = tichy.Service.get('SMS')
             for i in numbers:
                 message = message_service.create(number=i, text=text, direction='out')
@@ -456,7 +449,7 @@ class empty_sms():
             logger.error("Got error %s", ex)
             raise
             # XXX: at this point we should show an error box or do something
-        
+
     ##delete message INCOMPLETE
     def delete_message(self,emission, source, param, message, details_window, messages_edje_obj, canvas_obj):
         print "delete message called"
@@ -467,23 +460,23 @@ class empty_sms():
         messages_service.remove(message).start()
         #else:
             #messages_service.outbox.remove(message)
-    
+
     ##reply to message INCOMPLETE
     def reply(self, emission, source, param, message, details_window):
         print "reply called, to number: ", str(message.peer).encode('utf8')
         self.create_message_2(emission, source, param, details_window, 'number-text')
-    
+
     ##forward message INCOMPLETE
     def forward(self, emission, source, param, message, original_message):
         text = str(message.text).encode('utf8')
         print "forward called, of message: ", text
         self.create_message(emission, source, param, original_message, text)
-    
+
     ##general functions on module
     ##close window
     def _close(self,emission, source, param):
         emission.delete()
-    
+
     ##load phonebook
     def load_phone_book(self, emission, source, param):
         #print "load phone book called"
@@ -509,32 +502,32 @@ class empty_sms():
         except Exception,e:
             print e
         print "done2"
-          
-        try: 
+
+        try:
             self.contact_objects_list = gui.contact_list(self.phone_book,contacts_box,self.main.etk_obj.evas,self.edje_file,'message-contacts_item',self, 'contacts' , emission)
         except Exception,e:
-            print e 
+            print e
         print "done3"
-        
-        try: 
+
+        try:
             to_2_swallowed = contacts_box.scrolled_view
         except Exception,e:
-            print e 
+            print e
         print "done4"
-        
-        try: 
+
+        try:
             #print "new_edje.add(to_2_swallowed,contacts_edje)"
             new_edje.add(to_2_swallowed,contacts_box,"items")
         except Exception,e:
-            print e 
+            print e
         print "done5"
-        
-        try: 
+
+        try:
             contacts_box.box.show()
         except Exception,e:
-            print e 
+            print e
         print "done6"
-    
+
     ##add contact to recipients
     def add_recipient(self, emission, source, param, contact, dial_pad):
         print "add recipient called"
@@ -543,11 +536,11 @@ class empty_sms():
             new = str(contact.tel)
         else:
             new = old + ' ' + str(contact.tel)
-        
+
         dial_pad.part_text_set('num_field-text', new)
         self.extra_child.close_extra_child(emission, source, param)
         #self.open_keyboard()
-    
+
     ##add digit on dialpad like window
     def add_digit(self,emission, source, param):
         print "add digit called"
@@ -557,30 +550,30 @@ class empty_sms():
             new = str(new_sign)
         else:
             new = str(value)+str(new_sign)
-          
+
         emission.part_text_set('num_field-text',new)
-    
+
     ##delete digit on dialpad like window
     def number_edit_del(self,emission, source, param):
         print "number_edit del called"
         value = emission.part_text_get("num_field-text")
         if len(value) != 0:
             emission.part_text_set("num_field-text",value[:-1])
-    
+
     def close_keyboard(self,*args):
         print "close keyboard called"
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-    
+
     def open_keyboard(self,*args):
         print "open keyboard called"
         self.main.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
-    
-    
+
+
     def listen(self, emission, source, param):
         print source
         print param
         print emission.part_drag_value_get('clickable_blocker')
-    
+
     def call_contact(self, emission, source, param):
         number = emission.part_text_get('number-text')
         name = emission.part_text_get('name-text')
@@ -594,24 +587,24 @@ class empty_sms():
 
     def edit_number_type(self,emission, source, param, contact, details_window):
         print "edit number type called"
-    
+
         number = emission.part_text_get('number-text')
-        
+
         new_edje = gui.edje_gui(self.main,'edit-number-type',self.edje_file)
         #new_edje.edj.part_text_set('num_field-text',number)
         new_edje.edj.signal_callback_add("num_type_clicked", "*", self.edit_number, number, contact, details_window,new_edje)
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         #new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
+
     def edit_number(self,emission, source, param, number, contact, details_window,first_window):
         print "edit number called"
-        
+
         #number = emission.part_text_get('number-text')
         #last_window = emission
         number_type = param
@@ -622,16 +615,16 @@ class empty_sms():
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         new_edje.edj.signal_callback_add("save-button", "*", self.save_contact_number, 'number' , number_type, contact, details_window)
         new_edje.edj.signal_callback_add("save_successful", "*", first_window.delete)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
+
     def add_number_new_contact(self,emission, source, param):
         print "add new number called"
-        
+
         #number = emission.part_text_get('number-text')
         #me = 'mirko'
         new_edje = gui.edje_gui(self.main,'dialpad_numbers',self.edje_file)
@@ -641,20 +634,20 @@ class empty_sms():
         new_edje.edj.signal_callback_add("back", "*", new_edje.delete)
         new_edje.edj.signal_callback_add("add_digit", "*", self.add_digit)
         new_edje.edj.signal_callback_add("next-button", "*", self.add_name_new_contact,first_window=new_edje)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
 
-    
+
+
     def edit_name(self,emission, source, param, contact, first_window):
         print "edit name called"
-        
+
         name = emission.part_text_get('name-text')
-        
+
         new_edje = gui.edje_gui(self.main,'edit-name',self.edje_file)
         name_field = gui.entry(name,False)
         new_edje.text_field = name_field.entry
@@ -666,18 +659,18 @@ class empty_sms():
         new_edje.edj.signal_callback_add("next_step", "*", self.edit_name_info, contact, first_window,new_edje)
         new_edje.edj.signal_callback_add("close_w_textfield", "*", new_edje.close_extra_child)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
+
     def edit_name_info(self,emission, source, param, contact, first_window, last_window):
         print "edit info called"
-        
+
         #name = emission.part_text_get('name-text')
-        
+
         new_edje = gui.edje_gui(self.main,'edit-name',self.edje_file)
         info_field = gui.entry('info',False)
         new_edje.text_field = info_field.entry
@@ -693,18 +686,18 @@ class empty_sms():
         new_edje.edj.signal_callback_add("close_w_textfield", "*", last_window.close_extra_child)
         new_edje.edj.signal_callback_add("save_successful", "*", new_edje.close_extra_child)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
+
     def add_name_new_contact(self,emission, source, param,first_window=None):
         print "add new name called"
         #print name
         number = emission.part_text_get('num_field-text')
-        
+
         new_edje = gui.edje_gui(self.main,'edit-name',self.edje_file)
         name_field = gui.entry('Name',False)
         new_edje.text_field = name_field.entry
@@ -715,13 +708,13 @@ class empty_sms():
         new_edje.edj.signal_callback_add("close_w_textfield", "*", new_edje.close_extra_child)
         new_edje.edj.signal_callback_add("save_contact", "*", self.save_new_contact,name_object=new_edje,number=number,first_window=first_window)
         #new_edje.edj.signal_callback_add("del-button", "*", self.number_edit_del)
-        
+
         new_edje.edj.layer_set(4)
         if self.standalone:
             new_edje.edj.size_set(480,600)
         new_edje.edj.edj.pos_set(0,40)
         new_edje.edj.show()
-    
+
     def save_contact_number(self,emission,source,param, switch ,info, contact, details_window,name=None):
         if switch == 'number':
             number = emission.part_text_get('num_field-text')
@@ -737,12 +730,12 @@ class empty_sms():
             details_window.edj.part_text_set('name-text', cname)
             details_window.edj.part_text_set('name-info', cinfo)
             emission.signal_emit('contact_name_edit_saved','*')
-    
+
     def save_new_contact(self,emission, source, param,name_object=None,number=None,first_window=None):
         print "save new contact called"
         name = name_object.text_field.text_get()
         number = number
-        
+
         try:
             contact = tichy.Service.get('Contacts').create(name=str(name), number=str(number))
         except Exception,e:
@@ -758,23 +751,18 @@ class empty_sms():
         self.contact_objects_list.box.box.show_all()
         first_window.edj.delete()
         #print contacts_service.contacts
-     
+
     def on_key(self, w, k):
         self.text.value += k  # The view will automatically be updated
-        
+
     def on_del(self, w):
         self.text.value = self.text.value[:-1]
-        
-    #def calling(self,orig,orig_parent,emission, source, param):  
+
+    #def calling(self,orig,orig_parent,emission, source, param):
         #print "calling"
         #number = emission.part_text_get("num_field-label")
         #print number
         #yield Caller(self.edje_obj, number)
-        
+
     def on_call(self, b):
         yield Caller(self.window, self.text.value)
-       
-    #def self_test(self,emission, source, param):
-        #print "emission: ", str(emission)
-        #print "source: ", str(source)
-        #print "param: ", str(param)
