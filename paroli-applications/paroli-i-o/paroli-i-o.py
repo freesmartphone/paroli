@@ -27,20 +27,6 @@ from tichy import gui
 import sys
 import ecore
 
-class CallLog(tichy.Item):
-    """Class that represents a call log"""
-    def __init__(self, number, direction, timestamp, type, data):
-        self.number = number
-        self.direction = direction
-        self.timestamp = timestamp
-        self.type = type
-        self.description = self.type + " at " + unicode(self.timestamp.get_text())
-        self.data = data
-
-    def get_text(self):
-        return self.number.get_text()
-
-
 class I_O_App(tichy.Application):
     name = 'Paroli-I/O'
     icon = 'icon.png'
@@ -61,18 +47,7 @@ class I_O_App(tichy.Application):
         self.layerdict = {}
         self.gsm_service = tichy.Service.get('GSM')
             
-        self.history = self.gsm_service.logs
-        self.callLogs = tichy.List()
-        i = 0
-        for call in self.history:
-            if (i == 30): break
-            if call.status == "inactive" and call.direction == "in":
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Missed", call))
-            elif call.status != "inactive" and call.direction == "in":
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Incoming", call))
-            else: 
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Outgoing", call))
-            i = i + 1
+        self.callLogs = self.gsm_service.logs
         
         #history_box = gui.edje_box(self, 'V', 1)
 
@@ -104,6 +79,8 @@ class I_O_App(tichy.Application):
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
         if self.standalone:
             self.edje_obj.delete()
+            del self.history_list
+            del self.history_swallow
         else:
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
@@ -146,7 +123,6 @@ class I_O_App(tichy.Application):
 
     def delete_log(self, emission, source, param, log):
         print "Delete Log ", log
-        #TODO: delete log data (from file)
         self.callLogs.remove(log)
 
     
