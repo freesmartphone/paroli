@@ -48,8 +48,9 @@ class Call(tichy.Item):
             status : str | None
                 Can be any of :
                     - 'inactive'
+                    - 'incoming'
                     - 'outoing'
-                    - 'activaing'
+                    - 'activating'
                     - 'active'
                     - 'releasing'
                     - 'released'
@@ -165,6 +166,10 @@ class Call(tichy.Item):
     def _released(self):
         self.status = 'released'
         self.emit('released')
+
+    def _incoming(self):
+        self.status = 'imcoming'
+        self.emit('incoming')
 
 
     # TODO: In the long run we should really use a system similar to
