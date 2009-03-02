@@ -29,12 +29,13 @@ import ecore
 
 class CallLog(tichy.Item):
     """Class that represents a call log"""
-    def __init__(self, number, direction, timestamp, type):
+    def __init__(self, number, direction, timestamp, type, data):
         self.number = number
         self.direction = direction
         self.timestamp = timestamp
         self.type = type
         self.description = self.type + " at " + unicode(self.timestamp.get_text())
+        self.data = data
 
     def get_text(self):
         return self.number.get_text()
@@ -66,11 +67,11 @@ class I_O_App(tichy.Application):
         for call in self.history:
             if (i == 30): break
             if call.status == "inactive" and call.direction == "in":
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Missed"))
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Missed", call))
             elif call.status != "inactive" and call.direction == "in":
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Incoming"))
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Incoming", call))
             else: 
-                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Outgoing"))
+                self.callLogs.append(CallLog(call.number, call.direction, call.timestamp, "Outgoing", call))
             i = i + 1
         
         #history_box = gui.edje_box(self, 'V', 1)
@@ -116,7 +117,7 @@ class I_O_App(tichy.Application):
         item[1].Edje.signal_callback_add("new_call", "*", self.create_call, item[0])
         item[1].Edje.signal_callback_add("new_msg", "*", self.create_message, item[0])
         item[1].Edje.signal_callback_add("save_number", "*", self.save_number, item[0])
-        item[1].Edje.signal_callback_add("delete_log", "*", self.delete_log, item)
+        item[1].Edje.signal_callback_add("delete_log", "*", self.delete_log, item[0])
     
     def to_edit_mode(self, emission, source, param):
         for item in self.history_list.items:
@@ -145,31 +146,9 @@ class I_O_App(tichy.Application):
 
     def delete_log(self, emission, source, param, log):
         print "Delete Log ", log
-        #TODO: delete log data
-        self.history_list.items.remove(log)
-        self.refresh_list()
+        #TODO: delete log data (from file)
+        self.callLogs.remove(log)
 
-    def refresh_list(self):
-        print "refresh list"
-        self.history_swallow = self.history_list.get_swallow_object()
-        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
-        self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
-        self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
-        self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
-        if self.standalone:
-            self.edje_obj.Edje.size_set(480,550)
-            self.edje_obj.Edje.pos_set(0, 50)
-        else:
-            self.edje_obj.Edje.size_set(480,590)
-              
-        self.set_list(self.history_list)
-        self.edje_obj.show()
-        
-
-    def remove_entry(self, entry):
-        print "remove called"
-        assert entry in self.history
-        self.history.remove(entry)
     
     def load_phone_book(self,orig,orig_parent,emission, source, param):
         print "load phone book called"
