@@ -150,16 +150,16 @@ group { name: "history_item";
                to: "item";
             }
             rel2 {
-               // default is "unsaved" state for the phone number.
-               relative: 0.8 1.0;
+               // default is "saved" state for the phone number.
+               relative: 1.0 1.0;
                to: "item";
             }
          }
          description 
          { 
-            state: "saved" 0.0;
+            state: "unsaved" 0.0;
             inherit: "default" 0.0;
-            rel2.relative: 1.0 1.0;
+            rel2.relative: 0.8 1.0;
          }
       }
       part {
@@ -236,10 +236,11 @@ group { name: "history_item";
             image {
                normal: "Save.png";
             }
-            visible: 1;
+            visible: 0;
          }
          description { 
             state: "unsaved" 0.0;
+            inherit: "default" 0.0;
             visible: 1;
          }
       }
@@ -333,6 +334,22 @@ group { name: "history_item";
          signal: "mouse,up,1";
          source: "save_button";
          action: SIGNAL_EMIT "save_number" "save_button";
+      }
+      program {
+         name: "show-save-button";
+         signal: "show_save_button";
+         source: "*";
+         action: STATE_SET "unsaved" 0.0; 
+         target: "label-bg";
+         target: "save_button";
+      }
+      program {
+         name: "hide-save-button";
+         signal: "hide_save_button";
+         source: "*";
+         action: STATE_SET "default" 0.0; 
+         target: "label-bg";
+         target: "save_button";
       }
       program {
          name: "delete-log";

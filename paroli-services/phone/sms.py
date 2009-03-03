@@ -147,9 +147,6 @@ class TestSms(tichy.Service):
     service = 'SMS'
     name = 'Test'
 
-    def __init__(self):
-        pass
-
     @tichy.tasklet.tasklet
     def init(self):
         yield None
