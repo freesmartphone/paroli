@@ -416,7 +416,7 @@ class EvasList(tichy.Object):
           #scrollbox.add_with_viewport(self.box)
           scrollbox.drag_damping_set(0)
           #get scrollbar value
-          scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
+          #scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
           #logger.info(scrollbox.drag_damping_get())
           return scrollbox
    
