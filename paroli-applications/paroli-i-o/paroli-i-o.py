@@ -108,19 +108,11 @@ class I_O_App(tichy.Application):
         for item in self.callLogsView.items:
             item[1].Edje.signal_emit("to_default_mode", "")
     
-    def create_call(self, emission, source, param, contact):
-        print "Create Call ", contact
-        number = contact.number.value
-        name = unicode(contact)
-        #self.extra_child.edj.part_swallow_get('contacts-items').visible_set(0)
-        #self.extra_child.edj.part_swallow_get('contacts-items').delete()
-        caller_service = tichy.Service.get('Caller')
-        my_call = caller_service.call(emission, number, name)
-        my_call.start()
-        #try:
-            #self.extra_child.edj.delete()
-        #except Exception,e:
-            #print e
+    def create_call(self, emission, source, param, callLog):
+        number = callLog.number.value
+        name = unicode(callLog)
+        caller_service = tichy.Service.get('TeleCaller')
+        caller_service.call("window", number, name).start()
     
     def save_number(self, emission, source, param, contact):
         print "Save number ", contact
