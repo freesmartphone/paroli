@@ -40,12 +40,22 @@ def retry_on_sim_busy(method, *args):
     busy error"""
     # TODO: make a better implementation of this, we should use the
     #       SIMReady signal
+
+    def is_busy_error(ex):
+        """Check if an exception is due to a SIM busy error"""
+        # There is a little hack to handle cases when the framework
+        # fails to send the SIM.NotReady error.
+        name = ex.get_dbus_name()
+        msg = ex.get_dbus_message()
+        return name == 'org.freesmartphone.GSM.SIM.NotReady' or \
+            msg.endswith('SIM busy')
+
     for i in range(5):
         try:
             ret = yield WaitDBus(method, *args)
             yield ret
         except dbus.exceptions.DBusException, ex:
-            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.NotReady':
+            if not is_busy_error(ex): # This is an other error
                 raise
             logger.info("sim busy, retry in 5 seconds")
             yield tichy.tasklet.Sleep(5)
