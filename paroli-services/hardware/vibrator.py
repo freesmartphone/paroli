@@ -22,7 +22,7 @@ __docformat__ = 'reStructuredText'
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus
+from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
 logger = logging.getLogger('vibrator')
@@ -38,16 +38,19 @@ class VibratorService(tichy.Service):
     service = 'Vibrator'
 
     def __init__(self):
-        """Connect to the freesmartphone DBus object"""
         super(VibratorService, self).__init__()
+        self.vibrator = None
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
         try:
+            yield WaitDBusName('org.freesmartphone.odeviced')
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             vibrator = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/LED/neo1973_vibrator')
             self.vibrator = dbus.Interface(vibrator, 'org.freesmartphone.Device.LED')
 
         except Exception, e:
             logger.warning("can't use freesmartphone vibrator : %s", e)
-            self.vibrator = None
 
     def start(self):
         """Start the vibrator"""
