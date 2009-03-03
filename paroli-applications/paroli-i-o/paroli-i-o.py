@@ -28,7 +28,7 @@ import sys
 import ecore
 
 class I_O_App(tichy.Application):
-    name = 'Paroli-I/O'
+    name = 'I/O'
     icon = 'icon.png'
     #category = 'main' # So that we see the app in the launcher
     category = 'launcher' # So that we see the app in the launcher
@@ -83,7 +83,7 @@ class I_O_App(tichy.Application):
                 print "Send show signal for ", log.number
                 edje.Edje.signal_emit("show_save_button", "*") 
 
-        yield tichy.Wait(self.main, 'back_Paroli-I/O')
+        yield tichy.Wait(self.main, 'back_I/O')
         if self.standalone:
             self.edje_obj.delete()
             # XXX: This is wrong. We shouldn't use del to delete the object.
