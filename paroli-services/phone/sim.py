@@ -234,9 +234,6 @@ class TestSim(tichy.Service):
 
     PINError = PINError
 
-    def __init__(self):
-        pass
-
     @tichy.tasklet.tasklet
     def get_contacts(self):
         yield [SIMContact(name='test', tel='099872394', sim_index=0)]

@@ -385,9 +385,8 @@ class EvasList(tichy.Object):
           self.Evas = Parent.etk_obj.evas
           self.label_list = label_list    
           self._comp_fct = comp_fct
-          self.model.connect('appended',self._append_new)
-          self.model.connect('removed',self._remove_item)
-          #self.model.connect('modified',self._modified)
+          self.monitor(self.model, 'appended', self._append_new)
+          self.monitor(self.model, 'removed', self._remove_item)
           self.box = etk.VBox()
           self.callbacks = []
           self.sort()
@@ -468,10 +467,10 @@ class EvasList(tichy.Object):
                 for i in self.items:
                     i[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], i)
 
-      def _append_new(self,*args,**kargs):
+      def _append_new(self, list, item, **kargs):
           logger.info('append called')
-          args[1].connect('modified',self._redraw_view)
-          new_item = self.generate_single_item(args[1])
+          item.connect('modified',self._redraw_view)
+          new_item = self.generate_single_item(item)
           for cb in self.callbacks:
               new_item[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
           self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
@@ -480,10 +479,10 @@ class EvasList(tichy.Object):
           #self.sort()
           #self._redraw_box()
           
-      def _remove_item(self,*args,**kargs):
+      def _remove_item(self, list, removed_item):
           logger.info('remove called')
           for item in self.items:
-              if item[0] == args[1]:
+              if item[0] is removed_item:
                   index = item
                   item[2].remove_all()
           
