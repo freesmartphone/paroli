@@ -57,7 +57,7 @@ class Message(tichy.Item):
                 the time at which we received the message. If set to
                 None we use the current time
         """
-        
+        super(Message, self).__init__()
         storage = None
         
         self.peer = TelNumber.as_type(peer)
@@ -167,6 +167,7 @@ class MessagesService(tichy.Service):
     service = 'Messages'
 
     def __init__(self):
+        super(MessagesService, self).__init__()
         self.messages = tichy.List()
         self.unread = tichy.Text(0)
         self.messages.connect('appended',self._update_unread)
