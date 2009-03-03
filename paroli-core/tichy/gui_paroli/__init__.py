@@ -377,9 +377,10 @@ class EdjeWSwallow(EdjeObject):
           self.Edje.delete()
 
 class EvasList(tichy.Object):
-      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct ):
+      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct, EdjeFrame=None ):
           self.model = model
           self.parent = Parent
+          self.EdjeFrame = EdjeFrame
           self.EdjeFile = EdjeFile
           self.EdjeGroup = EdjeGroup
           self.Evas = Parent.etk_obj.evas
@@ -390,6 +391,9 @@ class EvasList(tichy.Object):
           self.box = etk.VBox()
           self.callbacks = []
           self.sort()
+          
+          if self.EdjeFrame != None:
+              self.EdjeFrame.Edje.signal_emit(str(len(self.model)),"python")
     
       def _modified(self, *args, **kargs):
           logger.info('scrolled')
@@ -405,20 +409,20 @@ class EvasList(tichy.Object):
               self.items.append(single)
               item.connect('modified',self._redraw_view)
               
-          scrollbox = etk.c_etk.ScrolledView()
-          scrollbox.add_with_viewport(self.box)
+          self.scrollbox = etk.c_etk.ScrolledView()
+          self.scrollbox.add_with_viewport(self.box)
           ## hide scrollbars
-          scrollbox.policy_set(2, 0)
+          self.scrollbox.policy_set(2, 2)
           ## make it dragable
-          scrollbox.dragable_set(True)
+          self.scrollbox.dragable_set(True)
           ## make it non-bouncing
-          scrollbox.drag_bouncy_set(True)
+          self.scrollbox.drag_bouncy_set(True)
           #scrollbox.add_with_viewport(self.box)
-          scrollbox.drag_damping_set(0)
+          self.scrollbox.drag_damping_set(0)
           #get scrollbar value
           #scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
           #logger.info(scrollbox.drag_damping_get())
-          return scrollbox
+          return self.scrollbox
    
       def generate_single_item(self, item):
           
@@ -509,6 +513,8 @@ class EvasList(tichy.Object):
           logger.info('redrawing called')
           self.sort()
           self.box.redraw_queue()
+          if self.EdjeFrame != None:
+              self.EdjeFrame.Edje.signal_emit(str(len(self.model)),"python")
           self.box.show_all()
 
       def sort(self,*args,**kargs):

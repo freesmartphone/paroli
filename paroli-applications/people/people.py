@@ -60,16 +60,29 @@ class PeopleApp(tichy.Application):
         def comp(m1, m2):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
         
+        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'people', "contacts-items")
+        
         self.list_label = [('label','name')]
-        self.contacts_list = gui.EvasList(self.contacts, self.main, self.edje_file, "contacts_item", self.list_label, comp)
+        self.contacts_list = gui.EvasList(self.contacts, self.main, self.edje_file, "contacts_item", self.list_label, comp, self.edje_obj)
 
         self.contacts_swallow = self.contacts_list.get_swallow_object()
 
         self.contacts_list.add_callback("contact_details", "contacts", self.open_detail_window)
-
-        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'people', "contacts-items")
         
         self.edje_obj.embed(self.contacts_swallow,self.contacts_list.box,"contacts-items")
+        
+        #self.contacts_list.connect('redrawing', self._redrawing)
+        
+        #self.edje_obj.add_callback("*", "touch", self.self_test)
+        
+        
+        #po = self.edje_obj.Edje.part_object_get("base2")
+        #print dir(self.edje_obj.Edje)
+        #po.geometry_set(0, -220, 440, 200)
+        #print po.geometry_get()
+        #po.top_left_set(0, -220)
+        #print po.top_left_get()
+        #self.edje_obj.Edje.part_drag_value_set("contacts-items", 1.0, 1.0)
         #sms_service = tichy.Service.get('SMS')
         #contact = empty_contact()
         self.edje_obj.add_callback("add_contact", "*", self.edit_number, empty_contact())
