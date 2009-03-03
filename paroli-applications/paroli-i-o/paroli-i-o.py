@@ -58,13 +58,13 @@ class I_O_App(tichy.Application):
 
         #  We use Call object to represent call log 
         self.list_label = [('label', 'number'), ('subtext', 'description')]
-        self.history_list = gui.EvasList(self.callLogs, self.main, self.edje_file, "history_item", self.list_label, comp)
-        self.history_swallow = self.history_list.get_swallow_object()
+        self.callLogsView = gui.EvasList(self.callLogs, self.main, self.edje_file, "history_item", self.list_label, comp)
+        self.history_swallow = self.callLogsView.get_swallow_object()
 
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
-        self.edje_obj.embed(self.history_swallow, self.history_list.box, "history-items")
+        self.edje_obj.embed(self.history_swallow, self.callLogsView.box, "history-items")
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
             self.edje_obj.Edje.pos_set(0, 50)
@@ -73,10 +73,10 @@ class I_O_App(tichy.Application):
               
         logger.info(self.edje_obj.Edje.size_get())    
         logger.info(self.edje_obj.Edje.pos_get())
-        self.set_list(self.history_list)
+        self.set_list(self.callLogsView)
         self.edje_obj.show()
 
-        for item in self.history_list.items:
+        for item in self.callLogsView.items:
             log = item[0]
             edje = item[1]
             if not log.number.get_contact():
@@ -88,8 +88,8 @@ class I_O_App(tichy.Application):
             self.edje_obj.delete()
             # XXX: This is wrong. We shouldn't use del to delete the object.
             #      and the signal emission should also be automatic.
-            self.history_list.emit('destroyed')
-            del self.history_list
+            self.callLogsView.emit('destroyed')
+            del self.callLogsView
             del self.history_swallow
         else:
             self.edje_obj.delete()
@@ -107,11 +107,11 @@ class I_O_App(tichy.Application):
         item[1].Edje.signal_callback_add("delete_log", "*", self.delete_log, item[0])
     
     def to_edit_mode(self, emission, source, param):
-        for item in self.history_list.items:
+        for item in self.callLogsView.items:
             item[1].Edje.signal_emit("to_edit_mode", "")
         
     def to_default_mode(self, emission, source, param):
-        for item in self.history_list.items:
+        for item in self.callLogsView.items:
             item[1].Edje.signal_emit("to_default_mode", "")
     
     def create_call(self, emission, source, param, contact):
