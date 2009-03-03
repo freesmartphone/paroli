@@ -76,6 +76,13 @@ class I_O_App(tichy.Application):
         self.set_list(self.history_list)
         self.edje_obj.show()
 
+        for item in self.history_list.items:
+            log = item[0]
+            edje = item[1]
+            if not log.number.get_contact():
+                print "Send show signal for ", log.number
+                edje.Edje.signal_emit("show_save_button", "*") 
+
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
         if self.standalone:
             self.edje_obj.delete()
