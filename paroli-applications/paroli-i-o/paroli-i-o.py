@@ -79,6 +79,9 @@ class I_O_App(tichy.Application):
         yield tichy.Wait(self.main, 'back_Paroli-I/O')
         if self.standalone:
             self.edje_obj.delete()
+            # XXX: This is wrong. We shouldn't use del to delete the object.
+            #      and the signal emission should also be automatic.
+            self.history_list.emit('destroyed')
             del self.history_list
             del self.history_swallow
         else:

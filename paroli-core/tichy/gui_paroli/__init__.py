@@ -381,9 +381,8 @@ class EvasList(tichy.Object):
           self.Evas = Parent.etk_obj.evas
           self.label_list = label_list    
           self._comp_fct = comp_fct
-          self.model.connect('appended',self._append_new)
-          self.model.connect('removed',self._remove_item)
-          #self.model.connect('modified',self._modified)
+          self.monitor(self.model, 'appended', self._append_new)
+          self.monitor(self.model, 'removed', self._remove_item)
           self.box = etk.VBox()
           self.callbacks = []
           self.sort()
