@@ -229,6 +229,10 @@ part\
                     }\
                     snprintf(txt, 60, "%s%s", old, num);\
                     set_text(PART:"num_field-text", txt);\
+                    if (strcmp(state, "active") == 0)\
+                    {\
+                        emit(num,"dtmf");\
+                    }\
               }\
            }\
         }
