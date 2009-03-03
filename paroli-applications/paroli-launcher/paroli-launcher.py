@@ -126,10 +126,14 @@ class Launcher_App(tichy.Application):
         
         self.prefs = tichy.Service.get('Prefs')
         
+        self.ussd = tichy.Service.get('Ussd')
+        self.ussd.connect('incoming', self.incoming_ussd)
         self._get_paroli_version()
-          
-        self.edje_obj.show(1)
         
+        #elm = gui.elm_test()
+        
+        self.edje_obj.show(1)
+        #print dir(self.edje_obj.Edje.evas_get())
         yield tichy.Wait(self.main, 'back')
         for i in self.main.children:
           i.remove()
@@ -181,7 +185,19 @@ class Launcher_App(tichy.Application):
                 yield tichy.Service.get('Dialog').error(self.main, ex)
             finally:
                 self.edje_obj.signal("switch_clock_off","*")
-               
+    
+    def incoming_ussd(self, stuff, msg):
+        """connected to the 'incoming_message' edje signal"""
+        print stuff
+        print msg
+        self._incoming_ussd(str(msg[1])).start()
+    
+    @tichy.tasklet.tasklet
+    def _incoming_ussd(self, msg):
+        logger.info('incoming ussd registered')
+        yield tichy.Service.get('Dialog').dialog(self.main, 'Ussd', msg)
+        
+    
     def quit_app(self, emission, source, name):
     
         emitted = 'back_'+str(self.active_app)    

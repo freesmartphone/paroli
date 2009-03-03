@@ -1,5 +1,7 @@
 
 group { name: "tele-people";
+      min: 200 400;
+      max: 480 640;
       parts {
           part{
             name: "base";
@@ -18,7 +20,7 @@ group { name: "tele-people";
             name:"add-button-text";
             type:TEXT;
             description { state: "default" 0.0;
-            visible:0;
+            visible:1;
                   color: 255 255 255 255;
                   text {
                           align: 0.0 0.0;
@@ -50,7 +52,7 @@ group { name: "tele-people";
             name:"add-button";
             type:RECT;
             description { state: "default" 0.0;
-            visible:0;
+            visible:1;
                   color: 255 255 255 0;
                   rel1 {
                           relative: 0.0 0.06;

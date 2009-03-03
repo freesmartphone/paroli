@@ -50,7 +50,10 @@ class DialerApp(tichy.Application):
 
             ##connect to tichy's contacts service
             self.contact_service = tichy.Service.get('Contacts')
-
+            
+            ##connect to tichy's ussd service
+            self.ussd_service = tichy.Service.get('Ussd')
+  
             ##get contacts list
             self.phone_book = self.contact_service.contacts
 
@@ -166,6 +169,128 @@ class DialerApp(tichy.Application):
         self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
         self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
 
+    def load_phone_book_elm(self, emission, signal, source):
+        logger.info("load phone book elm called")
+        ##generate window
+        win = gui.elementary.Window("phonebook", gui.elementary.ELM_WIN_BASIC)
+        win.title_set("Layout")
+        win.autodel_set(True)
+        main_layout = gui.elementary.Layout(win)
+        main_layout.file_set("/usr/share/nfs-paroli/paroli-applications/tele/tele.edj", "tele-people")
+        main_layout.size_hint_weight_set(1.0, 1.0)
+        win.resize_object_add(main_layout)
+        main_layout.show()
+        
+        #fr = gui.elementary.Frame(win.elm_obj)
+        #fr.label_set("Information")
+        #box0.pack_end(fr)
+        #fr.show()
+        
+        sc = gui.elementary.Scroller(win)
+        sc.size_hint_weight_set(1.0, 1.0)
+        sc.size_hint_align_set(-1.0, -1.0)
+        main_layout.content_set("contacts-items", sc)
+        #box0.pack_end(sc)
+        sc.show()
+        
+        box0 = gui.elementary.Box(win)
+        box0.size_hint_weight_set(1.0, 1.0)
+        sc.content_set(box0)
+        box0.show()
+
+        #box1 = gui.elementary.Box(win)
+        #box1.size_hint_weight_set(1.0, 1.0)
+        #sc.content_set(box1)
+        #box1.show()
+        
+        buttons = [("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked'),("Bg Plain", 'bg_plain_clicked'), 
+               ("Bg Image", 'bg_image_clicked')]
+        
+        #for btn in buttons:
+            #bt = gui.elementary.Button(win)
+            ####bt.clicked = btn[1]
+            #bt.label_set(btn[0])
+            #bt.size_hint_align_set(-1.0, 0.0)
+            #box0.pack_end(bt)
+            #bt.show()
+    
+        for i in self.phone_book_list.model:
+            logger.info(i)
+            #layout = gui.elm_layout(win, "/usr/share/nfs-paroli/paroli-applications/tele/tele.edj", "tele-contacts_item")
+            layout = gui.elementary.Layout(win)
+            layout.file_set("/usr/share/nfs-paroli/paroli-applications/tele/tele.edj", "tele-contacts_item")
+            layout.resize(400,60)
+            #layout.elm_obj.size_set(0.5, 0.5)
+            layout.size_hint_align_set(-1.0, 0.0)
+            #logger.info(layout.elm_obj.size_get())
+            #obj = gui.EdjeObject(self.main, self.edje_file, "tele-contacts_item")
+            #obj.Edje.show()
+            #layout.elm_obj.content_set('base', obj.Edje)
+            box0.pack_end(layout)
+            layout.show()
+            box0.show()
+            
+            
+            
+        
+    
+        #win.elm_obj.resize(320,520)
+        win.show()
+        
+        ##generate big layout
+        
+        
+        #main_layout = gui.elm_layout(win.elm_obj, self.edje_file, 'tele-people')
+        ###generate box to go into big layout
+        #box = gui.elementary.Box(win.elm_obj)
+        ###big layout into win
+        
+        
+        ##for i in self.phone_book_list.model:
+            ##logger.info(i)
+            ##layout = gui.elm_layout(win.elm_obj, self.edje_file, "pseudo")
+            ##layout.elm_obj.size_get()
+        #obj = gui.EdjeObject(self.main, self.edje_file, "tele-contacts_item")
+        #obj.show()
+            ##layout.elm_obj.content_set('base', obj.Edje)
+            ##layout.elm_obj.show()
+        #box.pack_end(obj.Edje)
+        
+        #sc = gui.elementary.Scroller(win.elm_obj)
+        #sc.size_hint_weight_set(1.0, 1.0)
+        #sc.size_hint_align_set(-1.0, -1.0)
+        #sc.content_set(box)
+        #sc.show()
+        
+        #box1 = gui.elementary.Box(win.elm_obj)
+        #box1.pack_end(sc)
+        #main_layout.elm_obj.content_set("contacts-items", box1)
+        #main_layout.elm_obj.show()
+        #box.show()
+        #box1.show()
+        #win.elm_obj.resize_object_add(main_layout.elm_obj)
+        #win.elm_obj.show()
+        
+        #new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
+        #new_edje.Edje.name_set('contacts_list')
+        #new_edje.Edje.size_set(480,560)
+        #new_edje.Edje.pos_set(0,40)
+        #new_edje.show(3)
+        #swallow = self.phone_book_list.get_swallow_object()
+        #new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
+        ##self.phone_book_list.add_callback("*", "*",self.self_test)
+        #self.phone_book_list.add_callback("call_contact", "tele", self.call_contact)
+        #self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
+
     ## open subwindow showing save-contact-window
     def add_contact_window(self,emission, source, param):
         logger.info("add contact in dialer")
@@ -197,9 +322,10 @@ class DialerApp(tichy.Application):
         #if ((number[0] in ['0', '1', '6'] or (number[0] == '+' and number[1] != '0')) and )
         if ((number[0].isdigit() or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
             logger.info(number.get_text())
+            emission.part_text_set('num_field-text','')
             TeleCaller(self.main, number).start(err_callback=self.throw)
         elif signal[0] in ['*'] :
-            pass
+            self.ussd_service.send_ussd(signal)
         else :
             pass
             

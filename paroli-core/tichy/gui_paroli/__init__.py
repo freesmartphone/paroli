@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
+import elementary
 import e_dbus
 import evas
 import evas.decorators
@@ -205,9 +206,11 @@ class EventsLoop(object):
 
     def __init__(self):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
+        elementary.init()
 
     def run(self):
         ecore.main_loop_begin()
+        elementary.run()
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)
@@ -217,7 +220,8 @@ class EventsLoop(object):
 
     def quit(self):
         ecore.main_loop_quit()
-
+        elementary.shutdown()
+        
     def iterate(self):
         ecore.main_loop_iterate()
 
@@ -518,6 +522,65 @@ class entry:
         self.entry = etk.Entry()
         self.entry.text = text
         self.entry.password_mode_set(False)
+
+class elm_window():
+    def __init__(self,title="None"):
+        self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
+        self.elm_obj.title_set(title)
+        self.elm_obj.autodel_set(True)
+        
+class elm_layout():
+    def __init__(self, win, edje_file, group, x=1.0, y=1.0):
+        self.elm_obj = elementary.Layout(win)
+        self.elm_obj.file_set(edje_file, group)
+        self.elm_obj.size_hint_weight_set(x, y)
+        win.resize_object_add(self.elm_obj)
+        self.elm_obj.show()
+        
+    def add(self, part, element):
+        self.elm_obj.content_set(part, element)
+
+class elm_test():
+    def __init__(self):
+        
+        self.win = elementary.Window("box-vert", elementary.ELM_WIN_BASIC)
+        self.win.title_set('title')
+        #self.win.show()
+        
+        
+        self.bx = elementary.Box(self.win)
+        self.win.resize_object_add(self.bx)
+        self.bx.size_hint_weight_set(1.0, 1.0)
+        self.bx.show()
+        
+        self.fr = elementary.Frame(self.win)
+        self.fr.label_set("Information")
+        self.bx.pack_end(self.fr)
+        self.fr.show()
+        
+        self.lb = elementary.Label(self.win)
+        self.lb.label_set('asd asdj aposjd pofoehfoa coiahdoajdpa owuaoiwj')
+        self.lb.resize(220, 300)
+        #self.bx.pack_end(self.lb)
+        self.fr.content_set(self.lb)
+        self.lb.show()
+        
+        self.bt = elementary.Button(self.win)
+        self.bt.on_mouse_up_add(self._on_ok_clicked)
+        self.bt.label_set('OK')
+        self.bt.size_hint_align_set(-1.0, 0.0)
+        self.bx.pack_end(self.bt)
+        self.bt.show()
+        self.win.resize(320,520)
+        self.win.show()
+
+    def _on_ok_clicked(self, *args, **kargs):
+        print args
+        print kargs
+        
+        self.win.delete()
+        
+
 
 class edje_box:
     """deprecated"""
