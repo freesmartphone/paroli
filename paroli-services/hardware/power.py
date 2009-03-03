@@ -39,11 +39,13 @@ class PowerService(tichy.Service):
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
         super(PowerService, self).__init__()
-        logger.info('power service init')
         self.battery_capacity = 50
         self.battery_status = ""
-        self._connect_dbus().start()        
-        #self.battery = None
+        self.battery = None
+
+    def init(self):
+        logger.info('power service init')
+        yield self._connect_dbus()
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
@@ -57,7 +59,6 @@ class PowerService(tichy.Service):
             self._on_capacity_change(self.battery.GetCapacity()) 
         except Exception, e:
             logger.warning("can't use freesmartphone power service : %s", e)
-            self.battery = None
         else:
             self._on_capacity_change(self.battery.GetCapacity())
             self.battery_capacity = 0
