@@ -152,7 +152,7 @@ class Object(object):
         when this object is destroyed.
 
         WARNING: This is still experimental, and should only be used
-        with objects that have a 'destroy' signal.
+        with objects that have a 'destroyed' signal.
         """
         connection = obj.connect(event, callback, *args)
 
