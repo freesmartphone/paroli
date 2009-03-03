@@ -153,6 +153,7 @@ class Call(tichy.Item):
     def send_dtmf(self, code):
         """Send one or more Dual Tone Multiple Frequency (DTMF)
         signals during an active call"""
+        gsm_service = tichy.Service.get('GSM')
         if self.status != 'active':
             raise Exception("Can't send DMTF to a call that is not active")
         yield gsm_service._send_dtmf(self, code)
