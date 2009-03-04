@@ -104,6 +104,25 @@ class Setting(Object):
         return self.__value.disconnect(*args, **kargs)
 
 
+class FSOSetting(Setting):
+    """Special setting class that hooks into a FSO preference
+
+    It relies on the 'Prefs' service.
+    """
+    @property
+    def value(self):
+        """accessor to the actual value"""
+        prefs = tichy.Service.get('Prefs')
+        return prefs[self.group][self.name]
+
+    @tasklet.tasklet
+    def set(self, value):
+        """Try to set the Setting value and block until it is done"""
+        prefs = tichy.Service.get('Prefs')
+        # XXX: make this asynchronous
+        prefs[self.group][self.name] = value
+        yield None
+
 if __name__ == '__main__':
     # Simple usage example
 
