@@ -60,6 +60,9 @@ class FreeSmartPhonePrefs(PrefsService):
         def __getitem__(self, key):
             return self.service.GetValue(key)
 
+        def __setitem__(self, key, value):
+            self.service.SetValue(key)
+
     @tichy.tasklet.tasklet
     def init(self):
         logger.info(
