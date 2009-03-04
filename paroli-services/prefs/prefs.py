@@ -27,6 +27,7 @@ logger = logging.getLogger('prefs')
 
 import dbus
 
+# TODO: make the blocking methods asynchronous
 
 class PrefsService(Service):
 
