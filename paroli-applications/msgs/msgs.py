@@ -80,7 +80,7 @@ class MsgsApp(tichy.Application):
         self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
 
         if self.standalone:
-            self.edje_obj.Edje.size_set(480,550)
+            self.edje_obj.Edje.size_set(480,590)
             self.edje_obj.Edje.pos_set(0, 50)
         else:
             self.edje_obj.Edje.size_set(480,590)
@@ -157,6 +157,7 @@ class MsgsApp(tichy.Application):
         sms.text = unicode(message.text).encode('utf8')
 
         ##add callbacks for reply button
+        new_edje.Edje.signal_callback_add("reply", "*", self._empty_sms_text, sms)
         new_edje.Edje.signal_callback_add("reply", "*", self.open_new_msg_text_entry, sms)
         ##add callbacks for forward function
         new_edje.Edje.signal_callback_add("forward", "*", self.open_enter_number, sms)
@@ -165,7 +166,7 @@ class MsgsApp(tichy.Application):
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,40)
+        new_edje.Edje.pos_set(0,50)
         ##show edje window
         new_edje.Edje.show()
         ##mark message as read if unread
@@ -182,8 +183,8 @@ class MsgsApp(tichy.Application):
         ## show main gui
         new_edje.Edje.layer_set(3)
         #if self.standalone == 1:
-        new_edje.Edje.size_set(480,540)
-        new_edje.Edje.pos_set(0,40)
+        new_edje.Edje.size_set(480,590)
+        new_edje.Edje.pos_set(0,50)
         new_edje.Edje.show()
         ##add window actions
         ##close window
@@ -193,6 +194,9 @@ class MsgsApp(tichy.Application):
         ##go to next step
         new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
         new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
+
+    def _empty_sms_text(self, emission, signal, source, sms):
+        sms.text = ''
 
     ## open subwindow to create new message (text entry)
     def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
@@ -204,8 +208,8 @@ class MsgsApp(tichy.Application):
         number = str(item[0].peer)
         logger.info("number is %s", number)
         new_edje = gui.EdjeObject(self.main,self.edje_file,'save-number', self.edje_obj.Windows, True)
-        new_edje.Edje.size_set(480,600)
-        new_edje.Edje.pos_set(0,40)
+        new_edje.Edje.size_set(480,590)
+        new_edje.Edje.pos_set(0,50)
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
         tb = new_edje.Edje.part_object_get("name-text-field")
@@ -260,7 +264,7 @@ class WriteMessage(tichy.Application):
         self.main = parent
 
         self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
-        new_edje = gui.EdjeObject(parent, self.edje_file, 'create_message')
+        new_edje = gui.EdjeObject(parent, self.edje_file, 'create_message', None, True)
         mb = new_edje.Edje.part_object_get("message-block")
 
         # add callback for back button and send
@@ -269,15 +273,16 @@ class WriteMessage(tichy.Application):
         new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms)
         new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
-
+        logger.info("'%s'" % str(sms.text))
         new_edje.Edje.layer_set(3)
         # move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,40)
+        new_edje.Edje.pos_set(0,50)
         # show edje window
         new_edje.Edje.show()
         new_edje.Edje.focus_set(True)
         mb.focus_set(True)
-
+        print str(sms.text)
+        new_edje.Edje.part_text_set('message-block', str(sms.text))
         # We wait for either the parent app or ourself to close
         self_close, _ = yield WaitFirst(Wait(parent, 'closed'),
                                         Wait(self, 'close'))

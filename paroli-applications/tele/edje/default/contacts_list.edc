@@ -20,7 +20,7 @@ group { name: "tele-people";
             name:"add-button-text";
             type:TEXT;
             description { state: "default" 0.0;
-            visible:1;
+            visible:0;
                   color: 255 255 255 255;
                   text {
                           align: 0.0 0.0;
@@ -77,7 +77,7 @@ group { name: "tele-people";
               state: "default" 0.0;
               color: 0 255 255 255;
               rel1 { to:"base";
-                relative: 0.0 0.16;
+                relative: 0.0 0.06;
                     }
               rel2 {to:"base";
                 relative: 1.0 0.99;

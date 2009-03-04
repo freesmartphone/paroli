@@ -391,7 +391,7 @@ class EvasList(tichy.Object):
           self.box = etk.VBox()
           self.callbacks = []
           self.sort()
-          
+          self.items = []
           if self.EdjeFrame != None:
               self.EdjeFrame.Edje.signal_emit(str(len(self.model)),"python")
     
