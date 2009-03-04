@@ -327,17 +327,21 @@ class EditNumber(tichy.Application):
         new_edje.Edje.signal_callback_add('back', '*', self._on_back)
         new_edje.Edje.signal_callback_add('next', '*', self._on_next)
 
-        logger.debug("Wait for back or next, or parent close")
-        event, _ = yield WaitFirst(Wait(self, 'next'),
-                                   Wait(self, 'back'),
-                                   Wait(parent, 'closed'))
-        logger.debug("Got event %d" % event)
+        while True:
+            logger.debug("Wait for back or next, or parent close")
+            event, _ = yield WaitFirst(Wait(self, 'next'),
+                                       Wait(self, 'back'),
+                                       Wait(parent, 'closed'))
+            logger.debug("Got event %d" % event)
 
-        if event == 0:          # Next button
-            contact.tel = new_edje.Edje.part_text_get('num_field-text')
-            # If the contact has no name then we start EditName
-            if not contact.name:
-                yield EditName(self.main, contact)
+            if event == 0:          # Next button
+                contact.tel = new_edje.Edje.part_text_get('num_field-text')
+                # If the contact has no name then we start EditName
+                if not contact.name:
+                    ret = yield EditName(self.main, contact)
+                    if ret is None: # The user canceled the edit Name action
+                        continue
+            break
 
         logger.info("Exit EditNumber")
         new_edje.delete()
@@ -350,7 +354,10 @@ class EditNumber(tichy.Application):
 
 
 class EditName(tichy.Application):
-    """Edit the name of a contact and then save it"""
+    """Edit the name of a contact and then save it
+
+    Return None if the user cancel the action (by pressing 'back')
+    """
     def run(self, parent, contact):
         logger.info("Start EditName")
 
@@ -387,6 +394,7 @@ class EditName(tichy.Application):
                                    Wait(parent, 'closed'))
         logger.debug("Got event %d", event)
 
+        ret = True
         if event == 0:          # Save button clicked
             contact.name = new_edje.Edje.part_text_get('name-box-text')
             # Save the contact into paroli contact list
@@ -398,9 +406,13 @@ class EditName(tichy.Application):
                 new_contact = contacts_service.create(str(contact.name),
                                                       tel=str(contact.tel))
                 contacts_service.add(new_contact)
+        elif event == 1:       # Back button clicked
+            ret = None
 
         logger.info("Exit EditName")
         new_edje.delete()
+        print "Test returning", ret
+        yield ret
 
     def _on_save(self, *args):
         self.emit('save')
