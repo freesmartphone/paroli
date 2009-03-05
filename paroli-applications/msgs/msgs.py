@@ -91,8 +91,7 @@ class MsgsApp(tichy.Application):
         # Here is the flow of the UI:
         #
         # - If the user presses create-message, we proceed to
-        #   EditNumber and then return, except if EditNumber returns
-        #   None (canceled)
+        #   EditNumber
         #
         # - If the user presses the top bar we return
         #
@@ -103,8 +102,7 @@ class MsgsApp(tichy.Application):
                                        Wait(self, 'create-message'))
             if event == 2:           # Create message clicked
                 edit_number_ret = yield EditNumber(self.main, sms)
-                if edit_number_ret is None: # Canceled
-                    continue
+                continue
             break
 
         logger.info('Msgs closing')
@@ -298,7 +296,8 @@ class EditNumber(tichy.Application):
         #
         # - if the user presses back we return None (canceled)
         #
-        # - if the user presses next, we proceed to EditText
+        # - if the user presses next, we proceed to EditText, and
+        #   return only if EditText is not canceled
         #
         # - if the user presses the top bar we return True
         while True:
@@ -308,7 +307,9 @@ class EditNumber(tichy.Application):
             if event == 0:    # next
                 sms.number = new_edje.Edje.part_text_get('num_field-text')
                 edit_text_ret = yield EditText(self.main, sms)
-                continue
+                if edit_text_ret is None: # Cancel the edit_text action
+                    continue
+                ret = True
             else:               # back, we just exit
                 ret = None
             break

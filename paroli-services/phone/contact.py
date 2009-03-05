@@ -400,6 +400,13 @@ class ContactsService(tichy.Service):
         """
         return [x for x in self.contacts if x.tel == number]
 
+    def get_by_number(self, number):
+        """return the first contacts having a given number, or None"""
+        for contact in self.contacts:
+            if contact.tel == number:
+                return contact
+        return None
+
     def create(self, name=None, **kargs):
         """Create a new `Contact` instance
 

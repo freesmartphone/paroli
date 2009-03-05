@@ -49,8 +49,7 @@ class TelNumber(tichy.Text):
         :Returns: `Contact` | None
         """
         contacts_service = tichy.Service.get('Contacts')
-        contacts = contacts_service.find_by_number(self.value)
-        return contacts[0] if contacts else None
+        return contacts_service.get_by_number(self.value)
 
     def input_method(self):
         return 'number'
