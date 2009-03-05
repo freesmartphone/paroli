@@ -91,8 +91,7 @@ class MsgsApp(tichy.Application):
         # Here is the flow of the UI:
         #
         # - If the user presses create-message, we proceed to
-        #   EditNumber and then return, except if EditNumber returns
-        #   None (canceled)
+        #   EditNumber
         #
         # - If the user presses the top bar we return
         #
@@ -103,8 +102,7 @@ class MsgsApp(tichy.Application):
                                        Wait(self, 'create-message'))
             if event == 2:           # Create message clicked
                 edit_number_ret = yield EditNumber(self.main, sms)
-                if edit_number_ret is None: # Canceled
-                    continue
+                continue
             break
 
         logger.info('Msgs closing')
