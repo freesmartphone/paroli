@@ -109,6 +109,7 @@ class ParoliAudio(tichy.Service):
         
         self.device = None
         self.muted = 0
+        self.volume = 55
 
     @tichy.tasklet.tasklet
     def init(self):
@@ -126,11 +127,11 @@ class ParoliAudio(tichy.Service):
             pass
     
     def get_speaker_volume(self):
-        return 60
+        return self.volume
         
     def set_speaker_volume(self, val):
         if self.muted != 1:
-            pass
+            self.volume = val
         
     def audio_toggle(self):
         return 0

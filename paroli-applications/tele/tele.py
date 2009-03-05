@@ -483,20 +483,14 @@ class TeleCaller(tichy.Application):
         current = self.audio_service.get_speaker_volume()
         all_values = [20, 40, 60, 80, 100]
         if all_values.count(current) == 0:
-          current = 60
-          current_index = 2
-        else:
-          current_index = all_values.index(current)
+          current = 40
+        
+        current_index = all_values.index(current)
         
         if len(all_values)-1 == current_index:
             new = all_values[0]
         else:
             new = all_values[current_index + 1]
-        edje_obj = gui.EdjeObject(self.main, self.edje_file, 'profile')    
-        edje_obj.Edje.part_text_set('text',str(new))
-        edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
-        edje_obj.Edje.size_set(480, 600)
-        edje_obj.show()
         self.audio_service.set_speaker_volume(new)
         logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
 
