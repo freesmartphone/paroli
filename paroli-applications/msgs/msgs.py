@@ -298,7 +298,8 @@ class EditNumber(tichy.Application):
         #
         # - if the user presses back we return None (canceled)
         #
-        # - if the user presses next, we proceed to EditText
+        # - if the user presses next, we proceed to EditText, and
+        #   return only if EditText is not canceled
         #
         # - if the user presses the top bar we return True
         while True:
@@ -308,7 +309,9 @@ class EditNumber(tichy.Application):
             if event == 0:    # next
                 sms.number = new_edje.Edje.part_text_get('num_field-text')
                 edit_text_ret = yield EditText(self.main, sms)
-                continue
+                if edit_text_ret is None: # Cancel the edit_text action
+                    continue
+                ret = True
             else:               # back, we just exit
                 ret = None
             break
