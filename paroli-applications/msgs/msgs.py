@@ -77,7 +77,8 @@ class MsgsApp(tichy.Application):
         self.edje_obj.Windows.connect('modified', self._blocker, self.edje_obj )
         self.edje_obj.embed(self.messages_swallow, self.messages_list.box, "message-items")
         sms = empty_sms()
-        self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
+        # self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
+        self.edje_obj.add_callback("create_message", "message-items", self._on_create_message)
 
         if self.standalone:
             self.edje_obj.Edje.size_set(480,590)
@@ -87,10 +88,26 @@ class MsgsApp(tichy.Application):
 
         self.edje_obj.show()
 
-        ##wait until main object emits back signal or delete is requested
-        yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_Msgs'))
+        # Here is the flow of the UI:
+        #
+        # - If the user presses create-message, we proceed to
+        #   EditNumber and then return, except if EditNumber returns
+        #   None (canceled)
+        #
+        # - If the user presses the top bar we return
+        #
+        # (I am not sure about the delete_request signal....)
+        while True:
+            event, _ = yield WaitFirst(Wait(self.main, 'delete_request'),
+                                       Wait(self.main, 'back_Msgs'),
+                                       Wait(self, 'create-message'))
+            if event == 2:           # Create message clicked
+                edit_number_ret = yield EditNumber(self.main, sms)
+                if edit_number_ret is None: # Canceled
+                    continue
+            break
+
         logger.info('Msgs closing')
-        self.main.emit('closed')
         ##remove all children -- edje elements
 
     #finally:
@@ -102,6 +119,9 @@ class MsgsApp(tichy.Application):
         else:
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
+
+    def _on_create_message(self, *args):
+        self.emit('create-message')
 
     def _blocker(self, *args, **kargs):
         logger.info("_blocker called with args %s and kargs: %s", str(args), str(kargs))
@@ -258,8 +278,59 @@ class MsgsApp(tichy.Application):
         edje.Edje.part_text_set('name-text-field',entry.text)
 
 
-class WriteMessage(tichy.Application):
-    """Allow the user to write the text of a message and send it"""
+class EditNumber(tichy.Application):
+    def run(self, parent, sms):
+        self.main = parent
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
+        new_edje = gui.EdjeObject(self.main, self.edje_file, 'dialpad')
+
+        new_edje.Edje.part_text_set('num_field-text','')
+
+        ## show main gui
+        new_edje.Edje.layer_set(3)
+        new_edje.Edje.size_set(480,590)
+        new_edje.Edje.pos_set(0,50)
+        new_edje.Edje.show()
+        new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
+        new_edje.Edje.signal_callback_add("next-button", "*", self._on_next)
+
+        # Here is the flow of the UI :
+        #
+        # - if the user presses back we return None (canceled)
+        #
+        # - if the user presses next, we proceed to EditText, and
+        #   return only if EditText is not canceled
+        #
+        # - if the user presses the top bar we return True
+        while True:
+            event, _ = yield WaitFirst(Wait(self, 'next'),
+                                       Wait(self, 'back'),
+                                       Wait(self.main, 'back_Msgs'))
+            if event == 0:    # next
+                sms.number = new_edje.Edje.part_text_get('num_field-text')
+                edit_text_ret = yield EditText(self.main, sms)
+                if edit_text_ret is None: # Cancel the edit_text action
+                    continue
+                ret = True
+            else:               # back, we just exit
+                ret = None
+            break
+
+        new_edje.delete()
+        yield ret
+
+    def _on_next(self, *args):
+        self.emit('next')
+
+    def _on_back(self, *args):
+        self.emit('back')
+
+
+class EditText(tichy.Application):
+    """Edit the text of a message and then send it
+
+    return None if the action was canceled (user pressed back)
+    """
     def run(self, parent, sms):
         self.main = parent
 
@@ -268,12 +339,10 @@ class WriteMessage(tichy.Application):
         mb = new_edje.Edje.part_object_get("message-block")
 
         # add callback for back button and send
-        # new_edje.Edje.signal_callback_add("close_details", "*", new_edje.back)
-        new_edje.Edje.signal_callback_add("send", "*", sms.set_text_from_part, 'message-block')
-        new_edje.Edje.signal_callback_add("send", "*", self._on_send_sms, sms)
+        new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
+        new_edje.Edje.signal_callback_add("send", "*", self._on_send)
         new_edje.Edje.signal_callback_add("entry,changed", "message-block", self.sign_counter)
         mb = new_edje.Edje.part_object_get("message-block")
-        logger.info("'%s'" % str(sms.text))
         new_edje.Edje.layer_set(3)
         # move edje object down to show top-bar
         new_edje.Edje.pos_set(0,50)
@@ -281,22 +350,42 @@ class WriteMessage(tichy.Application):
         new_edje.Edje.show()
         new_edje.Edje.focus_set(True)
         mb.focus_set(True)
-        print str(sms.text)
         new_edje.Edje.part_text_set('message-block', str(sms.text))
-        # We wait for either the parent app or ourself to close
-        self_close, _ = yield WaitFirst(Wait(parent, 'closed'),
-                                        Wait(self, 'close'))
+
+        # Here is the flow of the UI :
+        #
+        # - if the user presses back we return None (canceled)
+        #
+        # - if the user presses the top bar we return
+        #
+        # - if the user presses send we proceed to send_sms and then
+        #   return
+        logger.debug("Wait for an event to occure")
+        event, _ = yield WaitFirst(Wait(parent, 'back_Msgs'),
+                                   Wait(self, 'back'),
+                                   Wait(self, 'send'))
+        logger.debug("Got event %d", event)
+        if event == 2:           # Send
+            sms.text = new_edje.Edje.part_text_get('message-block')
+            yield self.send_sms(sms)
+            ret = True
+        elif event == 0:        # back from top bar
+            ret = True
+        else:                   # back
+            ret = None
+
         new_edje.delete()
+        yield ret
 
-    def _on_send_sms(self, emission, signal, source, sms):
-        """Called when the user click the send button
+    def _on_send(self, *args):
+        self.emit('send')
 
-        The function will simply start the send_message tasklet
-        """
-        self.send_sms(emission, signal, source, sms).start(err_callback=self.throw)
+    def _on_back(self, *args):
+        self.emit('back')
+
 
     @tichy.tasklet.tasklet
-    def send_sms(self, emission, signal, source, sms):
+    def send_sms(self, sms):
         """tasklet that performs the sending process
 
         connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
@@ -310,8 +399,6 @@ class WriteMessage(tichy.Application):
         except Exception, ex:
             logger.error("Got error %s", ex)
             yield tichy.Service.get('Dialog').error(self.main, ex)
-        # Requiere that we close the Application
-        self.emit('close')
 
     def sign_counter(self, emission, signal, source):
         text = emission.part_text_get(source)
