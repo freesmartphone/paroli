@@ -125,6 +125,7 @@ class Launcher_App(tichy.Application):
         self.button.connect('aux_button_pressed', self.switch_profile)
         
         self.prefs = tichy.Service.get('Prefs')
+        self.audio_service = tichy.Service.get('Audio')
         
         self.ussd = tichy.Service.get('Ussd')
         self.ussd.connect('incoming', self.incoming_ussd)
@@ -277,6 +278,22 @@ class Launcher_App(tichy.Application):
             self.prefs.set_profile(new)
             
             logger.info("current: %s new: %s", current, new)
+    
+    def audio_rotate(self, *args, **kargs):
+        current = self.audio_service.get_speaker_volume()
+        all_values = [20, 40, 60, 80, 100]
+        if all_values.count(current) == 0:
+          current = 60
+          current_index = 2
+        else:
+          current_index = all_values.index(current)
+        
+        if len(all_values)-1 == current_index:
+            new = all_values[0]
+        else:
+            new = all_values[current_index + 1]
+        self.audio_service.set_speaker_volume(new)
+        logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
     
     ##DEBUG FUNCTIONS
     def test(self, emission, source, param):

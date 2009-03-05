@@ -126,7 +126,7 @@ class ParoliAudio(tichy.Service):
             pass
     
     def get_speaker_volume(self):
-        return 100
+        return 60
         
     def set_speaker_volume(self, val):
         if self.muted != 1:

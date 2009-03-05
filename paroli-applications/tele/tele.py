@@ -373,6 +373,10 @@ class TeleCaller(tichy.Application):
         if self.audio_service.muted == 1:
             self.audio_service.audio_toggle()
             
+        self.button = tichy.Service.get('Buttons')
+        self.button.connect('aux_button_pressed', self.audio_rotate)
+        #self.audio = tichy.Service.get('Audio')    
+            
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         self.edje_obj_top_bar = gui.edje_gui(self.main,'tb',self.edje_file)
         self.edje_obj_top_bar.edj.size_set(480,40)
@@ -474,6 +478,27 @@ class TeleCaller(tichy.Application):
     
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))
+
+    def audio_rotate(self, *args, **kargs):
+        current = self.audio_service.get_speaker_volume()
+        all_values = [20, 40, 60, 80, 100]
+        if all_values.count(current) == 0:
+          current = 60
+          current_index = 2
+        else:
+          current_index = all_values.index(current)
+        
+        if len(all_values)-1 == current_index:
+            new = all_values[0]
+        else:
+            new = all_values[current_index + 1]
+        edje_obj = gui.EdjeObject(self.main, self.edje_file, 'profile')    
+        edje_obj.Edje.part_text_set('text',str(new))
+        edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
+        edje_obj.Edje.size_set(480, 600)
+        edje_obj.show()
+        self.audio_service.set_speaker_volume(new)
+        logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
 
     def gui_signals(self,emission, source, param):
         pass
