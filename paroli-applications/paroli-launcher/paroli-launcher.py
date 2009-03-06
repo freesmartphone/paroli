@@ -266,7 +266,8 @@ class Launcher_App(tichy.Application):
 
     def time_setting_start(self, emission, signal, source):
         print "Now time setting start"
-        self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission)
+        self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission, 1)
+        self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
         self.button.disconnect(self.aux_btn_profile_conn)
 
     def time_setting_stop(self, emission, signal, source):
@@ -274,6 +275,7 @@ class Launcher_App(tichy.Application):
         edje = emission
         time_text = edje.part_text_get('clock')
         self.button.disconnect(self.aux_btn_time_set_conn)
+        self.button.disconnect(self.aux_btn_held_conn)
         numbers = str(time_text).split(':') 
         timepart = time.asctime().split()
         hour_min_sec = timepart[3].split(':') 
@@ -292,18 +294,19 @@ class Launcher_App(tichy.Application):
         yield self.systime.set_current_time(new_time) 
 
     def adjust_time(self, *args, **kargs):
-        edje = args[1]
+        edje = args[2]
+        nmin = args[3]
+        
         time_text = edje.part_text_get('clock')
         numbers = time_text.split(':') 
         hour = int(numbers[0])
         min = int(numbers[1])
-        if min < 59:
-            min = min + 1
-        elif min is 59:
-            min = 0
-            if hour < 23:
-                hour = hour + 1
-            elif hour is 23:
+        if (min + nmin) < 60:
+            min = min + nmin
+        else:
+            min = min + nmin - 60
+            hour = hour + 1
+            if hour == 24:
                 hour = 0
 
         if hour < 10:
