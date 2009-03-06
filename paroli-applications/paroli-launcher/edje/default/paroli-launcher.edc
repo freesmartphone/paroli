@@ -1,7 +1,6 @@
 #include "paroli-launcher_macros.edc"
 
 fonts {
-   // We use Bold font for nearly everything. by Will.
    font: "Inspiration-Bold.ttf"   "Sans";
 }
 
@@ -133,8 +132,6 @@ collections{
             else if ((hour >= 10) && (minute >= 10)) { 
                snprintf(buf, 10, "%i:%i", hour, minute);
             }
-
-            //set_text(PART:"clock-time", buf);
    
             new buf2[2];
             strcut(buf2, buf, 0, 1);
@@ -145,7 +142,6 @@ collections{
             set_text(PART:"home-clock-minute-digit-1", buf2);
             strcut(buf2, buf, 4, 5);
             set_text(PART:"home-clock-minute-digit-0", buf2);
-     
 
             set_text(PART:"clock", buf);
             
@@ -755,11 +751,6 @@ collections{
                       visible:0;
                     }
                 }
-//                 _LINK_PROG("i-o", "I/O", 0.0, 0.2);
-//                 _LINK_PROG("msgs", "Msgs", 0.2, 0.4);
-//                 _LINK_PROG("tele", "Tele", 0.4, 0.6);
-//                 _LINK_PROG("test", "Pixels", 0.6, 0.8);
-//                 _LINK_PROG("people", "People", 0.8, 1.0);
           }
           programs {
               program 
@@ -875,37 +866,6 @@ collections{
                  after: "home-clock-colon_blink";
               }
 
-//               program 
-//               {
-//                   name: "i-o-launcher";
-//                   signal: "mouse,up,1";
-//                   source: "i-o-link-box";
-//                   action: SIGNAL_EMIT "launch_app" "Paroli-I/O";
-//                   after: "switch_clock_on";
-//               }
-//               program 
-//               {
-//                   name: "msgs-launcher";
-//                   signal: "mouse,up,1";
-//                   source: "msgs-link-box";
-//                   action: SIGNAL_EMIT "launch_app" "Paroli-Msgs";
-//               }
-//               program 
-//               {
-//                   name: "tele-launcher";
-//                   signal: "mouse,up,1";
-//                   source: "tele-link-box";
-//                   action: SIGNAL_EMIT "launch_app" "Tele";
-// //                   after: "switch_clock_on";
-//               }
-//               program 
-//               {
-//                   name: "People-launcher";
-//                   signal: "mouse,up,1";
-//                   source: "people-link-box";
-//                   action: SIGNAL_EMIT "launch_app" "People";
-// //                   after: "switch_clock_on";
-//               }
               program 
               {
                   name: "top-bar-pressed";
@@ -920,7 +880,6 @@ collections{
                   source: "*";
                   action: STATE_SET "visible" 0.0;
                   target: "clock";
-//                   target: "top-bar";
               }
               program
               {
@@ -929,7 +888,6 @@ collections{
                   source: "*";
                   action: STATE_SET "default" 0.0;
                   target: "clock";
-//                   target: "top-bar";
               }
               program
               {
@@ -958,7 +916,6 @@ collections{
                          set_state(PART:"gsm", "gsm_no_service", 0.0);
                       }
                   }
-                  
               }
               program
               {
@@ -987,7 +944,6 @@ collections{
                       }
                       emit(sig,"embryo");
                   }
-                  
               }
           }
     }
