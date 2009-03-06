@@ -370,11 +370,14 @@ class EdjeWSwallow(EdjeObject):
           if self.EdjeWindows != None:
               if self.EdjeWindows.count(self) != 0:
                   self.EdjeWindows.remove(self)
-              
-          self.Edje.part_swallow_get(self.Swallow).visible_set(0)
-          self.Edje.part_swallow_get(self.Swallow).delete()
-             
-          self.Edje.delete()
+          
+          if self.Edje.part_swallow_get(self.Swallow) != None:
+          
+              self.Edje.part_swallow_get(self.Swallow).visible_set(0)
+              self.Edje.part_swallow_get(self.Swallow).delete()
+          
+          if self.Edje.is_deleted() != True:
+              self.Edje.delete()
 
 class EvasList(tichy.Object):
       def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct, EdjeFrame=None ):

@@ -80,6 +80,8 @@ class MsgsApp(tichy.Application):
         # self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         self.edje_obj.add_callback("create_message", "message-items", self._on_create_message)
 
+        self.main.connect('back_Msgs', self._close)
+
         if self.standalone:
             self.edje_obj.Edje.size_set(480,590)
             self.edje_obj.Edje.pos_set(0, 50)
@@ -117,6 +119,9 @@ class MsgsApp(tichy.Application):
         else:
             self.edje_obj.delete()
             self.main.etk_obj.hide()   # Don't forget to close the window
+
+    def _close(self, *args, **kargs):
+        self.edje_obj.delete()
 
     def _on_create_message(self, *args):
         self.emit('create-message')

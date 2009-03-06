@@ -147,9 +147,19 @@ class PeopleApp(tichy.Application):
         logger.debug("call contact called")
         number = str(contact.tel)
         name = unicode(contact)
-        caller_service = tichy.Service.get('TeleCaller')
-        caller_service.call("window", number, name).start()
-        self.main.emit("back_People")
+        if ((number[0].isdigit() or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
+            logger.info("calling %s", number)
+            emission.part_text_set('num_field-text','')
+            #TeleCaller(self.main, number).start(err_callback=self.throw)
+            caller_service = tichy.Service.get('TeleCaller')
+            caller_service.call("window", number).start()
+        elif number[0] in ['*'] :
+            self.ussd_service = tichy.Service.get('Ussd')
+            self.ussd_service.send_ussd(number)
+        else :
+            pass
+        emission.signal_emit("close_details", "people")
+        #self.main.emit("back_People")
 
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing contact's-details
