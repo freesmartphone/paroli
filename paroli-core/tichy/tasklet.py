@@ -369,11 +369,13 @@ class Sleep(Tasklet):
 
     def _callback(self):
         self.connection = None
-        self.callback()
+        self.callback(*self.args, **self.kargs)
 
-    def start(self, callback, err_callback):
+    def start(self, callback, err_callback, *args, **kargs):
         import tichy
         self.callback = callback
+        self.args = args
+        self.kargs = kargs
         self.connection = tichy.mainloop.timeout_add(
             self.t * 1000, self._callback)
 
