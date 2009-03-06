@@ -27,6 +27,8 @@ from item import Item, ItemMetaClass
 import logging
 logger = logging.getLogger('Service')
 
+from tichy.tasklet import WaitFirst, Wait, Sleep
+
 class Service(Item):
     """Service base class
 
@@ -54,6 +56,13 @@ class Service(Item):
     @classmethod
     @tichy.tasklet.tasklet
     def init_all(cls, defaults={}):
+        """initialize all the services
+
+        :Parameters:
+            defaults : dict
+                contains a dict of name : service that should be use
+                as default service
+        """
         logger.info("init all services")
         logger.info("defaults service are %s", defaults)
         for service_cls in cls.subclasses:
@@ -76,30 +85,60 @@ class Service(Item):
             service._init().start()
         logger.info("waiting for all services to init")
         for service in cls.__all_services.values():
-            yield service.wait_initialized()
+            try:
+                yield service.wait_initialized()
+            except Exception, ex:
+                logger.error("service %s failed to init", service.service)
         logger.info("all services have been initialized")
 
     def __init__(self):
         super(Service, self).__init__()
+        # This attribute will be set to True after the service is
+        # initialized. If the service failed to initialize, it will be
+        # set to the exception that occurred.
         self.initialized = False
 
     @tichy.tasklet.tasklet
     def _init(self):
         logger.debug("init service %s", self.service)
-        yield self.init()
-        logger.debug("init service %s done", self.service)
-        self.initialized = True
-        self.emit('initialized')
+        try:
+            yield self.init()
+            logger.debug("init service %s done", self.service)
+            self.initialized = True
+            self.emit('initialized')
+        except Exception, ex:
+            logger.error("Can't init service %s : %s", self.service, ex)
+            self.emit('_fail_initialize') # internal signal
 
     @tichy.tasklet.tasklet
-    def wait_initialized(self):
-        if not self.initialized:
-            logger.debug("Wait for %s %s", self.service, id(self))
-            yield tichy.tasklet.Wait(self, 'initialized')
-            logger.debug("Done waiting for %s", self.service)
+    def wait_initialized(self, timeout=30):
+        """Block until the service is initialized
+
+        The method will raise an exception if the service fails to
+        initialize, or if a timeout occurs.
+        """
+        if self.initialized is True:
+            yield None
+        if isinstance(self.initialized, Exception):
+            raise self.initialized
+
+        logger.debug("Wait for %s", self.service)
+        event, _ = yield WaitFirst(Wait(self, 'initialized'),
+                                   Wait(self, '_fail_initialize'),
+                                   Sleep(timeout))
+        if event == 2:          # timeout
+            msg = "Timout when waiting for service %s" % self.service
+            self.initialized = Exception(msg)
+            raise self.initialized
+        elif event == 1:        # failed
+            msg = "waiting for service %s failed" % self.service
+            self.initialized = Exception(msg)
+            raise self.initialized
+        logger.debug("Done waiting for %s", self.service)
 
     @tichy.tasklet.tasklet
     def init(self):
+        """init the service"""
         yield None
 
     @staticmethod
