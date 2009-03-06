@@ -64,12 +64,10 @@ class ButtonService(tichy.Service):
         elif action.lower() == 'released':
             if self.last == 'pressed':
                 text = "%s_button_%s" % (name.lower(), self.last)
-            elif self.last == 'held':
-                text = "%s_button_%s_%i" % (name.lower(), self.last, seconds)
             self.last = None
         if action.lower() == 'held':
             self.last = 'held'
-            text = "%s_button_%s_%i" % (name.lower(), self.last, seconds)
+            text = "%s_button_%s" % (name.lower(), self.last)
             
-        self.emit(text)
+        self.emit(text, seconds)
 
