@@ -266,6 +266,7 @@ class Launcher_App(tichy.Application):
 
     def time_setting_start(self, emission, signal, source):
         print "Now time setting start"
+        self.edje_obj.signal("stop_clock_update", "*")
         self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission, 1)
         self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
         self.button.disconnect(self.aux_btn_profile_conn)
@@ -288,6 +289,7 @@ class Launcher_App(tichy.Application):
         new_time = tichy.Time.as_type(time.mktime(time.strptime(time_string)))
         self.set_time(new_time).start() 
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
+        self.edje_obj.signal("start_clock_update", "*")
 
     @tichy.tasklet.tasklet
     def set_time(self, new_time):
