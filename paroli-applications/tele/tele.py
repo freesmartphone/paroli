@@ -492,6 +492,13 @@ class TeleCaller(tichy.Application):
         else:
             new = all_values[current_index + 1]
         self.audio_service.set_speaker_volume(new)
+        
+        edje_obj = gui.EdjeObject(self.main, self.edje_file, 'profile')    
+        edje_obj.Edje.part_text_set('text',new)
+        edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
+        edje_obj.Edje.size_set(480, 600)
+        edje_obj.show()
+        
         logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
 
     def gui_signals(self,emission, source, param):
