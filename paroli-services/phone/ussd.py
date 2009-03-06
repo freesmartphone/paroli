@@ -39,9 +39,12 @@ class UssdService(tichy.Service):
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
         super(UssdService, self).__init__()
-        logger.info('ussd service init')
-        self._connect_dbus().start() 
         self.last = None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        logger.info('init')
+        yield self._connect_dbus()
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
