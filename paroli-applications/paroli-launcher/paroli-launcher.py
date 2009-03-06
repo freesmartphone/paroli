@@ -287,13 +287,21 @@ class Launcher_App(tichy.Application):
                       + " " + timepart[3] + " " + timepart[4]
         # Transfer from localtime to GMT time
         new_time = tichy.Time.as_type(time.mktime(time.strptime(time_string)))
-        self.set_time(new_time).start() 
+        if source == "alarm":
+            self.set_alarm(new_time).start() 
+        elif source == "time":
+            self.set_time(new_time).start() 
+            
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         self.edje_obj.signal("start_clock_update", "*")
 
     @tichy.tasklet.tasklet
     def set_time(self, new_time):
         yield self.systime.set_current_time(new_time) 
+
+    @tichy.tasklet.tasklet
+    def set_alarm(self, alarm_time):
+        yield self.alarm.set_alarm(alarm_time) 
 
     def adjust_time(self, *args, **kargs):
         edje = args[2]

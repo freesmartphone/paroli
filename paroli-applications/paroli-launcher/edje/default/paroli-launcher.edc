@@ -836,7 +836,17 @@ collections{
                  after: "time_setting_off";
               }
               program { name: "time_setting_off";
-                 action: SIGNAL_EMIT "time_setting_off" "*";
+                 script {
+                    new state_name[30];
+                    new Float:dummy;
+                    get_state(PART:"alarm_icon", state_name, 30, dummy);
+                    if (!strcmp(state_name, "default")) {
+                       emit("time_setting_off", "time")
+                    }
+                    else if (!strcmp(state_name, "alarm_on")) {
+                       emit("time_setting_off", "alarm")
+                    }
+                 }
                  after: "home-clock-colon_show";
               }
               program 
