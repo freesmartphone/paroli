@@ -29,6 +29,7 @@ import dbus
 from tel_number import TelNumber
 import subprocess
 import re
+import time
 
 class Launcher_App(tichy.Application):
     name = 'Paroli-Launcher'
@@ -122,15 +123,19 @@ class Launcher_App(tichy.Application):
         self.battery_capacity(0,10)
         
         self.button = tichy.Service.get('Buttons')
-        self.button.connect('aux_button_pressed', self.switch_profile)
+        self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         
         self.prefs = tichy.Service.get('Prefs')
         self.audio_service = tichy.Service.get('Audio')
         
         self.ussd = tichy.Service.get('Ussd')
         self.ussd.connect('incoming', self.incoming_ussd)
+        self.systime = tichy.Service.get('SysTime')
+        self.alarm = tichy.Service.get('Alarm')
         self._get_paroli_version()
         
+        self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
+        self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         #elm = gui.elm_test()
         
         self.edje_obj.show(1)
@@ -258,7 +263,71 @@ class Launcher_App(tichy.Application):
         elif args[1] == "full":
             #TODO: We may do something here.
             pass
-            
+
+    def time_setting_start(self, emission, signal, source):
+        print "Now time setting start"
+        self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission)
+        self.button.disconnect(self.aux_btn_profile_conn)
+
+    def time_setting_stop(self, emission, signal, source):
+        print "Now time setting stop"
+        edje = emission
+        time_text = edje.part_text_get('clock')
+        self.button.disconnect(self.aux_btn_time_set_conn)
+        numbers = str(time_text).split(':') 
+        timepart = time.asctime().split()
+        hour_min_sec = timepart[3].split(':') 
+        hour_min_sec[0] = str(numbers[0])
+        hour_min_sec[1] = numbers[1]
+        timepart[3] = hour_min_sec[0] + ":" + hour_min_sec[1] + ":" + hour_min_sec[2]
+        time_string = timepart[0] + " " + timepart[1] + " " + timepart[2] \
+                      + " " + timepart[3] + " " + timepart[4]
+        # Transfer from localtime to GMT time
+        new_time = tichy.Time.as_type(time.mktime(time.strptime(time_string)))
+        self.set_time(new_time).start() 
+        self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
+
+    @tichy.tasklet.tasklet
+    def set_time(self, new_time):
+        yield self.systime.set_current_time(new_time) 
+
+    def adjust_time(self, *args, **kargs):
+        edje = args[1]
+        time_text = edje.part_text_get('clock')
+        numbers = time_text.split(':') 
+        hour = int(numbers[0])
+        min = int(numbers[1])
+        if min < 59:
+            min = min + 1
+        elif min is 59:
+            min = 0
+            if hour < 23:
+                hour = hour + 1
+            elif hour is 23:
+                hour = 0
+
+        if hour < 10:
+            hour_digit_1 = "0"
+        else:
+            hour_digit_1 = str( hour/10 )
+        hour_digit_0 = str( hour%10 ) 
+
+        if min < 10:
+            min_digit_1 = "0"
+        else:
+            min_digit_1 = str( min/10 ) 
+        min_digit_0 = str( min%10 ) 
+
+        if hour < 10:
+            hour = "0" + str(hour)
+        if min < 10:
+            min = "0" + str(min)
+        time_text = str(hour) + ":" + str(min) 
+        edje.part_text_set('home-clock-hour-digit-1', hour_digit_1)
+        edje.part_text_set('home-clock-hour-digit-0', hour_digit_0)
+        edje.part_text_set('home-clock-minute-digit-1', min_digit_1)
+        edje.part_text_set('home-clock-minute-digit-0', min_digit_0)
+        edje.part_text_set('clock', time_text)
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)

@@ -797,6 +797,10 @@ collections{
                  target: "home-clock-colon_hide";
                  target: "home-clock-colon_blink_timer";
                  target: "home-clock-colon_hide_timer";
+                 after: "time_setting_on";
+              }
+              program { name: "time_setting_on";
+                 action: SIGNAL_EMIT "time_setting_on" "*";
                  after: "home-clock-colon_blink";
               }
               program { name: "on_home-clock-colon_blink_stop";
@@ -805,6 +809,10 @@ collections{
                  target: "home-clock-colon_hide";
                  target: "home-clock-colon_blink_timer";
                  target: "home-clock-colon_hide_timer";
+                 after: "time_setting_off";
+              }
+              program { name: "time_setting_off";
+                 action: SIGNAL_EMIT "time_setting_off" "*";
                  after: "home-clock-colon_show";
               }
               program 
