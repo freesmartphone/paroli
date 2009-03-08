@@ -63,7 +63,7 @@ class DialogService(tichy.Service):
     service = 'Dialog'
 
     @tichy.tasklet.tasklet
-    def dialog(self, parent, title, msg):
+    def dialog(self, parent, title, msg, *args):
         """Show a dialog and wait for the user to close it
 
         :Parameters:
@@ -77,12 +77,12 @@ class DialogService(tichy.Service):
             msg : unicode
                 The message
         """
-        msg = unicode(msg)
+        msg = unicode(msg) % args
         logger.info("show %s dialog : %s", title, msg)
         yield Dialog(parent, title, msg)
 
     @tichy.tasklet.tasklet
-    def error(self, parent, msg):
+    def error(self, parent, msg, *args):
         """Show an error message and wait for the user to close it
 
         :Paramters:
@@ -93,4 +93,4 @@ class DialogService(tichy.Service):
             msg : unicode
                 The message
         """
-        yield self.dialog(parent, "Error", msg)
+        yield self.dialog(parent, "Error", msg, *args)
