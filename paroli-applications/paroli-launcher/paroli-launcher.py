@@ -47,7 +47,7 @@ class Launcher_App(tichy.Application):
             self.h = 640
             logger.info('launcher running in standalone mode')
         else:
-            self.h = 590
+            self.h = 580
             logger.info('launcher running in windowed mode')
 
         self.main = gui.Window(None, self.w, self.h)

@@ -197,16 +197,18 @@ group { name: "contacts_item";
     part{
         name: "move_button";
         type: RECT;
-         
+        ignore_flags: ON_HOLD;
         dragable {
             x: 1 1 0;
             y: 0 0 0;
+            confine:"base";
         }
          
         description
         { 
             state: "default" 0.0;
-            color:0 0 0 0;
+            color:0 255 0 100;
+            min: 470 60;
             rel1
             {
                 relative: 0.0 0.0;
@@ -269,6 +271,16 @@ group { name: "contacts_item";
 //             action: STATE_SET "default" 0.0;
 //             target: "effect-rect";
 //         }
+          
+        program{
+            name: "drag_catcher";
+            signal: "*";
+            source: "move_button";
+            script{
+                emit(sig,"embryo");
+            }
+        }
+  
 //         program{
 //             name: "rightward-slide";
 //             signal: "RIGHTWARD_SLIDE";

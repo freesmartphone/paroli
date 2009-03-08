@@ -37,7 +37,7 @@ class PeopleApp(tichy.Application):
 
     def run(self, parent, standalone=False):
 
-        self.standalone = standalone
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
 
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
@@ -75,8 +75,7 @@ class PeopleApp(tichy.Application):
 
         #self.contacts_list.connect('redrawing', self._redrawing)
 
-        #self.edje_obj.add_callback("*", "touch", self.self_test)
-
+        self.contacts_list.add_callback("*", "move_button", self.self_test)
 
         #po = self.edje_obj.Edje.part_object_get("base2")
         #print dir(self.edje_obj.Edje)
@@ -93,7 +92,7 @@ class PeopleApp(tichy.Application):
             self.edje_obj.Edje.size_set(480,590)
             self.edje_obj.Edje.pos_set(0, 50)
         else:
-            self.edje_obj.Edje.size_set(480,590)
+            self.edje_obj.Edje.size_set(480,580)
 
         self.edje_obj.show()
 
@@ -107,12 +106,11 @@ class PeopleApp(tichy.Application):
         if self.standalone:
           #try:
           self.edje_obj.delete()
-          #except Exception, e:
-              #print Exception, e
         else:
             self.edje_obj.delete()
-            self.main.etk_obj.hide()   # Don't forget to close the window
-
+            if tichy.config.get('autolaunch','application') != 'Paroli-Launcher':
+                    self.main.etk_obj.hide()   # Don't forget to close the window
+                    
     ##DEBUG FUNCTIONS
     ## general output check
     def self_test(self, *args, **kargs):

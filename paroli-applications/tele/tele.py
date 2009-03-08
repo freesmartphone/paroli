@@ -34,7 +34,7 @@ class DialerApp(tichy.Application):
 
     def run(self, parent=None, standalone=False):
         logger.info("loading")
-        self.standalone = standalone
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
         self.main = parent
 
         # XXX: We whouldn't have to use this big try block if the
@@ -72,10 +72,11 @@ class DialerApp(tichy.Application):
             #self.edje_obj.data_add('windows',self.edje_obj)
 
             if self.standalone:
-                self.edje_obj.Edje.size_set(480,520)
+                self.edje_obj.Edje.size_set(480,590)
                 self.edje_obj.Edje.pos_set(0, 50)
             else:
-                self.edje_obj.Edje.size_set(480,590)
+                self.edje_obj.Edje.size_set(480,580)
+                #self.edje_obj.Edje.pos_set(0, 50)
                 
             logger.info(self.edje_obj.Edje.size_get())    
             logger.info(self.edje_obj.Edje.pos_get())
@@ -99,7 +100,8 @@ class DialerApp(tichy.Application):
 
             else:
                 self.edje_obj.delete()
-                self.main.etk_obj.hide()   # Don't forget to close the window
+                if tichy.config.get('autolaunch','application') != 'Paroli-Launcher':
+                    self.main.etk_obj.hide()   # Don't forget to close the window
 
     ##DEBUG FUNCTIONS 
     ## msgs from embryo
@@ -162,12 +164,24 @@ class DialerApp(tichy.Application):
         new_edje.Edje.name_set('contacts_list')
         new_edje.Edje.size_set(480,590)
         new_edje.Edje.pos_set(0,50)
-        new_edje.show(3)
+        #new_edje.show(3)
         swallow = self.phone_book_list.get_swallow_object()
         new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
         #self.phone_book_list.add_callback("*", "*",self.self_test)
+        
         self.phone_book_list.add_callback("call_contact", "tele", self.call_fr_phonebook)
         self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
+
+    ## open subwindow showing contact-list
+    def load_elm_phone_book(self, emission, signal, source):
+        logger.debug("load elm phone book called")
+        main_win = gui.elm_list_window(self.edje_file, 'tele-people', "contacts-items")
+        
+        ##cmp function for list sorting
+        def comp(m1, m2):
+            return cmp(str(m1.name).lower(), str(m2.name).lower())
+        
+        elm_list = gui.elm_list(self.phone_book, main_win, main_win.box, "contacts-items", self.list_label, comp)
 
     ## open subwindow showing save-contact-window
     def add_contact_window(self,emission, source, param):
