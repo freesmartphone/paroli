@@ -25,7 +25,6 @@ import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 import time
 
-
 class Slot(dbus.service.Object):
     """ Alarm notifications will be submitted as dbus method calls, hence 
         alarm receivers need to implement the interface 
@@ -36,10 +35,23 @@ class Slot(dbus.service.Object):
 
     def __init__(self, *args, **kargs):
         super(Slot, self).__init__(*args, **kargs)
+        self.action = None
+        self.args = None
+ 
+    def set_action(self, func, args):
+        self.action = func
+        self.args = args
 
     @dbus.service.method("org.freesmartphone.Notification")
     def Alarm(self):
-        print "!!!!!!!!!!!!!! Alarm !!!!!!!!!!!!!!!!!!"
+        logger.info( "!!!!!!!!!!!!!! Alarm !!!!!!!!!!!!!!!!!!" )
+        try:
+            if self.action is not None:
+                self.action(self.args)
+            self.action = None
+            self.args = None
+        except Exception, ex:
+            logger.info( "Alarm except %s", ex )
 
 
 class FreeSmartPhoneAlarmService(tichy.Service):
@@ -58,7 +70,7 @@ class FreeSmartPhoneAlarmService(tichy.Service):
     def _setup_notification_cb(self):
         bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         bus_name = dbus.service.BusName('org.tichy.notification', bus)
-        slot = Slot(bus_name, '/')
+        self.slot = Slot(bus_name, '/')
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
@@ -68,7 +80,7 @@ class FreeSmartPhoneAlarmService(tichy.Service):
             alarm_obj = bus.get_object('org.freesmartphone.otimed', 
                           '/org/freesmartphone/Time/Alarm')
             self.alarm = dbus.Interface(alarm_obj, 'org.freesmartphone.Time.Alarm')
-            logger.info('Alarm service OK!')
+            logger.info('Alarm service OK! %s', self.alarm)
         except Exception, e:
             logger.warning("can't use freesmartphone Alarm service : %s", e)
 
@@ -81,8 +93,9 @@ class FreeSmartPhoneAlarmService(tichy.Service):
             raise
 
     @tichy.tasklet.tasklet
-    def set_alarm(self, ttime):
+    def set_alarm(self, ttime, func, *args):
         try:
+            self.slot.set_action(func, *args)
             yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(ttime.value) )
         except Exception, ex:
             logger.error("Exception : %s", ex)

@@ -77,6 +77,10 @@ dbus_data = [
     ('../../etc/dbus-1/system.d/',
      ['data/dbus/tichy.conf'])]
 
+sound_data = [
+    ( '../../usr/share/paroli/data/sounds', ['data/sounds/alarm.wav'] ) 
+    ]
+
 setup(name='Paroli',
       version='0.1',
       description="Paroli",
@@ -98,7 +102,8 @@ setup(name='Paroli',
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \
           + plugins_files('paroli-services', '../../usr/share/paroli/services') \
           + plugins_files('paroli-applications', '../../usr/share/paroli/applications') \
-          + dbus_data,
+          + dbus_data \
+          + sound_data,
 
       cmdclass = {'build': my_build,
                   'clean': my_clean},

@@ -265,14 +265,12 @@ class Launcher_App(tichy.Application):
             pass
 
     def time_setting_start(self, emission, signal, source):
-        print "Now time setting start"
         self.edje_obj.signal("stop_clock_update", "*")
         self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission, 1)
         self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
         self.button.disconnect(self.aux_btn_profile_conn)
 
     def time_setting_stop(self, emission, signal, source):
-        print "Now time setting stop"
         edje = emission
         time_text = edje.part_text_get('clock')
         self.button.disconnect(self.aux_btn_time_set_conn)
@@ -289,6 +287,7 @@ class Launcher_App(tichy.Application):
         new_time = tichy.Time.as_type(time.mktime(time.strptime(time_string)))
         if source == "alarm":
             self.set_alarm(new_time).start() 
+            logger.info("Set alarm at %s", new_time)
         elif source == "time":
             self.set_time(new_time).start() 
             
@@ -301,7 +300,18 @@ class Launcher_App(tichy.Application):
 
     @tichy.tasklet.tasklet
     def set_alarm(self, alarm_time):
-        yield self.alarm.set_alarm(alarm_time) 
+        sound_dir = os.path.join(sys.prefix, "share/paroli/data/sounds") 
+        alarm_path = os.path.join(sound_dir, "alarm.wav") 
+        yield self.alarm.set_alarm(alarm_time, self.alarm_reaction, alarm_path) 
+
+    def alarm_reaction(self, *args, **kargs):
+        # Get Alarm file through settings ? 
+        # TODO?: Turn on backlight  
+        try:
+            alarm_file = args[0]
+            self.audio_service.play(alarm_file)
+        except Exception, ex:
+            logger.info( "Play alarm audio %s exception: %s", alarm_file, ex )
 
     def adjust_time(self, *args, **kargs):
         edje = args[2]
