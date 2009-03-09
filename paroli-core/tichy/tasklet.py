@@ -362,11 +362,20 @@ class WaitDBusSignal(Tasklet):
 
 
 class Sleep(Tasklet):
-    """Tasklet that will return after a while"""
-
+    """Tasklet that will return after a given number of seconds"""
     def __init__(self, t):
+        """
+        init the tasklet
+
+        :Parameter:
+            t : int | None
+                The time we wait in seconds. If set to None, wait
+                forever.
+        """
+
         super(Sleep, self).__init__()
         self.t = t
+        self.connection = None
 
     def _callback(self):
         self.connection = None
@@ -374,6 +383,10 @@ class Sleep(Tasklet):
 
     def start(self, callback, err_callback, *args, **kargs):
         import tichy
+
+        if self.t is None:      # None make us wait infinitively
+            return
+
         self.callback = callback
         self.args = args
         self.kargs = kargs
