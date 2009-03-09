@@ -108,6 +108,9 @@ class Service(Item):
             self.emit('initialized')
         except Exception, ex:
             logger.error("Can't init service %s : %s", self.service, ex)
+            dialog = tichy.Service.get('Dialog')
+            msg = "can't init service %s : %s"
+            yield dialog.error(None, msg, self.service, ex)
             self.emit('_fail_initialize') # internal signal
 
     @tichy.tasklet.tasklet
