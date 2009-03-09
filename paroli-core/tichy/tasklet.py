@@ -327,7 +327,7 @@ class WaitDBusSignal(Tasklet):
                             # because the callback only accpet a single argument
 
         try:
-            self.callback(args)
+            self.callback(args, *self.args)
         except:
             import sys
             self.err_callback(*sys.exc_info())
@@ -341,10 +341,11 @@ class WaitDBusSignal(Tasklet):
         e = Exception("TimeOut")
         self.err_callback(type(e), e, sys.exc_info()[2])
 
-    def start(self, callback, err_callback):
+    def start(self, callback, err_callback, *args):
         import tichy
         self.callback = callback
         self.err_callback = err_callback
+        self.args = args
         self.connection = self.obj.connect_to_signal(self.event, self._callback)
         if self.time_out:
             self.timeout_connection = tichy.mainloop.timeout_add(self.time_out * 1000, self._err_callback)
