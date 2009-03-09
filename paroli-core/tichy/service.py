@@ -114,7 +114,7 @@ class Service(Item):
             self.emit('_fail_initialize') # internal signal
 
     @tichy.tasklet.tasklet
-    def wait_initialized(self, timeout=600):
+    def wait_initialized(self, timeout=None):
         """Block until the service is initialized
 
         The method will raise an exception if the service fails to
