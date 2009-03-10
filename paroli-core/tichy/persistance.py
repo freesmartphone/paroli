@@ -33,7 +33,10 @@ import os
     #from yaml import Loader, Dumper
 
 import logging
-import ConfigParser
+try:
+	import cPickle as pickle
+except:
+	import pickle
 
 LOGGER = logging.getLogger('persistance')
 
@@ -41,16 +44,12 @@ LOGGER = logging.getLogger('persistance')
 class Persistance(object):
     """Use this class to save and load data from file
 
-    All the data will be placed into ~/.tichy directory. They are
-    stored using yaml format, but we could modify this cause the
-    plugins are not suppoed to read the file directly.
-    """
+    All the data will be placed into ~/.tichy directory."""
 
     base_path = os.path.expanduser('~/.paroli/')
 
     def __init__(self, path):
         self.path = path
-        self.parser = ConfigParser.ConfigParser()
 
     def _open(self, mod='r'):
         path = os.path.join(self.base_path, self.path)
@@ -72,16 +71,11 @@ class Persistance(object):
                 Any kind of python structure that can be
                 serialized. Usually dictionary or list.
         """
-        section = 0
-        for m in data:
-            section += 1
-            self.parser.add_section(str(section))
-            for k, v in m.iteritems():
-                v = unicode(v).encode('utf-8')
-                self.parser.set(str(section), k, v)
-        
+
+	# Save the object to a python pickle:
+	# http://docs.python.org/library/pickle.html
         file = self._open('w')
-        self.parser.write(file)
+        pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
 
     def load(self):
         """Load data from the file
@@ -93,15 +87,24 @@ class Persistance(object):
             file = self._open()
         except IOError, ex:
             return None
-        
-        self.parser.readfp(file)
+
+        # Try to load it as a pickle first
+        try:
+            return pickle.load(file)
+        except:
+            pass
+
+        # Try to load the legacy format
+        import ConfigParser
+        parser = ConfigParser.ConfigParser()
+        parser.readfp(file)
         
         #return yaml.load(file, Loader=Loader)
         result = []
         
-        for s in self.parser.sections():
+        for s in parser.sections():
             sub_result = {}
-            for k, v in self.parser.items(s):
+            for k, v in parser.items(s):
                 #d = [k, v]<<<d
                 sub_result[k]=v.decode('utf-8')
             

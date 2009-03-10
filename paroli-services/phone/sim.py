@@ -20,7 +20,7 @@
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus
+from tichy.tasklet import WaitDBus, WaitDBusSignal, WaitFirst, Sleep
 
 import logging
 logger = logging.getLogger('SIM')
@@ -50,6 +50,12 @@ def retry_on_sim_busy(method, *args):
         return name == 'org.freesmartphone.GSM.SIM.NotReady' or \
             msg.endswith('SIM busy')
 
+    bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+    gsm = bus.get_object('org.freesmartphone.ogsmd',
+                         '/org/freesmartphone/GSM/Device',
+                         follow_name_owner_changes=True)
+    gsm_sim = dbus.Interface(gsm, 'org.freesmartphone.GSM.SIM')
+
     for i in range(5):
         try:
             ret = yield WaitDBus(method, *args)
@@ -58,7 +64,8 @@ def retry_on_sim_busy(method, *args):
             if not is_busy_error(ex): # This is an other error
                 raise
             logger.info("sim busy, retry in 5 seconds")
-            yield tichy.tasklet.Sleep(5)
+            yield WaitFirst(Sleep(5),
+                            WaitDBusSignal(gsm_sim, 'ReadyStatus'))
             continue
     else:
         logger.error("SIM always busy")

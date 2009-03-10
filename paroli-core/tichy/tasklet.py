@@ -327,7 +327,7 @@ class WaitDBusSignal(Tasklet):
                             # because the callback only accpet a single argument
 
         try:
-            self.callback(args)
+            self.callback(args, *self.args)
         except:
             import sys
             self.err_callback(*sys.exc_info())
@@ -341,10 +341,11 @@ class WaitDBusSignal(Tasklet):
         e = Exception("TimeOut")
         self.err_callback(type(e), e, sys.exc_info()[2])
 
-    def start(self, callback, err_callback):
+    def start(self, callback, err_callback, *args):
         import tichy
         self.callback = callback
         self.err_callback = err_callback
+        self.args = args
         self.connection = self.obj.connect_to_signal(self.event, self._callback)
         if self.time_out:
             self.timeout_connection = tichy.mainloop.timeout_add(self.time_out * 1000, self._err_callback)
@@ -361,11 +362,20 @@ class WaitDBusSignal(Tasklet):
 
 
 class Sleep(Tasklet):
-    """Tasklet that will return after a while"""
-
+    """Tasklet that will return after a given number of seconds"""
     def __init__(self, t):
+        """
+        init the tasklet
+
+        :Parameter:
+            t : int | None
+                The time we wait in seconds. If set to None, wait
+                forever.
+        """
+
         super(Sleep, self).__init__()
         self.t = t
+        self.connection = None
 
     def _callback(self):
         self.connection = None
@@ -373,6 +383,10 @@ class Sleep(Tasklet):
 
     def start(self, callback, err_callback, *args, **kargs):
         import tichy
+
+        if self.t is None:      # None make us wait infinitively
+            return
+
         self.callback = callback
         self.args = args
         self.kargs = kargs

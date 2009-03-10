@@ -100,6 +100,15 @@ class FSOAudio(tichy.Service):
         logger.info("Stop all sounds")
         self.audio.StopAllSounds()
 
+    def play(self, filepath):
+        try:
+            self.audio.PlaySound( filepath, 0, 0 )
+        except dbus.DBusException, e:
+            assert e.get_dbus_name() == "org.freesmartphone.Device.Audio.PlayerError", \
+                                            "wrong error returned"
+        else:
+            assert False, "PlayerError expected"
+
 class ParoliAudio(tichy.Service):
 
     service = 'Audio'
