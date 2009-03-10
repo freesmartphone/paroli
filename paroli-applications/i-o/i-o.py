@@ -42,7 +42,7 @@ class I_O_App(tichy.Application):
         self.geometry = self.main.etk_obj.geometry_get()
         self.y = self.geometry[1]
         self.history_items = []
-        self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-i-o.edj')
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
         self.layerdict = {}
         self.gsm_service = tichy.Service.get('GSM')
         self.callLogs = self.gsm_service.logs
