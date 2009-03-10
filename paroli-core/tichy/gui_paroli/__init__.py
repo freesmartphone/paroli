@@ -24,6 +24,7 @@ import evas.decorators
 import edje
 import edje.decorators
 import ecore
+import ecore.x
 import ecore.evas
 import etk
 

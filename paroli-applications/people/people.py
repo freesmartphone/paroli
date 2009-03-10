@@ -75,7 +75,9 @@ class PeopleApp(tichy.Application):
 
         #self.contacts_list.connect('redrawing', self._redrawing)
 
-        self.contacts_list.add_callback("*", "move_button", self.self_test)
+        self.contacts_list.add_callback("mouse,clicked,1", "*", self.self_test)
+        self.contacts_list.add_callback("*", "embryo", self.self_test)
+        self.contacts_list.add_callback("create_message", "*", self.create_message)
 
         #po = self.edje_obj.Edje.part_object_get("base2")
         #print dir(self.edje_obj.Edje)
@@ -138,6 +140,13 @@ class PeopleApp(tichy.Application):
             logger.error("Got error %s", str(ex))
         else:
             emission.data['EdjeObject'].delete()
+
+    def create_message(self, emission, signal, source, item):
+        app = tichy.Application.find_by_name("EditText")
+        sms = empty_sms()
+        sms.number = item[0].tel
+        app(self.main, sms).start()
+        emission.signal_emit("fold-back","*")
 
     #calling
     def call_contact(self, emission, source, param, item = None):
@@ -461,6 +470,17 @@ class empty_contact():
 
     def set_name_from_obj(self, emission, source, signal, text_obj):
         self.text = text_obj.text_get(0)
+
+class empty_sms():
+    def __init__(self):
+        self.number = None
+        self.text = ''
+
+    def set_number(self, emission, source, signal, part):
+        self.number = emission.part_text_get(part)
+
+    def set_text_from_part(self, emission, source, signal, part):
+        self.text = emission.part_text_get(part)
 
 
     ##BELOW    --->     TO BE REPLACED / REWRITTEN

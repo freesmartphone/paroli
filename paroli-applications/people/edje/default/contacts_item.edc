@@ -2,6 +2,11 @@
 group { name: "contacts_item";
        min: 470 60;
        max: 470 60;
+       script {
+          public drag_value;
+          public mouse_x;
+        }
+       
        parts {
         part
         {
@@ -86,7 +91,7 @@ group { name: "contacts_item";
                     to:"msgs-button-base";
                 }
                 rel2 {
-                    relative: 1.0 1.0;
+                    relative: 0.0 0.0;
                     to:"msgs-button-base";
                 }
             }
@@ -131,7 +136,7 @@ group { name: "contacts_item";
             description
             { 
                 state: "default" 0.0;
-                color:0 0 0 0;
+                color:0 0 0 255;
                 rel1
                 {
                     relative: 0.0 0.0;
@@ -207,7 +212,7 @@ group { name: "contacts_item";
         description
         { 
             state: "default" 0.0;
-            color:0 255 0 100;
+            color:0 0 0 0;
             min: 470 60;
             rel1
             {
@@ -222,7 +227,6 @@ group { name: "contacts_item";
         description
         { 
             state: "changed" 0.0;
-            visible:1;
             color:0 0 0 0;
             rel1
             {
@@ -231,7 +235,7 @@ group { name: "contacts_item";
             }
             rel2 
             {
-                relative: 0.80 0.80;
+                relative: 0.0 0.0;
                 to:"base";
             }
         }
@@ -273,48 +277,108 @@ group { name: "contacts_item";
 //         }
           
         program{
-            name: "drag_catcher";
+            name: "all_catcher";
             signal: "*";
             source: "move_button";
             script{
                 emit(sig,"embryo");
             }
         }
-  
-//         program{
-//             name: "rightward-slide";
-//             signal: "RIGHTWARD_SLIDE";
-//             source: "*";
-//             action: STATE_SET "changed" 0.0;
-//             transition: LINEAR 0.32;
-//             target:"base";
-//             target: "move_button";
-//             target:"msgs-button-blocker";
-//         }
-//         program{
-//             name: "fold-back";
-//             signal: "mouse,up,1";
-//             source: "move_button";
-//             action: STATE_SET "default" 0.0;
-//             transition: LINEAR 0.32;
-//             target:"base";
-//             target:"msgs-button-blocker";
-//             target: "move_button";
-//         }
-//          
-//             
-//         program{
-//             name: "msg-pressed";
-//             signal: "mouse,up,1";
-//             source: "msgs-button-base";
-//             action: SIGNAL_EMIT "create_message" "contacts";
-//         }
-
+        program{
+            name: "drag_catcher";
+            signal: "drag,start";
+            source: "move_button";
+            script{
+                new x;
+                new y;
+                set_int(drag_value,1);
+                get_mouse(x,y)
+                set_int(mouse_x,x)
+            }                   
+        }
         program{
             name: "clickable-pressed";
             signal: "mouse,clicked,1";
             source: "move_button";
-            action: SIGNAL_EMIT "contact_details" "contacts";
+            script{
+                if (get_int(drag_value) != 1){
+                  emit( "contact_details", "contacts");
+                }
+                set_int(drag_value,0);
+            }
+            
         }
+        
+        program{
+            name:"effect-rect";
+            signal: "mouse,clicked,1";
+            source: "effect-rect";
+            script{
+                new state[100];
+                new Float:val;
+                get_state(PART:"msgs-button-blocker", state[0], 100, val);
+                if (strcmp(state, "default") == 0){
+                    run_program(PROGRAM:"fold-back");
+                    emit("folding back", "embryo");
+                }else{
+                    emit(state, "embryo");
+                }
+            }
+        }
+        
+        program{
+            name: "drag_catcher2";
+            signal: "drag,stop";
+            source: "move_button";
+            script{
+                new x;
+                new y;
+                get_mouse(x, y);
+                if (x - get_int(mouse_x) < 0){
+// //                     left swipe
+                    run_program(PROGRAM:"fold-back");
+                    emit("left swipe", "embryo");
+                }else{
+// //                     right swipe                
+                    run_program(PROGRAM:"rightward-slide");
+                    emit("right swipe", "embryo");
+                }
+            }                   
+        }
+  
+        program{
+            name: "rightward-slide";
+//             signal:"drag,stop";
+//             source: "move_button";
+            action: STATE_SET "changed" 0.0;
+            transition: LINEAR 0.32;
+            target:"base";
+            target: "move_button";
+            target:"msgs-button-blocker";
+        }
+        program{
+            name: "fold-back";
+            signal: "fold-back";
+            source: "*";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.32;
+            target:"base";
+            target:"msgs-button-blocker";
+            target: "move_button";
+        }
+//          
+//             
+        program{
+            name: "msg-pressed";
+            signal: "mouse,up,1";
+            source: "msgs-button-base";
+//             action: SIGNAL_EMIT "create_message" "contacts";
+            script{
+                emit("create message", "embryo");
+                emit("create_message", "*");
+            }
+        }
+
+
     }
 }

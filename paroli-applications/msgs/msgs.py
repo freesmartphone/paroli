@@ -347,6 +347,7 @@ class EditText(tichy.Application):
 
     return None if the action was canceled (user pressed back)
     """
+    name = "EditText"
     def run(self, parent, sms):
         self.main = parent
 
