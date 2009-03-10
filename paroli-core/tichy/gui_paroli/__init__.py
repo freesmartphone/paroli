@@ -562,8 +562,8 @@ class elm_box():
 class elm_list_window():
     def __init__(self, edje_file, group, swallow ,sx, sy):
         self.window = elm_window()
-        #self.window.elm_obj.resize(sx,sy)
-        #self.window.elm_obj.show()
+        self.window.elm_obj.resize(sx,sy)
+        self.window.elm_obj.show()
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         #self.main_layout.elm_obj.edje_get().size_set(sx,sy)

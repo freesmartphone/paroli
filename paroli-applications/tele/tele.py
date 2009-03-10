@@ -134,7 +134,7 @@ class DialerApp(tichy.Application):
         number = emission.part_text_get(param)
         if number == None or len(number) == 0:
             logger.debug("no number found")
-            self.load_phone_book( emission, source, param )
+            self.load_elm_phone_book( emission, source, param )
         else :
             logger.debug("number found")
             self.add_contact_window( emission, source, param )
@@ -196,9 +196,9 @@ class DialerApp(tichy.Application):
             new_edje.Edje.size_set(480,590)
         else:
             new_edje.Edje.size_set(480,580)
-        new_edje.Edje.part_swallow('swallow', main_win.scroller.elm_obj)
+        #new_edje.Edje.part_swallow('swallow', main_win.scroller.elm_obj)
         #new_edje.embed(main_win.scroller.elm_obj, main_win.scroller.elm_obj, "swallow")
-        new_edje.show()
+        #new_edje.show()
         elm_list.add_callback("call_contact", "tele", self.call_fr_phonebook)
         elm_list.add_callback("call_contact", "tele", main_win.delete)
 
