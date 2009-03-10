@@ -246,7 +246,7 @@ class TestSim(tichy.Service):
 
     @tichy.tasklet.tasklet
     def get_contacts(self):
-        yield [SIMContact(name='test', tel='099872394', sim_index=0)]
+        yield [SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test', tel='099872394', sim_index=0)]
 
     @tichy.tasklet.tasklet
     def get_messages(self):

@@ -10,6 +10,7 @@ group { name: "tele-people";
               color:0 0 0 255;
               rel1{
                     relative: 0.0 0.0;
+                    offset: 0 50;
                 }
                 rel2 {
                     relative: 0.99 1.0;
@@ -111,6 +112,8 @@ group { name: "tele-people";
 
 group{
     name:"scroll-container";
+    min: 200 400;
+    max: 480 640;
         parts{
             part{
                 name: "base";

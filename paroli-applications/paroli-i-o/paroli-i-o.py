@@ -34,7 +34,9 @@ class I_O_App(tichy.Application):
     layer = 0
     
     def run(self, parent=None, standalone=False):
-        self.standalone = standalone
+        
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
+        
         self.main = parent
         if self.main.etk_obj.title_get() != 'Home':
             self.main.etk_obj.title_set('I/O')
@@ -63,7 +65,7 @@ class I_O_App(tichy.Application):
             self.edje_obj.Edje.size_set(480,550)
             self.edje_obj.Edje.pos_set(0, 50)
         else:
-            self.edje_obj.Edje.size_set(480,590)
+            self.edje_obj.Edje.size_set(480,580)
               
         logger.info(self.edje_obj.Edje.size_get())    
         logger.info(self.edje_obj.Edje.pos_get())
@@ -77,7 +79,7 @@ class I_O_App(tichy.Application):
                 print "Send show signal for ", log.number
                 edje.Edje.signal_emit("show_save_button", "*") 
 
-        yield tichy.Wait(self.main, 'back_I/O')
+        yield tichy.WaitFirst(tichy.Wait(self.main, 'back_I/O'),tichy.Wait(self.main, 'delete_request'))
         if self.standalone:
             self.edje_obj.delete()
             # XXX: This is wrong. We shouldn't use del to delete the object.
@@ -87,7 +89,8 @@ class I_O_App(tichy.Application):
             del self.history_swallow
         else:
             self.edje_obj.delete()
-            self.main.etk_obj.hide()   # Don't forget to close the window
+            if tichy.config.get('autolaunch','application') != 'Paroli-Launcher':
+                    self.main.etk_obj.hide()   # Don't forget to close the window
 
     def set_list(self, list):
         for item in list.items:

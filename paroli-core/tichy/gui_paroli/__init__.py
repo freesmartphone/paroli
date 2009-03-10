@@ -81,7 +81,7 @@ class Window(Widget):
         Widget.__init__(self, None, etk_obj=etk_obj)
 
     def delete_request(self,*args,**kargs):
-        #logger.info(str(args))
+        logger.info(str(args))
         self.emit('delete_request')
 
     def show(self):
@@ -539,14 +539,215 @@ class elm_window():
         
 class elm_layout():
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
-        self.elm_obj = elementary.Layout(win)
+        self.elm_obj = elementary.Layout(win.elm_obj)
         self.elm_obj.file_set(edje_file, group)
         self.elm_obj.size_hint_weight_set(x, y)
-        win.resize_object_add(self.elm_obj)
+        win.elm_obj.resize_object_add(self.elm_obj)
         self.elm_obj.show()
         
     def add(self, part, element):
         self.elm_obj.content_set(part, element)
+
+class elm_scroller():
+    def __init__(self, win):
+        self.elm_obj = elementary.Scroller(win.elm_obj)
+        self.elm_obj.size_hint_weight_set(1.0, 1.0)
+        self.elm_obj.size_hint_align_set(-1.0, -1.0)
+        self.elm_obj.show()
+        
+class elm_box():
+    def __init__(self, win):
+        self.elm_obj = elementary.Box(win)
+        
+class elm_list_window():
+    def __init__(self, edje_file, group, swallow ,sx, sy):
+        self.window = elm_window()
+        #self.window.elm_obj.resize(sx,sy)
+        #self.window.elm_obj.show()
+        
+        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        #self.main_layout.elm_obj.edje_get().size_set(sx,sy)
+        #self.main_layout.elm_obj.edje_get().pos_set(480-int(sx),640-int(sy))
+        self.main_layout.elm_obj.geometry_set(480-int(sx),640-int(sy),sx,sy)
+        self.scroller = elm_scroller(self.window)
+        self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
+      
+    def delete(self, *args, **kargs):
+      self.window.elm_obj.delete()
+      #self.box = elm_box(self.window)
+      #self.scroller.elm_obj.content_set(self.box.elm_obj)
+      
+class elm_list(tichy.Object):
+      def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct):
+          
+          self.model = model
+          self.parent = Parent
+          self.EdjeFile = EdjeFile
+          self.EdjeGroup = EdjeGroup
+          self.Elm_win = Parent.window
+          self.label_list = label_list    
+          self._comp_fct = comp_fct
+          self.monitor(self.model, 'appended', self._redraw_view)
+          self.monitor(self.model, 'removed', self._redraw_view)
+          self.box = elm_box(self.Elm_win.elm_obj)
+          self.callbacks = []
+          self.sort()
+          self.items = []
+          self._redraw_view()
+    
+      def _redraw_view(self,*args,**kargs):
+          logger.info("list redrawing")
+          
+          self.sort()
+          self.box.elm_obj.delete()
+          del self.items
+          self.box = elm_box(self.Elm_win.elm_obj)
+          self.items = []
+          for item in self.model:
+              ly = elementary.c_elementary.Layout(self.Elm_win.elm_obj)
+              ly.file_set(self.EdjeFile, self.EdjeGroup)              
+              
+              edje_obj = ly.edje_get()
+              
+              for part, attribute in self.label_list:
+                if hasattr(item, attribute):
+                    value = getattr(item, attribute)
+                    if isinstance(value, tichy.Item):
+                        value = unicode(value.get_text())
+                    txt = unicode(value).encode('utf-8')
+                    edje_obj.part_text_set(part,txt)
+
+
+              ly.size_hint_min_set(470,60)
+              self.box.elm_obj.pack_end(ly)
+              ly.show()
+              self.items.append([item,edje_obj,ly])
+              
+          self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
+          self.box.elm_obj.show()
+          self.parent.scroller.elm_obj.show()
+          self._renew_callbacks()
+
+      def generate_single_item(self, item):
+          
+          #canvas_obj = etk.Canvas()
+          #edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
+          #canvas_obj.object_add(edje_obj.Edje)
+          
+          elm_item = elm_layout(self.Elm_win, self.EdjeFile, self.EdjeGroup)
+          edje_obj = elm_item.elm_obj.edje_get()
+          ## set text in text parts
+          for part, attribute in self.label_list:
+              if hasattr(item, attribute):
+                  value = getattr(item, attribute)
+                  if isinstance(value, tichy.Item):
+                      value = unicode(value.get_text())
+                  txt = unicode(value).encode('utf-8')
+                  edje_obj.part_text_set(part,txt)
+
+          ##check for optional display elements
+          if edje_obj.data_get('attribute1') != None:
+              attribute = edje_obj.data_get('attribute1')
+              if edje_obj.data_get('attribute2') != None:
+                  item_cp = getattr(item,attribute)
+                  attribute = edje_obj.data_get('attribute2')
+              else:  
+                  item_cp = item
+              if edje_obj.data_get('value') == 'None':
+                  value = None
+              else:
+                  value = edje_obj.data_get('value')
+              signal = edje_obj.data_get('signal')
+              if attribute[-2] == "(":
+                  test = getattr(item_cp,attribute[:-2])()
+              else:
+                  test = getattr(item_cp,attribute)
+              if test == value:
+                  edje_obj.signal_emit(signal,'*')
+          
+          elm_item.elm_obj.show()
+          
+          return [item,edje_obj,elm_item]
+
+      #def _redraw_box(self,*args,**kargs):
+          #logger.info('redrawing called')
+          #self.sort()
+          #self.box.redraw_queue()
+          #if self.EdjeFrame != None:
+              #self.EdjeFrame.Edje.signal_emit(str(len(self.model)),"python")
+          #self.box.show_all()
+
+      def _renew_callbacks(self, *args, **kargs):
+          for cb in self.callbacks:
+                for i in self.items:
+                    print i[1]
+                    i[1].signal_callback_add(cb[0], cb[1] , cb[2], i)
+
+      def sort(self,*args,**kargs):
+          logger.info("list sorting")
+          self.model.sort(self._comp_fct)
+    
+    
+      def _modified(self, *args, **kargs):
+          logger.info('scrolled')
+          logger.info(args)
+          logger.info(kargs)
+    
+      def get_swallow_object(self):
+          self.items = []
+  
+          for item in self.model:
+              single = self.generate_single_item(item)
+              self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+              self.items.append(single)
+              item.connect('modified',self._redraw_view)
+              
+          self.scrollbox = etk.c_etk.ScrolledView()
+          self.scrollbox.add_with_viewport(self.box)
+          ## hide scrollbars
+          self.scrollbox.policy_set(2, 2)
+          ## make it dragable
+          self.scrollbox.dragable_set(True)
+          ## make it non-bouncing
+          self.scrollbox.drag_bouncy_set(True)
+          #scrollbox.add_with_viewport(self.box)
+          self.scrollbox.drag_damping_set(0)
+          #get scrollbar value
+          #scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
+          #logger.info(scrollbox.drag_damping_get())
+          return self.scrollbox
+      
+      def add_callback(self, signal, source, func):
+          self.callbacks.append([signal, source, func])
+          for i in self.items:
+              print i[1]
+              i[1].signal_callback_add(signal, source , func, i)
+
+      
+
+      def _append_new(self, list, item, **kargs):
+          logger.info('append called')
+          item.connect('modified',self._redraw_view)
+          new_item = self.generate_single_item(item)
+          for cb in self.callbacks:
+              new_item[1].Edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
+          self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
+          self.items.insert(0,new_item)
+          self._redraw_view()
+          #self.sort()
+          #self._redraw_box()
+          
+      def _remove_item(self, list, removed_item):
+          logger.info('remove called')
+          for item in self.items:
+              if item[0] is removed_item:
+                  index = item
+                  item[2].remove_all()
+          
+          self.items.remove(index)
+          self._redraw_box()
+
+      
 
 class elm_test():
     def __init__(self):

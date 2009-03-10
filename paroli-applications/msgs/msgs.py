@@ -37,7 +37,7 @@ class MsgsApp(tichy.Application):
 
     def run(self, parent, standalone=False):
 
-        self.standalone = standalone
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
 
         ##create main edje object, the evas object used to generate edje objects
         self.main = parent
@@ -86,7 +86,7 @@ class MsgsApp(tichy.Application):
             self.edje_obj.Edje.size_set(480,590)
             self.edje_obj.Edje.pos_set(0, 50)
         else:
-            self.edje_obj.Edje.size_set(480,590)
+            self.edje_obj.Edje.size_set(480,580)
 
         self.edje_obj.show()
 
@@ -118,7 +118,8 @@ class MsgsApp(tichy.Application):
               #print Exception, e
         else:
             self.edje_obj.delete()
-            self.main.etk_obj.hide()   # Don't forget to close the window
+            if tichy.config.get('autolaunch','application') != 'Paroli-Launcher':
+                    self.main.etk_obj.hide()   # Don't forget to close the window
 
     def _close(self, *args, **kargs):
         self.edje_obj.delete()
@@ -189,7 +190,11 @@ class MsgsApp(tichy.Application):
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+           new_edje.Edje.size_set(480,580)
         ##show edje window
         new_edje.Edje.show()
         ##mark message as read if unread
@@ -205,9 +210,11 @@ class MsgsApp(tichy.Application):
         new_edje.Edje.part_text_set('num_field-text','')
         ## show main gui
         new_edje.Edje.layer_set(3)
-        #if self.standalone == 1:
-        new_edje.Edje.size_set(480,590)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.Edje.show()
         ##add window actions
         ##close window
@@ -223,7 +230,7 @@ class MsgsApp(tichy.Application):
 
     ## open subwindow to create new message (text entry)
     def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
-        WriteMessage(self.main, sms).start()
+        EditText(self.main, sms).start()
 
     ## open window to save unknown contact
     def open_save_contact_window(self, emission, signal, source, item):
@@ -231,8 +238,11 @@ class MsgsApp(tichy.Application):
         number = str(item[0].peer)
         logger.info("number is %s", number)
         new_edje = gui.EdjeObject(self.main,self.edje_file,'save-number', self.edje_obj.Windows, True)
-        new_edje.Edje.size_set(480,590)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
         tb = new_edje.Edje.part_object_get("name-text-field")
@@ -291,8 +301,11 @@ class EditNumber(tichy.Application):
 
         ## show main gui
         new_edje.Edje.layer_set(3)
-        new_edje.Edje.size_set(480,590)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.Edje.show()
         new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
         new_edje.Edje.signal_callback_add("next-button", "*", self._on_next)
@@ -348,12 +361,17 @@ class EditText(tichy.Application):
         mb = new_edje.Edje.part_object_get("message-block")
         new_edje.Edje.layer_set(3)
         # move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,50)
+        
+        if tichy.config.getboolean('standalone',                                               'activated', False):
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         # show edje window
         new_edje.Edje.show()
+        new_edje.Edje.part_text_set('message-block', str(sms.text))
         new_edje.Edje.focus_set(True)
         mb.focus_set(True)
-        new_edje.Edje.part_text_set('message-block', str(sms.text))
 
         # Here is the flow of the UI :
         #
@@ -438,9 +456,12 @@ class empty_sms():
         new_edje.edj.part_text_set('num_field-text','')
         ## show main gui
         new_edje.edj.layer_set(3)
-        if self.standalone == 1:
-            new_edje.edj.size_set(480,600)
-        new_edje.edj.pos_set(0,40)
+        
+        if tichy.config.getboolean('standalone',                                               'activated', False):
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.edj.show()
         ##add num-pad actions
         ##delete digit
@@ -464,9 +485,12 @@ class empty_sms():
         new_edje = gui.edje_gui(self.main,'create_message',self.edje_file)
         ## show main gui
         new_edje.edj.layer_set(3)
-        if self.standalone:
-            new_edje.edj.size_set(480,600)
-        new_edje.edj.pos_set(0,40)
+        
+        if tichy.config.getboolean('standalone',                                               'activated', False):
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.edj.show()
         self.open_keyboard()
         text = message
@@ -505,9 +529,12 @@ class empty_sms():
         new_edje.edj.signal_callback_add("delete_message", "*", self.delete_message, message, new_edje,emission, canvas_obj)
         message.read()
         new_edje.edj.layer_set(3)
+        
         if self.standalone:
-            new_edje.edj.size_set(480,600)
-        new_edje.edj.pos_set(0,40)
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.edj.show()
 
     def _on_send_message(self, emission, source, param, numbers, textbox, step_1, step_2, original_message=None):

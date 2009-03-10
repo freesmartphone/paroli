@@ -195,8 +195,11 @@ class PeopleApp(tichy.Application):
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,50)
-        new_edje.Edje.size_set(480,590)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         ##show edje window
         new_edje.Edje.show()
 
@@ -217,8 +220,11 @@ class PeopleApp(tichy.Application):
         ## show main gui
         new_edje.Edje.layer_set(3)
         #if self.standalone == 1:
-        new_edje.Edje.size_set(480,540)
-        new_edje.Edje.pos_set(0,40)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.Edje.show()
         ##add window actions
         ##close window
@@ -248,7 +254,11 @@ class PeopleApp(tichy.Application):
         ##set layer of edje object
         new_edje.Edje.layer_set(3)
         ##move edje object down to show top-bar
-        new_edje.Edje.pos_set(0,40)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         ##show edje window
         new_edje.Edje.show()
         tview.focus()
@@ -327,8 +337,11 @@ class EditNumber(tichy.Application):
         new_edje.Edje.part_text_set('num_field-text', text)
         ## show main gui
         new_edje.Edje.layer_set(3)
-        new_edje.Edje.size_set(480,540)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.Edje.show()
 
         # new_edje.Edje.signal_callback_add("back", "*", new_edje.delete)
@@ -370,7 +383,7 @@ class EditName(tichy.Application):
         logger.info("Start EditName")
 
         self.main = parent
-
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
         # Create the UI
         self.edje_file = os.path.join(os.path.dirname(__file__),
                                       'people.edj')
@@ -380,8 +393,11 @@ class EditName(tichy.Application):
         new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'edit-name',
                                     'name-box', self.edje_obj.Windows, True)
 
-        new_edje.Edje.size_set(480,600)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.show(3)
 
         name_field = gui.Edit(None)
@@ -461,9 +477,11 @@ class empty_contact():
         new_edje.edj.part_text_set('num_field-text','')
         ## show main gui
         new_edje.edj.layer_set(3)
-        if self.standalone == 1:
-            new_edje.edj.size_set(480,600)
-        new_edje.edj.pos_set(0,40)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.edj.show()
         ##add num-pad actions
         ##delete digit

@@ -133,6 +133,7 @@ class DialerApp(tichy.Application):
     def num_field(self, emission, source, param):
         number = emission.part_text_get(param)
         if number == None or len(number) == 0:
+            logger.debug("no number found")
             self.load_phone_book( emission, source, param )
         else :
             logger.debug("number found")
@@ -162,9 +163,12 @@ class DialerApp(tichy.Application):
         logger.debug("load phone book called")
         new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.edje_obj.Windows)
         new_edje.Edje.name_set('contacts_list')
-        new_edje.Edje.size_set(480,590)
-        new_edje.Edje.pos_set(0,50)
-        #new_edje.show(3)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
+        new_edje.show(3)
         swallow = self.phone_book_list.get_swallow_object()
         new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
         #self.phone_book_list.add_callback("*", "*",self.self_test)
@@ -175,13 +179,28 @@ class DialerApp(tichy.Application):
     ## open subwindow showing contact-list
     def load_elm_phone_book(self, emission, signal, source):
         logger.debug("load elm phone book called")
-        main_win = gui.elm_list_window(self.edje_file, 'tele-people', "contacts-items")
-        
+        sx = 480
+        if self.standalone:
+            sy = 590
+        else:
+            sy = 580
+        main_win = gui.elm_list_window(self.edje_file, 'tele-people', "contacts-items", sx, sy)
         ##cmp function for list sorting
         def comp(m1, m2):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
         
-        elm_list = gui.elm_list(self.phone_book, main_win, main_win.box, "contacts-items", self.list_label, comp)
+        elm_list = gui.elm_list(self.phone_book, main_win, self.edje_file, "tele-contacts_item", self.list_label, comp)
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'scroll-container', "swallow", self.edje_obj.Windows)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
+        new_edje.Edje.part_swallow('swallow', main_win.scroller.elm_obj)
+        #new_edje.embed(main_win.scroller.elm_obj, main_win.scroller.elm_obj, "swallow")
+        new_edje.show()
+        elm_list.add_callback("call_contact", "tele", self.call_fr_phonebook)
+        elm_list.add_callback("call_contact", "tele", main_win.delete)
 
     ## open subwindow showing save-contact-window
     def add_contact_window(self,emission, source, param):
@@ -189,8 +208,11 @@ class DialerApp(tichy.Application):
         number = emission.part_text_get('num_field-text')
         logger.info("number is %s", number)
         new_edje = gui.EdjeWSwallow(self.main,self.edje_file,'save-number',"name-box", self.edje_obj.Windows, True)
-        new_edje.Edje.size_set(480,590)
-        new_edje.Edje.pos_set(0,50)
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
         new_edje.show(3)
         new_edje.Edje.part_text_set('number',number)
         name_field = gui.Edit(None)
