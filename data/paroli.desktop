@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Paroli
+TryExec=paroli
+Icon=tichy
+GenericName=paroli
+Comment=Paroli
+StartupNotify=false
+Exec=paroli
+Terminal=false
+Type=Application
+Categories=Office;

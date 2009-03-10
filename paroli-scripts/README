@@ -4,7 +4,7 @@
 
   To start paroli, first make sure that the edje files have been build
   (by running ./build in the paroli-applications directory.  Then just
-  start paroli-launcher.
+  start paroli.
 
 * With DBUS service
 
@@ -29,9 +29,9 @@
     dbus-send --system --dest='org.tichy.launcher' /Launcher \
     --print-reply org.tichy.Launcher.Launch string:Paroli-Contacts
 
-    or you can use paroli-launcher --launch :
+    or you can use paroli --launch :
 
-    paroli-launcher --launch Paroli-Contacts
+    paroli --launch Paroli-Contacts
 
 
   * Run it on the desktop
@@ -42,8 +42,8 @@
 
     To use the session bus, use the --session argument :
 
-    paroli-launcher --session
+    paroli --session
 
     then to start an application (for example Paroli-Dialer) :
 
-    paroli-launcher --session --launch Paroli-Dialer
+    paroli --session --launch Paroli-Dialer
