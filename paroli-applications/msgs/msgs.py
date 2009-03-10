@@ -204,26 +204,28 @@ class MsgsApp(tichy.Application):
     ## open subwindow to create new message (enter recipients)
     def open_enter_number(self, emission, signal, source, sms):
         ##load main gui
-        new_edje = gui.EdjeObject(self.main,self.edje_file,'dialpad', self.edje_obj.Windows)
+        #new_edje = gui.EdjeObject(self.main,self.edje_file,'dialpad', self.edje_obj.Windows)
 
         ##set dialpad value to '' to not have NoneType problems
-        new_edje.Edje.part_text_set('num_field-text','')
+        #new_edje.Edje.part_text_set('num_field-text','')
         ## show main gui
-        new_edje.Edje.layer_set(3)
-        if self.standalone:
-            new_edje.Edje.pos_set(0,50)
-            new_edje.Edje.size_set(480,590)
-        else:
-            new_edje.Edje.size_set(480,580)
-        new_edje.Edje.show()
+        #new_edje.Edje.layer_set(3)
+        #if self.standalone:
+            #new_edje.Edje.pos_set(0,50)
+            #new_edje.Edje.size_set(480,590)
+        #else:
+            #new_edje.Edje.size_set(480,580)
+        #new_edje.Edje.show()
         ##add window actions
         ##close window
-        new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
+        #new_edje.Edje.signal_callback_add("close_details", "*", new_edje.delete)
         ##add contact from phonebook UNFINISHED
         #new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         ##go to next step
-        new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
-        new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
+        #new_edje.Edje.signal_callback_add("next-button", "*", sms.set_number, 'num_field-text')
+        #new_edje.Edje.signal_callback_add("next-button", "*", self.open_new_msg_text_entry, sms, new_edje)
+        EditNumber(self.main, sms).start()
+  
 
     def _empty_sms_text(self, emission, signal, source, sms):
         sms.text = ''
@@ -294,21 +296,23 @@ class MsgsApp(tichy.Application):
 class EditNumber(tichy.Application):
     def run(self, parent, sms):
         self.main = parent
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
         self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
-        new_edje = gui.EdjeObject(self.main, self.edje_file, 'dialpad')
+        self.new_edje = gui.EdjeObject(self.main, self.edje_file, 'dialpad')
 
-        new_edje.Edje.part_text_set('num_field-text','')
+        self.new_edje.Edje.part_text_set('num_field-text','')
 
         ## show main gui
-        new_edje.Edje.layer_set(3)
+        self.new_edje.Edje.layer_set(3)
         if self.standalone:
-            new_edje.Edje.pos_set(0,50)
-            new_edje.Edje.size_set(480,590)
+            self.new_edje.Edje.pos_set(0,50)
+            self.new_edje.Edje.size_set(480,590)
         else:
-            new_edje.Edje.size_set(480,580)
-        new_edje.Edje.show()
-        new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
-        new_edje.Edje.signal_callback_add("next-button", "*", self._on_next)
+            self.new_edje.Edje.size_set(480,580)
+        self.new_edje.Edje.show()
+        self.new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.open_phone_book)
+        self.new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
+        self.new_edje.Edje.signal_callback_add("next-button", "*", self._on_next)
 
         # Here is the flow of the UI :
         #
@@ -323,7 +327,7 @@ class EditNumber(tichy.Application):
                                        Wait(self, 'back'),
                                        Wait(self.main, 'back_Msgs'))
             if event == 0:    # next
-                sms.number = new_edje.Edje.part_text_get('num_field-text')
+                sms.number = self.new_edje.Edje.part_text_get('num_field-text')
                 edit_text_ret = yield EditText(self.main, sms)
                 if edit_text_ret is None: # Cancel the edit_text action
                     continue
@@ -332,7 +336,7 @@ class EditNumber(tichy.Application):
                 ret = None
             break
 
-        new_edje.delete()
+        self.new_edje.delete()
         yield ret
 
     def _on_next(self, *args):
@@ -341,6 +345,31 @@ class EditNumber(tichy.Application):
     def _on_back(self, *args):
         self.emit('back')
 
+    def open_phone_book(self, *args, **kargs):
+        self.contact_service = tichy.Service.get('Contacts')
+        self.phone_book = self.contact_service.contacts
+        logger.debug("load elm phone book called")
+        sx = 480
+        if self.standalone:
+            sy = 590
+        else:
+            sy = 580
+        main_win = gui.elm_list_window(self.edje_file, 'messages-people', "items", sx, sy)
+        ##cmp function for list sorting
+        self.list_label = [('label','name'),('label-number','tel')]
+        
+        def comp(m1, m2):
+            return cmp(str(m1.name).lower(), str(m2.name).lower())
+        
+        elm_list = gui.elm_list(self.phone_book, main_win, self.edje_file, "message-contacts_item", self.list_label, comp)
+        elm_list.add_callback("add_contact", "*", self.fr_phonebook)
+        elm_list.add_callback("add_contact", "*", main_win.delete)
+
+    def fr_phonebook(self, emission, source, param, item):
+        contact = item[0]
+        logger.debug("contact chosen")
+        number = str(contact.tel)
+        self.new_edje.Edje.part_text_set('num_field-text', number)
 
 class EditText(tichy.Application):
     """Edit the text of a message and then send it
