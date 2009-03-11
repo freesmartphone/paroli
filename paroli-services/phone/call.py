@@ -173,7 +173,7 @@ class Call(tichy.Item):
         self.emit('released')
 
     def _incoming(self):
-        self.status = 'imcoming'
+        self.status = 'incoming'
         self.emit('incoming')
 
 
