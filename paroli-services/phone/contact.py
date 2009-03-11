@@ -329,9 +329,14 @@ class ContactsService(tichy.Service):
         # TODO: the problem here is that when we load the contacts we
         # are going to rewrite them !
         self.contacts.connect('modified', self._on_contacts_modified)
+        # For optimization we keep a map of number to contact
+        self._number_to_contact = {}
 
     def _on_contacts_modified(self, contacts):
         yield PhoneContact.save()
+        # update the map of number to contact
+        self._number_to_contact = \
+            dict((str(x.tel), x) for x in self.contacts)
 
     @tichy.tasklet.tasklet
     def init(self):
@@ -402,10 +407,7 @@ class ContactsService(tichy.Service):
 
     def get_by_number(self, number):
         """return the first contacts having a given number, or None"""
-        for contact in self.contacts:
-            if contact.tel == number:
-                return contact
-        return None
+        return self._number_to_contact.get(str(number), None)
 
     def create(self, name=None, **kargs):
         """Create a new `Contact` instance
