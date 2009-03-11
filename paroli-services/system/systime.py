@@ -56,7 +56,8 @@ class FreeSmartPhoneTimeService(tichy.Service):
     @tichy.tasklet.tasklet
     def set_current_time(self, ttime):
         """  Set time, but not date here. ttime argument is GMT time """
-        assert isinstance(ttime, tichy.Time)
+        if not isinstance(ttime, tichy.Time): 
+            raise TypeError
         try:
             localtime = ttime.local_repr().split()
             timeSetCmd = 'date -s ' + localtime[3] 
