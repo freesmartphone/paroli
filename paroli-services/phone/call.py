@@ -77,6 +77,7 @@ class Call(tichy.Item):
         self.direction = direction
         self.timestamp = tichy.Time.as_type(timestamp)
         self.status = status
+        self.missed = False
 
     def get_text(self):
         return self.number.get_text()
@@ -169,6 +170,8 @@ class Call(tichy.Item):
         self.emit('activated')
 
     def _released(self):
+        if self.status == 'incoming':
+            self.missed = True
         self.status = 'released'
         self.emit('released')
 
