@@ -61,6 +61,7 @@ class FreeSmartPhoneTimeService(tichy.Service):
         try:
             localtime = ttime.local_repr().split()
             timeSetCmd = 'date -s ' + localtime[3] 
+            #XXX: here seems a dirty quick way (os.system).
             os.system(timeSetCmd)
             yield WaitDBus(self.rtc.SetCurrentTime, str(ttime.value) )
         except Exception, ex:
