@@ -337,6 +337,7 @@ class EditNumber(tichy.Application):
         logger.info("Start EditNumber")
 
         self.main = parent
+        self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
         self.edje_file = os.path.join(os.path.dirname(__file__),
                                       'people.edj')
         new_edje = gui.EdjeObject(self.main, self.edje_file, 'edit_number')
