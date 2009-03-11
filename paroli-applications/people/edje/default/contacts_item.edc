@@ -355,6 +355,14 @@ group { name: "contacts_item";
             target:"base";
             target: "move_button";
             target:"msgs-button-blocker";
+            after:"send_all_close";
+        }
+        
+        program{
+            name:"send_all_close";
+            script{
+                emit("send_all","fold-back");
+            }
         }
         program{
             name: "fold-back";

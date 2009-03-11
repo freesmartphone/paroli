@@ -433,7 +433,7 @@ class EvasList(tichy.Object):
           canvas_obj = etk.Canvas()
           edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
           canvas_obj.object_add(edje_obj.Edje)
-          
+          edje_obj.Edje.signal_callback_add("send_all", "*" , self.send_signal)
           ## set text in text parts
           for part, attribute in self.label_list:
               if hasattr(item, attribute):
@@ -469,6 +469,11 @@ class EvasList(tichy.Object):
           self.callbacks.append([signal, source, func])
           for i in self.items:
               i[1].Edje.signal_callback_add(signal, source , func, i)
+
+      def send_signal(self, emission, signal, source):
+          for i in self.items:
+              if emission != i[1].Edje:
+                  i[1].Edje.signal_emit(source, signal)
 
       def _renew_callbacks(self, *args, **kargs):
           for cb in self.callbacks:
