@@ -37,9 +37,13 @@ class PINError(Exception):
 @tichy.tasklet.tasklet
 def retry_on_sim_busy(method, *args):
     """Attempt a dbus call the the framework and retry if we get a sim
-    busy error"""
-    # TODO: make a better implementation of this, we should use the
-    #       SIMReady signal
+    busy error
+
+    Every time we get a SIM busy error, we wait for the ReadyStatus
+    signal, or 5 seconds, and we try again.
+
+    If it fails 5 times, we give up and raise an Exception.
+    """
 
     def is_busy_error(ex):
         """Check if an exception is due to a SIM busy error"""
