@@ -265,10 +265,8 @@ part\
                 snprintf(txt2, 60, "%s%s", pin, num);\
                 num = "*";\
                 snprintf(txt, 60, "%s%s", old, num);\
-                if(strlen(pin) < 4) {\
-                   set_text(PART:"pin-text", txt2);\
-                   emit(txt2,"embryo");\
-                   set_text(PART:"num_field-text", txt);\
-                }\
+                set_text(PART:"pin-text", txt2);\
+                emit(txt2,"embryo");\
+                set_text(PART:"num_field-text", txt);\
            }\
         }
