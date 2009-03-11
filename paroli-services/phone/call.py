@@ -84,7 +84,13 @@ class Call(tichy.Item):
 
     @property
     def description(self):
-        return self.status + " at " + unicode(self.timestamp.get_text())
+        if (self.missed):
+            return "Missed" + " at " + unicode(self.timestamp.get_text())
+        else:
+            if (self.direction == "out"):  
+                return "Outgoing" + " at " + unicode(self.timestamp.get_text())
+            elif (self.direction == "in"):
+                return "Incoming" + " at " + unicode(self.timestamp.get_text())
 
     @tichy.tasklet.tasklet
     def initiate(self):
