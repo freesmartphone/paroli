@@ -164,34 +164,17 @@ class FreeSmartPhoneSim(tichy.Service):
     def get_messages(self):
         """Return the list of all the messages in the SIM
         """
-        # TODO: Here we really should use the RetrieveMessagebook
-        #       method, but it is currently not working (see tickets
-        #       345 and 346 of freesmartphone.
-        #       So instead we get the messages one by one.
-        logger.info("calling GetMessagebookInfo")
-        info = yield retry_on_sim_busy(self.gsm_sim.GetMessagebookInfo)
-        logger.debug("got info %s", info)
+        logger.info("Get all the messages from the SIM")
+        entries = yield retry_on_sim_busy(self.gsm_sim.RetrieveMessagebook, 'all')
 
-        first = info['first']
-        last = info['last']
         ret = []
-        for index in range(first, last+1):
-            logger.debug("Retrieve Message %d", index)
-            try:
-                entry = yield retry_on_sim_busy(self.gsm_sim.RetrieveMessage,
-                                                index)
-            except dbus.exceptions.DBusException, ex:
-                if ex.get_dbus_name() == 'org.freesmartphone.GSM.SIM.NotFound':
-                    logger.debug("no message at index %d", index)
-                else:
-                    logger.error("can't get message %d : %s", i, ex)
-                continue
-
+        for entry in entries:
             logger.debug("Got message %s", entry)
-            status = str(entry[0]) # "read"|"sent"|"unread"|"unsent"
-            peer = str(entry[1])
-            text = unicode(entry[2])
-            properties = entry[3]
+            index = entry[0]
+            status = str(entry[1]) # "read"|"sent"|"unread"|"unsent"
+            peer = str(entry[2])
+            text = unicode(entry[3])
+            properties = entry[4]
             timestamp = properties.get('timestamp', None)
             # TODO: make the direction arg a boolean
             direction = 'out' if status in ['sent', 'unsent'] else 'in'
