@@ -242,6 +242,11 @@ class Launcher_App(tichy.Application):
         self.main.emit('show_Tele')
         if self.active_app == 'Tele':
             self.edje_obj.signal('app_active',"*")
+        call = args[0]
+        if call.missed:
+            missed_call_count = self.gsm.missed_call_count
+            text = "<normal>I/O</normal> <small>%s</small>" % (missed_call_count)
+            self.app_objs['I/O'][1].Edje.part_text_set('testing_textblock', text) 
             
         text = '<normal>Tele</normal> <small></small>'
         self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)

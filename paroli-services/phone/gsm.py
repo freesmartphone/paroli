@@ -122,6 +122,14 @@ class GSMService(tichy.Service):
                     raise
                 LOGGER.info("pin wrong : %s", pin)
 
+    @property
+    def missed_call_count(self):
+        count = 0
+        for call in self.logs:
+            if call.missed and ( not call.checked ):
+                count = count + 1
+        return tichy.Text(str(count))
+
 
 class FreeSmartPhoneGSM(GSMService):
     """GSMService that uses freesmartphone DBUS API"""

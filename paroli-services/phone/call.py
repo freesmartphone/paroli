@@ -56,6 +56,9 @@ class Call(tichy.Item):
                     - 'released'
                 (default to 'inactive')
 
+            checked : boolean
+                Actaully it's used only for "missed" calls
+
         Signals
 
             initiating
@@ -78,6 +81,7 @@ class Call(tichy.Item):
         self.timestamp = tichy.Time.as_type(timestamp)
         self.status = status
         self.missed = False
+        self.checked = True
 
     def get_text(self):
         return self.number.get_text()
@@ -178,6 +182,7 @@ class Call(tichy.Item):
     def _released(self):
         if self.status == 'incoming':
             self.missed = True
+            self.checked = False
         self.status = 'released'
         self.emit('released')
 
@@ -185,6 +190,8 @@ class Call(tichy.Item):
         self.status = 'incoming'
         self.emit('incoming')
 
+    def check(self):
+        self.checked = True
 
     # TODO: In the long run we should really use a system similar to
     #       PEAK, where we can define all the Items attributes and

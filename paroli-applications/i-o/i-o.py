@@ -31,6 +31,7 @@ class I_O_App(tichy.Application):
     name = 'I/O'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
+    launcher_info = [tichy.Service.get('GSM').missed_call_count]
     layer = 0
     
     def run(self, parent=None, standalone=False):
@@ -80,6 +81,12 @@ class I_O_App(tichy.Application):
                 edje.Edje.signal_emit("show_save_button", "*") 
 
         yield tichy.WaitFirst(tichy.Wait(self.main, 'back_I/O'),tichy.Wait(self.main, 'delete_request'))
+        # Make all call logs to be "checked" for missed type ones 
+        for call in self.callLogs:
+            if call.missed and ( not call.checked ):
+                call.check()
+        self.launcher_info[0].emit('modified');
+        
         if self.standalone:
             self.edje_obj.delete()
             # XXX: This is wrong. We shouldn't use del to delete the object.
