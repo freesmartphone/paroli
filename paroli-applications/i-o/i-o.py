@@ -35,7 +35,6 @@ class I_O_App(tichy.Application):
     layer = 0
     
     def run(self, parent=None, standalone=False):
-        
         self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
         
         self.main = parent
@@ -81,11 +80,7 @@ class I_O_App(tichy.Application):
                 edje.Edje.signal_emit("show_save_button", "*") 
 
         yield tichy.WaitFirst(tichy.Wait(self.main, 'back_I/O'),tichy.Wait(self.main, 'delete_request'))
-        # Make all call logs to be "checked" for missed type ones 
-        for call in self.callLogs:
-            if call.missed and ( not call.checked ):
-                call.check()
-        self.launcher_info[0].emit('modified');
+        self.gsm_service.check_all_missed_call_logs()
         
         if self.standalone:
             self.edje_obj.delete()

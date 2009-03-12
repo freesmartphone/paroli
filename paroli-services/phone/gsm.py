@@ -71,6 +71,7 @@ class GSMService(tichy.Service):
     def __init__(self):
         super(GSMService, self).__init__()
         self.logs = tichy.List()
+        self.missed_call_count = tichy.Int(0)
         self._load_logs()
         self.logs.connect('modified', self._on_logs_modified)
 
@@ -122,13 +123,18 @@ class GSMService(tichy.Service):
                     raise
                 logger.info("pin wrong : %s", pin)
 
-    @property
-    def missed_call_count(self):
+    def update_missed_call_count(self):
         count = 0
         for call in self.logs:
             if call.missed and ( not call.checked ):
                 count = count + 1
-        return tichy.Text(str(count))
+        self.missed_call_count.value = count
+
+    def check_all_missed_call_logs(self):
+        for call in self.logs:
+            if call.missed and ( not call.checked ):
+                call.check()
+        self.missed_call_count.value = 0 
 
 
 class FreeSmartPhoneGSM(GSMService):
@@ -251,6 +257,7 @@ class FreeSmartPhoneGSM(GSMService):
         elif status == 'release':
             self.lines[call_id]._released()
             del self.lines[call_id]
+            self.update_missed_call_count()
         else:
             logger.warning("Unknown status : %s", status)
 
