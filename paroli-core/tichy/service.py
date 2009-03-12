@@ -53,9 +53,26 @@ class Service(Item):
     service = None
     name = None
 
+    # Contains the default services
+    __defaults = {}
+
+    @classmethod
+    def set_default(cls, service, name):
+        """Set a default service
+
+        This should be called before init_all.
+
+        :Parameters:
+            service : str
+                the name of the service
+            name : str
+                the name of the item we want to use for this service
+        """
+        cls.__defaults[service] = name
+
     @classmethod
     @tichy.tasklet.tasklet
-    def init_all(cls, defaults={}):
+    def init_all(cls):
         """initialize all the services
 
         :Parameters:
@@ -64,6 +81,7 @@ class Service(Item):
                 as default service
         """
         logger.info("init all services")
+        defaults = cls.__defaults
         logger.info("defaults service are %s", defaults)
         for service_cls in cls.subclasses:
             service = service_cls.service
@@ -145,26 +163,30 @@ class Service(Item):
         yield None
 
     @staticmethod
-    def get(name):
+    def get(service):
         """Get a service instance by name
 
         We are supposed to only call this after the service have been
         initialized.
         """
         try:
-            return Service.__all_services[name]
+            return Service.__all_services[service]
         except KeyError:
             # This is a hack to allow plugins to require service
             # before they have been initialized. It should be avoided,
             # and so we log a warning in that case.
-            if name not in [x.service for x in Service.subclasses]:
+            if service not in [x.service for x in Service.subclasses]:
                 raise
             msg = "trying to access service '%s' before call to init"
-            logger.warning(msg, name)
-            cls = [x for x in Service.subclasses if x.service == name][0]
+            logger.warning(msg, service)
+            cls = [x for x in Service.subclasses if x.service == service]
+            # We get the default service if it is set
+            if service in Service.__defaults:
+                cls = [c for c in cls if c.name == Service.__defaults[service]]
+            cls = cls[0]
             instance = cls()
-            Service.__all_services[name] = instance
+            Service.__all_services[service] = instance
             return instance
 
-def get(name):
-    return Service.get(name)
+def get(service):
+    return Service.get(service)
