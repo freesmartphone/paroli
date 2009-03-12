@@ -139,6 +139,7 @@ group { name: "dialpad_numbers";
                     size: 48;
                     text: "";
                     font: "Sans";
+                    elipsis: 1.0; 
                 }
                 rel1 
                 {
