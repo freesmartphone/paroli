@@ -74,7 +74,7 @@ class GSMService(tichy.Service):
         self._load_logs()
         self.logs.connect('modified', self._on_logs_modified)
 
-    def init(self, on_step=None):
+    def init(self):
         """This must return a Tasklet"""
         raise NotImplementedError
 
@@ -181,29 +181,15 @@ class FreeSmartPhoneGSM(GSMService):
         LOGGER.info("Attempt to re-init the service")
         yield self.init()
 
-    def init(self, on_step=None):
+    def init(self):
         """Tasklet that registers on the network
-
-        :Parameters:
-
-            on_step : callback function | None
-                a callback function that take a string argument that
-                will be called at every step of the registration
-                procedure
         """
-
-        def default_on_step(msg):
-            pass
-        on_step = on_step or default_on_step
-
         try:
             yield self._connect_dbus()
             LOGGER.info("Request the GSM resource")
-            on_step("Request the GSM resource")
             yield WaitFSOResource('GSM', time_out=30)
             yield WaitDBus(self.ousage.RequestResource, 'GSM')
-            yield self._turn_on(on_step)
-            on_step("Register on the network")
+            yield self._turn_on()
             LOGGER.info("register on the network")
             yield WaitDBus(self.gsm_network.Register)
             provider = yield tichy.Wait(self, 'provider-modified')
@@ -214,7 +200,7 @@ class FreeSmartPhoneGSM(GSMService):
             self.gsm_call = None
             raise
 
-    def _turn_on(self, on_step):
+    def _turn_on(self):
         """turn on the antenna
 
         We need to check if the SIM PIN is required and if so start
@@ -226,7 +212,6 @@ class FreeSmartPhoneGSM(GSMService):
         if power:
             yield None
         LOGGER.info("turn on antenna power")
-        on_step("Turn on antenna power")
         try:
             yield WaitDBus(self.gsm_device.SetAntennaPower, True)
         except dbus.exceptions.DBusException, ex:
@@ -343,17 +328,10 @@ class TestGsm(GSMService):
         super(TestGsm, self).__init__()
         self.logs.append(Call('0478657392'))
 
-    def init(self, on_step=None):
+    def init(self):
         """register on the network"""
-
-        def default_on_step(msg):
-            pass
-        on_step = on_step or default_on_step
-
         LOGGER.info("Turn on antenna power")
-        on_step("Turn on antenna power")
         LOGGER.info("Register on the network")
-        on_step("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
         yield None
 
