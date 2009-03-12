@@ -8,6 +8,10 @@ group { name: "message_item";
           item: "value" "None";
           item: "signal" "unknown";
        }
+       script {
+          public drag_value;
+          public mouse_x;
+        }
        
        parts {
         part
@@ -25,6 +29,78 @@ group { name: "message_item";
                         relative: 1.0 1.0;
                     }
                 }
+        }
+        part
+        {
+            name: "msgs-button-base";
+            type: RECT;
+            description{ state: "default" 0.0;
+                    color:0 0 0 255;
+                    rel1{
+                        relative: 0.01 0.01;
+                    }
+                    rel2 {
+                        relative: 0.21 0.99;
+                    }
+                  }
+        }
+        part
+        {
+            name: "msgs-button-text";
+            type: TEXT;
+            mouse_events:0;
+            description
+            { 
+                state: "default" 0.0;
+                color:255 255 255 255;
+                text
+                {
+                    align: 0.0 0.0;
+                    size: 40;
+                    text: "Re:";
+                    font: "Sans";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                    to:"msgs-button-base";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to:"msgs-button-base";
+                }
+            }
+        }
+        part
+        {
+            name: "msgs-button-blocker";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1{
+                    relative: 0.0 0.0;
+                    to:"msgs-button-base";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to:"msgs-button-base";
+                }
+            }
+            description
+            {
+                state : "moved" 0.0;
+                visible:0;
+                color:0 0 0 0;
+                rel1{
+                    relative: 0.0 0.0;
+                    to:"msgs-button-base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    to:"msgs-button-base";
+                }
+            }
         }
         part{
                   name: "base";
@@ -220,8 +296,15 @@ group { name: "message_item";
         part{
             name: "clickable";
             type: RECT;
+            ignore_flags: ON_HOLD;
+            dragable {
+                x: 1 1 0;
+                y: 0 0 0;
+                confine:"base";
+            }
             description{ state: "default" 0.0;
             color:0 0 0 0;
+            min: 470 60;
             rel1{
                 relative: 0.0 0.0;
                 to:"base";
@@ -232,10 +315,11 @@ group { name: "message_item";
             }
         }
         description{ 
-            state: "changed" 0.0;
-            color:255 125 0 125;
+            state: "moved" 0.0;
+            color:0 0 0 0;
+            min: 390 60;
             rel1{
-                relative: 0.0 0.0;
+                relative: 0.2 0.2;
                 to:"base";
             }
             rel2 {
@@ -255,10 +339,92 @@ group { name: "message_item";
             target: "save-button-text";
         }
         program{
+            name: "all_catcher";
+            signal: "*";
+            source: "clickable";
+            script{
+                emit(sig,"embryo");
+            }
+        }
+        program{
+            name: "drag_catcher";
+            signal: "drag,start";
+            source: "clickable";
+            script{
+                new x;
+                new y;
+                set_int(drag_value,1);
+                get_mouse(x,y)
+                set_int(mouse_x,x)
+            }                   
+        }
+        program{
+            name: "drag_catcher2";
+            signal: "drag,stop";
+            source: "clickable";
+            script{
+                new x;
+                new y;
+                get_mouse(x, y);
+                if (x - get_int(mouse_x) < -30){
+// //                     left swipe
+                    run_program(PROGRAM:"fold-back");
+                    emit("left swipe", "embryo");
+                }else if (x - get_int(mouse_x) > 30){
+// //                     right swipe                
+                    run_program(PROGRAM:"rightward-slide");
+                    emit("right swipe", "embryo");
+                }else{
+                    set_int(drag_value,0);
+                }
+            }                   
+        }
+        program{
             name: "clickable-pressed";
             signal: "mouse,clicked,1";
             source: "clickable";
-            action: SIGNAL_EMIT "details" "edc";
+            script{
+                if (get_int(drag_value) != 1){
+                  emit( "details", "edc");
+                }
+                set_int(drag_value,0);
+            }
+        }
+        program{
+            name: "rightward-slide";
+//             signal:"drag,stop";
+//             source: "move_button";
+            action: STATE_SET "moved" 0.0;
+            transition: LINEAR 0.32;
+            target:"base";
+            target: "clickable";
+            target:"msgs-button-blocker";
+            after:"send_all_close";
+        }
+        program{
+            name:"quick_message_signal";
+            signal: "mouse,clicked,1";
+            source: "msgs-button-base";
+            script{
+                emit("quick_reply","*")
+            }
+        }
+        
+        program{
+            name:"send_all_close";
+            script{
+                emit("send_all","fold-back");
+            }
+        }
+        program{
+            name: "fold-back";
+            signal: "fold-back";
+            source: "*";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.32;
+            target:"base";
+            target:"msgs-button-blocker";
+            target: "clickable";
         }
         program{
             name: "save-button-pressed";

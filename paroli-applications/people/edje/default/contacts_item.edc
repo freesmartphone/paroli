@@ -334,14 +334,16 @@ group { name: "contacts_item";
                 new x;
                 new y;
                 get_mouse(x, y);
-                if (x - get_int(mouse_x) < 0){
+                if (x - get_int(mouse_x) < -30){
 // //                     left swipe
                     run_program(PROGRAM:"fold-back");
                     emit("left swipe", "embryo");
-                }else{
+                }else if (x - get_int(mouse_x) > 30){
 // //                     right swipe                
                     run_program(PROGRAM:"rightward-slide");
                     emit("right swipe", "embryo");
+                }else{
+                    set_int(drag_value,0);
                 }
             }                   
         }

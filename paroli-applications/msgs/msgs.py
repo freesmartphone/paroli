@@ -70,6 +70,9 @@ class MsgsApp(tichy.Application):
         self.messages_swallow = self.messages_list.get_swallow_object()
 
         self.messages_list.add_callback("details", "*", self.open_msg_detail_window)
+        
+        self.messages_list.add_callback("*", "embryo", self.self_test)
+        self.messages_list.add_callback("quick_reply", "*", self._quick_reply)
 
         self.messages_list.add_callback("save", "*", self.open_save_contact_window)
         #self.messages_list.add_callback("*", "embryo", self.self_test)
@@ -136,6 +139,12 @@ class MsgsApp(tichy.Application):
         else:
             args[1].signal('activate-blocker', '*')
             args[1].Edje.freeze()
+
+    ##DEBUG FUNCTIONS
+    ## general output check
+    def self_test(self, *args, **kargs):
+        txt = "self test called with args: ", args, "and kargs: ", kargs
+        logger.info(txt)
 
     ## SUBWINDOW FUNCTIONS
     ## open subwindow showing message-details
@@ -230,6 +239,11 @@ class MsgsApp(tichy.Application):
     def _empty_sms_text(self, emission, signal, source, sms):
         sms.text = ''
 
+    def _quick_reply(self, emission, signal, source, item):
+        sms = empty_sms()
+        sms.number = str(item[0].peer)
+        EditText(self.main, sms).start()
+        
     ## open subwindow to create new message (text entry)
     def open_new_msg_text_entry(self, emission, signal, source, sms, window=None):
         EditText(self.main, sms).start()
