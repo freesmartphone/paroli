@@ -22,7 +22,7 @@
 __docformat__ = 'reStructuredText'
 
 import logging
-LOGGER = logging.getLogger('GSM')
+logger = logging.getLogger('GSM')
 
 import dbus
 
@@ -87,13 +87,13 @@ class GSMService(tichy.Service):
 
     def _save_logs(self):
         """Save the logs into a file"""
-        LOGGER.info("Saving call logs")
+        logger.info("Saving call logs")
         data = [c.to_dict() for c in self.logs]
         tichy.Persistance('calls/logs').save(data)
 
     def _load_logs(self):
         """Load all the logs"""
-        LOGGER.info("Loading call logs")
+        logger.info("Loading call logs")
         data = tichy.Persistance('calls/logs').load()
         if not data:
             return
@@ -120,7 +120,7 @@ class GSMService(tichy.Service):
             except sim.PINError:
                 if i == 4: # after 3 times we give up
                     raise
-                LOGGER.info("pin wrong : %s", pin)
+                logger.info("pin wrong : %s", pin)
 
     @property
     def missed_call_count(self):
@@ -151,9 +151,9 @@ class FreeSmartPhoneGSM(GSMService):
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
-        LOGGER.info("connecting to DBus")
+        logger.info("connecting to DBus")
         yield WaitDBusName('org.freesmartphone.ousaged', time_out=30)
-        LOGGER.info("connecting to freesmartphone.GSM dbus interface")
+        logger.info("connecting to freesmartphone.GSM dbus interface")
         # We create the dbus interfaces to org.freesmarphone
         self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         self.ousage = self.bus.get_object('org.freesmartphone.ousaged',
@@ -177,8 +177,8 @@ class FreeSmartPhoneGSM(GSMService):
     def _keep_alive(self):
         """Reinit the dbus connection if the framework crashes"""
         yield WaitDBusNameChange('org.freesmartphone.ogsmd')
-        LOGGER.error("org.freesmartphone.ogsmd crashed")
-        LOGGER.info("Attempt to re-init the service")
+        logger.error("org.freesmartphone.ogsmd crashed")
+        logger.info("Attempt to re-init the service")
         yield self.init()
 
     def init(self):
@@ -186,17 +186,17 @@ class FreeSmartPhoneGSM(GSMService):
         """
         try:
             yield self._connect_dbus()
-            LOGGER.info("Request the GSM resource")
+            logger.info("Request the GSM resource")
             yield WaitFSOResource('GSM', time_out=30)
             yield WaitDBus(self.ousage.RequestResource, 'GSM')
             yield self._turn_on()
-            LOGGER.info("register on the network")
+            logger.info("register on the network")
             yield WaitDBus(self.gsm_network.Register)
             provider = yield tichy.Wait(self, 'provider-modified')
-            LOGGER.info("provider is '%s'", provider)
+            logger.info("provider is '%s'", provider)
             self._keep_alive().start()
         except Exception, ex:
-            LOGGER.error("Error : %s", ex)
+            logger.error("Error : %s", ex)
             self.gsm_call = None
             raise
 
@@ -206,12 +206,12 @@ class FreeSmartPhoneGSM(GSMService):
         We need to check if the SIM PIN is required and if so start
         the PIN input application.
         """
-        LOGGER.info("Check antenna power")
+        logger.info("Check antenna power")
         power = yield WaitDBus(self.gsm_device.GetAntennaPower)
-        LOGGER.info("antenna power is %d", power)
+        logger.info("antenna power is %d", power)
         if power:
             yield None
-        LOGGER.info("turn on antenna power")
+        logger.info("turn on antenna power")
         try:
             yield WaitDBus(self.gsm_device.SetAntennaPower, True)
         except dbus.exceptions.DBusException, ex:
@@ -220,15 +220,15 @@ class FreeSmartPhoneGSM(GSMService):
             yield self._ask_pin()
 
     def _on_call_status(self, call_id, status, properties):
-        LOGGER.info("call status %s %s %s", call_id, status, properties)
+        logger.info("call status %s %s %s", call_id, status, properties)
         call_id = int(call_id)
         status = str(status)
 
         if status == 'incoming':
-            LOGGER.info("incoming call")
+            logger.info("incoming call")
             # XXX: should use an assert, but it doesn't work on neo :O
             if call_id in self.lines:
-                LOGGER.warning("WARNING : line already present %s %s",
+                logger.warning("WARNING : line already present %s %s",
                                call_id, self.lines)
                 # XXX : I just ignore the message, because the
                 # framework send it twice !! Bug in the framework ?
@@ -252,10 +252,10 @@ class FreeSmartPhoneGSM(GSMService):
             self.lines[call_id]._released()
             del self.lines[call_id]
         else:
-            LOGGER.warning("Unknown status : %s", status)
+            logger.warning("Unknown status : %s", status)
 
     def _on_status(self, status):
-        LOGGER.debug("status %s", status)
+        logger.debug("status %s", status)
         if 'provider' in status:
             provider = str(status['provider'])
             if provider != self.provider:
@@ -279,7 +279,7 @@ class FreeSmartPhoneGSM(GSMService):
                 Indicate the direction of the call. Can be 'in' or
                 'out'
         """
-        LOGGER.info("create call %s" % number)
+        logger.info("create call %s" % number)
         call = Call(number, direction=direction)
         self.logs.insert(0, call)
         return call
@@ -291,10 +291,10 @@ class FreeSmartPhoneGSM(GSMService):
         if not self.gsm_call:
             raise Exception("No connectivity")
         number = str(call.number)
-        LOGGER.info("initiate call to %s", number)
+        logger.info("initiate call to %s", number)
         call_id = yield WaitDBus(self.gsm_call.Initiate, number, "voice")
         call_id = int(call_id)
-        LOGGER.info("call id : %d", call_id)
+        logger.info("call id : %d", call_id)
         self.lines[call_id] = call
         # TODO: mabe not good idea to store this in the call itself,
         #       beside, it makes pylint upset.
@@ -302,18 +302,18 @@ class FreeSmartPhoneGSM(GSMService):
 
     @tichy.tasklet.tasklet
     def _activate(self, call):
-        LOGGER.info("activate call %s", str(call.number))
+        logger.info("activate call %s", str(call.number))
         yield WaitDBus(self.gsm_call.Activate, call.__id)
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
-        LOGGER.info("send dtmf %s to call %s", code, str(call.number))
+        logger.info("send dtmf %s to call %s", code, str(call.number))
         assert call.status == 'active'
         yield WaitDBus(self.gsm_call.SendDtmf, code)
 
     @tichy.tasklet.tasklet
     def _release(self, call):
-        LOGGER.info("release call %s", str(call.number))
+        logger.info("release call %s", str(call.number))
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
@@ -330,8 +330,8 @@ class TestGsm(GSMService):
 
     def init(self):
         """register on the network"""
-        LOGGER.info("Turn on antenna power")
-        LOGGER.info("Register on the network")
+        logger.info("Turn on antenna power")
+        logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
         yield None
 
@@ -351,20 +351,20 @@ class TestGsm(GSMService):
 
     @tichy.tasklet.tasklet
     def _start_incoming(self):
-        LOGGER.info("simulate incoming call in 5 second")
+        logger.info("simulate incoming call in 5 second")
         yield Sleep(5)
         call = self.create_call('01234567', direction='in')
         self.emit('incoming-call', call)
 
     @tichy.tasklet.tasklet
     def _activate(self, call):
-        LOGGER.info("activate call %s", str(call.number))
+        logger.info("activate call %s", str(call.number))
         yield Sleep(1)
         call._active()
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
-        LOGGER.info("send dtmf %s to call %s", code, str(call.number))
+        logger.info("send dtmf %s to call %s", code, str(call.number))
         assert call.status == 'active'
         yield Sleep(1)
 
