@@ -69,12 +69,14 @@ group { name: "history_item";
          description { 
             state: "default" 0.0;
             color:0 0 0 255;
+            min: 88 35;
+            max: 88 35;
             rel1 {
                relative: 0.0 0.0;
                to: "main_base";
             }
             rel2 {
-               relative: 0.2 1.0;
+               relative: 0.25 1.0;
                to: "main_base";
             } 
          }
