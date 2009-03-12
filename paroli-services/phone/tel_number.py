@@ -43,6 +43,10 @@ class TelNumber(tichy.Text):
         self.view_text = tichy.Text(text)
         self.connect('modified', TelNumber.update_view_text)
 
+    def is_emergency(self):
+        """return True is the number is an emergency one"""
+        return self.value == '112'
+
     def get_contact(self):
         """Return the `Contact` that has this number
 
