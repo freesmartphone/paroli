@@ -87,25 +87,8 @@ def setup_logging():
 class InitAll(tichy.Tasklet):
     """Perform all basic initialization of services"""
 
-    def get_default_services(self):
-        """Get the dict of all default services"""
-        defaults = tichy.config.get('services', 'defaults', None)
-        if not defaults:
-            return {}
-        defaults = defaults.split(',')
-        ret = {}
-        for default in defaults:
-            if not default:
-                continue
-            service, name = default.strip().split(':')
-            ret[service] = name
-        return ret
-
     def run(self):
-        defaults = self.get_default_services()
-        yield tichy.Service.init_all(defaults=defaults)
-#         for service_name in ['TeleCom', 'TeleCaller', 'GSM', 'Audio', 'SIM', 'Contacts', 'Messages', 'SMS', 'Prefs']:
-
+        yield tichy.Service.init_all()
         logger.info("start AutoAnswerCall")
         yield AutoAnswerCall()
 
@@ -121,6 +104,20 @@ class AutoAnswerCall(tichy.Tasklet):
             logger.info("got incoming call")
             caller_service = tichy.Service.get('TeleCaller')
             yield caller_service.call("None", call)
+
+
+def set_default_services():
+    """Set default services"""
+    defaults = tichy.config.get('services', 'defaults', None)
+    if not defaults:
+        return {}
+    defaults = defaults.split(',')
+
+    for default in defaults:
+        if not default:
+            continue
+        service, name = default.strip().split(':')
+        tichy.Service.set_default(service, name)
 
 
 class Launcher(dbus.service.Object):
@@ -199,6 +196,9 @@ if __name__ == '__main__':
 
     setup_logging()
     tichy.config.parse(cfg_file=options.cfg_file)
+
+    # We set the default service before importing the plugins
+    set_default_services()
 
     # We import all the modules into the plugin directory
     default_plugins_path = '/usr/share/tichy/plugins'
