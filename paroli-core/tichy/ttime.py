@@ -66,6 +66,30 @@ class Time(tichy.Item):
     def local_repr(self):
         return time.asctime(time.localtime(self.__value))
 
+    def simple_repr(self):
+        if self.__is_the_same_day():
+            return self.time_repr()
+        else:
+            return self.date_repr()
+
+    def __is_the_same_day(self):
+        now = time.localtime()
+        t = time.localtime(self.__value)
+        if now[0] == t[0] and now[1] == t[1] and now[2] == t[2]:
+            return True
+        return False
+
+    def time_repr(self):
+        t = time.localtime(self.__value)
+        repr = str(t[3]) + ":" + str(t[4])
+        return repr
+
+    def date_repr(self):
+        t = time.localtime(self.__value)
+        repr = str(t[1]) + "/" + str(t[2])
+        return repr
+        
+
     def get_text(self):
         return tichy.Text(self.local_repr())
 
