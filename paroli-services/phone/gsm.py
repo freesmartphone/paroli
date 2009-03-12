@@ -147,6 +147,7 @@ class FreeSmartPhoneGSM(GSMService):
         self.lines = {}
         self.provider = None
         self.network_strength = None
+        self.gsm_call = None
 
     def get_provider(self):
         """Return the current provider of GSM network
@@ -203,7 +204,6 @@ class FreeSmartPhoneGSM(GSMService):
             self._keep_alive().start()
         except Exception, ex:
             logger.error("Error : %s", ex)
-            self.gsm_call = None
             raise
 
     def _turn_on(self):
