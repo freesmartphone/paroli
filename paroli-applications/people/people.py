@@ -929,3 +929,10 @@ class empty_sms():
         #print "emission: ", str(emission)
         #print "source: ", str(source)
         #print "param: ", str(param)
+
+
+class ContactEdit(tichy.Service):
+    service = 'ContactEdit'
+
+    def edit_name(self, parent, contact):
+        return EditName(parent, contact)
