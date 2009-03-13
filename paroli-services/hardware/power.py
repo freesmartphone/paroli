@@ -50,7 +50,7 @@ class PowerService(tichy.Service):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         try:
-            yield WaitDBusName('org.freesmartphone.odeviced', time_out=None)
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             battery = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerSupply/battery')
             self.battery = dbus.Interface(battery, 'org.freesmartphone.Device.PowerSupply')

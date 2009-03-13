@@ -69,7 +69,7 @@ class FreeSmartPhonePrefs(PrefsService):
         logger.info(
             "connecting to freesmartphone.Preferences dbus interface")
         try:
-            yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=30)
+            yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=120)
             # We create the dbus interfaces to org.freesmarphone
             self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             self.prefs = self.bus.get_object(

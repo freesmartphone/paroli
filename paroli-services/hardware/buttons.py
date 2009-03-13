@@ -46,7 +46,7 @@ class ButtonService(tichy.Service):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         try:
-            yield WaitDBusName('org.freesmartphone.odeviced', time_out=None)
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
             logger.info('button service active')
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             input_dev = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Input')

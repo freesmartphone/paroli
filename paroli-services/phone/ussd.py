@@ -49,7 +49,7 @@ class UssdService(tichy.Service):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         try:
-            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=30)
+            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
             logger.info('ussd service active')
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             input_dev = bus.get_object('org.freesmartphone.ogsmd',

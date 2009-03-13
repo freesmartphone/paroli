@@ -159,7 +159,7 @@ class FreeSmartPhoneGSM(GSMService):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         logger.info("connecting to DBus")
-        yield WaitDBusName('org.freesmartphone.ousaged', time_out=30)
+        yield WaitDBusName('org.freesmartphone.ousaged', time_out=120)
         logger.info("connecting to freesmartphone.GSM dbus interface")
         # We create the dbus interfaces to org.freesmarphone
         self.bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)

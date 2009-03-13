@@ -41,7 +41,7 @@ class FreeSmartPhoneTimeService(tichy.Service):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         try:
-            yield WaitDBusName('org.freesmartphone.odeviced', time_out=None)
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             rtc_obj = bus.get_object('org.freesmartphone.odeviced', 
                           '/org/freesmartphone/Device/RealTimeClock/rtc0')
