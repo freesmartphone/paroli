@@ -79,7 +79,7 @@ class DialogService(tichy.Service):
         """
         assert isinstance(msg, basestring)
         msg = msg % args
-        logger.info("show %s dialog : %s", title, msg)
+        logger.debug("show %s dialog : %s", title, msg)
         yield Dialog(parent, title, msg)
 
     @tichy.tasklet.tasklet
