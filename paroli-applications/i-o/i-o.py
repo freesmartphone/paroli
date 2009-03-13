@@ -72,13 +72,6 @@ class I_O_App(tichy.Application):
         self.set_list(self.callLogsView)
         self.edje_obj.show()
 
-        for item in self.callLogsView.items:
-            log = item[0]
-            edje = item[1]
-            if not log.number.get_contact():
-                print "Send show signal for ", log.number
-                edje.Edje.signal_emit("show_save_button", "*") 
-
         yield tichy.WaitFirst(tichy.Wait(self.main, 'back_I/O'),tichy.Wait(self.main, 'delete_request'))
         self.gsm_service.check_all_missed_call_logs()
         
@@ -99,11 +92,16 @@ class I_O_App(tichy.Application):
             self.set_item(item)
         
     def set_item(self, item):
-        item[1].Edje.signal_emit("to_default_mode", "")
-        item[1].Edje.signal_callback_add("new_call", "*", self.create_call, item[0])
-        item[1].Edje.signal_callback_add("new_msg", "*", self.create_message, item[0])
-        item[1].Edje.signal_callback_add("save_number", "*", self.save_number, item[0])
-        item[1].Edje.signal_callback_add("delete_log", "*", self.delete_log, item[0])
+        log = item[0]
+        edjeObj = item[1]
+        edjeObj.Edje.signal_emit("to_default_mode", "")
+        edjeObj.Edje.signal_callback_add("new_call", "*", self.create_call, item[0])
+        edjeObj.Edje.signal_callback_add("new_msg", "*", self.create_message, item[0])
+        edjeObj.Edje.signal_callback_add("save_number", "*", self.save_number, item[0])
+        edjeObj.Edje.signal_callback_add("delete_log", "*", self.delete_log, item[0])
+        # Show button refresh
+        if not log.number.get_contact():
+            edjeObj.Edje.signal_emit("show_save_button", "*") 
     
     def to_edit_mode(self, emission, source, param):
         for item in self.callLogsView.items:
@@ -119,13 +117,33 @@ class I_O_App(tichy.Application):
         caller_service = tichy.Service.get('TeleCaller')
         caller_service.call("window", number, name).start()
     
+    def _on_number_saved(self, *args, **kargs):
+        """ Make call log(Call) emit a modified signal to make the list refreshed 
+            for the case saving the number to a contact)
+        """
+        # item[0]:Call object 
+        # item[1]:EdjeObject object 
+        modified_edje_item = args[1] 
+        for item in self.callLogsView.items:
+            log = item[0]
+            edje = item[1].Edje
+            if edje is modified_edje_item:
+                log.emit("modified")
+                break
+        #XXX: Because _redraw_view will produce new Edje object for the whole list
+        self.set_list(self.callLogsView)
+
     def save_number(self, emission, source, param, number):
+        # Add a contact to contact list
+        # Make call log item modified.
         try:
             contact = tichy.Service.get('Contacts').create(name="", tel=str(number))
         except Exception,e:
             print e
         contact_edit_service = tichy.Service.get('ContactEdit')
-        contact_edit_service.edit_name(self.main, contact).start()
+        edit_name_app = contact_edit_service.edit_name(self.main, contact)
+        edit_name_app.connect('exit', self._on_number_saved, emission)
+        edit_name_app.start()
 
     def delete_log(self, emission, source, param, log):
         print "Delete Log ", log

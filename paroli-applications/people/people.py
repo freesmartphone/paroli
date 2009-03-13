@@ -445,6 +445,7 @@ class EditName(tichy.Application):
 
         logger.info("Exit EditName")
         new_edje.delete()
+        self.emit('exit')
         print "Test returning", ret
         yield ret
 
