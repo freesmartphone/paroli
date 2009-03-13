@@ -210,8 +210,13 @@ class EventsLoop(object):
         elementary.init()
 
     def run(self):
+        """start the main loop
+
+        This method only return after we call `quit`.
+        """
         ecore.main_loop_begin()
-        elementary.run()
+        # XXX: elementary also has a run method : elementary.run(),
+        #      how does it work with ecore.main_loop ?
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)
