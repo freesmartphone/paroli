@@ -23,7 +23,7 @@
 __docformat__ = 'reStructuredText'
 
 import logging
-LOGGER = logging.getLogger('Contact')
+logger = logging.getLogger('Contact')
 
 import tichy
 from tel_number import TelNumber
@@ -225,7 +225,7 @@ class Contact(tichy.Item):
             contact = yield cls.import_(self)
             tichy.Service.get('Contacts').add(contact)
         except Exception, ex:
-            LOGGER.error("can't import contact : %s", ex)
+            logger.error("can't import contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
                                "can't import the contact")
 
@@ -245,7 +245,7 @@ class Contact(tichy.Item):
             yield contact.delete()
             yield tichy.Service.get('Contacts').remove(contact)
         except Exception, ex:
-            LOGGER.error("can't delete contact : %s", ex)
+            logger.error("can't delete contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
                                "can't delete the contact")
 
@@ -285,7 +285,7 @@ class PhoneContact(Contact):
         self.connect('modified', self._on_modified)
 
     def _on_modified(self, contact):
-        LOGGER.info("Phone contact modified %s contact", contact)
+        logger.info("Phone contact modified %s contact", contact)
         yield self.save()
 
     @classmethod
@@ -297,7 +297,7 @@ class PhoneContact(Contact):
     @classmethod
     def save(cls):
         """Save all the phone contacts"""
-        LOGGER.info("Saving phone contacts")
+        logger.info("Saving phone contacts")
         contacts = tichy.Service.get('Contacts').contacts
         data = [c.to_dict() for c in contacts if isinstance(c, PhoneContact)]
         tichy.Persistance('contacts/phone').save(data)
@@ -309,7 +309,7 @@ class PhoneContact(Contact):
 
         Return a list of all the contacts
         """
-        LOGGER.info("Loading phone contacts")
+        logger.info("Loading phone contacts")
         ret = []
         data = tichy.Persistance('contacts/phone').load()
         for kargs in data:
@@ -351,18 +351,18 @@ class ContactsService(tichy.Service):
         """
         all_contacts = []
         for cls in Contact.subclasses:
-            LOGGER.info("loading contacts from %s", cls.storage)
+            logger.info("loading contacts from %s", cls.storage)
             try:
                 contacts = yield cls.load()
-                LOGGER.info("Got %d contacts from %s", len(contacts),
+                logger.info("Got %d contacts from %s", len(contacts),
                             cls.storage)
             except Exception, ex:
-                LOGGER.warning("can't get contacts : %s", ex)
+                logger.warning("can't get contacts : %s", ex)
                 continue
             assert all(isinstance(x, Contact) for x in contacts)
             all_contacts.extend(contacts)
         self.contacts[:] = all_contacts
-        LOGGER.info("Totally got %d contacts", len(self.contacts))
+        logger.info("Totally got %d contacts", len(self.contacts))
 
     @tichy.tasklet.tasklet
     def copy_all(self):

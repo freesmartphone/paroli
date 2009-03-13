@@ -38,7 +38,7 @@ try:
 except:
 	import pickle
 
-LOGGER = logging.getLogger('persistance')
+logger = logging.getLogger('persistance')
 
 
 class Persistance(object):
@@ -59,7 +59,7 @@ class Persistance(object):
         try:
             return open(path, mod)
         except IOError, ex:
-            LOGGER.warning("can't open file : %s", ex)
+            logger.warning("can't open file : %s", ex)
             raise
 
     def save(self, data):

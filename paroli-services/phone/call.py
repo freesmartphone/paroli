@@ -21,7 +21,7 @@
 __docformat__ = 'reStructuredText'
 
 import logging
-LOGGER = logging.getLogger('Call')
+logger = logging.getLogger('Call')
 
 import tichy
 from tel_number import TelNumber
@@ -103,7 +103,7 @@ class Call(tichy.Item):
         This will try to get the 'GSM' service and call its 'initiate'
         method.
         """
-        LOGGER.info("initiate call")
+        logger.info("initiate call")
         gsm_service = tichy.Service.get('GSM')
         yield gsm_service._initiate(self)
         self.status = 'initiating'
@@ -111,7 +111,7 @@ class Call(tichy.Item):
 
     @tichy.tasklet.tasklet
     def release(self):
-        LOGGER.info("release call")
+        logger.info("release call")
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service.get('GSM')
@@ -129,7 +129,7 @@ class Call(tichy.Item):
     @tichy.tasklet.tasklet
     def activate(self):
         """Activate the call"""
-        LOGGER.info("activate call")
+        logger.info("activate call")
         gsm_service = tichy.Service.get('GSM')
         yield gsm_service._activate(self)
         self.status = 'activating'
@@ -139,22 +139,22 @@ class Call(tichy.Item):
 
     def mute_ringtone(self):
         """mute the call ringtone if it is ringing"""
-        LOGGER.info("mute ring tone")
+        logger.info("mute ring tone")
         tichy.Service.get('Audio').stop_all_sounds()
         tichy.Service.get('Vibrator').stop()
 
     def mute(self):
         """Mute an active call"""
-        LOGGER.info("mute call")
+        logger.info("mute call")
         tichy.Service.get('Audio').set_mic_status(False)
 
     def unmute(self):
         """Un Mute an active call"""
-        LOGGER.info("mute call")
+        logger.info("mute call")
         tichy.Service.get('Audio').set_mic_status(True)
 
     def mute_toggle(self):
-        LOGGER.info("mute call toggle")
+        logger.info("mute call toggle")
         if tichy.Service.get('Audio').get_mic_status() == 1:
             tichy.Service.get('Audio').set_mic_status(0)
         else:
