@@ -117,15 +117,6 @@ class ContactAttr(tichy.Item):
             self.value.view(ret)
         return ret
 
-    def create_actor(self):
-        """Return an actor acting on this item
-
-        :Returns: `tichy.Actor`
-        """
-        actor = super(ContactAttr, self).create_actor()
-        actor.new_action('Edit').connect('activated', self._on_edit)
-        return actor
-
     def __get_value(self):
         return getattr(self.contact, '_attr_%s_' % self.field.name, None)
 
@@ -202,24 +193,6 @@ class Contact(tichy.Item):
         """
         return self.name.view(parent, **kargs)
 
-    def create_actor(self):
-        """Return an actor acting on this contact
-
-        :Returns: `tichy.Actor`
-        """
-        actor = tichy.Item.create_actor(self)
-        actor.new_action("Call").connect('activated', self._on_call)
-        actor.new_action("Edit").connect('activated', self._on_edit)
-        actor.new_action("Delete").connect('activated', self._on_delete)
-
-        for cls in Contact.subclasses:
-            if isinstance(self, cls):
-                continue
-            import_ = actor.new_action("Copy to %s" % cls.storage)
-            import_.connect('activated', self._on_copy_to, cls)
-
-        return actor
-
     def _on_copy_to(self, action, contact, view, cls):
         try:
             contact = yield cls.import_(self)
@@ -228,26 +201,6 @@ class Contact(tichy.Item):
             logger.error("can't import contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
                                "can't import the contact")
-
-    def _on_call(self, _action, contact, view):
-        if not self.tel:
-            yield tichy.Dialog(view.window, "Error", "Contact has no tel")
-        else:
-            caller = tichy.Service.get('Caller')
-            yield caller.call(view.window, contact.tel)
-
-    def _on_edit(self, item, contact, view):
-        editor = tichy.Service.get('EditContact')
-        yield editor.edit(self, view.window)
-
-    def _on_delete(self, item, contact, view):
-        try:
-            yield contact.delete()
-            yield tichy.Service.get('Contacts').remove(contact)
-        except Exception, ex:
-            logger.error("can't delete contact : %s", ex)
-            yield tichy.Dialog(view.window, "Error",
-                               "can't delete the contact")
 
     def delete(self):
         """delete the contact
