@@ -119,8 +119,13 @@ class I_O_App(tichy.Application):
         caller_service = tichy.Service.get('TeleCaller')
         caller_service.call("window", number, name).start()
     
-    def save_number(self, emission, source, param, contact):
-        print "Save number ", contact
+    def save_number(self, emission, source, param, number):
+        try:
+            contact = tichy.Service.get('Contacts').create(name="", tel=str(number))
+        except Exception,e:
+            print e
+        contact_edit_service = tichy.Service.get('ContactEdit')
+        contact_edit_service.edit_name(self.main, contact).start()
 
     def delete_log(self, emission, source, param, log):
         print "Delete Log ", log
