@@ -299,7 +299,7 @@ class PeopleApp(tichy.Application):
             # XXX: we should differentiate between different errors
             # DON'T raise here, as it will close the app and that only half way
             logger.error("Got error %s", ex)
-            yield tichy.Service.get('Dialog').error(self.main, ex)
+            yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
             # XXX: at this point we should show an error box or do something
 
         else:
@@ -320,7 +320,7 @@ class PeopleApp(tichy.Application):
             messages_service.remove(message).start()
         except Exception, ex:
             logger.error("Got error %s", str(ex))
-            #yield tichy.Service.get('Dialog').error(self.main, ex)
+            #yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
         else:
             #canvas.remove_all()
             emission.data['EdjeObject'].delete()

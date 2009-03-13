@@ -77,7 +77,8 @@ class DialogService(tichy.Service):
             msg : unicode
                 The message
         """
-        msg = unicode(msg) % args
+        assert isinstance(msg, basestring)
+        msg = msg % args
         logger.info("show %s dialog : %s", title, msg)
         yield Dialog(parent, title, msg)
 

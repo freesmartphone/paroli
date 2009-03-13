@@ -188,7 +188,7 @@ class Launcher_App(tichy.Application):
                 yield app(self.main, standalone=self.standalone)
             except Exception, ex:
                 logger.error("Error from app %s : %s", name, ex)
-                yield tichy.Service.get('Dialog').error(self.main, ex)
+                yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
             finally:
                 self.edje_obj.signal("switch_clock_off","*")
     

@@ -463,7 +463,7 @@ class EditText(tichy.Application):
             yield message.send()
         except Exception, ex:
             logger.error("Got error %s", ex)
-            yield tichy.Service.get('Dialog').error(self.main, ex)
+            yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
 
     def sign_counter(self, emission, signal, source):
         text = emission.part_text_get(source)
