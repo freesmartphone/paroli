@@ -6,6 +6,8 @@ fonts {
 images {
    image: "back.png" COMP;
    image: "save.png" COMP;
+   image: "minus.png" COMP;
+   image: "plus.png" COMP;
 
    image: "call.png" COMP;
    image: "end_call.png" COMP;

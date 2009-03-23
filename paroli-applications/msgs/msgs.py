@@ -71,7 +71,7 @@ class MsgsApp(tichy.Application):
 
         self.messages_list.add_callback("details", "*", self.open_msg_detail_window)
         
-        self.messages_list.add_callback("*", "embryo", self.self_test)
+        #self.messages_list.add_callback("*", "embryo", self.self_test)
         self.messages_list.add_callback("quick_reply", "*", self._quick_reply)
 
         self.messages_list.add_callback("save", "*", self.open_save_contact_window)
@@ -82,6 +82,8 @@ class MsgsApp(tichy.Application):
         sms = empty_sms()
         # self.edje_obj.add_callback("create_message", "message-items", self.open_enter_number, sms)
         self.edje_obj.add_callback("create_message", "message-items", self._on_create_message)
+        
+        self.edje_obj.add_callback("*", "paging", self.paging)
 
         self.main.connect('back_Msgs', self._close)
 
@@ -139,6 +141,13 @@ class MsgsApp(tichy.Application):
         else:
             args[1].signal('activate-blocker', '*')
             args[1].Edje.freeze()
+
+    def paging(self, emission, signal, source):
+        logger.info("paging called")
+        if signal == "up":
+            self.messages_list.paging(-1)
+        elif signal == "down":
+            self.messages_list.paging(1)
 
     ##DEBUG FUNCTIONS
     ## general output check
@@ -324,7 +333,7 @@ class EditNumber(tichy.Application):
         else:
             self.new_edje.Edje.size_set(480,580)
         self.new_edje.Edje.show()
-        self.new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.open_phone_book)
+        self.new_edje.Edje.signal_callback_add("num_field_pressed", "*", self.load_phone_book)
         self.new_edje.Edje.signal_callback_add("close_details", "*", self._on_back)
         self.new_edje.Edje.signal_callback_add("next-button", "*", self._on_next)
 
@@ -359,6 +368,43 @@ class EditNumber(tichy.Application):
     def _on_back(self, *args):
         self.emit('back')
 
+    ## open subwindow showing contact-list
+    def load_phone_book(self, emission, signal, source):
+        self.contact_service = tichy.Service.get('Contacts')
+        self.phone_book = self.contact_service.contacts
+        
+        ##cmp function for list sorting
+        def comp(m1, m2):
+            return cmp(str(m1.name).lower(), str(m2.name).lower())
+        
+        self.list_label = [('label','name'),('label-number','tel')]
+        self.phone_book_list = gui.EvasList(self.phone_book, self.main, self.edje_file, "message-contacts_item", self.list_label, comp)
+        
+        logger.debug("load phone book called")
+        new_edje = gui.EdjeWSwallow(self.main, self.edje_file, 'tele-people', "contacts-items", self.new_edje.Windows)
+        new_edje.Edje.name_set('contacts_list')
+        if self.standalone:
+            new_edje.Edje.pos_set(0,50)
+            new_edje.Edje.size_set(480,590)
+        else:
+            new_edje.Edje.size_set(480,580)
+        new_edje.show(3)
+        swallow = self.phone_book_list.get_swallow_object()
+        new_edje.embed(swallow,self.phone_book_list.box,"contacts-items")
+        #self.phone_book_list.add_callback("*", "*",self.self_test)
+        
+        self.phone_book_list.add_callback("add_contact", "*", self.fr_phonebook)
+        self.phone_book_list.add_callback("add_contact", "*", new_edje.delete)
+        new_edje.add_callback("*", "paging", self.phone_book_paging)
+        #self.new_edje.add_callback("*", "embryo", self.printer)
+        
+    def phone_book_paging(self, emission, signal, source):
+        logger.info("paging called")
+        if signal == "up":
+            self.phone_book_list.paging(-1)
+        elif signal == "down":
+            self.phone_book_list.paging(1)
+
     def open_phone_book(self, *args, **kargs):
         self.contact_service = tichy.Service.get('Contacts')
         self.phone_book = self.contact_service.contacts
@@ -384,6 +430,10 @@ class EditNumber(tichy.Application):
         logger.debug("contact chosen")
         number = str(contact.tel)
         self.new_edje.Edje.part_text_set('num_field-text', number)
+
+    def printer(self, *args, **kargs):
+        print args
+        print kargs
 
 class EditText(tichy.Application):
     """Edit the text of a message and then send it

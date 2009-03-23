@@ -55,6 +55,39 @@ group {
                visible: 1;
             }
          }
+           part{
+            name: "up_pager";
+            type: IMAGE;
+            description{ state: "default" 0.0;
+              visible:1;
+              rel1{
+                    relative: 0.5 0.06;
+                }
+                rel2 {
+                    relative: 0.75 0.15;
+                }
+               image {
+                  normal: "minus.png";
+               }
+            }
+          }
+           part{
+            name: "down_pager";
+            type: IMAGE;
+            description{ state: "default" 0.0;
+              visible:1;
+              rel1{
+                    relative: 0.76 0.06;
+                }
+                rel2 {
+                    relative: 1.0 0.15;
+                }
+               image {
+                  normal: "plus.png";
+               }
+            }
+          }
+         /*
          part{
             name:"contacts-items-clip";
             type:RECT;
@@ -90,15 +123,12 @@ group {
                   to: "base";
               }
             }
-           }
+           }*/
           part{
             name:"contacts-items";
-            clip_to:"contacts-items-clip";
             type:SWALLOW;
               description { 
               state: "default" 0.0;
-              min: 420 550;
-              max: 420 59000;
               color: 0 255 255 255;
               rel1 { 
                   relative: 0.0 0.0;
@@ -111,13 +141,7 @@ group {
                   to: "base";
               }
             }
-            
-            dragable{
-              x: 0 0 0;
-              y: 1 1 0;
-              confine: "base2";
-            }
-           }
+           }/*
            part{
             name:"contacts-items-touch";
             clip_to:"contacts-items-clip2";
@@ -143,7 +167,7 @@ group {
               events: "contacts-items";
               confine: "base";
             }
-           }
+           }*/
       }
       
       programs {
@@ -153,7 +177,22 @@ group {
                 signal: "mouse,up,1";
                 source: "add-button";
                 action: SIGNAL_EMIT "add_contact" "contacts-items";
-              }/*
+              }
+          program 
+              { 
+                    name: "up_pager";
+                    signal: "mouse,up,1";
+                    source: "up_pager";
+                    action: SIGNAL_EMIT "up" "paging";
+              }
+          program 
+              { 
+                    name: "down_pager";
+                    signal: "mouse,up,1";
+                    source: "down_pager";
+                    action: SIGNAL_EMIT "down" "paging";
+              }
+              /*
           program{
               name: "dragging";
               signal: "drag,start";
@@ -161,58 +200,58 @@ group {
               action: SIGNAL_EMIT "drag-start" "touch";
               after:"load";
           }*/
-          program{
-              name: "load";
-              signal: "*";
-              source: "python";
-              script{
-                  
-//                   new Float:dx;
-                  new Float:dy;
-                  new min_x;
-                  new buf[100];
-                  getsarg(0,buf,99);
-                  set_drag(PART:"contacts-items", 1.0, 1.0);
-
-                  new num = atoi(buf);
-
-                  if (num < 9 ){
-//                       new xtra = 0
-                      num = 0
-                  }else{
-                      emit(buf, "touch")
-                      num = 9 - num
-                      
-                    //                       new xtra = 540
-                  }
-                  
-                  new minus = 50 + num * 60
-                  new plus = 50 - num * 60
-//                   create custom state
-                  custom_state(PART:"base2", "default", 0.0);
-//                   set the value to what you want it to be
-                  set_state_val(PART:"base2", STATE_REL1_OFFSET, 0 , minus);
-                  set_state_val(PART:"base2", STATE_REL2_OFFSET, 0 , plus);
-//                   apply the new state
-                  set_state(PART:"base2", "custom", 0.0);
-
-//                   create custom state
-                  custom_state(PART:"contacts-items", "default", 0.0);
-//                   set the value to what you want it to be
-                  set_state_val(PART:"contacts-items", STATE_MIN, 420, atoi(buf) * 60);
-                  set_state_val(PART:"contacts-items", STATE_MAX, 420, atoi(buf) * 60);
-//                   apply the new state
-                  set_state(PART:"contacts-items", "custom", 0.0);                  
-                  
-                  get_state_val(PART:"contacts-items", STATE_MIN, dy, min_x)
-                  
-                  snprintf(buf, 100, "%d %d %d", plus, min_x, atoi(buf) * 60);
-//                   get_state(PART:"base2", buf, 100, dx);
-                  
+//           program{
+//               name: "load";
+//               signal: "*";
+//               source: "python";
+//               script{
+//                   
+// //                   new Float:dx;
+//                   new Float:dy;
+//                   new min_x;
+//                   new buf[100];
+//                   getsarg(0,buf,99);
+//                   set_drag(PART:"contacts-items", 1.0, 1.0);
+// 
+//                   new num = atoi(buf);
+// 
+//                   if (num < 9 ){
+// //                       new xtra = 0
+//                       num = 0
+//                   }else{
+//                       emit(buf, "touch")
+//                       num = 9 - num
+//                       
+//                     //                       new xtra = 540
+//                   }
+//                   
+//                   new minus = 50 + num * 60
+//                   new plus = 50 - num * 60
+// //                   create custom state
+//                   custom_state(PART:"base2", "default", 0.0);
+// //                   set the value to what you want it to be
+//                   set_state_val(PART:"base2", STATE_REL1_OFFSET, 0 , minus);
+//                   set_state_val(PART:"base2", STATE_REL2_OFFSET, 0 , plus);
+// //                   apply the new state
+//                   set_state(PART:"base2", "custom", 0.0);
+// 
+// //                   create custom state
+//                   custom_state(PART:"contacts-items", "default", 0.0);
+// //                   set the value to what you want it to be
+//                   set_state_val(PART:"contacts-items", STATE_MIN, 420, atoi(buf) * 60);
+//                   set_state_val(PART:"contacts-items", STATE_MAX, 420, atoi(buf) * 60);
+// //                   apply the new state
+//                   set_state(PART:"contacts-items", "custom", 0.0);                  
+//                   
+//                   get_state_val(PART:"contacts-items", STATE_MIN, dy, min_x)
+//                   
+//                   snprintf(buf, 100, "%d %d %d", plus, min_x, atoi(buf) * 60);
+// //                   get_state(PART:"base2", buf, 100, dx);
+//                   
+// //                   emit(buf,"touch");
+// //                   emit("drag-start","touch");
 //                   emit(buf,"touch");
-//                   emit("drag-start","touch");
-                  emit(buf,"touch");
-              }
-          }
+//               }
+//           }
       }
 }

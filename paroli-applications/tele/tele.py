@@ -134,7 +134,7 @@ class DialerApp(tichy.Application):
         number = emission.part_text_get(param)
         if number == None or len(number) == 0:
             logger.debug("no number found")
-            self.load_elm_phone_book( emission, source, param )
+            self.load_phone_book( emission, source, param )
         else :
             logger.debug("number found")
             self.add_contact_window( emission, source, param )
@@ -175,6 +175,14 @@ class DialerApp(tichy.Application):
         
         self.phone_book_list.add_callback("call_contact", "tele", self.call_fr_phonebook)
         self.phone_book_list.add_callback("call_contact", "tele", new_edje.delete)
+        self.phone_book_list.add_callback("*", "paging", self.paging)
+        
+    def paging(self, emission, signal, source):
+        logger.info("paging called")
+        if signal == "up":
+            self.phone_book_list.paging(-1)
+        elif signal == "down":
+            self.phone_book_list.paging(1)
 
     ## open subwindow showing contact-list
     def load_elm_phone_book(self, emission, signal, source):

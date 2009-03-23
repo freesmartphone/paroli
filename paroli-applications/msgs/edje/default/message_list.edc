@@ -86,6 +86,38 @@ group { name: "messages";
             }
            }
            part{
+            name: "up_pager";
+            type: IMAGE;
+            description{ state: "default" 0.0;
+              visible:1;
+              rel1{
+                    relative: 0.5 0.06;
+                }
+                rel2 {
+                    relative: 0.75 0.15;
+                }
+               image {
+                  normal: "minus.png";
+               }
+            }
+          }
+           part{
+            name: "down_pager";
+            type: IMAGE;
+            description{ state: "default" 0.0;
+              visible:1;
+              rel1{
+                    relative: 0.76 0.06;
+                }
+                rel2 {
+                    relative: 1.0 0.15;
+                }
+               image {
+                  normal: "plus.png";
+               }
+            }
+          }
+           part{
             name: "blocker";
             type: RECT;
             description{ state: "default" 0.0;
@@ -120,6 +152,20 @@ group { name: "messages";
                     signal: "mouse,up,1";
                     source: "add-button";
                     action: SIGNAL_EMIT "create_message" "message-items";
+              }
+          program 
+              { 
+                    name: "up_pager";
+                    signal: "mouse,up,1";
+                    source: "up_pager";
+                    action: SIGNAL_EMIT "up" "paging";
+              }
+          program 
+              { 
+                    name: "down_pager";
+                    signal: "mouse,up,1";
+                    source: "down_pager";
+                    action: SIGNAL_EMIT "down" "paging";
               }
           program 
               { 

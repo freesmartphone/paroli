@@ -9,6 +9,8 @@ styles
 
 images {
    image: "Back_button.png" COMP;
+   image: "minus.png" COMP;
+   image: "plus.png" COMP;
    image: "Save_button.png" COMP;
 }
 

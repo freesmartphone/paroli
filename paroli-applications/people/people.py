@@ -89,6 +89,7 @@ class PeopleApp(tichy.Application):
         #sms_service = tichy.Service.get('SMS')
         #contact = empty_contact()
         self.edje_obj.add_callback("add_contact", "*", self.edit_number, empty_contact())
+        self.edje_obj.add_callback("*", "paging", self.paging)
 
         if self.standalone:
             self.edje_obj.Edje.size_set(480,590)
@@ -129,6 +130,13 @@ class PeopleApp(tichy.Application):
 
     def delete_callback(self, emission, signal, source, item, oid):
         item.disconnect(oid)
+
+    def paging(self, emission, signal, source):
+        logger.info("paging called")
+        if signal == "up":
+            self.contacts_list.paging(-1)
+        elif signal == "down":
+            self.contacts_list.paging(1)
 
     #deleting
     def delete_contact(self, emission, signal, source, item):

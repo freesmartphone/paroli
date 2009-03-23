@@ -401,6 +401,7 @@ class EvasList(tichy.Object):
           self.callbacks = []
           self.sort()
           self.items = []
+          self.page_size = 1.0
           if self.EdjeFrame != None:
               self.EdjeFrame.Edje.signal_emit(str(len(self.model)),"python")
     
@@ -423,12 +424,15 @@ class EvasList(tichy.Object):
           ## hide scrollbars
           self.scrollbox.policy_set(2, 2)
           ## make it dragable
-          self.scrollbox.dragable_set(True)
+          self.scrollbox.dragable_set(False)
           ## make it non-bouncing
-          self.scrollbox.drag_bouncy_set(True)
+          self.scrollbox.drag_bouncy_set(False)
           #scrollbox.add_with_viewport(self.box)
           self.scrollbox.drag_damping_set(0)
           #get scrollbar value
+          self.calc_value()
+          
+          self.vscrollbar = self.scrollbox.vscrollbar_get()
           #scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
           #logger.info(scrollbox.drag_damping_get())
           return self.scrollbox
@@ -512,6 +516,9 @@ class EvasList(tichy.Object):
           
           self.sort()
           self.box.remove_all()
+          
+          self.calc_value()
+          
           del self.items
           self.items = []
           for item in self.model:
@@ -535,6 +542,25 @@ class EvasList(tichy.Object):
           logger.info("list sorting")
           self.model.sort(self._comp_fct)
 
+      def calc_value(self, *args, **kargs):
+          item_count = len(self.model)
+          pages = max( ( len( self.model ) - 1 ) / 6 + 1, 1 )
+          self.page_size = 1.0 / pages
+
+      def paging(self, delta):
+          new_value = delta * 360.0
+          length = len(self.model) * 60
+          old_value = self.vscrollbar.value_get()
+          if ((old_value + new_value) > length):
+              new_value = length
+          elif ((old_value + new_value) < 0.0):
+              new_value = 0.0
+          else:
+              new_value = old_value + new_value
+          logger.info("old: %f ,new: %f ,length: %d", old_value, new_value, length)
+          self.vscrollbar.value_set( new_value )
+          self.vscrollbar.redraw_queue()
+
 class entry:
     """deprecated use Edit instead"""
     def __init__(self,text='Unknown',pw=False):
@@ -542,51 +568,96 @@ class entry:
         self.entry.text = text
         self.entry.password_mode_set(False)
 
-class elm_window():
+class elm_window(tichy.Object):
     def __init__(self,title="None"):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
         self.elm_obj.autodel_set(True)
         
-class elm_layout():
+class elm_layout(tichy.Object):
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
         self.elm_obj = elementary.Layout(win.elm_obj)
         self.elm_obj.file_set(edje_file, group)
-        self.elm_obj.size_hint_weight_set(x, y)
-        win.elm_obj.resize_object_add(self.elm_obj)
         self.elm_obj.show()
-        
+        self.add_callback("*", "main_command", self.relay)
+    
+    def relay(self, emission, signal, source):
+        print "emitting %s" % (signal)
+        self.emit(signal)
+    
     def add(self, part, element):
         self.elm_obj.content_set(part, element)
 
-class elm_scroller():
+    def add_callback(self, signal, source, func):
+        self.elm_obj.edje_get().signal_callback_add(signal, source, func)
+
+    def delete(self, *args, **kargs):
+        self.elm_obj.delete()
+
+class elm_scroller(tichy.Object):
     def __init__(self, win):
         self.elm_obj = elementary.Scroller(win.elm_obj)
         self.elm_obj.size_hint_weight_set(1.0, 1.0)
         self.elm_obj.size_hint_align_set(-1.0, -1.0)
         self.elm_obj.show()
         
-class elm_box():
+class elm_box(tichy.Object):
     def __init__(self, win):
         self.elm_obj = elementary.Box(win)
         
-class elm_list_window():
-    def __init__(self, edje_file, group, swallow ,sx, sy):
-        self.window = elm_window()
-        self.window.elm_obj.resize(sx,sy)
+class elm_layout_window(tichy.Object):
+    def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False):
+        self.window = elm_window()  
         self.window.elm_obj.show()
         
+        if tb == True:
+            self.bg = elm_layout(self.window, edje_file, "bg-tb-on")
+            self.tb_layout = elm_layout(self.window, edje_file, "tb")
+            self.bg.elm_obj.content_set("tb-swallow", self.tb_layout.elm_obj)
+            self.tb_layout.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.delete)
+        
+        else:
+            self.bg = elm_layout(self.window, edje_file, "bg-tb-off")
+        
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
-        #self.main_layout.elm_obj.edje_get().size_set(sx,sy)
-        #self.main_layout.elm_obj.edje_get().pos_set(480-int(sx),640-int(sy))
-        self.main_layout.elm_obj.geometry_set(480-int(sx),640-int(sy),sx,sy)
         self.scroller = elm_scroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
-      
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+        self.window.elm_obj.resize_object_add(self.bg.elm_obj)
+        self.bg.elm_obj.show()
+
     def delete(self, *args, **kargs):
-      self.window.elm_obj.delete()
-      #self.box = elm_box(self.window)
-      #self.scroller.elm_obj.content_set(self.box.elm_obj)
+        self.window.elm_obj.delete()
+        
+    def printer(self, *args, **kargs):
+        print args
+        
+    def restore_orig(self, *args, **kargs):
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+   
+    def empty_window(self, *args, **kargs):
+        self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
+   
+class elm_list_window(elm_layout_window):
+    def __init__(self, edje_file, group, swallow , sx=None, sy=None, tb=False):
+        self.window = elm_window()  
+        self.window.elm_obj.show()
+        
+        if tb == True:
+            self.bg = elm_layout(self.window, edje_file, "bg-tb-on")
+            self.tb_layout = elm_layout(self.window, edje_file, "tb")
+            self.bg.elm_obj.content_set("tb-swallow", self.tb_layout.elm_obj)
+            self.tb_layout.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.delete)
+            
+        else:
+            self.bg = elm_layout(self.window, edje_file, "bg-tb-off")
+        
+        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.scroller = elm_scroller(self.window)
+        self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+        self.window.elm_obj.resize_object_add(self.bg.elm_obj)
+        self.bg.elm_obj.show()
       
 class elm_list(tichy.Object):
       def __init__(self, model, Parent, EdjeFile, EdjeGroup, label_list, comp_fct):
@@ -599,6 +670,7 @@ class elm_list(tichy.Object):
           self.label_list = label_list    
           self._comp_fct = comp_fct
           self.monitor(self.model, 'appended', self._redraw_view)
+          self.monitor(self.model, 'inserted', self._redraw_view)
           self.monitor(self.model, 'removed', self._redraw_view)
           self.box = elm_box(self.Elm_win.elm_obj)
           self.callbacks = []
@@ -610,8 +682,9 @@ class elm_list(tichy.Object):
           logger.info("list redrawing")
           
           self.sort()
-          self.box.elm_obj.delete()
-          del self.items
+          #if self.box.elm_obj.is_deleted() == False:
+              #self.box.elm_obj.delete()
+          #del self.items
           self.box = elm_box(self.Elm_win.elm_obj)
           self.items = []
           for item in self.model:
@@ -628,6 +701,25 @@ class elm_list(tichy.Object):
                     txt = unicode(value).encode('utf-8')
                     edje_obj.part_text_set(part,txt)
 
+              ##check for optional display elements
+              if edje_obj.data_get('attribute1') != None:
+                  attribute = edje_obj.data_get('attribute1')
+                  if edje_obj.data_get('attribute2') != None:
+                      item_cp = getattr(item,attribute)
+                      attribute = edje_obj.data_get('attribute2')
+                  else:  
+                      item_cp = item
+                  if edje_obj.data_get('value') == 'None':
+                      value = None
+                  else:
+                      value = edje_obj.data_get('value')
+                  signal = edje_obj.data_get('signal')
+                  if attribute[-2] == "(":
+                      test = getattr(item_cp,attribute[:-2])()
+                  else:
+                      test = getattr(item_cp,attribute)
+                  if test == value:
+                      edje_obj.signal_emit(signal,'*')
 
               ly.size_hint_min_set(470,60)
               self.box.elm_obj.pack_end(ly)
@@ -731,7 +823,7 @@ class elm_list(tichy.Object):
       def add_callback(self, signal, source, func):
           self.callbacks.append([signal, source, func])
           for i in self.items:
-              print i[1]
+              #print i[1]
               i[1].signal_callback_add(signal, source , func, i)
 
       

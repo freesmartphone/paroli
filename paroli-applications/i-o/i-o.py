@@ -60,6 +60,9 @@ class I_O_App(tichy.Application):
         self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'i-o', "history-items")
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
+        
+        self.edje_obj.add_callback("*", "paging", self.paging)
+        
         self.edje_obj.embed(self.history_swallow, self.callLogsView.box, "history-items")
         if self.standalone:
             self.edje_obj.Edje.size_set(480,550)
@@ -90,6 +93,13 @@ class I_O_App(tichy.Application):
     def set_list(self, list):
         for item in list.items:
             self.set_item(item)
+
+    def paging(self, emission, signal, source):
+        logger.info("paging called")
+        if signal == "up":
+            self.callLogsView.paging(-1)
+        elif signal == "down":
+            self.callLogsView.paging(1)
         
     def set_item(self, item):
         log = item[0]
