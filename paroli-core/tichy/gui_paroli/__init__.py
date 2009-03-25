@@ -669,29 +669,44 @@ class elm_list(tichy.Object):
           self.Elm_win = Parent.window
           self.label_list = label_list    
           self._comp_fct = comp_fct
-          self.monitor(self.model, 'appended', self._redraw_view)
-          self.monitor(self.model, 'inserted', self._redraw_view)
-          self.monitor(self.model, 'removed', self._redraw_view)
+          self.cb_list = []
+          #self.monitor(self.model, 'appended', self._redraw_view)
+          #self.monitor(self.model, 'inserted', self._redraw_view)
+          #self.monitor(self.model, 'removed', self._redraw_view)
+          self.cb_list.append(self.model.connect('appended', self._redraw_view))
+          self.cb_list.append(self.model.connect('inserted', self._redraw_view))
+          self.cb_list.append(self.model.connect('removed', self._redraw_view))
           self.box = elm_box(self.Elm_win.elm_obj)
           self.callbacks = []
           self.sort()
           self.items = []
           self._redraw_view()
+          self.Elm_win.elm_obj.on_del_add(self._remove_cb)
+    
     
       def _redraw_view(self,*args,**kargs):
           logger.info("list redrawing")
           
           self.sort()
+          logger.info("sorted")
           #if self.box.elm_obj.is_deleted() == False:
               #self.box.elm_obj.delete()
-          #del self.items
-          self.box = elm_box(self.Elm_win.elm_obj)
+          print self.Elm_win.elm_obj
+          logger.info("deleted")
+          bobby = self.Elm_win.elm_obj
+          self.box = elm_box(bobby)
           self.items = []
+          logger.info("box and items generated")
           for item in self.model:
-              ly = elementary.c_elementary.Layout(self.Elm_win.elm_obj)
+              if bobby.is_deleted() == True:
+                  logger.info("window deleted")
+              ly = elementary.Layout(bobby)
+              #logger.info("layout there")
               ly.file_set(self.EdjeFile, self.EdjeGroup)              
-              
+              #logger.info("file set")
               edje_obj = ly.edje_get()
+              
+              #logger.info("edje gotten")
               
               for part, attribute in self.label_list:
                 if hasattr(item, attribute):
@@ -700,6 +715,8 @@ class elm_list(tichy.Object):
                         value = unicode(value.get_text())
                     txt = unicode(value).encode('utf-8')
                     edje_obj.part_text_set(part,txt)
+              
+              #logger.info("labels set")
 
               ##check for optional display elements
               if edje_obj.data_get('attribute1') != None:
@@ -725,14 +742,17 @@ class elm_list(tichy.Object):
               self.box.elm_obj.pack_end(ly)
               ly.show()
               self.items.append([item,edje_obj,ly])
-              
+          
+          #logger.info("all items there")
           self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
           self.box.elm_obj.show()
+          #logger.info("content set and obj shown")
           self.parent.scroller.elm_obj.show()
+          #logger.info("2nd obj shown")
           self._renew_callbacks()
 
       def generate_single_item(self, item):
-          
+          logger.info("generating single item")
           #canvas_obj = etk.Canvas()
           #edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
           #canvas_obj.object_add(edje_obj.Edje)
@@ -781,9 +801,10 @@ class elm_list(tichy.Object):
           #self.box.show_all()
 
       def _renew_callbacks(self, *args, **kargs):
+          logger.info("renewing callbacks")
           for cb in self.callbacks:
                 for i in self.items:
-                    print i[1]
+                    #print i[1]
                     i[1].signal_callback_add(cb[0], cb[1] , cb[2], i)
 
       def sort(self,*args,**kargs):
@@ -791,6 +812,11 @@ class elm_list(tichy.Object):
           self.model.sort(self._comp_fct)
     
     
+      def _remove_cb(self, *args, **kargs):
+          logger.debug('window removed, removing cb')
+          for i in self.cb_list :
+              self.model.disconnect(i)
+      
       def _modified(self, *args, **kargs):
           logger.info('scrolled')
           logger.info(args)
