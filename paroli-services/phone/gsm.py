@@ -72,8 +72,8 @@ class GSMService(tichy.Service):
         super(GSMService, self).__init__()
         self.logs = tichy.List()
         self.missed_call_count = tichy.Int(0)
-        self._load_logs()
         self.logs.connect('modified', self._on_logs_modified)
+        self._load_logs()
 
     def init(self):
         """This must return a Tasklet"""
@@ -89,7 +89,7 @@ class GSMService(tichy.Service):
     def _save_logs(self):
         """Save the logs into a file"""
         logger.info("Saving call logs")
-        data = [c.to_dict() for c in self.logs]
+        data = [c.to_dict() for c in self.logs[:29]]
         tichy.Persistance('calls/logs').save(data)
 
     def _load_logs(self):
@@ -333,13 +333,17 @@ class TestGsm(GSMService):
 
     def __init__(self):
         super(TestGsm, self).__init__()
-        self.logs.append(Call('0478657392'))
+        #self.logs.append(Call('0478657392'))
 
     def init(self):
         """register on the network"""
         logger.info("Turn on antenna power")
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
+        if len(self.logs) == 0:    
+            for i in range(3):
+                call = Call('0049110', direction='out')
+                self.logs.insert(0, call)
         yield None
 
     def create_call(self, number, direction='out'):
