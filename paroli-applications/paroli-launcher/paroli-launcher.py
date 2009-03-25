@@ -120,7 +120,7 @@ class Launcher_App(tichy.Application):
         self.power = tichy.Service.get('Power')
         self.power.connect('battery_capacity', self.battery_capacity)
         self.power.connect('battery_status', self.battery_status)
-        self.battery_capacity(0,10)
+        #self.battery_capacity(0,10)
         
         self.button = tichy.Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
