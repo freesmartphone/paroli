@@ -684,28 +684,35 @@ class elm_list(tichy.Object):
           self.Elm_win.elm_obj.on_del_add(self._remove_cb)
     
     
-      def _redraw_view(self,*args,**kargs):
+      def _redraw_view(self, *args, **kargs):
           logger.info("list redrawing")
-          
+          print self.label_list
           self.sort()
-          logger.info("sorted")
-          #if self.box.elm_obj.is_deleted() == False:
-              #self.box.elm_obj.delete()
-          print self.Elm_win.elm_obj
-          logger.info("deleted")
-          bobby = self.Elm_win.elm_obj
-          self.box = elm_box(bobby)
+          #logger.info("sorted")
+          if self.box.elm_obj.is_deleted() == False:
+              self.box.elm_obj.delete()
+          #print self.Elm_win.elm_obj
+          #logger.info("deleted")
+          #bobby = self.Elm_win.elm_obj
+          self.box = elm_box(self.Elm_win.elm_obj)
           self.items = []
-          logger.info("box and items generated")
+          testcounter = 0
+          #logger.info("box and items generated")
           for item in self.model:
-              if bobby.is_deleted() == True:
+              if self.Elm_win.elm_obj.is_deleted() == True:
                   logger.info("window deleted")
-              ly = elementary.Layout(bobby)
+              ly = elementary.Layout(self.Elm_win.elm_obj)
               #logger.info("layout there")
               ly.file_set(self.EdjeFile, self.EdjeGroup)              
               #logger.info("file set")
               edje_obj = ly.edje_get()
               
+              #if testcounter == 0:
+                  #print dir(item)
+                  #print item.get_text()
+                  #print item.number.get_text()
+                  #print item.number.get_contact()
+                  #testcounter += 1
               #logger.info("edje gotten")
               
               for part, attribute in self.label_list:
