@@ -30,7 +30,7 @@ import ecore
 class I_O_App(tichy.Application):
     name = 'I/O'
     icon = 'icon.png'
-    category = 'launcher' # So that we see the app in the launcher
+    category = 'main' # So that we see the app in the launcher
     launcher_info = [tichy.Service.get('GSM').missed_call_count]
     layer = 0
     
