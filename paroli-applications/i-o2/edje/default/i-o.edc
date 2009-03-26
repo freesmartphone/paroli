@@ -1,0 +1,30 @@
+fonts {
+   font: "Inspiration-Bold.ttf"   "Sans";
+}
+
+images {
+   image: "Edit.png" COMP;
+   image: "Save.png" COMP;
+   image: "Done.png" COMP;
+   image: "Delete.png" COMP;
+}
+
+styles
+{
+    style 
+    {
+      name: "textblock_style";
+      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+    }
+}
+
+collections
+{
+    #include "topbar.edc"
+    #include "list.edc"
+    #include "item.edc"
+    #include "messaging.edc"
+    #include "edit_contact_name.edc"
+    #include "create_message.edc"
+}
+
