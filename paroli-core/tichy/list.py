@@ -85,6 +85,13 @@ class List(list, Item):
         self.emit('removed', value)
         self.emit('modified')
 
+    def remove_group(self, value_list):
+        """Remove group of items from the list"""
+        for value in value_list:
+            list.remove(self, value)
+        self.emit('removed', value_list[0])
+        self.emit('modified')
+  
     def sort(self, *args, **kargs):
         """Sort the list inplace"""
         list.sort(self, *args, **kargs)
