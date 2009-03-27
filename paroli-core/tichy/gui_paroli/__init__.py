@@ -582,7 +582,7 @@ class elm_layout(tichy.Object):
         self.add_callback("*", "main_command", self.relay)
     
     def relay(self, emission, signal, source):
-        print "emitting %s" % (signal)
+        #print "emitting %s" % (signal)
         self.emit(signal)
     
     def add(self, part, element):
@@ -592,6 +592,7 @@ class elm_layout(tichy.Object):
         self.elm_obj.edje_get().signal_callback_add(signal, source, func)
 
     def delete(self, *args, **kargs):
+        self.elm_obj.hide()
         self.elm_obj.delete()
 
 class elm_scroller(tichy.Object):
@@ -643,14 +644,7 @@ class elm_list_window(elm_layout_window):
         self.window = elm_window()  
         self.window.elm_obj.show()
         
-        if tb == True:
-            self.bg = elm_layout(self.window, edje_file, "bg-tb-on")
-            self.tb_layout = elm_layout(self.window, edje_file, "tb")
-            self.bg.elm_obj.content_set("tb-swallow", self.tb_layout.elm_obj)
-            self.tb_layout.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.delete)
-            
-        else:
-            self.bg = elm_layout(self.window, edje_file, "bg-tb-off")
+        self.bg = tichy.Service.get("TopBar").create(self.window, self.delete, tb)
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = elm_scroller(self.window)
@@ -686,7 +680,7 @@ class elm_list(tichy.Object):
     
       def _redraw_view(self, *args, **kargs):
           logger.info("list redrawing")
-          print self.label_list
+          #print self.label_list
           self.sort()
           #logger.info("sorted")
           if self.box.elm_obj.is_deleted() == False:

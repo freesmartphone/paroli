@@ -30,24 +30,14 @@ import ecore.evas
 from tichy.tasklet import WaitFirst, Wait
 
 
-class PeopleApp(tichy.Application):
-    name = 'People2'
+class People2App(tichy.Application):
+    name = 'People'
     icon = 'icon.png'
-    category = 'launcher2' # So that we see the app in the launcher
+    category = 'launcher' # So that we see the app in the launcher
 
     def run(self, parent, standalone=False):
 
         self.standalone = tichy.config.getboolean('standalone',                                               'activated', False)
-
-        ##create main edje object, the evas object used to generate edje objects
-        self.main = parent
-
-    #try:
-        ##set the title of the window
-        if self.main.etk_obj.title_get() != 'Home':
-            self.main.etk_obj.title_set('People')
-            self.main.etk_obj.show()
-
 
         ##set edje file to be used
         ##TODO: make one edje file per plugin
@@ -55,70 +45,271 @@ class PeopleApp(tichy.Application):
 
         ##get message service and list of all messages
         self.contact_service = tichy.Service.get('Contacts')
-
         self.contacts = self.contact_service.contacts
 
         ##sort contact by date
         def comp(m1, m2):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
 
-        self.edje_obj = gui.EdjeWSwallow(self.main, self.edje_file, 'people', "contacts-items")
+        ##generate app-window
+        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.edje_obj = self.window.main_layout
 
         self.list_label = [('label','name')]
-        self.contacts_list = gui.EvasList(self.contacts, self.main, self.edje_file, "contacts_item", self.list_label, comp, self.edje_obj)
+        self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
+       
+        self.item_list.add_callback("contact_details", "*", self.contact_details)
+        #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
+        #self.item_list.add_callback("*", "embryo", self.self_test)
+        self.item_list.add_callback("create_message", "*", self.create_msg)
+        
+        self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
-        self.contacts_swallow = self.contacts_list.get_swallow_object()
-
-        self.contacts_list.add_callback("contact_details", "contacts", self.open_detail_window)
-
-        self.edje_obj.embed(self.contacts_swallow,self.contacts_list.box,"contacts-items")
-
-        #self.contacts_list.connect('redrawing', self._redrawing)
-
-        self.contacts_list.add_callback("mouse,clicked,1", "*", self.self_test)
-        self.contacts_list.add_callback("*", "embryo", self.self_test)
-        self.contacts_list.add_callback("create_message", "*", self.create_message)
-
-        #po = self.edje_obj.Edje.part_object_get("base2")
-        #print dir(self.edje_obj.Edje)
-        #po.geometry_set(0, -220, 440, 200)
-        #print po.geometry_get()
-        #po.top_left_set(0, -220)
-        #print po.top_left_get()
-        #self.edje_obj.Edje.part_drag_value_set("contacts-items", 1.0, 1.0)
-        #sms_service = tichy.Service.get('SMS')
-        #contact = empty_contact()
-        self.edje_obj.add_callback("add_contact", "*", self.edit_number, empty_contact())
-        self.edje_obj.add_callback("*", "paging", self.paging)
-
-        if self.standalone:
-            self.edje_obj.Edje.size_set(480,590)
-            self.edje_obj.Edje.pos_set(0, 50)
-        else:
-            self.edje_obj.Edje.size_set(480,580)
-
-        self.edje_obj.show()
+        #self.edje_obj.show()
 
         ##wait until main object emits back signal or delete is requested
-        yield tichy.WaitFirst(tichy.Wait(self.main, 'delete_request'),tichy.Wait(self.main, 'back_People'))
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back_People'))
         logger.info('People closing')
-        self.main.emit('closed')
-        ##remove all children -- edje elements
-
-    #finally:
-        if self.standalone:
-          #try:
-          self.edje_obj.delete()
-        else:
-            self.edje_obj.delete()
-            if tichy.config.get('autolaunch','application') != 'Paroli-Launcher':
-                    self.main.etk_obj.hide()   # Don't forget to close the window
+        #self.main.emit('closed')
+        
+        del self.item_list
+        self.window.delete()
                     
     ##DEBUG FUNCTIONS
     ## general output check
     def self_test(self, *args, **kargs):
         txt = "self test called with args: ", args, "and kargs: ", kargs
         logger.info(txt)
+
+    def create_contact(self, emission, source, param):
+        service = tichy.Service.get('ContactCreate')
+        service.create(self.window).start()
+    
+    def contact_details(self, emission, source, param, item):
+        number = str(item[0].tel)
+        name = str(item[0].name)
+        detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "contact_details")              
+        edje_obj = detail_layout.elm_obj.edje_get()
+        edje_obj.part_text_set('name-text',str(name).encode('utf8'))
+        edje_obj.part_text_set('number-text',str(number).encode('utf8'))
+        detail_layout.elm_obj.show()
+        self.window.main_layout.elm_obj.hide()
+        self.window.bg.elm_obj.content_set("content-swallow", detail_layout.elm_obj)
+        
+        def _update_values(*args, **kargs):
+            contact = args[0]
+            edje = args[1]
+            edje.part_text_set('name-text',str(contact.name).encode('utf8'))
+            edje.part_text_set('number-text',str(contact.tel).encode('utf8'))
+            self.contacts.emit("inserted")
+
+        oid = item[0].connect('modified', _update_values, edje_obj)
+        
+        ##add callback for delete button
+        edje_obj.signal_callback_add("delete_contact", "*", self.delete_contact, item[0], detail_layout)
+        
+        ##add callback for edit buttons
+        edje_obj.signal_callback_add("*", "edit", self.edit_contact, item[0], detail_layout)
+        
+        ##add callback for calling
+        edje_obj.signal_callback_add("call_contact", "*", self.call_contact, item[0])
+        
+        ##add callbacks for back button
+        edje_obj.signal_callback_add("close_details", "*", detail_layout.delete)
+        edje_obj.signal_callback_add("close_details", "*", self.window.restore_orig)
+    
+    #editing
+    def edit_contact(self, emission, signal, source, contact, layout):
+        service = tichy.Service.get('ContactCreate')
+        service.create(self.window, "", "", contact, signal, layout).start()
+    
+    def call_contact(self, emission, source, param, contact):
+        number = contact.tel.value
+        name = unicode(contact)
+        caller_service = tichy.Service.get('TeleCaller')
+        caller_service.call("window", number, name).start()
+    
+    #deleting
+    def delete_contact(self, emission, signal, source, item, layout):
+        logger.info("delete contact called")
+        try:
+            self.contact_service.remove(item)
+        except Exception, ex:
+            logger.error("Got error %s", str(ex))
+        else:
+            layout.delete()
+            self.window.restore_orig()
+    
+    def create_msg(self, emission, source, param, item):
+        service = tichy.Service.get('MessageCreate')
+        service.write(self.window, item[0].tel).start()
+
+##Service to store some info
+class ContactCreate(tichy.Service):
+    service = 'ContactCreate'
+
+    def __init__(self):
+        super(ContactCreate, self).__init__()
+    
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield self._do_sth()
+        
+    def _do_sth(self):
+        pass    
+        
+    def create(self, window, number="", name="", contact=None, mode=None, layout=None):
+        return CreateContact(window, number, name, contact, mode, layout)
+
+class CreateContact(tichy.Application):
+    
+    name = 'CreateContactApp'
+    
+    def run(self, parent, number, name, contact, mode, layout, *args, **kargs):
+        try:
+          self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
+          number_layout = 0
+          text_layout = 0
+          send = 0
+          
+          if contact != None:
+              name = str(contact.name)
+              number = str(contact.tel)
+              layout.elm_obj.hide()
+          
+          if number == "":
+              full = True
+          else:
+              full = False
+          
+          while True:
+          
+              if full or mode == "number":
+                  parent.window.elm_obj.keyboard_win_set(False)
+                  
+                  if number_layout == 0:
+                    
+                      number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
+                      
+                      edje_obj = number_layout.elm_obj.edje_get()
+                  
+                      edje_obj.part_text_set('num_field-text', number)
+                  
+                      number_layout.elm_obj.show()
+                      
+                      parent.main_layout.elm_obj.hide()
+                  
+                  else:
+                      
+                      number_layout.elm_obj.show()
+                  
+                  parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
+                  
+                  i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
+              
+                  if i == 0: #back
+                      print "breaking"
+                      break
+                      
+                  if i == 1: #next
+                      number_layout.elm_obj.hide()
+                      number = edje_obj.part_text_get('num_field-text') 
+                      if mode == "number":
+                          send = 1
+                          break
+              
+              if mode != "number":
+                if text_layout == 0:
+                
+                    text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
+                    
+                    edje_obj = text_layout.elm_obj.edje_get()
+                    
+                    text_layout.elm_obj.show()
+                    
+                    parent.main_layout.elm_obj.hide()
+                    
+                    textbox = gui.elementary.Entry(parent.window.elm_obj)
+                    textbox.single_line_set(True)
+            
+                    textbox.color_set(255, 255, 255, 255)
+                    
+                    textbox.entry_set(name)
+                    
+                    textbox.size_hint_weight_set(1.0, 1.0)
+                    text_layout.elm_obj.content_set('entry', textbox)
+                    textbox.editable_set(True)        
+                
+                else:
+                    text_layout.elm_obj.show()
+                
+                parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
+                
+                textbox.focus()
+                textbox.show()
+                
+                i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
+                
+                if i == 0: #back
+                    if full:
+                        text_layout.elm_obj.hide()
+                        continue
+                    else:
+                        break
+                if i == 1: #save
+                    send = 1
+                    break
+            
+          logger.info("broke loop")
+          
+          if send == 1:
+              logger.info("send is one")
+              if text_layout:
+                text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+              contacts_service = tichy.Service.get('Contacts')
+              if contact not in contacts_service.contacts:
+                  name = str(textbox.entry_get()).replace("<br>","")
+                  new_contact = contacts_service.create(name.strip(),tel=str(number))
+                  contacts_service.add(new_contact)
+                  contacts_service.contacts.emit('inserted')
+              else:
+                  logger.info("updating contact")
+                  if mode == "name":
+                      name = str(textbox.entry_get()).replace("<br>","")
+                      logger.info("updating name")
+                      contact.name = name.strip()
+                  elif mode == "number":
+                      logger.info("updating number")
+                      contact.tel = number
+                      
+                  layout.elm_obj.show()
+          
+          parent.window.elm_obj.keyboard_win_set(False)
+          
+          if number_layout:
+              number_layout.delete()
+              
+          if text_layout:
+              text_layout.delete()
+          
+          parent.restore_orig()    
+          
+          ret = "done"
+          
+          yield ret
+          
+        except Exception, e:
+            print e
+            print Exception
+    
+    def callback(self, *args, **kargs):
+        print args
+        print kargs
+    
+    def err_callback(self, *args, **kargs):
+        print args
+        print kargs
+
 
     ###############################################
     ##MISC FUNCTIONS

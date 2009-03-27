@@ -39,7 +39,6 @@ class I_O2_App(tichy.Application):
         ##to be standardized
         self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
 
-        
         self.gsm_service = tichy.Service.get('GSM')
         self.callLogs = self.gsm_service.logs
 
@@ -279,122 +278,17 @@ class TopBar(tichy.Service):
     def _do_sth(self):
         pass
     
-    def create(self):
-        self.window = gui.elm_window()
-        self.layout = gui.elm_layout(self.window, self.edje_file, "tb")
+    def create(self, window, onclick, standalone=False):
         
-        return self.layout
+        if standalone == True:
+            self.bg = gui.elm_layout(window, self.edje_file, "bg-tb-on")
+            self.tb = gui.elm_layout(window, self.edje_file, "tb")
+            self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)
+            self.tb.elm_obj.edje_get().signal_callback_add("top-bar", "*", onclick)
+        else:
+            self.bg = gui.elm_layout(self.window, edje_file, "bg-tb-off")
         
-    #def create(self, window, number=""):
-        #return CreateContact(window, number)
+        return self.bg
 
 ##move to people app later
 
-##Service to store some info
-class ContactCreate(tichy.Service):
-    service = 'ContactCreate'
-
-    def __init__(self):
-        super(ContactCreate, self).__init__()
-    
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._do_sth()
-        
-    def _do_sth(self):
-        pass    
-        
-    def create(self, window, number=""):
-        return CreateContact(window, number)
-
-class CreateContact(tichy.Application):
-    
-    name = 'CreateContactApp'
-    
-    def run(self, parent, number, *args, **kargs):
-        try:
-          self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
-          number_layout = 0
-          send = 0
-          contact = None
-          
-          if number == "":
-              full = True
-          else:
-              full = False
-          
-          while True:
-          
-              if full:
-                  pass
-              
-              text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
-              
-              edje_obj = text_layout.elm_obj.edje_get()
-              
-              text_layout.elm_obj.show()
-              
-              parent.main_layout.elm_obj.hide()
-              
-              parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
-              
-              textbox = gui.elementary.Entry(parent.window.elm_obj)
-              textbox.single_line_set(True)
-      
-              textbox.color_set(255, 255, 255, 255)
-              
-              textbox.size_hint_weight_set(1.0, 1.0)
-              text_layout.elm_obj.content_set('entry', textbox)
-              textbox.editable_set(True)        
-              
-              textbox.focus()
-              textbox.show()
-              
-              i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
-              
-              print "full: ", full
-              if i == 0: #back
-                  if full:
-                      continue
-                  else:
-                      print "breaking"
-                      break
-              if i == 1: #save
-                  send = 1
-                  break
-          
-          logger.info("broke loop")
-          
-          if send == 1:
-              print "saving"
-              text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-              contacts_service = tichy.Service.get('Contacts')
-              if contact not in contacts_service.contacts:
-                  name = str(textbox.entry_get()).replace("<br>","")
-                  new_contact = contacts_service.create(name.strip(),tel=str(number))
-                  contacts_service.add(new_contact)
-                  contacts_service.contacts.emit('inserted')
-          
-          if number_layout:
-              number_layout.delete()
-              
-          if text_layout:
-              text_layout.delete()
-          
-          parent.restore_orig()    
-          
-          ret = "done"
-          
-          yield ret
-          
-        except Exception, e:
-            print e
-            print Exception
-    
-    def callback(self, *args, **kargs):
-        print args
-        print kargs
-    
-    def err_callback(self, *args, **kargs):
-        print args
-        print kargs
