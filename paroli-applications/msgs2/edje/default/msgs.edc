@@ -1,0 +1,45 @@
+styles
+{
+    style 
+    {
+      name: "textblock_style";
+      base: "font=Sans font_size=24 align=left valign=top color=#0ff  wrap=word";
+    }
+}
+
+images {
+   image: "add.png" COMP;
+   image: "minus.png" COMP;
+   image: "plus.png" COMP;
+   image: "Back_button.png" COMP;
+   image: "backspace.png" COMP;
+   image: "Done_button.png" COMP;
+   image: "Edit_button.png" COMP;
+   image: "Next_button.png" COMP;
+   image: "Save_button.png" COMP;
+   image: "Delete_button.png" COMP;
+   image: "1.png" COMP;
+   image: "2.png" COMP;
+   image: "3.png" COMP;
+   image: "4.png" COMP;
+   image: "5.png" COMP;
+   image: "6.png" COMP;
+   image: "7.png" COMP;
+   image: "8.png" COMP;
+   image: "9.png" COMP;
+   image: "0.png" COMP;
+   image: "asterisk.png" COMP;
+   image: "sharp.png" COMP;
+   image: "back.png" COMP;
+}
+
+collections
+{
+    #include "macros.edc"
+    #include "dialpad.edc"
+    #include "message_item.edc"
+    #include "message_list.edc"
+    #include "message_details.edc"
+    #include "messaging.edc"
+
+}

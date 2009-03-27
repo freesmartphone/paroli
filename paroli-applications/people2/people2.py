@@ -139,7 +139,7 @@ class People2App(tichy.Application):
     
     def create_msg(self, emission, source, param, item):
         service = tichy.Service.get('MessageCreate')
-        service.write(self.window, item[0].tel).start()
+        service.write(self.window, 'reply', item[0].tel).start()
 
 ##Service to store some info
 class ContactCreate(tichy.Service):

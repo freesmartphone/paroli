@@ -1,0 +1,246 @@
+group { 
+   name: "CreateText";
+   min: 480 590;
+   parts {
+      part{
+         name: "base";
+         type: RECT;
+         description{ state: "default" 0.0;
+            color:0 0 0 255;
+            rel1{
+               relative: 0.0 0.0;
+            }
+            rel2 {
+               relative: 1.0 1.0;
+            }
+         }
+      }
+      part
+        {
+            name:"send-button";
+            type:RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.8 0.0;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.1;
+                    to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"send-button-text";
+            type:TEXT;
+            mouse_events:0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 24;
+                    text: "Send:";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "send-button";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "send-button";
+                }
+            }
+            description
+            {
+                state: "edit-mode" 0.0;
+                visible:0;
+            }
+        }
+        part
+        {
+            name:"close";
+            type:RECT;
+            description
+            {
+              color: 0 0 0 255;
+              rel1 
+              {
+                  relative: 0.0 0.0;
+                  to: "base";
+              }
+              rel2 
+              {
+                  relative: 0.1 0.1;
+                  to: "base";
+              }
+            }
+        }
+        part
+        {
+            name:"close-text";
+            type:TEXT;
+            mouse_events:0;
+            description
+            {
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.1 0.15;
+                    size: 12;
+                    text: "Back";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+        }
+        part
+        {
+            name:"close-clickable";
+            type:RECT;
+            description
+            {
+                color: 0 235 235 0;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+      }
+      part{
+         name:"entry";
+         type:SWALLOW;
+         description { 
+            state: "default" 0.0;
+            rel1 { to:"base";
+               relative: 0.0 0.11;
+            }
+            rel2 {to:"base";
+               relative: 1.0 1.0;
+            }
+         }
+      }
+            part 
+            {
+                name: "save-notice";
+                type: RECT;
+                mouse_events: 1;
+                description 
+                { 
+                    state:   "default"  0.0;
+                    visible:0;
+                    color: 0 0 0 160;
+                }
+                description 
+                { 
+                    state:   "save"  0.0;
+                rel1 { to:"base";
+                  relative: 0.0 0.0;
+                }
+                rel2 {to:"base";
+                  relative: 1.0 1.0;
+                }
+                    visible:1;
+                    color: 0 0 0 160;
+                }
+            }
+            part 
+            {
+                name: "save-notice-text";
+                type: TEXT;
+                mouse_events: 0;
+                description 
+                { 
+                    state: "default" 0.0;
+                    visible:0;
+                }
+                description { state: "save" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                          align: 0.15 0.4;
+                          size: 32;
+                          text: "Sending";
+                          font: "Sans";
+                  }
+                  rel1 {
+                          relative: 0.7 0.51;
+                          to: "save-notice";
+                  }
+                  rel2 {
+                          relative: 1.0 0.7;
+                          to: "save-notice";
+                  }
+             }
+      }
+      part{
+         name: "layover";
+         type: RECT;
+         mouse_events: 0;
+         description{ state: "default" 0.0;
+            visible:0;
+            color:0 255 0 100;
+            rel1{
+               relative: 0.0 0.0;
+               to: "base";
+            }
+            rel2 {
+               relative: 1.0 1.0;
+               to: "base";
+            }
+         }
+      }
+   }
+   programs {  
+      program { 
+         name: "back_clicked";
+         signal: "mouse,up,1";
+         source: "close-clickable";
+         script {
+            emit("back", "main_command")
+         }
+      }
+      program { 
+         name: "send_clicked";
+         signal: "mouse,up,1";
+         source: "send-button";
+         script {
+            emit("send", "main_command")
+         }
+      }
+      program 
+        { 
+          name: "show_save_notice";
+          signal: "save-notice";
+          source: "*";
+          action: STATE_SET "save" 0.0; 
+          target: "save-notice";
+          target: "save-notice-text"; 
+        }
+   }
+}

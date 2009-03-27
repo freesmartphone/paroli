@@ -1,0 +1,369 @@
+group 
+{ 
+    name: "message_details";
+    min: 480 590;
+    max: 480 590;
+    parts 
+    {
+    
+        part
+        {
+        
+            name:"base";
+            type: RECT;
+            description
+            { 
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                }
+            }
+        }
+        part
+        {
+            name:"reply-button";
+            type:RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.8 0.05;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.1;
+                    to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"reply-button-text";
+            type:TEXT;
+            mouse_events:0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 24;
+                    text: "Re:";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.8 0.05;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.1;
+                    to: "base";
+                }
+            }
+            description
+            {
+                state: "edit-mode" 0.0;
+                visible:0;
+            }
+        }
+        part
+        {
+            name:"close";
+            type:RECT;
+            description
+            {
+              color: 0 0 0 255;
+              rel1 
+              {
+                  relative: 0.05 0.05;
+                  to: "base";
+              }
+              rel2 
+              {
+                  relative: 0.15 0.15;
+                  to: "base";
+              }
+            }
+        }
+        part
+        {
+            name:"close-text";
+            type:TEXT;
+            description
+            {
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.1 0.15;
+                    size: 12;
+                    text: "Back";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+        }
+        part
+        {
+            name:"close-clickable";
+            type:RECT;
+            description
+            {
+                color: 0 235 235 0;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "close";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "close";
+                }
+            }
+        }
+        part
+        {
+            name:"name";
+            type:RECT;
+            description
+            {
+                color: 0 0 0 255;
+                rel1 
+                {
+                    relative: 0.05 0.16;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.95 0.30;
+                      to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"name-text";
+            type:TEXT;
+            description
+            {
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 52;
+                    text: "Jane Backhouse";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "name";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.79;
+                    to: "name";
+                }
+            }
+        }
+        part
+        {
+            name:"number-text";
+            type:TEXT;
+            description
+            {
+                state: "default" 0.0;
+                color: 255 255 255 0;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 52;
+                    text: "Jane Backhouse";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "name";
+                }
+                rel2 
+                {
+                    relative: 1.0 0.79;
+                    to: "name";
+                }
+            }
+        }
+        part
+        {
+            name:"name-info";
+            type:TEXT;
+            description
+            {
+                state:"default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.0 0.0;
+                    size: 20;
+                    text: "Openmoko";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.8;
+                    to: "name";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "name";
+                }
+            }
+        }
+        part
+        {
+            name:"name-button";
+            type:RECT;
+            description
+            {
+                color: 0 0 0 0;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "name";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "name";
+                }
+            }
+        }
+        part
+        {
+            name:"message";
+            type:SWALLOW;
+            description
+            {
+                rel1 
+                {
+                    relative: 0.05 0.35;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.99 0.82;
+                      to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"del-button";
+            type:RECT;
+//             description
+//             {
+//                 state:"default" 0.0;
+//                 visible:0;
+//             }
+            description
+            {
+                state:"default" 0.0;
+                visible:1;
+                color: 73 12 14 255;
+                rel1 
+                {
+                    relative: 0.05 0.83;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.25 0.88;
+                    to: "base";
+                }
+            }
+        }
+        part
+        {
+            name:"del-text";
+            type:TEXT;
+            mouse_events:0;
+            description
+            {
+                state:"default" 0.0;
+                visible:1;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.1 0.0;
+                    size: 20;
+                    text: "Delete";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "del-button";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "del-button";
+                }
+            }
+        }
+    }
+    programs 
+    {
+        program
+        {
+            name: "close-clickable-pressed";
+            signal: "mouse,clicked,1";
+            source: "close-clickable";
+            action: SIGNAL_EMIT "close_details" "people";
+        }
+          program
+          {
+              name: "reply";
+              signal: "mouse,up,1";
+              source: "reply-button";
+              action: SIGNAL_EMIT "reply" "messaging";
+          }
+          program
+          {
+              name: "forward";
+              signal: "mouse,up,1";
+              source: "name-button";
+              action: SIGNAL_EMIT "forward" "messaging";
+          }
+        program
+        {
+            name: "del-button-clicked";
+            signal: "mouse,up,1";
+            source: "del-button";
+            action: SIGNAL_EMIT "delete_message" "people";
+        }
+    }
+}

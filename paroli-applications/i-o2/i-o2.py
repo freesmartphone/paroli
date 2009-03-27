@@ -107,7 +107,7 @@ class I_O2_App(tichy.Application):
     
     def create_msg(self, emission, source, param, callLog):
         service = tichy.Service.get('MessageCreate')
-        service.write(self.window, callLog[0].number).start()
+        service.write(self.window, 'reply', callLog[0].number).start()
     
     def create_contact(self, emission, source, param, callLog):
         service = tichy.Service.get('ContactCreate')
@@ -119,146 +119,7 @@ class I_O2_App(tichy.Application):
 
 ##move to msgs app later
 
-##Service to store some info
-class MessageCreate(tichy.Service):
-    service = 'MessageCreate'
 
-    def __init__(self):
-        super(MessageCreate, self).__init__()
-    
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._do_sth()
-        
-    def _do_sth(self):
-        pass    
-        
-    def write(self, window, number="", txt=""):
-        sms_service = tichy.Service.get('SMS')
-        sms = sms_service.create(number, txt)
-        return MsgsWrite(window, sms)
-
-class MsgsWrite(tichy.Application):
-    
-    name = 'MsgsWriteApp'
-    
-    def run(self, parent, sms, *args, **kargs):
-        try:
-          self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
-          number_layout = 0
-          send = 0
-          
-          if sms.peer == "":
-              full = True
-          else:
-              full = False
-          
-          while True:
-          
-              if full:
-                  pass
-                  
-              if sms.text == "":
-                
-                  print "in text edit"
-                  
-                  text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateText")
-                  
-                  text_layout.elm_obj.layer_set(99)
-                  
-                  edje_obj = text_layout.elm_obj.edje_get()
-                  
-                  text_layout.elm_obj.show()
-                  
-                  parent.main_layout.elm_obj.hide()
-                  
-                  parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
-                  
-                  textbox = gui.elementary.Entry(parent.window.elm_obj)
-          
-                  textbox.color_set(255, 255, 255, 255)
-          
-                  textbox.entry_set("Just a stupid test text")
-                  
-                  textbox.size_hint_weight_set(1.0, 1.0)
-                  text_layout.elm_obj.content_set('entry', textbox)
-                  
-                  textbox.editable_set(True)        
-                  
-                  textbox.focus()
-                  textbox.show()
-                  #try:
-                      #parent.window.elm_obj.keyboard_win_set(False)
-                      #parent.window.elm_obj.keyboard_mode_set(gui.elementary.ELM_WIN_KEYBOARD_ON)
-                  #except Exception, e:
-                      #print e
-                      #print Exception
-                  
-              
-              #print dir(parent.window.elm_obj.evas_get())
-              
-              logger.info("just before waiting")
-              i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'send'))
-              
-              print "full: ", full
-              if i == 0: #back
-                  if full:
-                      continue
-                  else:
-                      print "breaking"
-                      break
-              if i == 1: #send
-                  send = 1
-                  break
-          
-          logger.info("broke loop")
-          if send == 1:
-              text = str(textbox.entry_get()).replace("<br>","")
-              sms.text = text.strip()
-              text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-              yield self.send_sms(sms)
-              print "sending"
-        
-          if number_layout:
-              number_layout.delete()
-              
-          if text_layout:
-              text_layout.delete()
-              parent.window.elm_obj.keyboard_win_set(0)
-          
-          parent.restore_orig()    
-          
-          ret = "done"
-          
-          yield ret
-          
-        except Exception, e:
-            print e
-            print Exception
-    
-    @tichy.tasklet.tasklet
-    def send_sms(self, sms):
-        """tasklet that performs the sending process
-
-        connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
-        """
-        logger.info("send message called")
-        try:
-            message_service = tichy.Service.get('Messages')
-            message = message_service.create(number=sms.peer, text=sms.text, direction='out')
-            logger.info("sending message: %s to : %s", sms.text, sms.peer)
-            yield message.send()
-        except Exception, ex:
-            logger.error("Got error %s", ex)
-            #yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
-    
-    def callback(self, *args, **kargs):
-        print args
-        print kargs
-    
-    def err_callback(self, *args, **kargs):
-        print args
-        print kargs
 
 ## move to launcher app later
 

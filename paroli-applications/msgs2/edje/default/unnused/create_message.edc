@@ -35,19 +35,6 @@ group
                 }
             }
         }
-        part{
-            name: "top-bar";
-            type: RECT;
-            description{ state: "default" 0.0;
-              color:0 0 0 255;
-              rel1{
-                  relative: 0.01 0.0;
-              }
-              rel2 {
-                  relative: 0.99 0.05;
-              }
-            }
-          }
         part
         {
             name:"send-button";
@@ -164,13 +151,14 @@ group
                     to: "close";
                 }
             }
-        }
+        }/*
         part
         {
             name:"message";
             type:SWALLOW;
             description
             {
+                visible:0;
                 color: 0 0 0 255;
                 rel1 
                 {
@@ -183,51 +171,83 @@ group
                       to: "base";
                 }
             }
-        }
-//         part{
-//              name:"message-block";
-//              type:TEXTBLOCK;
-// //                   multiline:1;
-//              
-//               description { state: "default" 0.0;
-//                   color: 255 255 255 255;
-//                   visible:1;
-//                   text{
-//                           style:"textblock_style_2";
-//                           text_source:"message-text";
-//                   }
-//                   rel1 {
-//                           relative: 0.0 0.0;
-//                           to: "message";
-//                   }
-//                   rel2 {
-//                           relative: 1.0 1.0;
-//                           to: "message";
-//                   }
-//              }
-//             }
-//             part{
-//               name:"message-text";
-//               type:TEXT;
-//               description{ state:"default" 0.0;
-//                   color: 255 255 255 255;
-//                   text{
-//                       align: 0.0 0.0;
-//                       size: 24;
-//                       text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
-//                       font: "Sans";
-//                   }
-//                   rel1 {
-//                           relative: 0.0 0.0;
-//                           to: "base";
-//                   }
-//                   rel2 {
-//                           relative: 0.0 0.0;
-//                           to: "base";
-//                   }
-//                 }
-//                 
-//               }
+        }*/
+            part{
+              name:"length-text";
+              type:TEXT;
+              description{ state:"default" 0.0;
+                  color: 255 255 255 255;
+                  text{
+                      align: 0.0 0.0;
+                      size: 18;
+                      text: "0/160";
+                      font: "Sans";
+                  }
+                  rel1 
+                  {
+                      relative: 0.60 0.17;
+                      to: "base";
+                  }
+                  rel2 
+                  {
+                      relative: 0.95 0.20;
+                        to: "base";
+                  }
+                }
+                
+              }
+        part{
+            name:"message-block";
+            type:TEXTBLOCK;
+            multiline:0;
+            entry_mode:EDITABLE;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                visible:1;
+                text{
+                        text_source: "message-text";
+                        style:"textblock_style_2";
+                }
+                rel1 
+                {
+                    relative: 0.05 0.20;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 0.95 0.61;
+                      to: "base";
+                }
+             }
+              source3:"cursor1";
+              source4:"cursor2";
+              source5:"cursor1";
+              source6:"cursor2";
+            }
+            part{
+              name:"message-text";
+              type:TEXT;
+              description{ state:"default" 0.0;
+                  color: 255 255 255 255;
+                  visible:0;
+                  text{
+                      align: 0.0 0.0;
+                      size: 24;
+                      text: "This is a test text with an unknown number of signs, but certainly long enough to need multiple lines...";
+                      font: "Sans";
+                  }
+                  rel1 {
+                          relative: 0.0 0.0;
+                          to: "base";
+                  }
+                  rel2 {
+                          relative: 0.0 0.0;
+                          to: "base";
+                  }
+                }
+                
+              }
 //         part
 //         {
 //             name:"del-button";
@@ -291,13 +311,13 @@ group
     }
     programs 
     {
-//         program
-//         {
-//             name: "close-clickable-pressed";
-//             signal: "mouse,clicked,1";
-//             source: "close-clickable";
-//             action: SIGNAL_EMIT "close_details" "people";
-//         }
+        program
+        {
+            name: "close-clickable-pressed";
+            signal: "mouse,clicked,1";
+            source: "close-clickable";
+            action: SIGNAL_EMIT "close_details" "people";
+        }
 //         program
 //         {
 //             name: "call-contact";
@@ -305,13 +325,13 @@ group
 //             source: "number-text-button";
 //             action: SIGNAL_EMIT "call_contact" "people";
 //         }
-          program 
-          { 
-              name: "top-bar-tapped";
-              signal: "mouse,up,1";
-              source: "top-bar";
-              action: SIGNAL_EMIT "top_bar" "tapped";
-          }
+//           program 
+//           { 
+//               name: "top-bar-tapped";
+//               signal: "mouse,up,1";
+//               source: "top-bar";
+//               action: SIGNAL_EMIT "top_bar" "tapped";
+//           }
           program
           {
               name: "send";
@@ -326,6 +346,30 @@ group
               source: "close-clickable";
               action: SIGNAL_EMIT "back" "message";
           }
+          program
+          {
+              name: "load";
+              signal: "load";
+              source: "*";
+              action: FOCUS_SET;
+              target: "message-block";
+          }
+          program
+          {
+              name: "sign_changed";
+              signal: "entry,changed";
+              source: "message-block";
+              script{
+                  new buf[1000];
+                  buf[999] = get_text(PART:"message-block", buf, 1000);
+                  emit(buf,"embryo")
+                  new len = strlen(buf);
+                  snprintf(buf, 100, "%i/160", len);
+                  set_text(PART:"length-text", buf);
+                  
+              }
+          }
+          
 //         program
 //         {
 //             name: "edit-name";
@@ -398,3 +442,42 @@ group
     }
 }
 
+group{
+    name:"cursor1";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 255 255 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 32;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
+}
+
+group{
+    name:"cursor2";
+    parts{
+        part{     
+            name:"cursor";
+            type:TEXT;
+            description{
+                state:"default" 0.0;
+                color: 255 0 0 255;
+                text{
+                        align: 0.15 0.4;
+                        size: 48;
+                        text: "|";
+                        font: "Sans";
+                }
+            }
+        }
+    }
+}

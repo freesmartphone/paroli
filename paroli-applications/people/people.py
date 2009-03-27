@@ -73,21 +73,9 @@ class PeopleApp(tichy.Application):
 
         self.edje_obj.embed(self.contacts_swallow,self.contacts_list.box,"contacts-items")
 
-        #self.contacts_list.connect('redrawing', self._redrawing)
-
         self.contacts_list.add_callback("mouse,clicked,1", "*", self.self_test)
         self.contacts_list.add_callback("*", "embryo", self.self_test)
         self.contacts_list.add_callback("create_message", "*", self.create_message)
-
-        #po = self.edje_obj.Edje.part_object_get("base2")
-        #print dir(self.edje_obj.Edje)
-        #po.geometry_set(0, -220, 440, 200)
-        #print po.geometry_get()
-        #po.top_left_set(0, -220)
-        #print po.top_left_get()
-        #self.edje_obj.Edje.part_drag_value_set("contacts-items", 1.0, 1.0)
-        #sms_service = tichy.Service.get('SMS')
-        #contact = empty_contact()
         self.edje_obj.add_callback("add_contact", "*", self.edit_number, empty_contact())
         self.edje_obj.add_callback("*", "paging", self.paging)
 

@@ -23,7 +23,6 @@ collections
     #include "topbar.edc"
     #include "list.edc"
     #include "item.edc"
-    #include "messaging.edc"
     #include "edit_contact_name.edc"
     #include "create_message.edc"
 }

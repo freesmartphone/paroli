@@ -1,5 +1,5 @@
 
-group { name: "message_item";
+group { name: "item";
        min: 470 80;
        max: 470 80;
        data{
@@ -174,54 +174,6 @@ group { name: "message_item";
                 }
             }
         }
-        part{
-            name: "save-button";
-            mouse_events:1;
-            type: RECT;
-            description { 
-                state: "default" 0.0;
-                visible:0;
-            }
-            description { 
-                state: "visible" 0.0;
-                color: 0 0 0 255;
-                rel1 {
-                    relative: 0.8 0.0;
-                    to: "base";
-                }
-                rel2 {
-                    relative: 1.0 0.66;
-                    to: "base";
-                }
-            }
-        }
-        part{
-            name: "save-button-text";
-            mouse_events:0;
-            type: TEXT;
-            description { 
-                state: "default" 0.0;
-                visible:0;
-            }
-            description { 
-                state: "visible" 0.0;
-                color: 255 255 255 255;
-                text {
-                    align: 0.5 0.5;
-                    size: 20;
-                    text: "Save";
-                    font: "Sans";
-                }
-                rel1 {
-                    relative: 0.0 0.0;
-                    to: "save-button";
-                }
-                rel2 {
-                    relative: 1.0 1.0;
-                    to: "save-button";
-                }
-            }
-        }
           part{
             name: "label-number";
             type: TEXT;
@@ -328,6 +280,55 @@ group { name: "message_item";
             }
         }
     }
+    
+        part{
+            name: "save-button";
+            mouse_events:1;
+            type: RECT;
+            description { 
+                state: "default" 0.0;
+                visible:0;
+            }
+            description { 
+                state: "visible" 0.0;
+                color: 0 0 0 255;
+                rel1 {
+                    relative: 0.8 0.0;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 1.0 0.66;
+                    to: "base";
+                }
+            }
+        }
+        part{
+            name: "save-button-text";
+            mouse_events:0;
+            type: TEXT;
+            description { 
+                state: "default" 0.0;
+                visible:0;
+            }
+            description { 
+                state: "visible" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.5 0.5;
+                    size: 20;
+                    text: "Save";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.0 0.0;
+                    to: "save-button";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to: "save-button";
+                }
+            }
+        }
   }
     programs {
         program{
