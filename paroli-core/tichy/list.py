@@ -43,6 +43,7 @@ class List(list, Item):
         list.__init__(self, values)
         Item.__init__(self)
         assert hasattr(self, '_Object__listeners'), self
+        self.sort()
 
     def clear(self):
         """Remove all the items from a list"""
