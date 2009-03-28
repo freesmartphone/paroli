@@ -581,7 +581,8 @@ class elm_layout(tichy.Object):
         self.elm_obj.file_set(edje_file, group)
         self.elm_obj.show()
         self.add_callback("*", "main_command", self.relay)
-    
+        self.Edje = self.elm_obj.edje_get()
+        
     def relay(self, emission, signal, source):
         #print "emitting %s" % (signal)
         self.emit(signal)
