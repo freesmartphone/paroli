@@ -64,7 +64,8 @@ class Application(Tasklet, Item):
 
     def do_run(self, parent, *args, **kargs):
         """You shouldn't change this, redefine the run method instead"""
-        window = parent or tichy.gui.Window(parent, modal=True, expand=True)
+        #window = parent or tichy.gui.Window(parent, modal=True, expand=True)
+        window = parent or None
         ret = yield super(Application, self).do_run(window, *args, **kargs)
         yield ret
 

@@ -73,7 +73,7 @@ class I_O2_App(tichy.Application):
 
         self.item_list.Elm_win = self.window.window
 
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'back_I/O'),tichy.Wait(self.window, 'delete_request'))
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'))
         
         del self.item_list
         self.window.delete()
@@ -102,7 +102,7 @@ class I_O2_App(tichy.Application):
     def create_call(self, emission, source, param, callLog):
         number = callLog[0].number.value
         name = unicode(callLog[0])
-        caller_service = tichy.Service.get('TeleCaller')
+        caller_service = tichy.Service.get('TeleCaller2')
         caller_service.call("window", number, name).start()
     
     def create_msg(self, emission, source, param, callLog):
@@ -139,17 +139,8 @@ class TopBar(tichy.Service):
     def _do_sth(self):
         pass
     
-    def create(self, window, onclick, standalone=False):
+    def create(self, parent, onclick, standalone=False):
         
-        if standalone == True:
-            self.bg = gui.elm_layout(window, self.edje_file, "bg-tb-on")
-            self.tb = gui.elm_layout(window, self.edje_file, "tb")
-            self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)
-            self.tb.elm_obj.edje_get().signal_callback_add("top-bar", "*", onclick)
-        else:
-            self.bg = gui.elm_layout(self.window, edje_file, "bg-tb-off")
+        tb = gui.elm_tb(parent, onclick, self.edje_file, standalone)
         
-        return self.bg
-
-##move to people app later
-
+        return tb

@@ -1,6 +1,7 @@
 #    Paroli
 #
 #    copyright 2008 Openmoko
+#    copyright 2009 Openmoko
 #
 #    This file is part of Paroli.
 #
@@ -605,27 +606,44 @@ class elm_scroller(tichy.Object):
 class elm_box(tichy.Object):
     def __init__(self, win):
         self.elm_obj = elementary.Box(win)
-        
+
+class elm_tb(tichy.Object):
+    def __init__(self, parent, onclick, edje_file, standalone=False):
+        self.parent = parent
+        self.onclick = onclick
+        if standalone == True:
+            self.bg = elm_layout(parent.window, edje_file, "bg-tb-on")
+            self.tb = elm_layout(parent.window, edje_file, "tb")
+            self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)
+            self.tb.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.signal)
+        else:
+            self.bg = elm_layout(parent.window, edje_file, "bg-tb-off")
+
+    def signal(self, emission, signal, source):
+        print self.onclick
+        print self.tb
+        self.parent.emit(self.onclick)
+
 class elm_layout_window(tichy.Object):
-    def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False):
+    def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False, onclick=None):
         self.window = elm_window()  
         self.window.elm_obj.show()
         
-        if tb == True:
-            self.bg = elm_layout(self.window, edje_file, "bg-tb-on")
-            self.tb_layout = elm_layout(self.window, edje_file, "tb")
-            self.bg.elm_obj.content_set("tb-swallow", self.tb_layout.elm_obj)
-            self.tb_layout.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.delete)
+        self.tb_action = onclick or 'back'
         
-        else:
-            self.bg = elm_layout(self.window, edje_file, "bg-tb-off")
+        self.bg_m = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        
+        self.bg = self.bg_m.bg
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
-        self.scroller = elm_scroller(self.window)
-        self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
+        #self.scroller = elm_scroller(self.window)
+        #self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
+
+    def tb_action_set(self, func):
+        self.tb_action = func
 
     def delete(self, *args, **kargs):
         self.window.elm_obj.delete()
@@ -638,13 +656,28 @@ class elm_layout_window(tichy.Object):
    
     def empty_window(self, *args, **kargs):
         self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
-   
+
+class elm_list_subwindow(elm_layout_window):
+    def __init__(self, window, edje_file, group, swallow):
+        self.window = window.window
+        self.bg = window.bg_m.bg
+        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.scroller = elm_scroller(self.window)
+        self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+        self.window.elm_obj.resize_object_add(self.bg.elm_obj)
+        self.bg.elm_obj.show()
+    
 class elm_list_window(elm_layout_window):
-    def __init__(self, edje_file, group, swallow , sx=None, sy=None, tb=False):
+    def __init__(self, edje_file, group, swallow , sx=None, sy=None, tb=False, onclick=None):
         self.window = elm_window()  
         self.window.elm_obj.show()
         
-        self.bg = tichy.Service.get("TopBar").create(self.window, self.delete, tb)
+        self.tb_action = onclick or 'back'
+        
+        self.bg_m = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        
+        self.bg = self.bg_m.bg
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = elm_scroller(self.window)
@@ -664,9 +697,6 @@ class elm_list(tichy.Object):
           self.label_list = label_list    
           self._comp_fct = comp_fct
           self.cb_list = []
-          #self.monitor(self.model, 'appended', self._redraw_view)
-          #self.monitor(self.model, 'inserted', self._redraw_view)
-          #self.monitor(self.model, 'removed', self._redraw_view)
           self.cb_list.append(self.model.connect('appended', self._redraw_view))
           self.cb_list.append(self.model.connect('inserted', self._redraw_view))
           self.cb_list.append(self.model.connect('removed', self._redraw_view))
@@ -676,7 +706,6 @@ class elm_list(tichy.Object):
           self.items = []
           self._redraw_view()
           self.Elm_win.elm_obj.on_del_add(self._remove_cb)
-    
     
       def _redraw_view(self, *args, **kargs):
           logger.info("list redrawing")
@@ -696,19 +725,8 @@ class elm_list(tichy.Object):
               if self.Elm_win.elm_obj.is_deleted() == True:
                   logger.info("window deleted")
               ly = elementary.Layout(self.Elm_win.elm_obj)
-              #logger.info("layout there")
               ly.file_set(self.EdjeFile, self.EdjeGroup)              
-              #logger.info("file set")
               edje_obj = ly.edje_get()
-              
-              #if testcounter == 0:
-                  #print dir(item)
-                  #print item.get_text()
-                  #print item.number.get_text()
-                  #print item.number.get_contact()
-                  #testcounter += 1
-              #logger.info("edje gotten")
-              
               for part, attribute in self.label_list:
                 if hasattr(item, attribute):
                     value = getattr(item, attribute)
@@ -717,8 +735,6 @@ class elm_list(tichy.Object):
                     txt = unicode(value).encode('utf-8')
                     edje_obj.part_text_set(part,txt)
               
-              #logger.info("labels set")
-
               ##check for optional display elements
               if edje_obj.data_get('attribute1') != None:
                   attribute = edje_obj.data_get('attribute1')
@@ -744,19 +760,16 @@ class elm_list(tichy.Object):
               ly.show()
               self.items.append([item,edje_obj,ly])
           
-          #logger.info("all items there")
+          
           self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
           self.box.elm_obj.show()
-          #logger.info("content set and obj shown")
+          
           self.parent.scroller.elm_obj.show()
-          #logger.info("2nd obj shown")
+          
           self._renew_callbacks()
 
       def generate_single_item(self, item):
           logger.info("generating single item")
-          #canvas_obj = etk.Canvas()
-          #edje_obj = EdjeObject(self.parent, self.EdjeFile, self.EdjeGroup)
-          #canvas_obj.object_add(edje_obj.Edje)
           
           elm_item = elm_layout(self.Elm_win, self.EdjeFile, self.EdjeGroup)
           edje_obj = elm_item.elm_obj.edje_get()

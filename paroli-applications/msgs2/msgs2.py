@@ -75,7 +75,7 @@ class MsgsApp2(tichy.Application):
         
         self.item_list.add_callback("details", "*", self.msg_details)
 
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back_Msgs'))
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')
         
         del self.item_list
@@ -190,6 +190,8 @@ class MsgsWrite(tichy.Application):
           number = ""
           full = False
           
+          self.window = parent
+          
           if layout != None:
               layout.elm_obj.hide()
           
@@ -218,7 +220,9 @@ class MsgsWrite(tichy.Application):
                   else:
                       logger.info("back pressed in text")
                       number_layout.elm_obj.show()
-                      
+                  
+                  edje_obj.signal_callback_add("num_field_pressed", "*", self.num_field_action)
+                  self.number_layout = number_layout
                   parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
                   
                   i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
@@ -305,6 +309,21 @@ class MsgsWrite(tichy.Application):
             print e
             print Exception
     
+    ## switch to either open contacts or save number
+    def num_field_action(self, emission, signal, source):
+        self.num_field(emission, signal, source).start()
+    
+    @tichy.tasklet.tasklet
+    def num_field(self, emission, signal, source):
+        logger.info("num field pressed")
+        number = emission.part_text_get('num_field-text')
+        
+        if number == None or len(number) == 0:
+            logger.info("no number found")
+            createService = tichy.Service.get('ContactCreate')
+            num = yield createService.contactList(self.window, self.number_layout)
+            emission.part_text_set('num_field-text', str(num.tel))
+    
     @tichy.tasklet.tasklet
     def send_sms(self, sms):
         """tasklet that performs the sending process
@@ -319,7 +338,6 @@ class MsgsWrite(tichy.Application):
             yield message.send()
         except Exception, ex:
             logger.error("Got error %s", ex)
-            #yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
     
     def callback(self, *args, **kargs):
         print args

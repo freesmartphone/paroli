@@ -42,11 +42,11 @@ class People2App(tichy.Application):
         ##TODO: make one edje file per plugin
         self.edje_file = os.path.join(os.path.dirname(__file__),'people.edj')
 
-        ##get message service and list of all messages
+        ##get contact service and list of all contacts
         self.contact_service = tichy.Service.get('Contacts')
         self.contacts = self.contact_service.contacts
 
-        ##sort contact by date
+        ##sort contact by name
         def comp(m1, m2):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
 
@@ -65,7 +65,7 @@ class People2App(tichy.Application):
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
         ##wait until main object emits back signal or delete is requested
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back_People'))
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')
         #self.main.emit('closed')
         
@@ -123,7 +123,7 @@ class People2App(tichy.Application):
     def call_contact(self, emission, source, param, contact):
         number = contact.tel.value
         name = unicode(contact)
-        caller_service = tichy.Service.get('TeleCaller')
+        caller_service = tichy.Service.get('TeleCaller2')
         caller_service.call("window", number, name).start()
     
     #deleting
@@ -157,6 +157,56 @@ class ContactCreate(tichy.Service):
         
     def create(self, window, number="", name="", contact=None, mode=None, layout=None):
         return CreateContact(window, number, name, contact, mode, layout)
+    
+    def contactList(self, window, layout):
+        ret = ListContacts(window, layout)
+        #print ret
+        return ret
+
+class ListContacts(tichy.Application):
+    
+    name = 'ListContactsApp'
+    
+    def run(self, parent, layout, *args, **kargs):
+
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
+        self.list_layout =  gui.elm_list_subwindow(parent, self.edje_file, "main", "list")
+        
+        edje_obj = self.list_layout.main_layout.elm_obj.edje_get()
+    
+        edje_obj.signal_emit('list_only_mode', "*")
+    
+        self.list_layout.main_layout.elm_obj.show()
+        
+        ##get contact service and list of all contacts
+        self.contact_service = tichy.Service.get('Contacts')
+        self.contacts = self.contact_service.contacts
+
+        ##sort contact by name
+        def comp(m1, m2):
+            return cmp(str(m1.name).lower(), str(m2.name).lower())
+        
+        self.list_label = [('label','name')]
+        self.item_list = gui.elm_list(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
+        
+        parent.main_layout.elm_obj.hide()
+        layout.elm_obj.hide()
+
+        parent.bg.elm_obj.content_set("content-swallow", self.list_layout.main_layout.elm_obj)
+
+        self.item_list.add_callback("contact_details", "*", self.contact_clicked)
+
+        yield tichy.Wait(self.list_layout, 'picked')
+        
+        self.list_layout.main_layout.delete()
+        parent.restore_orig()
+        layout.elm_obj.show()
+        
+        yield self.contact
+
+    def contact_clicked(self, emission, signal, source, item):
+        self.contact = item[0]
+        self.list_layout.emit('picked')
 
 class CreateContact(tichy.Application):
     
