@@ -28,7 +28,7 @@ from tel_number import TelNumber
 from dialog import Dialog
 
 class TeleApp(tichy.Application):
-    name = 'Tele2'
+    name = 'Tele'
     icon = 'icon.png'
     category = 'launcher'
 

@@ -28,9 +28,9 @@ from tel_number import TelNumber
 from dialog import Dialog
 
 class DialerApp(tichy.Application):
-    name = 'Tele'
+    name = 'Tele_old'
     icon = 'icon.png'
-    category = 'launcher'
+    category = 'launcher2'
 
     def run(self, parent=None, standalone=False):
         logger.info("loading")
