@@ -1,0 +1,305 @@
+#include "macros_rev2.edc"
+
+group{
+    name: "pin_enter";
+    min: 480 640;
+    max: 480 640;
+    script {
+        
+        public del_digit() {
+            new state[30];
+            new Float:floaty;
+            if (get_state(PART:"del-button", state[0], 30, floaty) == 0)
+              {
+                  new old[40];
+                  old[39] = get_text(PART:"num_field-text",old,40);
+                  new old2[40];
+                  old2[39] = get_text(PART:"pin-text",old2,40);
+                  new len = strlen(old);
+                  new txt[61];
+                  snprintf(txt, 60, "%i%s", len, old);
+                  emit(txt, "embryo");
+                  if (len != 0)
+                      {
+                        new num[39];
+                        strnprep(num, old, len-1);
+                        set_text(PART:"num_field-text",num);
+                        
+                        new num2[39];
+                        strnprep(num2, old2, len-1);
+                        set_text(PART:"pin-text",num2);
+                      }
+               }
+               else {
+                   emit("coming soon to a cinema near you", "embryo");
+               }
+         }
+        public send_pin() {
+            new state[30];
+            new Float:floaty;
+            if (get_state(PART:"call-button", state[0], 30, floaty) == 0)
+              {
+                  new num[40];
+                  num[39] = get_text(PART:"pin-text",num,40);
+                  emit(num, "sending_pin");
+              }
+            else 
+              {
+                emit("blew up", "embryo");
+              }
+        }
+        
+    }
+    
+    parts
+    {
+        part 
+        {
+            name: "base";
+            type: RECT;
+            description 
+            { 
+                state:   "default"  0.0;
+                color: 0 0 0 255;
+            }
+        }
+        part{
+            name: "top-bar";
+            type: RECT;
+            description{
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1{
+                    relative: 0.0 0.0;
+                    offset: 0 0;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 480 50;
+                    to: "base";
+                }
+            }
+          }
+           part{
+             name: "title";
+             type: TEXT;
+             mouse_events:0;
+             description { 
+                state: "default" 0.0;
+                     color: 255 255 255 255;
+                     text {
+                             align: 0.5 0.0;
+                             text: "Enter PIN";
+                             size: 18;
+                             font: "Sans";
+                     }
+                     rel1 {
+                             relative: 0.0 0.0;
+                             offset: 150 29;
+                             to: "top-bar";
+                     }
+                     rel2 {
+                             relative: 0.0 0.0;
+                             offset: 322 41;
+                             to: "top-bar";
+                     }
+                }
+           }
+        part
+        {
+            name: "num_field";
+            type: RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 
+                {
+                   relative:0.0 0.0;
+                   offset: 51 98;
+                   to: "base";
+                }
+                rel2 
+                {
+                   relative:0.0 0.0;
+                   offset: 430 142;
+                   to: "base";
+                }
+            }
+        }        
+            
+        part
+        {
+            name: "num_field-text";
+            type: TEXT;
+            mouse_events: 0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.5 1.0;
+                    size: 60;
+                    text: "";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "num_field";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "num_field";
+                }
+            }
+         }
+              
+         part {
+            name: "call-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               rel1 {
+                  relative: 0.0 0.0;
+                  offset: 1 210;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.0 0.0;
+                  offset: 319 279;
+                  to: "base";
+               }
+               image {
+                  normal: "enter.png";
+               }
+               visible: 1;
+            }
+         }
+
+         part {
+            name: "del-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               rel1 {
+                  relative: 0.0 0.0;
+                  offset: 320 210;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.0 0.0;
+                  offset: 479 279;
+                  to: "base";
+               }
+               image {
+                  normal: "backspace.png";
+               }
+               visible: 1;
+            }
+         }
+
+        _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 280, 160, 369);
+        _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 280,  319, 369);
+        _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 280,  479, 369);
+        _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 370, 160, 459);
+        _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 370,  319, 459);
+        _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 370,  479, 459);
+        _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 460,  160, 549);
+        _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 460,  319, 549);
+        _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 460,  479, 549);
+        _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 560,  160, 639);
+        _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 560, 319, 639);
+        _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 560, 479, 639);
+           
+        part
+        {
+            name: "pin-text";
+            type: TEXT;
+            mouse_events: 0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 0 0 255;
+                visible:0;
+                text
+                {
+                    align: 0.5 0.0;
+                    size: 18;
+                    text: "";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "base";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "base";
+                }
+            }
+        }
+           
+    }
+    programs
+    {
+            /*
+        program 
+        { 
+            name: "num_field-clicked";
+            signal: "mouse,clicked,1";
+            source: "num_field";
+            action: SIGNAL_EMIT "num_field_pressed" "num_field-text";
+        }
+             */
+        program 
+        { 
+            name: "call-button-clicked";
+            signal: "mouse,clicked,1";
+            source: "call-button";
+             
+            script{
+               send_pin();
+            }
+             
+        }
+          
+        program 
+        { 
+            name: "del-button-clicked";
+            signal: "mouse,clicked,1";
+            source: "del-button";
+             
+            script{
+               del_digit();
+            }
+              
+        }
+
+//         programs ROW TWO
+           _PART_PIN_ENTER_KEYPAD_PROG("button-1", "1");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-2", "2");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-3", "3");
+//         programs ROW THREE
+           _PART_PIN_ENTER_KEYPAD_PROG("button-4", "4");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-5", "5");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-6", "6");
+//         programs ROW FOUR
+           _PART_PIN_ENTER_KEYPAD_PROG("button-7", "7");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-8", "8");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-9", "9");
+//         programs ROW FIVE
+           _PART_PIN_ENTER_KEYPAD_PROG("button-star", "*");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-0", "0");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-hash", "#");
+
+    }
+}
+
