@@ -98,8 +98,8 @@ class Launcher_App(tichy.Application):
         self.edje_obj.Edje.size_set(self.w, self.h)
         
         self.storage = tichy.Service.get('TeleCom')
-        self.connector = self.storage.window
-        self.connector.connect('call_active',self.set_caller)
+        #self.connector = self.storage.window
+        #self.connector.connect('call_active',self.set_caller)
         self.edje_obj.add_callback("*", "launch_app", self.launch_app)
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("test", "*", self.test)
@@ -176,21 +176,21 @@ class Launcher_App(tichy.Application):
         """
         logger.info("launching %s", name)
         # XXX: The launcher shouldn't know anything about this app
-        if name == 'Tele' and self.storage.call != None:
-            self.storage.window.etk_obj.visibility_set(1)
+        if name == 'Tele2' and self.storage.call != None:
+            self.storage.window.emit("dehide")
         else:
             app = tichy.Application.find_by_name(name)
-            try:
-                self.active_app = name
-                self.edje_obj.signal('app_active',"*")
-                # minus top-bar, 50, magic number here for now. 
-                #self.main.etk_obj.move_resize(0, 50, self.w, self.h-50)
-                yield app(self.main, standalone=self.standalone)
-            except Exception, ex:
-                logger.error("Error from app %s : %s", name, ex)
-                yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
-            finally:
-                self.edje_obj.signal("switch_clock_off","*")
+            #try:
+            self.active_app = name
+            self.edje_obj.signal('app_active',"*")
+            # minus top-bar, 50, magic number here for now. 
+            #self.main.etk_obj.move_resize(0, 50, self.w, self.h-50)
+            yield app(self.main, standalone=self.standalone)
+            #except Exception, ex:
+                #logger.error("Error from app %s : %s", name, ex)
+                #yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
+            #finally:
+            self.edje_obj.signal("switch_clock_off","*")
     
     def incoming_ussd(self, stuff, msg):
         """connected to the 'incoming_message' edje signal"""
