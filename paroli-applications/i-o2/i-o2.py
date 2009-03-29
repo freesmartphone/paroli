@@ -33,7 +33,7 @@ class I_O2_App(tichy.Application):
     name = 'I/O'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
-    launcher_info = [tichy.Service.get('GSM').missed_call_count]
+    launcher_info = ['GSM',"missed_call_count"]
     
     def run(self, parent=None, standalone=False):
         ##to be standardized
@@ -123,24 +123,3 @@ class I_O2_App(tichy.Application):
 
 ## move to launcher app later
 
-##Service to generate and store the topbar
-class TopBar(tichy.Service):
-    service = 'TopBar'
-
-    def __init__(self):
-        super(TopBar, self).__init__()
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
-    
-    
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._do_sth()
-    
-    def _do_sth(self):
-        pass
-    
-    def create(self, parent, onclick, standalone=False):
-        
-        tb = gui.elm_tb(parent, onclick, self.edje_file, standalone)
-        
-        return tb
