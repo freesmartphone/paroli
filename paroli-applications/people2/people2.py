@@ -69,8 +69,8 @@ class People2App(tichy.Application):
         logger.info('People closing')
         #self.main.emit('closed')
         
-        del self.item_list
         self.window.delete()
+        #del self.item_list
                     
     ##DEBUG FUNCTIONS
     ## general output check

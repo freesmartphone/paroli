@@ -209,6 +209,7 @@ class elm_list(tichy.Object):
           testcounter = 0
           for item in self.model:
               if self.Elm_win.elm_obj.is_deleted() == True:
+                  logger.info(str(self.model))
                   logger.info("window deleted")
               ly = elementary.Layout(self.Elm_win.elm_obj)
               ly.file_set(self.EdjeFile, self.EdjeGroup)              
@@ -264,7 +265,7 @@ class elm_list(tichy.Object):
           self.model.sort(self._comp_fct)
     
       def _remove_cb(self, *args, **kargs):
-          logger.debug('window removed, removing cb')
+          logger.info('window removed, removing cb')
           for i in self.cb_list :
               self.model.disconnect(i)
       

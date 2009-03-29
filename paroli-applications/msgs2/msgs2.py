@@ -70,16 +70,15 @@ class MsgsApp2(tichy.Application):
         self.item_list.add_callback("*", "messaging", self.adv_msg)
         self.item_list.add_callback("save", "*", self.create_contact)
         
-        self.contacts.connect('inserted', self.item_list._redraw_view)
-        #self.item_list.add_callback("*", "embryo", self.self_test)
+        self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
         
         self.item_list.add_callback("details", "*", self.msg_details)
 
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
-        logger.info('People closing')
-        
-        del self.item_list
+        logger.info('Messages closing')
+        self.contacts.disconnect(self.oid)
         self.window.delete()
+        del self.item_list
       
     ##DEBUG FUNCTIONS
     ## general output check
