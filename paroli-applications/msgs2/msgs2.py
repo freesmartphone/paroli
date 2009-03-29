@@ -33,7 +33,7 @@ class MsgsApp2(tichy.Application):
     name = 'Msgs'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
-    launcher_info = [tichy.Service.get('Messages').unread]
+    launcher_info = ['Messages',"unread"]
 
     def run(self, parent, standalone=False):
 

@@ -31,6 +31,7 @@ class TeleApp(tichy.Application):
     name = 'Tele'
     icon = 'icon.png'
     category = 'launcher'
+    launcher_info = ['TeleCom2',"caller"]
 
     def run(self, parent=None, standalone=False):
 
@@ -100,11 +101,12 @@ class TeleApp(tichy.Application):
             logger.info("no number found")
             createService = tichy.Service.get('ContactCreate')
             num = yield  createService.contactList(self.window,self.window.main_layout)
-            print "calling", num.tel
             emission.part_text_set('num_field-text', str(num.tel))
         else :
             logger.info("number found")
-            self.add_contact_window( emission, signal, source )
+            service = tichy.Service.get('ContactCreate')
+            service.create(self.window, str(number)).start()
+            emission.part_text_set('num_field-text', "")
 
 class TeleCaller2(tichy.Application):
     """This is the application that deal with the calling sequence
@@ -126,7 +128,7 @@ class TeleCaller2(tichy.Application):
         """
         logger.debug("caller run, names : %s", name)
         
-        self.storage = tichy.Service.get('TeleCom')
+        self.storage = tichy.Service.get('TeleCom2')
         self.gsm_service = tichy.Service.get('GSM')
         self.dialog = tichy.Service.get('Dialog')
         self.audio_service = tichy.Service.get('Audio')
@@ -178,6 +180,8 @@ class TeleCaller2(tichy.Application):
                     # XXX: we should connect to the error callback
                     call.activate().start()
 
+                self.storage.caller.value = call.number.get_text()
+
                 self.edje_obj.signal_callback_add("activate", "call", make_active)
 
             else:   # If not it means we want to initiate the call first
@@ -188,6 +192,7 @@ class TeleCaller2(tichy.Application):
                 self.edje_obj.show()
                 call = self.gsm_service.create_call(number)
                 call.connect("error", self.dialog.error)
+                self.storage.caller.value = call.number.get_text()
                 self.storage.call = call
                 self.main.emit('call_active')
                 yield call.initiate()
@@ -229,6 +234,7 @@ class TeleCaller2(tichy.Application):
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
                     
+            self.storage.caller.value = ""
             self.storage.call = None
             
             if layout:
@@ -373,7 +379,7 @@ class TeleCallerService(tichy.Service):
 
 ##Service to store some info
 class TeleComService(tichy.Service):
-    service = 'TeleCom'
+    service = 'TeleCom2'
 
     def __init__(self):
         dir(self)
@@ -384,6 +390,7 @@ class TeleComService(tichy.Service):
         self.window = gui.Window(None)
         self.status = tichy.Text('None')
         self.call = None
+        self.caller = tichy.Text("")
         self.main_window = None
         yield self._do_sth()
     

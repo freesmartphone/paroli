@@ -153,7 +153,7 @@ class ContactCreate(tichy.Service):
         yield self._do_sth()
         
     def _do_sth(self):
-        pass    
+        pass
         
     def create(self, window, number="", name="", contact=None, mode=None, layout=None):
         return CreateContact(window, number, name, contact, mode, layout)
