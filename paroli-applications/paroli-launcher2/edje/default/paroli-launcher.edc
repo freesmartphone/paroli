@@ -1,0 +1,1114 @@
+#include "paroli-launcher_macros.edc"
+
+fonts {
+   font: "Inspiration-Bold.ttf"   "Sans";
+}
+
+images {
+   image: "alarm.png" COMP;
+   image: "gsm_no_service.png" COMP;
+   image: "gsm_0.png" COMP;
+   image: "gsm_1.png" COMP;
+   image: "gsm_2.png" COMP;
+   image: "gsm_3.png" COMP;
+   image: "gsm_4.png" COMP;
+   image: "battery_0.png" COMP;
+   image: "battery_1.png" COMP;
+   image: "battery_2.png" COMP;
+   image: "battery_3.png" COMP;
+   image: "battery_charging.png" COMP;
+}
+
+styles
+{
+  style {
+    name: "textblock_style";
+    base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
+
+    tag:  "small"    "+ font_size=15";
+    tag:  "normal"    "+ color=#fff";
+    tag:  "br"        "  \n";
+  }
+}
+
+collections{
+    #include "topbar.edc"
+    group { name: "main";
+          min: 480 590;
+          max: 480 590;
+          script {
+             public clock_updating_timer_id = 0;
+             public check_slider_action(val) {
+                new Float:dx;
+                new Float:dy;
+                new state_name[30];
+                new Float:dummy;
+                get_drag(PART:"invisible-slider", dx, dy);
+                get_state(PART:"clock-box", state_name, 30, dummy);
+                
+                if (!strcmp(state_name, "to-the-right")) {
+                   set_state(PART:"clock-box", "default", 0.0);
+                   set_state(PART:"home-clock-hour-digit-1", "default", 0.0);
+                   set_state(PART:"home-clock-hour-digit-0", "default", 0.0);
+                   set_state(PART:"home-clock-colon", "default", 0.0);
+                   set_state(PART:"home-clock-minute-digit-1", "default", 0.0);
+                   set_state(PART:"home-clock-minute-digit-0", "default", 0.0);
+                }
+                else if (!strcmp(state_name, "default")) {
+                   if ( dx > 240.0) {
+                      set_state(PART:"clock-box", "to-the-right", 0.0);
+                      set_state(PART:"home-clock-hour-digit-1", "fade-out", 0.0);
+                      set_state(PART:"home-clock-hour-digit-0", "fade-out", 0.0);
+                      set_state(PART:"home-clock-colon", "fade-out", 0.0);
+                      set_state(PART:"home-clock-minute-digit-1", "fade-out", 0.0);
+                      set_state(PART:"home-clock-minute-digit-0", "fade-out", 0.0);
+                   }
+                   else {
+                      get_state(PART:"clock-box-background", state_name, 30, dummy);
+                      if (!strcmp(state_name, "default")) {
+                         set_state(PART:"clock-box-background", "to-blink", 0.0);
+                         run_program(PROGRAM:"on_home-clock-colon_blink");
+                      } else {
+                         set_state(PART:"clock-box-background", "default", 0.0);
+                         run_program(PROGRAM:"on_home-clock-colon_blink_stop");
+                      }
+                   }
+                }
+            
+                set_drag(PART:"invisible-slider", 0.0, 0.0);
+
+             }
+             public switch_alarm(val) {
+                new state_name[30];
+                new Float:dummy;
+                get_state(PART:"alarm_switch_text", state_name, 30, dummy);
+                if (!strcmp(state_name, "default")) {
+                   set_state(PART:"alarm_switch_text", "alarm_on", 0.0);
+                   set_state(PART:"alarm_icon", "alarm_on", 0.0);
+                } else {
+                   set_state(PART:"alarm_switch_text", "default", 0.0);
+                   set_state(PART:"alarm_icon", "default", 0.0);
+                }
+                set_state(PART:"clock-box", "default", 0.0);
+                set_state(PART:"home-clock-hour-digit-1", "default", 0.0);
+                set_state(PART:"home-clock-hour-digit-0", "default", 0.0);
+                set_state(PART:"home-clock-colon", "default", 0.0);
+                set_state(PART:"home-clock-minute-digit-1", "default", 0.0);
+                set_state(PART:"home-clock-minute-digit-0", "default", 0.0);
+             }
+        public stop_clock_timer(val) {
+            if (get_int(clock_updating_timer_id) != 0) {
+               cancel_timer(get_int(clock_updating_timer_id));
+               set_int(clock_updating_timer_id, 0);
+            }
+        }
+        public clock_cb(val) {
+            new buf[11];
+            new lday[100];
+            new day_s[50];
+            new month_s[40];
+            new year, month, day, yearday, weekday, hour, minute;
+            new Float:second;
+            new Float:s;
+            
+            date(year, month, day, yearday, weekday, hour, minute, second);
+      //      timer(60.0 - second, "clock_cb", 1);
+      // update every 5 seconds just for changing actual time in config. no other
+      // way to know unless you poll (and every 5 seconds is better than 60 for
+      // responsiveness to config changes
+            s = 60.0 - second;
+            while (s < 0.0) s = s + 5.0;
+            new i = timer(60.0 - second, "clock_cb", 1);      
+            set_int(clock_updating_timer_id, i);
+            
+            if ((hour < 10) && (minute < 10)) {
+               snprintf(buf, 10, "0%i:0%i", hour, minute);
+            } 
+            else if ((hour < 10) && (minute >= 10)) {
+               snprintf(buf, 10, "0%i:%i", hour, minute);
+            }
+            else if ((hour >= 10) && (minute < 10)) {
+               snprintf(buf, 10, "%i:0%i", hour, minute);
+            }
+            else if ((hour >= 10) && (minute >= 10)) { 
+               snprintf(buf, 10, "%i:%i", hour, minute);
+            }
+   
+            new buf2[2];
+            strcut(buf2, buf, 0, 1);
+            set_text(PART:"home-clock-hour-digit-1", buf2);
+            strcut(buf2, buf, 1, 2);
+            set_text(PART:"home-clock-hour-digit-0", buf2);
+            strcut(buf2, buf, 3, 4);
+            set_text(PART:"home-clock-minute-digit-1", buf2);
+            strcut(buf2, buf, 4, 5);
+            set_text(PART:"home-clock-minute-digit-0", buf2);
+
+//             set_text(PART:"clock", buf);
+            
+            switch(weekday){
+              case 0:
+                  snprintf(day_s, 50, "%s", "Monday");
+              case 1:
+                  snprintf(day_s, 50, "%s", "Tuesday");
+              case 2:
+                  snprintf(day_s, 50, "%s", "Wednesday");
+              case 3:
+                  snprintf(day_s, 50, "%s", "Thursday");
+              case 4:
+                  snprintf(day_s, 50, "%s", "Friday");
+              case 5:
+                  snprintf(day_s, 50, "%s", "Saturday");
+              case 6:
+                  snprintf(day_s, 50, "%s", "Sunday");
+            }
+            
+            switch(month){
+              case 1:
+                  snprintf(month_s, 40, "%s", "January");
+              case 2:
+                  snprintf(month_s, 40, "%s", "February");
+              case 3:
+                  snprintf(month_s, 40, "%s", "March");
+              case 4:
+                  snprintf(month_s, 40, "%s", "April");
+              case 5:
+                  snprintf(month_s, 40, "%s", "May");
+              case 6:
+                  snprintf(month_s, 40, "%s", "June");
+              case 7:
+                  snprintf(month_s, 40, "%s", "July");
+              case 8:
+                  snprintf(month_s, 40, "%s", "August");
+              case 9:
+                  snprintf(month_s, 40, "%s", "September");
+              case 10:
+                  snprintf(month_s, 40, "%s", "October");
+              case 11:
+                  snprintf(month_s, 40, "%s", "November");
+              case 12:
+                  snprintf(month_s, 40, "%s", "December");
+            }
+            
+            snprintf(lday, 100, "| %s, %s %i, %i |", day_s, month_s, day, year);
+            set_text(PART:"clock-date", lday);
+        }
+      }     
+          parts {
+              part{
+                name: "base";
+                type: RECT;
+                description{ state: "default" 0.0;
+                  color:0 0 0 255;
+                  rel1{
+                        relative: 0.0 0.0;
+                    }
+                    rel2 {
+                        relative: 1.0 1.0;
+                    }
+                }
+              }/*
+              part{
+                  name: "top-bar";
+                  type: RECT;
+                  description{ 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1{
+                          relative: 0.0 0.0;
+                          offset: 0 0;
+                          to: "base";
+                      }
+                      rel2 {
+                          relative: 0.0 0.0;
+                          offset: 480 50;
+                          to: "base";
+                      }
+                  }
+                }
+              part{
+                name: "clock";
+                type: TEXT;
+                mouse_events:0;
+                description { 
+                  state: "default" 0.0;
+                  visible:0;
+                }
+                description { state: "visible" 0.0;
+                              color: 255 255 255 255;
+                              text {
+                                      align: 0.5 0.0;
+                                      text: "00:00";
+                                      size: 18;
+                                      font: "Sans";
+                              }
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      offset: 200 29;
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 0.0 0.0;
+                                      offset: 283 41;
+                                      to: "top-bar";
+                              }
+                      }
+              }
+              part{
+                name: "gsm";
+                type: IMAGE;
+                mouse_events:0;
+                description { state: "default" 0.0;
+                              min: 23 16;
+                              max: 23 16;
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      offset: 418 25; 
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 0.0 0.0;
+                                      offset: 441 41; 
+                                      to: "top-bar";
+                              }
+                        image {
+                           normal: "gsm_no_service.png";
+                        }
+                        visible: 1;
+                      }
+                 description { state: "gsm_strengh_1" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_1.png";
+                 }
+                 description { state: "gsm_strengh_2" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_2.png";
+                 }
+                 description { state: "gsm_strengh_3" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_3.png";
+                 }
+                 description { state: "gsm_strengh_4" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_4.png";
+                 }
+                 description { state: "gsm_no_service" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "gsm_no_service.png";
+                 }
+              }
+              part{
+                name: "battery";
+                type: IMAGE;
+                mouse_events:0;
+                description { state: "default" 0.0;
+                              min: 25 15;
+                              max: 25 15;
+                              rel1 {
+                                      relative: 0.0 0.0;
+                                      offset: 448 26; 
+                                      to: "top-bar";
+                              }
+                              rel2 {
+                                      relative: 0.0 0.0;
+                                      offset: 473 41; 
+                                      to: "top-bar";
+                              }
+                        image {
+                           normal: "battery_0.png";
+                        }
+                        visible: 1;
+                      }
+                 description { state: "battery_1" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "battery_1.png";
+                 }
+                 description { state: "battery_2" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "battery_2.png";
+                 }
+                 description { state: "battery_3" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "battery_3.png";
+                 }
+                 description { state: "charging" 0.0;
+                     inherit: "default" 0.0;
+                     image.normal: "battery_charging.png";
+                 }
+              }*/
+               // Show the red rim
+                part {
+                    name:  "clock-box-background";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                          relative: 0.0 0.0;
+                          offset: 0 1;
+                          to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 480 125;
+                         to: "base";
+                      } 
+                   }
+                   description { 
+                      state: "to-blink" 0.0;
+                      inherit: "default" 0.0;
+                   }
+                }
+                part {
+                    name:  "clock-box-background-layer2";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                          relative: 0.0 0.0;
+                          offset: 1 1;
+                          to: "clock-box-background";
+                      }
+                      rel2 {
+                         relative: 1.0 1.0;
+                         offset: -3 -2;
+                         to: "clock-box-background";
+                      } 
+                   }
+                }
+
+                part {
+                    name:  "alarm_switch_button";
+                    type: RECT;
+                    mouse_events:1;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                         relative: 0.0 0.0;
+                         offset: 23 40;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 207 86;
+                         to: "base";
+                      } 
+                   }
+                }
+                part {
+                    name:  "alarm_switch_text";
+                    type: TEXT;
+                    mouse_events:0;
+                    description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                              align: 0.0 0.5;
+                              font: "Sans";
+                              size: 25;
+                              text: "Alarm On";
+                      }
+                      rel1 {
+                         relative: 0.0 0.0;
+                         to: "alarm_switch_button";
+                      }
+                      rel2 {
+                         relative: 1.0 1.0;
+                         to: "alarm_switch_button";
+                      } 
+                    }
+                    description { 
+                      state: "alarm_on" 0.0;
+                      inherit: "default" 0.0;
+                      text {
+                         text: "Alarm Off";
+                      }
+                    }
+                }
+
+                part {
+                    name:  "clock-box";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      rel1 {
+                          relative: 0.0 0.0;
+                          offset: 1 1;
+                          to: "clock-box-background";
+                      }
+                      rel2 {
+                         relative: 1.0 1.0;
+                         offset: -3 -2;
+                         to: "clock-box-background";
+                      } 
+                    }
+                   description {
+                      state: "to-the-right" 0.0;
+                      inherit: "default" 0.0;
+                      rel1 {
+                          relative: 0.5 0.0;
+                          to: "clock-box-background";
+                      }
+                   }
+                }
+               // invisible slider on top of Clock
+                part {
+                   name:  "invisible-slider";
+                   type: RECT;
+                   dragable {
+                      x: 1 1 0;
+                      y: 0 0 0;
+                   }
+                   description { 
+                      state: "default" 0.0;
+                      color:0 0 0 255;
+                      fixed: 1 1;
+                      rel1 {
+                         relative: 0.0 0.0;
+                         to: "clock-box";
+                      }
+                      rel2 {
+                         relative: 1.0 1.0;
+                         offset: -3 -2;
+                         to: "clock-box";
+                      } 
+                   }
+                }
+
+                part {
+                   name:  "home-clock-hour-digit-1";
+                   type: TEXT;
+                   mouse_events:0;
+                   description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      visible: 1;
+                      text {
+                         font: "Sans";
+                         size: 135;
+                      }
+                      rel1 {
+                         relative: 0.042 0.0;
+                         to:"invisible-slider";
+                      }
+                      rel2 {
+                         relative: 0.25 1.0;
+                         to:"invisible-slider";
+                      } 
+                   }
+                   description { 
+                      state: "fade-out" 0.0;
+                      inherit: "default" 0.0;
+                      color: 220 220 220 220;
+                      rel2 {
+                         relative: 0.45 1.0;
+                      } 
+                   }
+                }
+                part {
+                   name:  "home-clock-hour-digit-0";
+                   type: TEXT;
+                   mouse_events:0;
+                   description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                         font: "Sans";
+                         size: 135;
+                      }
+                      rel1 {
+                         relative: 0.26 0.0;
+                         to:"invisible-slider";
+                      }
+                      rel2 {
+                         relative: 0.46 1.0;
+                         to:"invisible-slider";
+                      } 
+                   }
+                   description { 
+                      state: "fade-out" 0.0;
+                      inherit: "default" 0.0;
+                      color: 220 220 220 220;
+                      rel1 {
+                         relative: 0.45 0.0;
+                      } 
+                      rel2 {
+                         relative: 0.85 1.0;
+                      } 
+                   }
+                }
+                
+                part {
+                   name:  "home-clock-colon";
+                   type: TEXT;
+                   mouse_events:0;
+                   description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                         align: 0.5 0.75;
+                         font: "Sans";
+                         size: 135;
+                         text: ":";
+                      }
+                      rel1 {
+                         offset: 220 0;
+                         to:"invisible-slider";
+                      }
+                      rel2 {
+                         offset: -210 0;
+                         to:"invisible-slider";
+                      } 
+                   }
+                   description {
+                      state: "invisible" 0.0;
+                      inherit: "default" 0.0;
+                      visible: 0; 
+                   }
+                   description { 
+                      state: "fade-out" 0.0;
+                      inherit: "default" 0.0;
+                      color: 220 220 220 220;
+                      rel1 {
+                         offset: 200 0;
+                      } 
+                      rel2 {
+                         offset: 5 0;
+                      } 
+                   }
+                }
+                
+                part {
+                   name:  "home-clock-minute-digit-1";
+                   type: TEXT;
+                   mouse_events:0;
+                   description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                         align: 0.5 0.5;
+                         font: "Sans";
+                         size: 135;
+                      }
+                      rel1 {
+                         offset: 260 0;
+                         to:"invisible-slider";
+                      }
+                      rel2 {
+                         offset: -120 0;
+                         to:"invisible-slider";
+                      } 
+                   }
+                   description { 
+                      state: "fade-out" 0.0;
+                      inherit: "default" 0.0;
+                      color: 220 220 220 220;
+                   }
+                }
+                part {
+                   name:  "home-clock-minute-digit-0";
+                   type: TEXT;
+                   mouse_events:0;
+                   description { 
+                      state: "default" 0.0;
+                      color: 255 255 255 255;
+                      text {
+                         align: 0.5 0.5;
+                         font: "Sans";
+                         size: 135;
+                      }
+                      rel1 {
+                         offset: 360 0;
+                         to:"invisible-slider";
+                      }
+                      rel2 {
+                         offset: -20 0;
+                         to:"invisible-slider";
+                      } 
+                   }
+                   description { 
+                      state: "fade-out" 0.0;
+                      inherit: "default" 0.0;
+                      color: 220 220 220 220;
+                   }
+                }
+
+                part {
+                    name:  "clock-date";
+                    type: TEXT;
+                    mouse_events:0;
+                    description { 
+                      state: "default" 0.0;
+                      text {
+                              align: 0.075 0.92;
+                              size: 14;
+                              text: "";
+                              font: "Sans";
+                      }
+                      rel1 {
+                         relative: 0.0 0.0;
+                         offset: 23 142;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 270 158;
+                         to: "base";
+                      } 
+                    }
+                }
+
+                part{
+                    name: "alarm_icon";
+                    type: IMAGE;
+                    description { 
+                        state: "default" 0.0;
+                        min: 14 13;
+                        max: 14 13;
+                        rel1 {
+                           relative: 0.0 0.0;
+                           offset: 280 141;
+                           to: "base";
+                        }
+                        rel2 {
+                           relative: 0.0 0.0;
+                           offset: 294 154;
+                           to: "base";
+                        } 
+                        image {
+                           normal: "alarm.png";
+                        }
+                       visible: 0;
+                    }
+                    description { 
+                       state: "alarm_on" 0.0;
+                       inherit:"default" 0.0;
+                       visible: 1;
+                    }
+                }
+
+                part {
+                    name:  "link-box";
+                    type: SWALLOW;
+                    description { 
+                      state: "default" 0.0;
+                      fixed: 1 1;
+                      color:0 0 0 255;
+                      rel1 {
+                         relative: 0.0 0.0;
+                         offset: 22 247;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 460 532;
+                         to: "base";
+                      } 
+                    }
+                }
+                part{
+                    name:  "version";
+                    type: TEXT;
+                    mouse_events:0;
+                    description { 
+                      state: "default" 0.0;
+                      text {
+                              align: 0.075 0.92;
+                              size: 14;
+                              text: "";
+                              font: "Sans";
+                      }
+                      rel1 {
+                         relative: 0.5 0.9;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 1.0 1.0;
+                         to: "base";
+                      } 
+                    }
+                }
+                part {
+                    name:  "blocker";
+                    type: RECT;
+                    description { 
+                      state: "default" 0.0;
+                      color:0 0 0 120;
+                      rel1 {
+                         relative: 0.0 0.0;
+                         offset: 22 247;
+                         to: "base";
+                      }
+                      rel2 {
+                         relative: 0.0 0.0;
+                         offset: 460 532;
+                         to: "base";
+                      } 
+                    }
+                    description { 
+                      state: "unblocked" 0.0;
+                      visible:0;
+                    }
+                }
+          }
+          programs {
+              program 
+              { 
+                 name: "init";
+                 signal: "load";
+                 source: "*";
+                 script{
+                    clock_cb(1);
+                 }
+              }
+              program {
+                 name: "stop_clock_update";
+                 signal: "stop_clock_update";
+                 source: "*";
+                 script {
+                    stop_clock_timer(1);
+                 }
+              }
+              program {
+                 name: "start_clock_update";
+                 signal: "start_clock_update";
+                 source: "*";
+                 script {
+                    clock_cb(1);
+                 }
+              }
+              program
+              {
+                 name: "slider-action";
+                 signal: "mouse,up,1";
+                 source: "invisible-slider";
+                 script {
+                    check_slider_action(1)
+                 }
+              }
+              program 
+              {
+                  name: "unblock";
+                  signal: "ready";
+                  source: "*";
+                  action: STATE_SET "unblocked" 0.0;
+                  target: "blocker";
+              }
+              program 
+              {
+                  name: "alarm-switch";
+                  signal: "mouse,up,1";
+                  source: "alarm_switch_button";
+                  script {
+                     switch_alarm(1)
+                  }
+              }
+
+              // for colon to blink
+              program { name: "on_home-clock-colon_blink";
+                 action: ACTION_STOP;
+                 target: "home-clock-colon_blink";
+                 target: "home-clock-colon_hide";
+                 target: "home-clock-colon_blink_timer";
+                 target: "home-clock-colon_hide_timer";
+                 after: "time_setting_on";
+              }
+              program { name: "time_setting_on";
+                 action: SIGNAL_EMIT "time_setting_on" "*";
+                 after: "home-clock-colon_blink";
+              }
+              program { name: "on_home-clock-colon_blink_stop";
+                 action: ACTION_STOP;
+                 target: "home-clock-colon_blink";
+                 target: "home-clock-colon_hide";
+                 target: "home-clock-colon_blink_timer";
+                 target: "home-clock-colon_hide_timer";
+                 after: "time_setting_off";
+              }
+              program { name: "time_setting_off";
+                 script {
+                    new state_name[30];
+                    new Float:dummy;
+                    get_state(PART:"alarm_icon", state_name, 30, dummy);
+                    if (!strcmp(state_name, "default")) {
+                       emit("time_setting_off", "time")
+                    }
+                    else if (!strcmp(state_name, "alarm_on")) {
+                       emit("time_setting_off", "alarm")
+                    }
+                 }
+                 after: "home-clock-colon_show";
+              }
+              program 
+              {
+                  name: "home-clock-colon_show";
+                  action: STATE_SET "default" 0.0;
+                  target: "home-clock-colon";
+              }
+              program { name: "home-clock-colon_blink";
+                 action: STATE_SET "invisible" 0.0;
+                 target: "home-clock-colon";
+                 after: "home-clock-colon_blink_timer";
+              }
+              program { name: "home-clock-colon_hide";
+                 action: STATE_SET "default" 0.0;
+                 target: "home-clock-colon";
+                 transition: SINUSOIDAL 0.2;
+                 after: "home-clock-colon_hide_timer";
+              }
+              program { name: "home-clock-colon_blink_timer";
+                 in: 0.55 0.0;
+                 after: "home-clock-colon_hide";
+              }
+              program { name: "home-clock-colon_hide_timer";
+                 in: 0.2 0.0;
+                 after: "home-clock-colon_blink";
+              }
+/*
+              program 
+              {
+                  name: "top-bar-pressed";
+                  signal: "mouse,up,1";
+                  source: "top-bar";
+                  action: SIGNAL_EMIT "quit_app" "quit";
+              }
+              program
+              {
+                  name: "switch_clock_on";
+                  signal: "app_active";
+                  source: "*";
+                  action: STATE_SET "visible" 0.0;
+                  target: "clock";
+              }
+              program
+              {
+                  name: "switch_clock_off";
+                  signal: "switch_clock_off";
+                  source: "*";
+                  action: STATE_SET "default" 0.0;
+                  target: "clock";
+              }
+              program
+              {
+                  name: "set_gsm";
+                  signal: "*";
+                  source: "gsm_change";
+                  script{
+                      new val;
+                      val = atoi(sig);
+                      if( val >= 80 ) {
+                         set_state(PART:"gsm", "gsm_strengh_4", 0.0);
+                      }
+                      else if( val >= 60 && val < 80) {
+                         set_state(PART:"gsm", "gsm_strengh_3", 0.0);
+                      }
+                      else if( val >= 40 && val < 60) {
+                         set_state(PART:"gsm", "gsm_strengh_2", 0.0);
+                      }
+                      else if( val > 20 && val < 40) {
+                         set_state(PART:"gsm", "gsm_strengh_1", 0.0);
+                      }
+                      else if( val > 0 && val < 20) {
+                         set_state(PART:"gsm", "gsm_strengh_0", 0.0);
+                      }
+                      else {
+                         set_state(PART:"gsm", "gsm_no_service", 0.0);
+                      }
+                  }
+              }*/
+//               program
+//               {
+//                   name: "set_battery_status_charging";
+//                   signal: "*";
+//                   source: "battery_status_charging";
+//                   action: STATE_SET "charging" 0.0;
+//                   target: "battery";
+//               }
+//               program
+//               {
+//                   name: "set_battery";
+//                   signal: "*";
+//                   source: "battery_change";
+//                   script{
+//                       new val;
+//                       val = atoi(sig);
+//                       if(val >= 66) {
+//                          set_state(PART:"battery", "battery_3", 0.0);
+//                       }
+//                       else if(val >= 33 && val < 66) {
+//                          set_state(PART:"battery", "battery_2", 0.0);
+//                       }
+//                       else if(val < 33){
+//                          set_state(PART:"battery", "battery_1", 0.0);
+//                       }
+//                       emit(sig,"embryo");
+//                   }
+//               }
+          }
+    }
+    
+    group{
+        name: "link";
+        min: 400 60;
+        max: 400 60;
+        script{
+            public prog;
+            
+            public message(Msg_Type: type, id, ...)
+                {
+                  new buf[100];
+                  new it[100];
+                  it[1] = getsarg(3,it,100)
+                  snprintf(buf, 100, "%s", it);
+                  set_str(prog, buf);
+                  set_text(PART:"testing_textblock", buf);
+
+                }
+            
+            public linking(){
+            
+              new txt[20];
+//               get_str(prog, txt, 20);
+              get_text(PART:"texter", txt, 20);
+              
+              emit(txt,"launch_app")
+              
+            }
+            
+        }
+        parts{
+          part
+          {
+              name:"base";
+              type: RECT;
+              description
+              { 
+                  state: "default" 0.0;
+                  color:0 0 0 255;
+                  rel1
+                  {
+                      relative: 0.0 0.0;
+                  }
+                  rel2 
+                  {
+                      relative: 0.7 1.0;
+                  }
+              }
+          }
+          part{
+              name:"texter";
+              type:TEXT;
+              mouse_events:0;
+              description 
+              { 
+                  state: "default" 0.0;
+                  visible:0;
+                  text{
+                        align: 0.5 0.0;
+                        size: 18;
+                        text: "20:08";
+                        font: "Sans";
+                  }
+              }
+          }
+          part 
+          {
+              name: "testing_textblock";
+              type:  TEXTBLOCK;
+              mouse_events:0;
+              description 
+              {
+                  state:    "default" 0.0;
+                  text 
+                  {
+                      text:  "<normal>title</normal><small>(huhu)</small>";
+                      style: "textblock_style";
+                      min:   0 0;
+                  }
+                  rel1 
+                  {
+                      relative: 0.02  0.0;
+                      to:"base";
+                  }
+                  rel2 {
+                      relative: 1.0  1.0;
+                      to:"base";
+                  }
+              }
+          }
+       }
+       programs
+       {
+            program
+            {
+                name: "link";
+                signal: "mouse,up,1";
+                source: "base";
+                script{
+                    linking();
+                }
+            }
+            program
+            {
+                name: "init";
+                signal: "load";
+                source: "*";
+                script{
+                    set_str(prog, "test");
+                }
+            }
+        }
+    }
+
+group{
+    name:"profile";
+    min: 480 580;
+    max: 480 640;
+    parts{
+        part{
+            name:"text";
+            type:"TEXT";
+            mouse_events:0;
+            description{ 
+                state: "default" 0.0;
+                color:255 255 255 255;
+                text {
+                        align: 0.5 0.5;
+                        size: 48;
+                        text: "asd";
+                        font: "Sans";
+                }
+                rel1{
+                      relative: 0.0 0.0;
+                  }
+                  rel2 {
+                      relative: 1.0 1.0;
+                  }
+            }
+            description{ 
+                state: "invisible" 0.0;
+                color:0 0 0 255;
+            }
+        }
+    }
+    programs{
+        program{
+            name:"fading";
+            signal:"load";
+            source:"*";
+            action: STATE_SET "invisible" 0.0;
+            transition: LINEAR 2.0;
+            target:"text";
+            after:"erase";
+        }
+        program{
+            name:"erase";
+            action: SIGNAL_EMIT "erase" "edje";
+        }
+    }
+}
+// // collections closing
+}
