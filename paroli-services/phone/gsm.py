@@ -110,7 +110,7 @@ class GSMService(tichy.Service):
     def _ask_pin(self):
         #window = tichy.Service.get("WindowsManager").get_app_parent()
         window = None
-        editor = tichy.Service.get('TelePIN')
+        editor = tichy.Service.get('TelePIN2')
         sim = tichy.Service.get('SIM')
         for i in range(4):
             pin = yield editor.edit(window, name="Enter PIN",

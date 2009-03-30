@@ -268,20 +268,24 @@ class TeleCaller2(tichy.Application):
         logger.info("embryo says:" + str(signal))
 
     def audio_rotate(self, *args, **kargs):
-        current = self.audio_service.get_speaker_volume()
-        all_values = [20, 40, 60, 80, 100]
-        if all_values.count(current) == 0:
-          current = 40
-        
-        current_index = all_values.index(current)
-        
-        if len(all_values)-1 == current_index:
-            new = all_values[0]
-        else:
-            new = all_values[current_index + 1]
-        self.audio_service.set_speaker_volume(new)
-        
-        logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
+        try:
+            current = self.audio_service.get_speaker_volume()
+            all_values = [20, 40, 60, 80, 100]
+            if all_values.count(current) == 0:
+              current = 40
+            
+            current_index = all_values.index(current)
+            
+            if len(all_values)-1 == current_index:
+                new = all_values[0]
+            else:
+                new = all_values[current_index + 1]
+            self.audio_service.set_speaker_volume(new)
+            
+            logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
+        except Exception, e:
+            logger.info(str(Exception))
+            logger.info(str(e))
 
     def gui_signals(self,emission, source, param):
         pass
@@ -406,69 +410,66 @@ class TeleComService(tichy.Service):
     def set_active(self,call):
         self.call = call
 
-class PINApp(tichy.Application):
+class PINApp2(tichy.Application):
 
-    name = 'PINApp'
+    name = 'PINApp2'
     icon = 'icon.png'
 
     def run(self, window, text="", name=None, input_method=None):
 
 
-        logger.info("PIN called")
+        logger.info("PIN2 called")
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
-        self.main = window
-        self.main.show()
-
-        self.edje_obj = gui.edje_gui(self.main, 'pin_enter', self.edje_file)
-        self.edje_obj.layer_set(2)
+        
+        self.main = gui.elm_layout_window(self.edje_file, "pin_enter")
+        logger.info("PIN2 main generated")
+        self.edje_obj = self.main.main_layout.Edje
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
-        self.edje_obj.signal_callback_add("add_digit", "*", self.add_digit)
-        self.edje_obj.show()
+        #self.edje_obj.show()
 
         yield tichy.Wait(self.main, 'value_received')
 
         number = self.edje_obj.part_text_get("pin-text")
-        self.edje_obj.delete()
-        self.main.etk_obj.visibility_set(0)
+        self.main.delete()
         yield number
 
 
     def embryo(self, emission, signal, source):
         logger.info('embryo says: ' + signal)
 
-    def func_btn(self,emission,source,param):
-        if param == 'call-button':
-              self.call_btn_pressed(emission, source, param)
-        elif param == 'del-button':
-              self.number_edit_del(emission,source,param)
+    #def func_btn(self,emission,source,param):
+        #if param == 'call-button':
+              #self.call_btn_pressed(emission, source, param)
+        #elif param == 'del-button':
+              #self.number_edit_del(emission,source,param)
 
     def call_btn_pressed(self,emission, signal, source):
         logger.info(signal)
         self.main.emit('value_received')
 
-    def add_digit(self,emission,source,param):
-        new_sign = param
-        value = emission.part_text_get('active-call')
-        if value == None:
-          new = str(new_sign)
-          new_stars = '*'
-        else:
-          new = str(value)+str(new_sign)
-          new_stars = str(emission.part_text_get('num_field-text')) + '*'
+    #def add_digit(self,emission,source,param):
+        #new_sign = param
+        #value = emission.part_text_get('active-call')
+        #if value == None:
+          #new = str(new_sign)
+          #new_stars = '*'
+        #else:
+          #new = str(value)+str(new_sign)
+          #new_stars = str(emission.part_text_get('num_field-text')) + '*'
 
-        emission.part_text_set('active-call',new)
-        emission.part_text_set('num_field-text',new_stars)
+        #emission.part_text_set('active-call',new)
+        #emission.part_text_set('num_field-text',new_stars)
 
-    def number_edit_del(self,emission, source, param):
-        logger.debug("number_edit del called")
-        value = emission.part_text_get("active-call")
-        star_value = emission.part_text_get("num_field-text")
-        if len(value) != 0:
-          emission.part_text_set("num_field-text",star_value[:-1])
+    #def number_edit_del(self,emission, source, param):
+        #logger.debug("number_edit del called")
+        #value = emission.part_text_get("active-call")
+        #star_value = emission.part_text_get("num_field-text")
+        #if len(value) != 0:
+          #emission.part_text_set("num_field-text",star_value[:-1])
 
-          emission.part_text_set("active-call",value[:-1])
+          #emission.part_text_set("active-call",value[:-1])
 
 
 class MyTextEditService(tichy.Service):
@@ -478,8 +479,8 @@ class MyTextEditService(tichy.Service):
     of a text editor to use the applicaton we defined previously.
     """
 
-    service = 'TelePIN'
+    service = 'TelePIN2'
 
     def edit(self, parent, text="", name=None, input_method=None):
         """The only function defined in the TextEditService"""
-        return PINApp(parent, text, name=name, input_method=input_method)
+        return PINApp2(parent, text, name=name, input_method=input_method)
