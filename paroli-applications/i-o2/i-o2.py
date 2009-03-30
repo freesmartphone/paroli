@@ -65,7 +65,7 @@ class I_O2_App(tichy.Application):
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
 
-        self.contacts.connect('inserted', self.item_list._redraw_view)
+        self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
         self.item_list.add_callback("new_call", "*", self.create_call)
         self.item_list.add_callback("new_msg", "*", self.create_msg)
@@ -75,8 +75,9 @@ class I_O2_App(tichy.Application):
 
         yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'))
         
-        del self.item_list
+        self.contacts.disconnect(self.oid)
         self.window.delete()
+        del self.item_list
     
     def to_edit_mode(self, emission, source, param):
         for item in self.item_list.items:

@@ -76,6 +76,7 @@ class MsgsApp2(tichy.Application):
 
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('Messages closing')
+        
         self.contacts.disconnect(self.oid)
         self.window.delete()
         del self.item_list
