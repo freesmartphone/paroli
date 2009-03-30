@@ -386,15 +386,15 @@ class TeleComService(tichy.Service):
     service = 'TeleCom2'
 
     def __init__(self):
-        dir(self)
+        #dir(self)
         super(TeleComService, self).__init__()
     
     @tichy.tasklet.tasklet
     def init(self):
-        self.window = gui.Window(None)
+        self.window = None
         self.status = tichy.Text('None')
         self.call = None
-        self.caller = tichy.Text("")
+        self.caller = tichy.Text(" ")
         self.main_window = None
         yield self._do_sth()
     
