@@ -107,7 +107,8 @@ class elm_tb(tichy.Object):
     def __init__(self, parent, onclick, edje_file, standalone=False):
         self.parent = parent
         self.onclick = onclick
-        if standalone == True:
+        self.standalone = tichy.config.getboolean('standalone','activated', False)
+        if self.standalone == True:
             self.bg = elm_layout(parent.window, edje_file, "bg-tb-on")
             self.tb = elm_layout(parent.window, edje_file, "tb")
             self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)

@@ -417,17 +417,21 @@ class PINApp2(tichy.Application):
 
     def run(self, window, text="", name=None, input_method=None):
 
-
         logger.info("PIN2 called")
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         
         self.main = gui.elm_layout_window(self.edje_file, "pin_enter")
         logger.info("PIN2 main generated")
+        
+        if hasattr(self.main.bg_m, "tb"):
+            tb = self.main.bg_m.tb.Edje
+            tb.signal_emit("hide_clock", "*")
+            tb.signal_emit("show_pin_title", "*")
+        
         self.edje_obj = self.main.main_layout.Edje
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
-        #self.edje_obj.show()
 
         yield tichy.Wait(self.main, 'value_received')
 

@@ -2,7 +2,7 @@
 
 group{
     name: "pin_enter";
-    min: 480 640;
+    min: 480 590;
     max: 480 640;
     script {
         
@@ -62,7 +62,7 @@ group{
                 state:   "default"  0.0;
                 color: 0 0 0 255;
             }
-        }
+        }/*
         part{
             name: "top-bar";
             type: RECT;
@@ -105,7 +105,7 @@ group{
                              to: "top-bar";
                      }
                 }
-           }
+           }*/
         part
         {
             name: "num_field";
@@ -117,13 +117,13 @@ group{
                 rel1 
                 {
                    relative:0.0 0.0;
-                   offset: 51 98;
+                   offset: 51 28;
                    to: "base";
                 }
                 rel2 
                 {
                    relative:0.0 0.0;
-                   offset: 430 142;
+                   offset: 430 72;
                    to: "base";
                 }
             }
@@ -166,12 +166,12 @@ group{
                state: "default" 0.0;
                rel1 {
                   relative: 0.0 0.0;
-                  offset: 1 210;
+                  offset: 1 120;
                   to: "base";
                }
                rel2 {
                   relative: 0.0 0.0;
-                  offset: 319 279;
+                  offset: 319 189;
                   to: "base";
                }
                image {
@@ -189,12 +189,12 @@ group{
                state: "default" 0.0;
                rel1 {
                   relative: 0.0 0.0;
-                  offset: 320 210;
+                  offset: 320 120;
                   to: "base";
                }
                rel2 {
                   relative: 0.0 0.0;
-                  offset: 479 279;
+                  offset: 479 189;
                   to: "base";
                }
                image {
@@ -204,18 +204,18 @@ group{
             }
          }
 
-        _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 280, 160, 369);
-        _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 280,  319, 369);
-        _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 280,  479, 369);
-        _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 370, 160, 459);
-        _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 370,  319, 459);
-        _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 370,  479, 459);
-        _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 460,  160, 549);
-        _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 460,  319, 549);
-        _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 460,  479, 549);
-        _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 560,  160, 639);
-        _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 560, 319, 639);
-        _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 560, 479, 639);
+        _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 190, 160, 279);
+        _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 190,  319, 279);
+        _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 190,  479, 279);
+        _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 280, 160, 369);
+        _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 280,  319, 369);
+        _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 280,  479, 369);
+        _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 370,  160, 459);
+        _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 370,  319, 459);
+        _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 370,  479, 459);
+        _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 460,  160, 549);
+        _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 460, 319, 549);
+        _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 460, 479, 549);
            
         part
         {
