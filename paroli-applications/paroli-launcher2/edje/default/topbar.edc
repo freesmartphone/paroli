@@ -184,7 +184,35 @@ group{
                 visible:0;
             }
         }
-        
+           part{
+             name: "title";
+             type: TEXT;
+             mouse_events:0;
+             description { 
+                state: "default" 0.0;
+                visible:0;
+             }
+             description { 
+                state: "pin" 0.0;
+                     color: 255 255 255 255;
+                     text {
+                             align: 0.5 0.0;
+                             text: "Enter PIN";
+                             size: 18;
+                             font: "Sans";
+                     }
+                     rel1 {
+                             relative: 0.0 0.0;
+                             offset: 150 29;
+                             to: "base";
+                     }
+                     rel2 {
+                             relative: 0.0 0.0;
+                             offset: 322 41;
+                             to: "base";
+                     }
+                }
+           }
               part{
                 name: "gsm";
                 type: IMAGE;
@@ -227,6 +255,10 @@ group{
                      inherit: "default" 0.0;
                      image.normal: "gsm_no_service.png";
                  }
+                description { 
+                    state: "pin" 0.0;
+                    visible:0;
+                }
               }
               part{
                 name: "battery";
@@ -266,6 +298,10 @@ group{
                      inherit: "default" 0.0;
                      image.normal: "battery_charging.png";
                  }
+                description { 
+                    state: "pin" 0.0;
+                    visible:0;
+                }
               }
 //         part
 //         {
@@ -312,6 +348,16 @@ group{
             source: "*";
             action: STATE_SET "hidden" 0.0;
             target: "clock";
+        }
+        program 
+        { 
+            name: "show_pin_title";
+            signal: "show_pin_title";
+            source: "*";
+            action: STATE_SET "pin" 0.0;
+            target: "title";
+            target: "gsm";
+            target: "battery";
         }
         program
               {

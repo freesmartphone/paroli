@@ -47,7 +47,7 @@ class Launcher_App2(tichy.Application):
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
         
-        if self.window.bg_m.tb:
+        if hasattr(self.window.bg_m, "tb"):
 
             self.window.bg_m.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
 
@@ -186,7 +186,6 @@ class Launcher_App2(tichy.Application):
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
         yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
-        
     
     def quit_app(self, emission, source, name):
     
@@ -425,11 +424,12 @@ class TopBar(tichy.Service):
         
         tb = gui.elm_tb(parent, onclick, self.edje_file, standalone)
         
-        if tb.tb:
+        if hasattr(tb,"tb"):
           self.tb_list.append(tb.tb.elm_obj)
           tb.tb.elm_obj.on_del_add(self.tb_deleted)
           self.battery_capacity(0,self.power.get_battery_capacity())
           self.network_strength(0,self.gsm.network_strength)
+          
         return tb
 
     def tb_deleted(self, *args, **kargs):
