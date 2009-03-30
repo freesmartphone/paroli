@@ -73,19 +73,9 @@ class PowerService(tichy.Service):
         self.emit('battery_status', self.battery_status)
 
     def get_battery_capacity(self):
-        bat_value = self.battery.GetCapacity()
-        return bat_value
-
-    #def start(self):
-        #"""Start the vibrator"""
-        #logger.info("start vibrator")
-        #if not self.vibrator:
-            #return
-        #self.vibrator.SetBlinking(300, 700)
-
-    #def stop(self):
-        #"""Stop the vibrator"""
-        #logger.info("stop vibrator")
-        #if not self.vibrator:
-            #return
-        #self.vibrator.SetBrightness(0)
+        if hasattr(self.battery, "GetCapacity"):
+            bat_value = self.battery.GetCapacity()
+            return bat_value
+        else: 
+            print dir(self.battery)
+            return 50

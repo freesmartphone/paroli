@@ -439,41 +439,12 @@ class PINApp2(tichy.Application):
         self.main.delete()
         yield number
 
-
     def embryo(self, emission, signal, source):
         logger.info('embryo says: ' + signal)
-
-    #def func_btn(self,emission,source,param):
-        #if param == 'call-button':
-              #self.call_btn_pressed(emission, source, param)
-        #elif param == 'del-button':
-              #self.number_edit_del(emission,source,param)
 
     def call_btn_pressed(self,emission, signal, source):
         logger.info(signal)
         self.main.emit('value_received')
-
-    #def add_digit(self,emission,source,param):
-        #new_sign = param
-        #value = emission.part_text_get('active-call')
-        #if value == None:
-          #new = str(new_sign)
-          #new_stars = '*'
-        #else:
-          #new = str(value)+str(new_sign)
-          #new_stars = str(emission.part_text_get('num_field-text')) + '*'
-
-        #emission.part_text_set('active-call',new)
-        #emission.part_text_set('num_field-text',new_stars)
-
-    #def number_edit_del(self,emission, source, param):
-        #logger.debug("number_edit del called")
-        #value = emission.part_text_get("active-call")
-        #star_value = emission.part_text_get("num_field-text")
-        #if len(value) != 0:
-          #emission.part_text_set("num_field-text",star_value[:-1])
-
-          #emission.part_text_set("active-call",value[:-1])
 
 
 class MyTextEditService(tichy.Service):
