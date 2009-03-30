@@ -36,25 +36,39 @@ class Dialog(tichy.Application):
     """
     def run(self, parent, title, msg):
         """Create an etk window and show the message"""
-        import etk
-        self.window = etk.Window(w=480, h=640)
-        box = etk.VBox()
-        self.window.add(box)
-        title_label = etk.Label(title)
-        box.add(title_label)
-        msg_label = etk.Label(msg)
-        box.add(msg_label)
-        button = etk.Button()
-        box.add(button)
-        ok_label = etk.Label("OK")
-        button.add(ok_label)
-        self.window.show_all()
-        button.connect('clicked', self._on_ok_clicked)
+        self.window = gui.elm_window(str(title))
+        self.window.elm_obj.show()
+        self.window.elm_obj.color_set(0, 0, 0, 255)
+        self.box = gui.elm_box(self.window.elm_obj)
+        self.window.elm_obj.resize_object_add(self.box.elm_obj)
+        
+        self.label = gui.elementary.Label(self.window.elm_obj)
+        self.label.label_set(str(title))
+        self.box.elm_obj.pack_end(self.label)
+        self.label.size_hint_min_set(440, 50)
+        self.label.show()
+        
+        self.scroller = gui.elm_scroller(self.window)
+        self.entry = gui.elementary.Entry(self.window.elm_obj)
+        self.entry.entry_set(str(msg))
+        self.entry.size_hint_weight_set(1.0, 0.6)
+        self.entry.editable_set(False)
+        self.entry.show()
+        self.scroller.elm_obj.content_set(self.entry)
+        
+        self.box.elm_obj.pack_end(self.scroller.elm_obj)
+        
+        self.button = gui.elementary.Button(self.window.elm_obj)
+        self.button.label_set("OK")
+        self.button.on_mouse_up_add(self._on_ok_clicked)
+        self.box.elm_obj.pack_end(self.button)
+        self.button.show()
+        
         yield tichy.Wait(self, 'done')
 
     def _on_ok_clicked(self, *args):
         """called when we clock the OK button"""
-        self.window.destroy()
+        self.window.elm_obj.delete()
         self.emit('done')
 
 
