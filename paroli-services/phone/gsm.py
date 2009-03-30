@@ -340,6 +340,7 @@ class TestGsm(GSMService):
         logger.info("Turn on antenna power")
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
+        self.network_strength = 50
         if len(self.logs) == 0:    
             for i in range(3):
                 call = Call('0049110', direction='out')
