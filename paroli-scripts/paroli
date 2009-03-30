@@ -102,7 +102,7 @@ class AutoAnswerCall(tichy.Tasklet):
         while True:
             call = yield tichy.Wait(gsm_service, 'incoming-call')
             logger.info("got incoming call")
-            caller_service = tichy.Service.get('TeleCaller')
+            caller_service = tichy.Service.get('TeleCaller2')
             yield caller_service.call("None", call)
 
 
