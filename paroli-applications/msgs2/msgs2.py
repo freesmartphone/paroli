@@ -253,7 +253,7 @@ class MsgsWrite(tichy.Application):
           
                   textbox.color_set(255, 255, 255, 255)
           
-                  textbox.entry_set("Just a stupid test text")
+                  textbox.entry_set("")
                   
                   textbox.size_hint_weight_set(1.0, 1.0)
         
