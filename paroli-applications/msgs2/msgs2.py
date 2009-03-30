@@ -274,12 +274,16 @@ class MsgsWrite(tichy.Application):
               if i == 0: #back
                   if full:
                       text_layout.elm_obj.hide()
+                      logger.info("win set False")
+                      self.window.window.elm_obj.keyboard_win_set(False)
                       continue
                   else:
                       print "breaking"
                       break
               if i == 1: #send
                   send = 1
+                  logger.info("win set False")
+                  self.window.window.elm_obj.keyboard_win_set(False)
                   break
           
           logger.info("broke loop")
