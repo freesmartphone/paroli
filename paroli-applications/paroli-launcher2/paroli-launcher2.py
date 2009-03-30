@@ -99,12 +99,12 @@ class Launcher_App2(tichy.Application):
         else:
             self.unblock_screen()
         
-        self.gsm = tichy.Service.get('GSM')
-        self.gsm.connect('network-strength', self.network_strength)
+        #self.gsm = tichy.Service.get('GSM')
+        #self.gsm.connect('network-strength', self.network_strength)
         
-        self.power = tichy.Service.get('Power')
-        self.power.connect('battery_capacity', self.battery_capacity)
-        self.power.connect('battery_status', self.battery_status)
+        #self.power = tichy.Service.get('Power')
+        #self.power.connect('battery_capacity', self.battery_capacity)
+        #self.power.connect('battery_status', self.battery_status)
         
         self.button = tichy.Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
@@ -120,7 +120,6 @@ class Launcher_App2(tichy.Application):
         
         self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
-        self.battery_capacity(0,self.power.get_battery_capacity())
         
         yield tichy.Wait(self.window, 'backs')
         #for i in self.main.children:
@@ -407,6 +406,13 @@ class TopBar(tichy.Service):
     def __init__(self):
         super(TopBar, self).__init__()
         self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
+        self.tb_list = []
+        self.gsm = tichy.Service.get('GSM')
+        self.power = tichy.Service.get('Power')    
+        self.gsm.connect('network-strength', self.network_strength)
+        self.power.connect('battery_capacity', self.battery_capacity)
+        self.power.connect('battery_status', self.battery_status)
+    
     
     @tichy.tasklet.tasklet
     def init(self):
@@ -419,4 +425,36 @@ class TopBar(tichy.Service):
         
         tb = gui.elm_tb(parent, onclick, self.edje_file, standalone)
         
+        if tb.tb:
+          self.tb_list.append(tb.tb.elm_obj)
+          tb.tb.elm_obj.on_del_add(self.tb_deleted)
+          self.battery_capacity(0,self.power.get_battery_capacity())
+          self.network_strength(0,self.gsm.network_strength)
         return tb
+
+    def tb_deleted(self, *args, **kargs):
+        try:
+            self.tb_list.remove(args[0])
+        except Exception,e:
+            dir(e)
+
+    def network_strength(self, *args, **kargs):
+        for i in self.tb_list:
+            i.edje_get().signal_emit(str(args[1]), "gsm_change")
+        
+    def battery_capacity(self, *args, **kargs):
+        for i in self.tb_list:
+            logger.info("capacity change in launcher to %s", str(args[1]))
+            i.edje_get().signal_emit(str(args[1]), "battery_change")
+
+    def battery_status(self, *args, **kargs):
+        for i in self.tb_list:
+            logger.info("battery status change in launcher")
+            if args[1] == "charging":
+                i.edje_get().signal_emit(args[1], "battery_status_charging")
+            elif args[1] == "discharging":
+                bat_value = self.power.get_battery_capacity() 
+                i.edje_get().signal_emit(str(bat_value), "battery_change")
+            elif args[1] == "full":
+                #TODO: We may do something here.
+                pass
