@@ -178,14 +178,14 @@ class Launcher_App2(tichy.Application):
     
     def incoming_ussd(self, stuff, msg):
         """connected to the 'incoming_message' edje signal"""
-        print stuff
-        print msg
+        #print stuff
+        #print msg
         self._incoming_ussd(str(msg[1])).start()
     
     @tichy.tasklet.tasklet
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
-        yield tichy.Service.get('Dialog').dialog(self.main, 'Ussd', msg)
+        yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
         
     
     def quit_app(self, emission, source, name):
