@@ -63,7 +63,7 @@ class EventsLoop(object):
         ecore.main_loop_iterate()
 
 class elm_window(tichy.Object):
-    def __init__(self,title="None"):
+    def __init__(self, title="Paroli"):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
         self.elm_obj.autodel_set(True)
