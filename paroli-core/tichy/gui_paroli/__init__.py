@@ -45,22 +45,26 @@ class EventsLoop(object):
 
         This method only return after we call `quit`.
         """
-        ecore.main_loop_begin()
+        #ecore.main_loop_begin()
+        elementary.run()
         # XXX: elementary also has a run method : elementary.run(),
         #      how does it work with ecore.main_loop ?
 
     def timeout_add(self, time, callback, *args):
-        return ecore.timer_add(time / 1000., callback, *args)
+        #return ecore.timer_add(time / 1000., callback, *args)
+        pass
 
     def source_remove(self, timer):
-        timer.delete()
+        pass
+        #timer.delete()
 
     def quit(self):
-        ecore.main_loop_quit()
+        #ecore.main_loop_quit()
         elementary.shutdown()
         
     def iterate(self):
-        ecore.main_loop_iterate()
+        #ecore.main_loop_iterate()
+        pass
 
 class elm_window(tichy.Object):
     def __init__(self, title="Paroli"):
