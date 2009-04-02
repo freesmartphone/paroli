@@ -41,9 +41,11 @@ class FSOAudio(tichy.Service):
         yield self._connect_dbus()
         if self.device != None:
             self.mic_state = self.get_mic_status()
-            self.speaker_volume = self.get_speaker_volume()
+            ##XXX: currently not working method in Framework so we assume 40
+            #self.speaker_volume = self.get_speaker_volume()
+            self.speaker_volume = 40
         
-        #yield self._do_sth()
+        yield None
         
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
@@ -66,6 +68,7 @@ class FSOAudio(tichy.Service):
         pass
         
     def get_mic_status(self):
+        logging.info("retriving mic status")
         return self.device.GetMicrophoneMuted()
         
     def set_mic_status(self, val):
@@ -73,6 +76,7 @@ class FSOAudio(tichy.Service):
             self.device.SetMicrophoneMuted(val)
     
     def get_speaker_volume(self):
+        logging.info("retriving speaker status")
         return self.device.GetSpeakerVolume()
         
     def set_speaker_volume(self, val):
