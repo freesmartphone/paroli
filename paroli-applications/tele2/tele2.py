@@ -244,7 +244,7 @@ class TeleCaller2(tichy.Application):
                 self.main.bg_m.onclick = 'back'
             else:
                 self.main.delete()
-            
+            self.storage.window = None
         except Exception, e:
             logger.error("Got error in caller : %s", e)
             if layout:
@@ -253,6 +253,7 @@ class TeleCaller2(tichy.Application):
                 self.main.bg_m.onclick = 'back'
             else:
                 self.main.delete()
+            self.storage.window = None
             raise    
     
     def hide_call(self, *args, **kargs):

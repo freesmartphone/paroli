@@ -38,7 +38,8 @@ class Launcher_App2(tichy.Application):
     
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
-        self.standalone = standalone
+        self.standalone = tichy.config.getboolean('standalone',
+                                                'activated', False)
         self.advanced = tichy.config.getboolean('advanced-mode',
                                                 'activated', False)
 
@@ -84,14 +85,12 @@ class Launcher_App2(tichy.Application):
         box.elm_obj.show()
         self.edje_obj.elm_obj.content_set("link-box",box.elm_obj)
         self.storage = tichy.Service.get('TeleCom2')
-        #self.connector = self.storage.window
-        #self.connector.connect('call_active',self.set_caller)
         self.edje_obj.add_callback("*", "launch_app", self.launch_app)
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("test", "*", self.test)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         ##current hack
-        self.standalone = True
+        #self.standalone = True
         
         self.msg = tichy.Service.get('Messages')
         if self.msg.ready == False :
@@ -99,12 +98,7 @@ class Launcher_App2(tichy.Application):
         else:
             self.unblock_screen()
         
-        #self.gsm = tichy.Service.get('GSM')
-        #self.gsm.connect('network-strength', self.network_strength)
-        
-        #self.power = tichy.Service.get('Power')
-        #self.power.connect('battery_capacity', self.battery_capacity)
-        #self.power.connect('battery_status', self.battery_status)
+        self.busywin = tichy.Service.get('BusyWin')
         
         self.button = tichy.Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
@@ -122,8 +116,6 @@ class Launcher_App2(tichy.Application):
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         yield tichy.Wait(self.window, 'backs')
-        #for i in self.main.children:
-          #i.remove()
         self.window.delete()   # Don't forget to close the window
 
     def unblock_screen(self, *args, **kargs):
@@ -147,10 +139,14 @@ class Launcher_App2(tichy.Application):
         app = args[1]
         edje_obj = self.app_objs[app][0]
         text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
+        if hasattr(self.storage.window, "window"):
+            self.storage.window.window.elm_obj.on_hide_add(self._recreate_link_signals)
+            #self.storage.window.window.elm_obj.on_show_add(self._remove_link_signals)
         edje_obj.Edje.part_text_set('testing_textblock',text)
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
+        self._remove_link_signals()
         self._launch_app(str(signal)).start()
 
     @tichy.tasklet.tasklet
@@ -162,30 +158,33 @@ class Launcher_App2(tichy.Application):
         # XXX: The launcher shouldn't know anything about this app
         if name == 'Tele' and self.storage.call != None:
             self.storage.window.emit("dehide")
-        else:
+        elif self.active_app == None or self.active_app == "Tele":
+            #self.edje_obj.Edje.signal_emit("unready","*")
             app = tichy.Application.find_by_name(name)
-            #try:
             self.active_app = name
-            #self.edje_obj.signal('app_active',"*")
-            # minus top-bar, 50, magic number here for now. 
-            #self.main.etk_obj.move_resize(0, 50, self.w, self.h-50)
             yield app(self.window, standalone=self.standalone)
-            #except Exception, ex:
-                #logger.error("Error from app %s : %s", name, ex)
-                #yield tichy.Service.get('Dialog').error(self.main, "%s", ex)
-            #finally:
-            #self.edje_obj.signal("switch_clock_off","*")
+            self._recreate_link_signals()
+            #self.edje_obj.Edje.signal_emit("ready","*")
+            self.active_app = None
+        else:
+            logger.info("blocked %s", name)
     
     def incoming_ussd(self, stuff, msg):
         """connected to the 'incoming_message' edje signal"""
-        #print stuff
-        #print msg
         self._incoming_ussd(str(msg[1])).start()
     
     @tichy.tasklet.tasklet
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
         yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
+    
+    def _remove_link_signals(self, *args, **kargs):
+        for i in self.app_objs:
+            self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
+    
+    def _recreate_link_signals(self, *args, **kargs):
+        for i in self.app_objs:
+            self.app_objs[i][0].Edje.signal_callback_add("*", "launch_app", self.launch_app)
     
     def quit_app(self, emission, source, name):
     
@@ -397,7 +396,38 @@ class Launcher_App2(tichy.Application):
         except Exception, ex:
             logger.warning("Can't get paroli version : %s", ex)
             self.edje_obj.Edje.part_text_set('version', '????')
+ 
+##Service to generate and store the loading window
+class BusyWin(tichy.Service):
+    service = 'BusyWin'
+
+    def __init__(self):
+        super(BusyWin, self).__init__()
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
+        self.win = None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield self._do_sth()
     
+    def _do_sth(self):
+        pass
+
+    @tichy.tasklet.tasklet
+    def create_win(self):
+        if self.win == None:
+            self.win = gui.elm_window()
+            self.layout = gui.elm_layout(self.win, self.edje_file, "busywin")
+            self.win.elm_obj.resize_object_add(self.layout.elm_obj)
+            self.win.elm_obj.show()
+            print "you"
+        yield "me"
+
+    def delete_win(self):
+        if self.win != None:
+            self.win.elm_obj.delete()
+            self.win = None
+
 ##Service to generate and store the topbar
 class TopBar(tichy.Service):
     service = 'TopBar'
