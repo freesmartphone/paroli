@@ -739,12 +739,13 @@ collections{
                       color:0 0 0 120;
                       rel1 {
                          relative: 0.0 0.0;
-                         offset: 22 247;
+//                          offset: 22 247;
+//                          offset: 0 0;
                          to: "base";
                       }
                       rel2 {
-                         relative: 0.0 0.0;
-                         offset: 460 532;
+                         relative: 1.0 1.0;
+//                          offset: 460 532;
                          to: "base";
                       } 
                     }
@@ -796,6 +797,21 @@ collections{
                   source: "*";
                   action: STATE_SET "unblocked" 0.0;
                   target: "blocker";
+              }
+              program 
+              {
+                  name: "block";
+                  signal: "unready";
+                  source: "*";
+                  action: STATE_SET "default" 0.0;
+                  target: "blocker";
+                  after:"embryo-test";
+              }
+              program{
+                  name:"embryo-test";
+                  script{
+                      emit("blocking-test","embryo");
+                  }
               }
               program 
               {
