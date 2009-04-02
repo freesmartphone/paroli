@@ -71,9 +71,13 @@ class FreeSmartPhoneSMS(tichy.Service):
 
     service = 'SMS'
 
+    def __init__(self):
+        super(FreeSmartPhoneSMS, self).__init__()
+
     @tichy.tasklet.tasklet
     def init(self):
-        logger.info("connecting to freesmartphone.GSM dbus interface")
+        logger.info("connecting to freesmartphone.GSM SMS dbus interface")
+        yield tichy.Service.get('GSM').wait_initialized()
         try:
             # We create the dbus interfaces to org.freesmarphone
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -87,6 +91,8 @@ class FreeSmartPhoneSMS(tichy.Service):
             logger.info("Listening to incoming SMS")
             # XXX: we should use the IncomigMessage method, but there
             #      is a bug in the framework.
+            self.sms_iface.connect_to_signal("IncomingMessage",
+                                             self.on_incoming_unstored_message)
             self.sim_iface.connect_to_signal("IncomingStoredMessage",
                                              self.on_incoming_message)
         except Exception, e:
@@ -123,6 +129,27 @@ class FreeSmartPhoneSMS(tichy.Service):
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)
 
+    def on_incoming_unstored_message(self, *args, **kargs):
+        logger.info("incoming unstored message")
+        print args
+        self._on_incoming_unstored_message(args[0]).start()
+
+    @tichy.tasklet.tasklet
+    def _on_incoming_unstored_message(self, message):
+        # XXX: It would be better to use a PhoneMessage here, and
+        #      never store messages on the SIM.
+        #logger.info("Incoming message %d", index)
+        #message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
+        #status = str(message[0])
+        peer = str(message[0])
+        text = unicode(message[1])
+        messages_service = tichy.Service.get('Messages')
+        message = messages_service.create(peer, text, 'in')
+        yield messages_service.add(message)
+        # We delete the message from the SIM
+        self.sms_iface.AckMessage(message)
+        #yield WaitDBus(self.sim_iface.DeleteMessage, index)
+
     def on_incoming_message(self, index):
         self._on_incoming_message(index).start()
 
@@ -139,7 +166,9 @@ class FreeSmartPhoneSMS(tichy.Service):
         message = messages_service.create(peer, text, 'in')
         yield messages_service.add(message)
         # We delete the message from the SIM
+        logger.info("deleting %d", index)
         yield WaitDBus(self.sim_iface.DeleteMessage, index)
+        logger.info("deleted %d", index)
 
 
 class TestSms(tichy.Service):
