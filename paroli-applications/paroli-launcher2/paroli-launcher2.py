@@ -43,6 +43,8 @@ class Launcher_App2(tichy.Application):
         self.advanced = tichy.config.getboolean('advanced-mode',
                                                 'activated', False)
 
+        self.settings = tichy.config.getboolean('settings','activated', False)
+
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
@@ -103,6 +105,9 @@ class Launcher_App2(tichy.Application):
         self.button = tichy.Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         
+        if self.settings:
+            self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
+          
         self.prefs = tichy.Service.get('Prefs')
         self.audio_service = tichy.Service.get('Audio')
         
@@ -336,6 +341,9 @@ class Launcher_App2(tichy.Application):
         edje.part_text_set('home-clock-minute-digit-1', min_digit_1)
         edje.part_text_set('home-clock-minute-digit-0', min_digit_0)
         edje.part_text_set('clock', time_text)
+    
+    def open_settings(self, *args, **kargs):
+        print "settings called"
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)
