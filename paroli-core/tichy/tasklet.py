@@ -464,6 +464,7 @@ class WaitDBusName(Tasklet):
 
     def run(self, name, time_out=None):
         if self._is_dbus_name_present(name):
+            #logger.info("%s is present", str(name))
             yield None
         else:
             yield WaitDBusNameChange(name, time_out=time_out)
