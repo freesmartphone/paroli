@@ -45,21 +45,21 @@ class EventsLoop(object):
 
         This method only return after we call `quit`.
         """
-        #ecore.main_loop_begin()
-        elementary.run()
+        ecore.main_loop_begin()
+        #elementary.run()
         # XXX: elementary also has a run method : elementary.run(),
         #      how does it work with ecore.main_loop ?
 
     def timeout_add(self, time, callback, *args):
-        #return ecore.timer_add(time / 1000., callback, *args)
+        return ecore.timer_add(time / 1000., callback, *args)
         pass
 
     def source_remove(self, timer):
         pass
-        #timer.delete()
+        timer.delete()
 
     def quit(self):
-        #ecore.main_loop_quit()
+        ecore.main_loop_quit()
         elementary.shutdown()
         
     def iterate(self):
