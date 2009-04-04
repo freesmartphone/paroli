@@ -115,10 +115,12 @@ class Launcher_App2(tichy.Application):
         self.ussd.connect('incoming', self.incoming_ussd)
         self.systime = tichy.Service.get('SysTime')
         self.alarm = tichy.Service.get('Alarm')
-        self._get_paroli_version()
+        #self._get_paroli_version()
         
         self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
+        
+        #tichy.Service.get("GSM")._ask_pin()
         
         yield tichy.Wait(self.window, 'backs')
         self.window.delete()   # Don't forget to close the window
@@ -394,16 +396,16 @@ class Launcher_App2(tichy.Application):
     def general_test(self, *args, **kargs):
         logger.info("general test called with args: %s and kargs: %s", args, kargs)
     
-    #write version number on home-screen
-    def _get_paroli_version(self):
-        try:
-            wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, error= wo.communicate()
-            m = re.search('Version:\s.*[+].*[+](.*)-[r5]',output)
-            self.edje_obj.Edje.part_text_set('version',m.group(1))
-        except Exception, ex:
-            logger.warning("Can't get paroli version : %s", ex)
-            self.edje_obj.Edje.part_text_set('version', '????')
+    ##write version number on home-screen
+    #def _get_paroli_version(self):
+        #try:
+            #wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #output, error= wo.communicate()
+            #m = re.search('Version:\s.*[+].*[+](.*)-[r5]',output)
+            #self.edje_obj.Edje.part_text_set('version',m.group(1))
+        #except Exception, ex:
+            #logger.warning("Can't get paroli version : %s", ex)
+            #self.edje_obj.Edje.part_text_set('version', '????')
  
 ##Service to generate and store the loading window
 class BusyWin(tichy.Service):
@@ -428,7 +430,6 @@ class BusyWin(tichy.Service):
             self.layout = gui.elm_layout(self.win, self.edje_file, "busywin")
             self.win.elm_obj.resize_object_add(self.layout.elm_obj)
             self.win.elm_obj.show()
-            print "you"
         yield "me"
 
     def delete_win(self):
@@ -477,6 +478,7 @@ class TopBar(tichy.Service):
             dir(e)
 
     def network_strength(self, *args, **kargs):
+        logger.info("network strength %s", str(args[1]))
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gsm_change")
         
