@@ -252,13 +252,13 @@ group { name: "main";
                 color: 0 0 0 255;
                 rel1 
                 {
-                   relative:0.1062 0.145;
+                   relative:0.1062 0.105;
 //                    offset: 51 48;
                    to: "base";
                 }
                 rel2 
                 {
-                   relative:0.8959 0.21375;
+                   relative:0.8959 0.17375;
 //                    offset: 430 92;
                    to: "base";
                 }
@@ -559,12 +559,12 @@ group { name: "main";
             description {
                state: "default" 0.0;
                rel1 {
-                  relative: 0.6667 0.241875;
+                  relative: 0.6667 0.206;
 //                   offset: 320 110;
                   to: "base";
                }
                rel2 {
-                  relative: 0.9999 0.3499;
+                  relative: 0.9999 0.354;
 //                   offset: 479 179;
                   to: "base";
                }
