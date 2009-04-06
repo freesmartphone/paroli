@@ -346,6 +346,15 @@ class Launcher_App2(tichy.Application):
     
     def open_settings(self, *args, **kargs):
         print "settings called"
+        if self.settings == True:
+            self.launch_app(None, 'Settings', None)
+        #print tichy.Setting.groups
+        #m = tichy.Setting.groups["phone"]["volume"]
+        #print dir(m)
+        #yield m.set(60)
+        #print m.value
+        #print 
+        
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)

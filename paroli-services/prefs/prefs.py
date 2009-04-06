@@ -44,9 +44,12 @@ class PrefsService(Service):
         raise NotImplementedError
 
 
-class FreeSmartPhonePrefs(PrefsService):
+class FreeSmartPhonePrefs(tichy.Service):
 
     service = 'Prefs'
+
+    def __init__(self):
+        super(FreeSmartPhonePrefs, self).__init__()
 
     class Service(object):
 
@@ -57,12 +60,15 @@ class FreeSmartPhonePrefs(PrefsService):
             path = prefs.prefs.GetService(name)
             self.service = prefs.bus.get_object(
                 'org.freesmartphone.opreferencesd', path)
+      
+            self.iface = dbus.Interface(self.service, 'org.freesmartphone.Preferences.Service')
 
         def __getitem__(self, key):
-            return self.service.GetValue(key)
+            return self.iface.GetValue(key)
 
         def __setitem__(self, key, value):
-            self.service.SetValue(key)
+            self.iface.SetValue(key, value)
+            print self.iface.GetValue(key)
 
     @tichy.tasklet.tasklet
     def init(self):
@@ -78,6 +84,8 @@ class FreeSmartPhonePrefs(PrefsService):
             self.prefs = dbus.Interface(
                 self.prefs,
                 'org.freesmartphone.Preferences')
+                
+            profile = tichy.settings.Setting('phone', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profiles())
         except Exception, e:
             logger.warning("can't use freesmartphone Preferences : %s", e)
             self.prefs = None
@@ -89,9 +97,10 @@ class FreeSmartPhonePrefs(PrefsService):
     def get_profiles(self):
         ret = self.prefs.GetProfiles()
         return [str(x) for x in ret]
-
+    
+    @tichy.tasklet.tasklet
     def set_profile(self, name):
-        self.prefs.SetProfile(name)
+        yield self.prefs.SetProfile(name)
 
     def __getitem__(self, name):
         return FreeSmartPhonePrefs.Service(self, name)

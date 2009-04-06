@@ -43,8 +43,11 @@ class FSOAudio(tichy.Service):
             self.mic_state = self.get_mic_status()
             ##XXX: currently not working method in Framework so we assume 40
             #self.speaker_volume = self.get_speaker_volume()
-            self.speaker_volume = 40
-        
+            self.speaker_volume = tichy.Int(50)
+        tichy.settings.FSOSetting('phone', 'ring-volume', tichy.Int,  options=[0,25,50,75,100])
+        tichy.settings.FSOSetting('phone', 'message-volume', tichy.Int, options=[0,25,50,75,100])
+        tichy.settings.FSOSetting('phone', 'ring-vibration', tichy.Int,  options=[0,1])
+        tichy.settings.FSOSetting('phone', 'message-vibration', tichy.Int, options=[0,1])
         yield None
         
     @tichy.tasklet.tasklet
@@ -80,8 +83,10 @@ class FSOAudio(tichy.Service):
         return self.device.GetSpeakerVolume()
         
     def set_speaker_volume(self, val):
+        logging.info("set speaker vol called")
         if self.muted != 1:
-            self.device.SetSpeakerVolume(val)
+            self.device.SetSpeakerVolume(int(val))
+            logger.info("set volume to %d", self.get_speaker_volume())
         
     def audio_toggle(self):
       if self.device != None:
@@ -122,12 +127,14 @@ class ParoliAudio(tichy.Service):
         
         self.device = None
         self.muted = 0
-        self.volume = 55
+        self.volume = tichy.Int.as_type(55)
 
     @tichy.tasklet.tasklet
     def init(self):
-       
-        yield self._do_sth()
+        logger.info("init of audio")
+        volume = tichy.Setting('phone', 'volume', tichy.Int, setter=self.set_speaker_volume)
+        yield volume.set(self.volume)
+        #yield self._do_sth()
         
     def _do_sth(self):
         pass
@@ -140,11 +147,12 @@ class ParoliAudio(tichy.Service):
             pass
     
     def get_speaker_volume(self):
-        return self.volume
+        return self.volume.value
         
     def set_speaker_volume(self, val):
         if self.muted != 1:
-            self.volume = val
+            self.volume.value = val
+            logger.info("volume set to %d", self.get_speaker_volume())
         
     def audio_toggle(self):
         return 0

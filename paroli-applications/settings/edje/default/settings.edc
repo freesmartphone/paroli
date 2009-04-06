@@ -1,0 +1,338 @@
+// // the base element in all edc files
+collections
+{
+  fonts {
+      font: "Inspiration-Bold.ttf"   "Sans";
+  }
+  
+  images {
+   image: "back.png" COMP;
+  }
+  
+    // // these are the elements you can form edje objects from
+    group
+    {
+        // // the name parameter is the one also used by python to retrieve the group
+        name:"main";
+        // // the are the maximum and minumum size of the canvas
+        // // if you do not specifiy them your object will not be visible
+        min: 480 590;
+        min: 480 590;
+        // // every group can contain any number of parts, all of which are generated when the group is called
+        parts
+        {            
+            part
+            {
+                // // it is advisable to have a base part which catches all clicks not made on any other object and prevents them from getting to the elements laying below
+                name:"base";
+                // // edc knows several types: IMAGE, RECT, TEXT etc.
+                // // rect will open a simple rectangle between rel1 and rel2 (see below)
+                type:RECT;
+                // // the description part defines the design of the part
+                description 
+                { 
+                    // // an element can have multiple designs depending on its state
+                    state:   "default"  0.0;
+                    color: 0 0 0 255;
+                    // // in edc size can be allocated via pixels as well as relative
+                    // // in most cases relativ sizes are more advisable as they allow easy scaling
+                    rel1 
+                    {
+                        // // rel1 defines the top left of the element
+                        // // the first is the x-value and the second the y-value
+                        relative: 0.0 0.0;
+                    }
+                    rel2 
+                    {
+                        // // rel2 defines the bottom right of the element
+                        // // the first is the x-value and the second the y-value
+                        relative: 1.0 1.0;
+                    }
+                }
+            }
+            part {
+                name: "back-button";
+                type: IMAGE;
+                mouse_events: 1;
+                description {
+                    state: "default" 0.0;
+                }
+                description {
+                      state: "sublist" 0.0;
+                      min: 114 33;
+                      max: 114 33;
+                      rel1 
+                      {
+                        relative: 0.02 0.03;
+        //                  offset: 9 20;
+                        to: "base";
+                      }
+                      rel2 
+                      {
+                          relative: 0.26625 0.0828;
+        //                   offset: 123 53;
+                          to: "base";
+                      }
+                      image {
+                          normal: "back.png";
+                      }
+                      visible: 1;
+                  }
+            }
+            part
+            {
+                // // the actual Hello World text part
+                // // name the part
+                name: "list";
+                // // make it a text part
+                type: SWALLOW;
+                description 
+                { 
+                    // // define the default state
+                    state: "default" 0.0;
+                    // // define the font color in rgba
+                    color: 0 0 0 255;
+                    rel1 {
+                        relative: 0.01 0.01;
+                        to: "base";
+                    }
+                    rel2 {
+                        relative: 0.99 0.99;
+                        to: "base";
+                    }
+                }
+                description 
+                { 
+                    // // define the default state
+                    state: "sublist" 0.0;
+                    // // define the font color in rgba
+                    color: 0 0 0 255;
+                    rel1 {
+                        relative: 0.01 0.1;
+                        to: "base";
+                    }
+                    rel2 {
+                        relative: 0.99 0.99;
+                        to: "base";
+                    }
+                }
+            }
+        }
+        // //a new part in this is the programs, they are simple functions executed on certain events
+        programs
+        {
+            program{
+                name: "enable_sublist";
+                signal: "sublist_mode";
+                source: "*";
+                action: STATE_SET "sublist" 0.0;
+                target: "list";
+                target: "back-button";
+            }
+            program{
+                name: "back_clicked";
+                signal: "mouse,clicked,1";
+                source: "back-button";
+                action: SIGNAL_EMIT "back" "main_command";
+            }
+        }
+    }
+
+group{
+    name: "group";
+    min: 400 60;
+    max: 400 60;
+    parts{
+        part{
+            name: "base";
+            type:RECT;
+            description{
+                state:   "default"  0.0;
+                color: 0 0 0 255;
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 255 255 255 255;
+            }
+        }
+        part{
+            name: "title";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 0.05 0.2;
+                    font: "Sans";
+                    size: 48;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+        part{
+            name: "subtitle";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 0.8 0.8;
+                    font: "Sans";
+                    size: 24;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+    }
+    programs{
+        program{
+            name: "clicked";
+            signal: "mouse,up,1";
+            source: "base";
+            action: SIGNAL_EMIT "click" "sublist";
+        }
+//         program{
+//             name: "select";
+//             signal: "mouse,up,1";
+//             source: "base";
+//             action: STATE_SET "selected" 0.0;
+//             target: "base";
+//             target: "title";
+//             target: "subtitle";
+//             after: "send_toggle";
+//         }
+//         program{
+//             name: "send_toggle";
+//             action: SIGNAL_EMIT "callback" "xxx";
+//         }
+    }
+}
+
+group{
+    name: "toggle_setting";
+    min: 400 60;
+    max: 400 60;
+    parts{
+        part{
+            name: "base";
+            type:RECT;
+            description{
+                state:   "default"  0.0;
+                color: 0 0 0 255;
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 255 255 255 255;
+            }
+        }
+        part{
+            name: "title";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 0.1 0.0;
+                    font: "Sans";
+                    size: 48;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+        part{
+            name: "subtitle";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 0.6 0.6;
+                    font: "Sans";
+                    size: 24;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+    }
+    programs{
+        program{
+            name: "select";
+            signal: "mouse,up,1";
+            source: "base";
+            action: STATE_SET "selected" 0.0;
+            target: "base";
+            target: "title";
+            target: "subtitle";
+            after: "send_toggle";
+        }
+        program{
+            name: "send_toggle";
+            action: SIGNAL_EMIT "callback" "xxx";
+        }
+    }
+}
+
+// // collections closing    
+} 

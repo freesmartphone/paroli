@@ -6,4 +6,5 @@ cd paroli-launcher2; ./build.sh; cd ..
 cd tele2; ./build.sh; cd ..
 cd msgs2; ./build.sh; cd ..
 cd people2; ./build.sh; cd ..
+cd settings; ./build.sh; cd ..
 

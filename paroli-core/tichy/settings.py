@@ -20,9 +20,11 @@
 from tichy.object import Object
 from tichy.item import Item
 from tichy import tasklet
-        
+import tichy
+import logging
+logger = logging.getLogger('settings-service')     
 
-class Setting(Object):
+class Setting(tichy.Object):
     """Represents a setting value
 
     Setting values are similar to Item, but allow to give more
@@ -40,7 +42,7 @@ class Setting(Object):
     # contains a map : { group : { name : setting } }
     groups = {}
 
-    def __init__(self, group, name, type, value=None, setter=None, **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options=None, **kargs):
         """Create a new setting
 
         :Parameters:
@@ -70,6 +72,8 @@ class Setting(Object):
         self.type = type
         self.__value = type.as_type(value) if value is not None else type()
         self.__setter = setter or self.setter
+        self.options = tichy.List()
+        self.options.extend(options)
 
         # register the setting into the list of all settings
         Setting.groups.setdefault(group, {})[name] = self
@@ -90,11 +94,28 @@ class Setting(Object):
         """
         yield None
 
-    @tasklet.tasklet
+    @tichy.tasklet.tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
         yield self.__setter(value)
         self.__value.value = value
+        self.options.emit('updated')
+        logger.info("%s set to %s", self.name, str(self.value))
+
+    def rotate(self):
+        if self.value != None:
+            if self.options.count(self.value) != 0:
+                current_index = self.options.index(self.value)
+                logger.info("current index: %d", current_index)
+                if len(self.options)-1 == current_index:
+                    new = self.options[0]
+                else:
+                    new = self.options[current_index + 1]
+            else:
+                new = self.options[0]
+                
+            logger.info("new value: %s", new)    
+            self.set(new).start()
 
     # Redirect `connect` and `disconnect` to the value
     def connect(self, *args, **kargs):
@@ -121,6 +142,7 @@ class FSOSetting(Setting):
         prefs = tichy.Service.get('Prefs')
         # XXX: make this asynchronous
         prefs[self.group][self.name] = value
+        self.options.emit('updated')
         yield None
 
 if __name__ == '__main__':
