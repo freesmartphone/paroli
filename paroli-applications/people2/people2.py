@@ -189,6 +189,8 @@ class ListContacts(tichy.Application):
         self.list_label = [('label','name')]
         self.item_list = gui.elm_list(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
         
+        self.item_list.signal_send('list_only_mode', "*")
+        
         parent.main_layout.elm_obj.hide()
         layout.elm_obj.hide()
 

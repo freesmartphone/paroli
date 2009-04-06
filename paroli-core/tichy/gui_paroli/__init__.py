@@ -103,8 +103,8 @@ class elm_scroller(tichy.Object):
 class elm_box(tichy.Object):
     def __init__(self, win):
         self.elm_obj = elementary.Box(win)
-        self.elm_obj.size_hint_weight_set(1.0, 1.0)
-        self.elm_obj.size_hint_align_set(-1.0, -1.0)
+        self.elm_obj.size_hint_weight_set(0.0, 0.0)
+        self.elm_obj.size_hint_align_set(0.0, 0.0)
         self.elm_obj.show()
 
 class elm_tb(tichy.Object):
@@ -283,6 +283,10 @@ class elm_list(tichy.Object):
           self.callbacks.append([signal, source, func])
           for i in self.items:
               i[1].signal_callback_add(signal, source , func, i)
+
+      def signal_send(self, signal, source):
+          for i in self.items:
+              i[1].signal_emit(signal, source)
 
       def _remove_item(self, list, removed_item):
           logger.info('remove called')

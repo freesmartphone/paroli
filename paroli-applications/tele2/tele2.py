@@ -51,7 +51,7 @@ class TeleApp(tichy.Application):
         self.ussd_service = tichy.Service.get('Ussd')
         self.edje_obj.add_callback("num_field_pressed", "*", self.num_field_action)
 
-        #self.edje_obj.add_callback("*", "embryo", self.embryo)
+        self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
 
         ##wait until main object emits back signal or delete is requested
