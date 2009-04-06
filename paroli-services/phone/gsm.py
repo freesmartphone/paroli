@@ -205,7 +205,7 @@ class FreeSmartPhoneGSM(GSMService):
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
-
+        
     def _turn_on(self):
         """turn on the antenna
 
@@ -341,6 +341,7 @@ class TestGsm(GSMService):
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
         self.network_strength = 50
+        #yield self._ask_pin()
         if len(self.logs) == 0:    
             for i in range(3):
                 call = Call('0049110', direction='out')
@@ -384,6 +385,23 @@ class TestGsm(GSMService):
     def _release(self, call):
         call._released()
         yield None
+
+    @tichy.tasklet.tasklet
+    def _ask_pin(self):
+        #window = tichy.Service.get("WindowsManager").get_app_parent()
+        window = None
+        editor = tichy.Service.get('TelePIN2')
+        sim = tichy.Service.get('SIM')
+        for i in range(4):
+            pin = yield editor.edit(window, name="Enter PIN",
+                                    input_method='number')
+            try:
+                yield sim.send_pin(pin)
+                break
+            except sim.PINError:
+                if i == 4: # after 3 times we give up
+                    raise
+                logger.info("pin wrong : %s", pin)
 
     def get_provider(self):
         return 'Charlie Telecom'
