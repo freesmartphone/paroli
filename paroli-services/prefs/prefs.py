@@ -100,7 +100,8 @@ class FreeSmartPhonePrefs(tichy.Service):
     
     @tichy.tasklet.tasklet
     def set_profile(self, name):
-        yield self.prefs.SetProfile(name)
+        self.prefs.SetProfile(name)
+        yield self.emit('profile_changed')
 
     def __getitem__(self, name):
         return FreeSmartPhonePrefs.Service(self, name)

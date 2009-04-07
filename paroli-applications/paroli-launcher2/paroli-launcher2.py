@@ -371,7 +371,7 @@ class Launcher_App2(tichy.Application):
             #edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
             #edje_obj.Edje.size_set(480, 600)
             #edje_obj.show()
-            self.prefs.set_profile(new)
+            yield self.prefs.set_profile(new)
             
             logger.info("current: %s new: %s", current, new)
     
@@ -455,10 +455,12 @@ class TopBar(tichy.Service):
         self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
         self.tb_list = []
         self.gsm = tichy.Service.get('GSM')
-        self.power = tichy.Service.get('Power')    
+        self.power = tichy.Service.get('Power')
+        self.prefs = tichy.Service.get('Prefs')
         self.gsm.connect('network-strength', self.network_strength)
         self.power.connect('battery_capacity', self.battery_capacity)
         self.power.connect('battery_status', self.battery_status)
+        self.prefs.connect('profile_changed', self.profile_change)
     
     
     @tichy.tasklet.tasklet
@@ -477,6 +479,7 @@ class TopBar(tichy.Service):
           tb.tb.elm_obj.on_del_add(self.tb_deleted)
           self.battery_capacity(0,self.power.get_battery_capacity())
           self.network_strength(0,self.gsm.network_strength)
+          self.profile_change(0,self.prefs.get_profile())
           
         return tb
 
@@ -495,6 +498,11 @@ class TopBar(tichy.Service):
         for i in self.tb_list:
             logger.info("capacity change in launcher to %s", str(args[1]))
             i.edje_get().signal_emit(str(args[1]), "battery_change")
+
+    def profile_change(self, *args, **kargs):
+        for i in self.tb_list:
+            logger.info("profile display changed to %s", self.prefs.get_profile())
+            i.edje_get().signal_emit(self.prefs.get_profile(), "profile-change")
 
     def battery_status(self, *args, **kargs):
         for i in self.tb_list:
