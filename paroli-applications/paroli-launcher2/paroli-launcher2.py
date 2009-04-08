@@ -458,6 +458,7 @@ class TopBar(tichy.Service):
     @tichy.tasklet.tasklet
     def init(self):
         yield tichy.Service.get('Prefs').wait_initialized()
+        yield tichy.Service.get('Power').wait_initialized()
         self.gsm = tichy.Service.get('GSM')
         self.power = tichy.Service.get('Power')
         self.prefs = tichy.Service.get('Prefs')
@@ -477,9 +478,12 @@ class TopBar(tichy.Service):
         if hasattr(tb,"tb"):
           self.tb_list.append(tb.tb.elm_obj)
           tb.tb.elm_obj.on_del_add(self.tb_deleted)
-          self.battery_capacity(0,self.power.get_battery_capacity())
-          self.network_strength(0,self.gsm.network_strength)
-          self.profile_change(0,self.prefs.get_profile())
+          if hasattr(self,"power"):
+              self.battery_capacity(0,self.power.get_battery_capacity())
+          if hasattr(self,"gsm"):
+              self.network_strength(0,self.gsm.network_strength)
+          if hasattr(self,"prefs"):
+              self.profile_change(0,self.prefs.get_profile())
           logger.info("topbar created for %s", str(parent))
         return tb
 
