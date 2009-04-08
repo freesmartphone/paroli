@@ -121,6 +121,7 @@ class elm_tb(tichy.Object):
             self.bg = elm_layout(parent.window, edje_file, "bg-tb-off")
 
     def signal(self, emission, signal, source):
+        logger.info(" %s emitting %s", str(self.parent), str(self.onclick))
         self.parent.emit(self.onclick)
 
 class elm_layout_window(tichy.Object):
@@ -154,14 +155,30 @@ class elm_layout_window(tichy.Object):
     def empty_window(self, *args, **kargs):
         self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
 
-class elm_list_subwindow(elm_layout_window):
-    def __init__(self, window, edje_file, group, swallow):
+class elm_layout_subwindow(elm_layout_window):
+    def __init__(self, window, edje_file, group):
         self.window = window.window
         self.bg = window.bg_m.bg
+        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+        print self.bg.Edje.part_exists("content-swallow")
+        #self.window.elm_obj.resize_object_add(self.bg.elm_obj)
+        self.bg.elm_obj.show()
+
+    def restore_orig(self):
+        self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+
+class elm_list_subwindow(elm_layout_window):
+    def __init__(self, window, edje_file, group, swallow, layout=None):
+        self.window = window.window
+        self.bg = window.bg_m.bg
+        self.bg_m = window.bg_m
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = elm_scroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
+        if layout != None:
+            self.window.elm_obj.resize_object_del(layout)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
     

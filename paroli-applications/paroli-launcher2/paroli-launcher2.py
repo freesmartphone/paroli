@@ -453,7 +453,11 @@ class TopBar(tichy.Service):
     def __init__(self):
         super(TopBar, self).__init__()
         self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
-        self.tb_list = []
+        self.tb_list = []    
+    
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield tichy.Service.get('Prefs').wait_initialized()
         self.gsm = tichy.Service.get('GSM')
         self.power = tichy.Service.get('Power')
         self.prefs = tichy.Service.get('Prefs')
@@ -461,10 +465,6 @@ class TopBar(tichy.Service):
         self.power.connect('battery_capacity', self.battery_capacity)
         self.power.connect('battery_status', self.battery_status)
         self.prefs.connect('profile_changed', self.profile_change)
-    
-    
-    @tichy.tasklet.tasklet
-    def init(self):
         yield self._do_sth()
     
     def _do_sth(self):
@@ -480,7 +480,7 @@ class TopBar(tichy.Service):
           self.battery_capacity(0,self.power.get_battery_capacity())
           self.network_strength(0,self.gsm.network_strength)
           self.profile_change(0,self.prefs.get_profile())
-          
+          logger.info("topbar created for %s", str(parent))
         return tb
 
     def tb_deleted(self, *args, **kargs):

@@ -1,7 +1,6 @@
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
-#    copyright 2009 Mirko Lindner (mirko@openmoko.org)
 #
 #    This file is part of Tichy.
 #
@@ -26,25 +25,32 @@
 
 import os
 
-import logging
-try:
-	import cPickle as pickle
-except:
-	import pickle
+#import yaml
+#try:
+    #from yaml import CLoader as Loader
+    #from yaml import CDumper as Dumper
+#except ImportError: 
+    #from yaml import Loader, Dumper
 
-logger = logging.getLogger('persistance')
+import logging
+import ConfigParser
+
+LOGGER = logging.getLogger('persistance')
 
 
 class Persistance(object):
     """Use this class to save and load data from file
 
-    All the data will be placed into ~/.paroli directory."""
+    All the data will be placed into ~/.tichy directory. They are
+    stored using yaml format, but we could modify this cause the
+    plugins are not suppoed to read the file directly.
+    """
 
     base_path = os.path.expanduser('~/.paroli/')
 
     def __init__(self, path):
         self.path = path
-        logger.info("path = %s", str(path))
+        self.parser = ConfigParser.ConfigParser()
 
     def _open(self, mod='r'):
         path = os.path.join(self.base_path, self.path)
@@ -54,7 +60,7 @@ class Persistance(object):
         try:
             return open(path, mod)
         except IOError, ex:
-            logger.warning("can't open file : %s", ex)
+            LOGGER.warning("can't open file : %s", ex)
             raise
 
     def save(self, data):
@@ -66,11 +72,16 @@ class Persistance(object):
                 Any kind of python structure that can be
                 serialized. Usually dictionary or list.
         """
-
-	# Save the object to a python pickle:
-	# http://docs.python.org/library/pickle.html
+        section = 0
+        for m in data:
+            section += 1
+            self.parser.add_section(str(section))
+            for k, v in m.iteritems():
+                v = unicode(v).encode('utf-8')
+                self.parser.set(str(section), k, v)
+        
         file = self._open('w')
-        pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
+        self.parser.write(file)
 
     def load(self):
         """Load data from the file
@@ -82,24 +93,15 @@ class Persistance(object):
             file = self._open()
         except IOError, ex:
             return None
-
-        # Try to load it as a pickle first
-        try:
-            return pickle.load(file)
-        except:
-            pass
-
-        # Try to load the legacy format
-        import ConfigParser
-        parser = ConfigParser.ConfigParser()
-        parser.readfp(file)
+        
+        self.parser.readfp(file)
         
         #return yaml.load(file, Loader=Loader)
         result = []
         
-        for s in parser.sections():
+        for s in self.parser.sections():
             sub_result = {}
-            for k, v in parser.items(s):
+            for k, v in self.parser.items(s):
                 #d = [k, v]<<<d
                 sub_result[k]=v.decode('utf-8')
             

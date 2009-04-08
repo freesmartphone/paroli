@@ -7,7 +7,10 @@ collections
   
   images {
    image: "back.png" COMP;
+   image: "Save_button.png" COMP;
   }
+  
+  #include "stringsetting.edc"
   
     // // these are the elements you can form edje objects from
     group
@@ -16,7 +19,6 @@ collections
         name:"main";
         // // the are the maximum and minumum size of the canvas
         // // if you do not specifiy them your object will not be visible
-        min: 480 590;
         min: 480 590;
         // // every group can contain any number of parts, all of which are generated when the group is called
         parts
@@ -49,6 +51,19 @@ collections
                         relative: 1.0 1.0;
                     }
                 }
+            }
+            part{
+              name:"entry";
+              type:SWALLOW;
+              description { 
+                  state: "default" 0.0;
+                  rel1 { to:"base";
+                    relative: 0.0 0.11;
+                  }
+                  rel2 {to:"base";
+                    relative: 1.0 1.0;
+                  }
+              }
             }
             part {
                 name: "back-button";
@@ -172,7 +187,7 @@ group{
                 text{
                     align: 0.05 0.2;
                     font: "Sans";
-                    size: 48;
+                    size: 36;
                     text: "";
                 }
                 rel1{
@@ -198,7 +213,7 @@ group{
                 text{
                     align: 0.8 0.8;
                     font: "Sans";
-                    size: 24;
+                    size: 20;
                     text: "";
                 }
                 rel1{

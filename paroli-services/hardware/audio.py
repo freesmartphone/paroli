@@ -132,9 +132,11 @@ class ParoliAudio(tichy.Service):
     @tichy.tasklet.tasklet
     def init(self):
         logger.info("init of audio")
-        volume = tichy.Setting('phone', 'volume', tichy.Int, setter=self.set_speaker_volume)
-        yield volume.set(self.volume)
-        #yield self._do_sth()
+        tichy.settings.FSOSetting('phone', 'ring-volume', tichy.Int,  options=[0,25,50,75,100])
+        tichy.settings.FSOSetting('phone', 'message-volume', tichy.Int, options=[0,25,50,75,100])
+        tichy.settings.FSOSetting('phone', 'ring-vibration', tichy.Int,  options=[0,1])
+        tichy.settings.FSOSetting('phone', 'message-vibration', tichy.Int, options=[0,1])
+        yield self._do_sth()
         
     def _do_sth(self):
         pass

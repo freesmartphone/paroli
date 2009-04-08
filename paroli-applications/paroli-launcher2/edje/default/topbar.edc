@@ -234,7 +234,7 @@ group{
                         font: "Sans";
                 }
                 rel1 {
-                        relative: 0.44 0.6;
+                        relative: 0.44 0.4;
                         to: "base";
                 }
                 rel2 {

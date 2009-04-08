@@ -42,7 +42,7 @@ class Setting(tichy.Object):
     # contains a map : { group : { name : setting } }
     groups = {}
 
-    def __init__(self, group, name, type, value=None, setter=None, options=None, **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options="", **kargs):
         """Create a new setting
 
         :Parameters:
@@ -72,8 +72,7 @@ class Setting(tichy.Object):
         self.type = type
         self.__value = type.as_type(value) if value is not None else type()
         self.__setter = setter or self.setter
-        self.options = tichy.List()
-        self.options.extend(options)
+        self.options = tichy.List(options)
 
         # register the setting into the list of all settings
         Setting.groups.setdefault(group, {})[name] = self
@@ -102,7 +101,7 @@ class Setting(tichy.Object):
         self.options.emit('updated')
         logger.info("%s set to %s", self.name, str(self.value))
 
-    def rotate(self):
+    def rotate(self, *args):
         if self.value != None:
             if self.options.count(self.value) != 0:
                 current_index = self.options.index(self.value)
@@ -125,6 +124,14 @@ class Setting(tichy.Object):
         return self.__value.disconnect(*args, **kargs)
 
 
+class StringSetting(Setting):
+    """ Setting for string values, on click it will produce a text-edit dialog and show a kbd
+    """
+    
+    def rotate(self, parent, layout):
+        fe = tichy.Service.get("FreeEdit")
+        fe.StringEdit(self, parent, layout).start()
+    
 class FSOSetting(Setting):
     """Special setting class that hooks into a FSO preference
 
