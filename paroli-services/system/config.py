@@ -33,11 +33,15 @@ class ConfigService(tichy.Service):
     @tichy.tasklet.tasklet
     def init(self):
         logger.info('Config service init')
-        self.parser = ConfigParser.SafeConfigParser()
+        self.main_cfg = ConfigParser.SafeConfigParser()
         self.base_path = os.path.expanduser('~/.paroli/')
         self.path = "settings/settings"
-        logger.info("settings service")
-        self.main_cfg = self._read()
+        compl_path = os.path.join(self.base_path, self.path)
+        dir = os.path.dirname(compl_path)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        self.main_cfg.read(compl_path)
+        logger.info("settings service %s", str(compl_path))
         yield "none"    
     
     def _open(self, path, mod='r'):
@@ -60,29 +64,34 @@ class ConfigService(tichy.Service):
             return None
             raise
     
-    def get_items(self, section, path=None):
-        if path:
-            contents = self._read(path)
-        else:
-            contents = self.main_cfg
+    def get_items(self, section, path=False):
+        contents = self.main_cfg
+
+        logger.info("contents: %s", str(contents))
 
         if contents == None:
             ret = None
         elif contents.has_section(section):
             ret = contents.items(section)
         else:
+            logger.info("doesn't have section %s", str(section))
+            print contents.sections()
             ret = None
         return ret
         
-    def set_item(self, section, option, value, path=None):
-        if path:
-            file = self._open(path,'w')
-        else:
-            file = self._open(self.path, 'w')
+    def set_item(self, section, option, value, path=False):
+        #if path:
+            #file = self._open(path,'w')
+        #else:
+        path = self.base_path + self.path
+        file = open(path, 'w')
         
+        
+        logger.info("parsing done")
         if not self.main_cfg.has_section(section):
             self.main_cfg.add_section(section)
             
         self.main_cfg.set(section, option, value)
         self.main_cfg.write(file)
-        self.main_cfg = self._read()
+        #self.main_cfg = self._read()
+        print self.main_cfg.sections()

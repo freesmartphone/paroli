@@ -70,8 +70,8 @@ class Setting(tichy.Object):
         self.group = group
         self.name = name
         self.type = type
-        self.__value = type.as_type(value) if value is not None else type()
-        self.__setter = setter or self.setter
+        self.Value = type.as_type(value) if value is not None else type()
+        self.Setter = setter or self.setter
         self.options = tichy.List(options)
 
         # register the setting into the list of all settings
@@ -80,7 +80,7 @@ class Setting(tichy.Object):
     @property
     def value(self):
         """accessor to the actual value"""
-        return self.__value.value
+        return self.Value.value
         
     @tasklet.tasklet
     def setter(self, value):
@@ -96,8 +96,8 @@ class Setting(tichy.Object):
     @tichy.tasklet.tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
-        yield self.__setter(value)
-        self.__value.value = value
+        yield self.Setter(value)
+        self.Value.value = value
         self.options.emit('updated')
         logger.info("%s set to %s", self.name, str(self.value))
 
@@ -118,10 +118,10 @@ class Setting(tichy.Object):
 
     # Redirect `connect` and `disconnect` to the value
     def connect(self, *args, **kargs):
-        return self.__value.connect(*args, **kargs)
+        return self.Value.connect(*args, **kargs)
 
     def disconnect(self, *args, **kargs):
-        return self.__value.disconnect(*args, **kargs)
+        return self.Value.disconnect(*args, **kargs)
 
 
 class StringSetting(Setting):
@@ -131,6 +131,21 @@ class StringSetting(Setting):
     def rotate(self, parent, layout):
         fe = tichy.Service.get("FreeEdit")
         fe.StringEdit(self, parent, layout).start()
+    
+class ToggleSetting(Setting):
+    """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter
+    """
+    
+    def rotate(self, *args):
+        self.set(self.value).start()
+    
+    @tichy.tasklet.tasklet
+    def set(self, value):
+        """Try to set the Setting value and block until it is done"""
+        val = yield self.Setter(value)
+        self.Value.value = val
+        self.options.emit('updated')
+        logger.info("%s set to %s", self.name, str(self.value))
     
 class FSOSetting(Setting):
     """Special setting class that hooks into a FSO preference
