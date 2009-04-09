@@ -38,6 +38,7 @@ class Launcher_App2(tichy.Application):
     
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
+        self.ready = 0
         self.standalone = tichy.config.getboolean('standalone',
                                                 'activated', False)
         self.advanced = tichy.config.getboolean('advanced-mode',
@@ -114,12 +115,11 @@ class Launcher_App2(tichy.Application):
         self.ussd.connect('incoming', self.incoming_ussd)
         self.systime = tichy.Service.get('SysTime')
         self.alarm = tichy.Service.get('Alarm')
-        #self._get_paroli_version()
         
         self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
-        #tichy.Service.get("GSM")._ask_pin()
+        self.ready = 1
         
         yield tichy.Wait(self.window, 'backs')
         self.window.delete()   # Don't forget to close the window
@@ -152,8 +152,9 @@ class Launcher_App2(tichy.Application):
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
-        self._remove_link_signals()
-        self._launch_app(str(signal)).start()
+        if self.ready != 0:
+            self._remove_link_signals()
+            self._launch_app(str(signal)).start()
 
     @tichy.tasklet.tasklet
     def _launch_app(self, name):
@@ -347,12 +348,6 @@ class Launcher_App2(tichy.Application):
         print "settings called"
         if self.settings == True:
             self.launch_app(None, 'Settings', None)
-        #print tichy.Setting.groups
-        #m = tichy.Setting.groups["phone"]["volume"]
-        #print dir(m)
-        #yield m.set(60)
-        #print m.value
-        #print 
         
     
     def switch_profile(self, *args, **kargs):
@@ -365,11 +360,6 @@ class Launcher_App2(tichy.Application):
                 new = available[0]
             else:
                 new = available[current_index+1]
-            #edje_obj = gui.EdjeObject(self.main, self.edje_file, 'profile')    
-            #edje_obj.Edje.part_text_set('text',new)
-            #edje_obj.Edje.signal_callback_add('erase', '*', edje_obj.delete)
-            #edje_obj.Edje.size_set(480, 600)
-            #edje_obj.show()
             yield self.prefs.set_profile(new)
             
             logger.info("current: %s new: %s", current, new)
@@ -458,9 +448,12 @@ class TopBar(tichy.Service):
     def init(self):
         yield tichy.Service.get('Prefs').wait_initialized()
         yield tichy.Service.get('Power').wait_initialized()
+        yield tichy.Service.get('Gprs').wait_initialized()
         self.gsm = tichy.Service.get('GSM')
         self.power = tichy.Service.get('Power')
         self.prefs = tichy.Service.get('Prefs')
+        self.gprs = tichy.Service.get('Gprs')
+        self.gprs.connect('gprs-status', self.gprs_status)
         self.gsm.connect('network-strength', self.network_strength)
         self.power.connect('battery_capacity', self.battery_capacity)
         self.power.connect('battery_status', self.battery_status)
@@ -505,6 +498,11 @@ class TopBar(tichy.Service):
         logger.info("network strength %s", str(args[1]))
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gsm_change")
+        
+    def gprs_status(self, *args, **kargs):
+        logger.info("gprs status change in launcher to %s", str(args[1]))
+        for i in self.tb_list:
+            i.edje_get().signal_emit(str(args[1]), "gprs_status")
         
     def battery_capacity(self, *args, **kargs):
         for i in self.tb_list:

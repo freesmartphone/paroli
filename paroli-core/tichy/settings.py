@@ -42,7 +42,7 @@ class Setting(tichy.Object):
     # contains a map : { group : { name : setting } }
     groups = {}
 
-    def __init__(self, group, name, type, value=None, setter=None, options="", **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options="", listenObject=False, signal=False, **kargs):
         """Create a new setting
 
         :Parameters:
@@ -73,6 +73,10 @@ class Setting(tichy.Object):
         self.Value = type.as_type(value) if value is not None else type()
         self.Setter = setter or self.setter
         self.options = tichy.List(options)
+        
+        if listenObject:
+            listenObject.connect_to_signal(signal, self.change_val)
+
 
         # register the setting into the list of all settings
         Setting.groups.setdefault(group, {})[name] = self
@@ -135,6 +139,12 @@ class StringSetting(Setting):
 class ToggleSetting(Setting):
     """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter
     """
+    
+    def sub_init(self):
+        self.listenObject.connect_to_signal(signal, self.change_val)
+    
+    def change_val(self, val):
+        self.Value.value = val
     
     def rotate(self, *args):
         self.set(self.value).start()

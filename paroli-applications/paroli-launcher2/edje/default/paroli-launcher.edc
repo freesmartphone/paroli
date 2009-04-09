@@ -8,6 +8,7 @@ images {
    image: "alarm.png" COMP;
    image: "gsm_no_service.png" COMP;
    image: "profile-speaker.png" COMP;
+   image: "gprs.png" COMP;
    image: "gsm_0.png" COMP;
    image: "gsm_1.png" COMP;
    image: "gsm_2.png" COMP;

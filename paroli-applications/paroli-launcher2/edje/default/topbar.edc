@@ -276,7 +276,40 @@ group{
                      }
                 }
            }
-              part{
+          part{
+              name: "gprs";
+              type: IMAGE;
+              mouse_events:0;
+              description { 
+                  state: "default" 0.0;
+                  min: 25 25;
+                  max: 25 25;
+                  rel1 {
+                      relative: 0.0 0.0;
+                      offset: 390 16; 
+                      to: "base";
+                  }
+                  rel2 {
+                      relative: 0.0 0.0;
+                      offset: 415 41; 
+                      to: "base";
+                  }
+                  image {
+                      normal: "gprs.png";
+                  }
+                  visible: 0;
+              }
+              description{
+                  state:"on" 0.0;
+                  inherit:"default" 0.0;
+                  visible: 1;
+              }
+              description{
+                  state:"off" 0.0;
+                  inherit:"default" 0.0;
+              }
+          }
+          part{
                 name: "gsm";
                 type: IMAGE;
                 mouse_events:0;
@@ -439,6 +472,15 @@ group{
                       else {
                          set_state(PART:"gsm", "gsm_no_service", 0.0);
                       }
+                  }
+              }
+              program
+              {
+                  name: "set_gprs";
+                  signal: "*";
+                  source: "gprs_status";
+                  script{
+                      set_state(PART:"gprs",sig[0], 0.0);
                   }
               }
               program
