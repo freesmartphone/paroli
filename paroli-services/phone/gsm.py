@@ -30,6 +30,7 @@ import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 
 from call import Call
+from threading import Timer
 
 # TODO: move this tasklet into paroli-service/phone
 
@@ -148,6 +149,7 @@ class FreeSmartPhoneGSM(GSMService):
         self.provider = None
         self.network_strength = None
         self.gsm_call = None
+        self.reg_counter = 0
 
     def get_provider(self):
         """Return the current provider of GSM network
@@ -187,7 +189,36 @@ class FreeSmartPhoneGSM(GSMService):
         logger.error("org.freesmartphone.ogsmd crashed")
         logger.info("Attempt to re-init the service")
         yield self.init()
+    
+    
+    def _register_jumper(self):
+        #logger.info("register jumper")
+        self._register().start()
 
+    @tichy.tasklet.tasklet
+    def _register(self):
+        try:
+            #if self.reg_counter != 0:
+                #logger.info("about to wait")
+            yield WaitDBus(self.gsm_network.Register)
+                #ret = True
+            #else:
+                #logger.info("elsed")
+                #raise TypeError
+        except:
+            ret = False
+        
+        logger.info("ret is %s", str(ret))
+        
+        #self.reg_counter += 1
+        
+        if not ret:
+            t = Timer(30, self._register_jumper)
+            t.start()
+            #logger.info("timer obj: %s", str(t))
+
+        yield ret
+        
     def init(self):
         """Tasklet that registers on the network
         """
@@ -198,9 +229,10 @@ class FreeSmartPhoneGSM(GSMService):
             yield WaitDBus(self.ousage.RequestResource, 'GSM')
             yield self._turn_on()
             logger.info("register on the network")
-            yield WaitDBus(self.gsm_network.Register)
-            provider = yield tichy.Wait(self, 'provider-modified')
-            logger.info("provider is '%s'", provider)
+            register = yield self._register()
+            if register:
+                provider = yield tichy.Wait(self, 'provider-modified')
+                logger.info("provider is '%s'", provider)
             self._keep_alive().start()
         except Exception, ex:
             logger.error("Error : %s", ex)
