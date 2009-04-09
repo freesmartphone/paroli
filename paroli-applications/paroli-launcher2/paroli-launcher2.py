@@ -49,7 +49,6 @@ class Launcher_App2(tichy.Application):
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
-        
         if hasattr(self.window.bg_m, "tb"):
 
             self.window.bg_m.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
@@ -479,11 +478,20 @@ class TopBar(tichy.Service):
           self.tb_list.append(tb.tb.elm_obj)
           tb.tb.elm_obj.on_del_add(self.tb_deleted)
           if hasattr(self,"power"):
-              self.battery_capacity(0,self.power.get_battery_capacity())
+              try:
+                  self.battery_capacity(0,self.power.get_battery_capacity())
+              except:
+                  pass
           if hasattr(self,"gsm"):
-              self.network_strength(0,self.gsm.network_strength)
+              try:
+                  self.network_strength(0,self.gsm.network_strength)
+              except:
+                  pass
           if hasattr(self,"prefs"):
-              self.profile_change(0,self.prefs.get_profile())
+              try:
+                  self.profile_change(0,self.prefs.get_profile())
+              except:
+                  pass
           logger.info("topbar created for %s", str(parent))
         return tb
 
