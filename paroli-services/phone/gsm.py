@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 #
-#    Tichy
+#    Paroli (formerly: Tichy)
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
+#    copyright 2009 Mirko Lindner (mirko@openmoko.org)
+
+#    This file is part of Paroli.
 #
-#    This file is part of Tichy.
-#
-#    Tichy is free software: you can redistribute it and/or modify it
+#    Paroli is free software: you can redistribute it and/or modify it
 #    under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    Tichy is distributed in the hope that it will be useful, but
+#    Paroli is distributed in the hope that it will be useful, but
 #    WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #    General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
+#    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 __docformat__ = 'reStructuredText'
 
@@ -201,7 +202,7 @@ class FreeSmartPhoneGSM(GSMService):
             #if self.reg_counter != 0:
                 #logger.info("about to wait")
             yield WaitDBus(self.gsm_network.Register)
-                #ret = True
+            ret = True
             #else:
                 #logger.info("elsed")
                 #raise TypeError
@@ -372,7 +373,7 @@ class TestGsm(GSMService):
         logger.info("Turn on antenna power")
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
-        self.network_strength = 50
+        self.network_strength = 100
         #yield self._ask_pin()
         if len(self.logs) == 0:    
             for i in range(3):
