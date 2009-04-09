@@ -8,9 +8,11 @@ collections
   images {
    image: "back.png" COMP;
    image: "Save_button.png" COMP;
+   image: "backspace.png" COMP;
   }
   
   #include "stringsetting.edc"
+  #include "numbersetting.edc"
   
     // // these are the elements you can form edje objects from
     group
@@ -185,7 +187,7 @@ group{
                 state: "default"  0.0;
                 color: 255 255 255 255;
                 text{
-                    align: 0.05 0.2;
+                    align: 0.0 0.0;
                     font: "Sans";
                     size: 36;
                     text: "";
@@ -194,7 +196,7 @@ group{
                     relative: 0.0 0.0;
                 }
                 rel2{
-                    relative: 1.0 1.0;
+                    relative: 1.0 0.6;
                 }
             }
             description{
@@ -211,13 +213,13 @@ group{
                 state: "default"  0.0;
                 color: 255 255 255 255;
                 text{
-                    align: 0.8 0.8;
+                    align: 1.0 0.0;
                     font: "Sans";
                     size: 20;
                     text: "";
                 }
                 rel1{
-                    relative: 0.0 0.0;
+                    relative: 0.0 0.6;
                 }
                 rel2{
                     relative: 1.0 1.0;
@@ -256,8 +258,8 @@ group{
 
 group{
     name: "toggle_setting";
-    min: 400 60;
-    max: 400 60;
+    min: 400 75;
+    max: 400 75;
     parts{
         part{
             name: "base";
@@ -286,16 +288,16 @@ group{
                 state: "default"  0.0;
                 color: 255 255 255 255;
                 text{
-                    align: 0.1 0.0;
+                    align: 0.0 0.0;
                     font: "Sans";
-                    size: 48;
+                    size: 40;
                     text: "";
                 }
                 rel1{
                     relative: 0.0 0.0;
                 }
                 rel2{
-                    relative: 1.0 1.0;
+                    relative: 1.0 0.6;
                 }
             }
             description{
@@ -312,13 +314,13 @@ group{
                 state: "default"  0.0;
                 color: 255 255 255 255;
                 text{
-                    align: 0.6 0.6;
+                    align: 1.0 0.0;
                     font: "Sans";
-                    size: 24;
+                    size: 20;
                     text: "";
                 }
                 rel1{
-                    relative: 0.0 0.0;
+                    relative: 0.0 0.6;
                 }
                 rel2{
                     relative: 1.0 1.0;

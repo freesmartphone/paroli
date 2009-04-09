@@ -135,7 +135,15 @@ class StringSetting(Setting):
     def rotate(self, parent, layout):
         fe = tichy.Service.get("FreeEdit")
         fe.StringEdit(self, parent, layout).start()
+
+class NumberSetting(Setting):
+    """ Setting for string values, on click it will produce a text-edit dialog and show a kbd
+    """
     
+    def rotate(self, parent, layout):
+        fe = tichy.Service.get("FreeEdit")
+        fe.NumberEdit(self, parent, layout).start()
+
 class ToggleSetting(Setting):
     """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter
     """

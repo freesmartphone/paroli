@@ -126,21 +126,31 @@ class FreeSmartPhoneSim(tichy.Service):
                                       follow_name_owner_changes=True)
             self.gsm_sim = dbus.Interface(self.gsm,
                                           'org.freesmartphone.GSM.SIM')
-
-            #for d in self.sim_imsi:
-            #print self.sim_info['imsi']
+            
         except Exception, e:
-            logger.warning("can't use freesmartphone GSM : %s", e)
+            logger.warning("can't use freesmartphone SIM : %s", e)
             self.gsm = None
 
         self.indexes = {}       # map sim_index -> contact
 
-    @tichy.tasklet.tasklet
+    #@tichy.tasklet.tasklet
     def init(self):
         yield tichy.Service.get('GSM').wait_initialized()
         #set sim info variable to be used by various apps
-        logger.debug("Get sim info")
+        #logger.info("Get sim info")
+        try:
+            msg_center = tichy.settings.NumberSetting('sim', 'Service Center', tichy.Text, value=self.gsm_sim.GetServiceCenterNumber(), setter=self.SetServiceCenterNumber)
+        except Exception, e:
+            print Exception
+            print e
+        #logger.info("message center is %s", str(msg_center))
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
+        yield None
+
+    @tichy.tasklet.tasklet
+    def SetServiceCenterNumber(self, value):
+        self.gsm_sim.SetServiceCenterNumber(value)
+        yield None
 
     def get_contacts(self):
         """Return the list of all the contacts in the SIM
