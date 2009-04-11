@@ -214,7 +214,7 @@ class StringSettingApp(tichy.Application):
             self.edje_obj.Edje.signal_emit("save-notice","*")
             setting.set(text).start()
             
-        self.edje_obj.visible_set(False)
+        self.edje_obj.elm_obj.visible_set(False)
         self.edje_obj.delete()
         layout.elm_obj.show()
         
