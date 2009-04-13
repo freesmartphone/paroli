@@ -22,9 +22,6 @@
 # - Time(hour, min)         : create a trigger activated at the given time
 # - Debug(msg)              : Action that prints a debug message (only for debuging)
 -
-    trigger: Time(12,29)
-    actions: Debug("A Test")
--
     #
     # Suspend Handling
     #
@@ -33,10 +30,12 @@
              - HasAttr(switch, "POWER")
              - HasAttr(event, "released")
              - HasAttr(duration, 0)
+             - Not(CallListContains("active"))
+             - Not(CallListContains("incoming"))
     actions: Suspend()
 -
     #
-    # Suspend Handling
+    # Power button Handling
     #
     trigger: InputEvent()
     filters:
@@ -74,7 +73,6 @@
    while: PowerStatus()
    filters: Not(HasAttr(status, "discharging"))
    actions: OccupyResource(Display)
-
 -
     while: PowerStatus()
     filters: HasAttr(status, "critical")
@@ -85,7 +83,9 @@
     actions: SetLed("gta02_power_blue", "light")
 -
     trigger: PowerStatus()
-    filters: HasAttr(status, "empty")
+    filters: 
+    	     - Not(HasAttr(status, "discharging"))
+    	     - HasAttr(status, "empty")
     actions: Command('poweroff')
 
     #
