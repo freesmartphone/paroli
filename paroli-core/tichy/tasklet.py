@@ -431,10 +431,13 @@ class Producer(Tasklet):
 
 class WaitDBusNameChange(Tasklet):
     """Tasklet that will wait until a dbus name owner change"""
-    def run(self, name, time_out=None):
+    def run(self, name, time_out=None, session=False):
         import dbus
         import tichy
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        if session:
+            bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+        else:
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         bus_obj = bus.get_object('org.freedesktop.DBus',
                                               '/org/freedesktop/DBus')
         bus_obj_iface = dbus.proxies.Interface(bus_obj,
@@ -450,11 +453,14 @@ class WaitDBusName(Tasklet):
 
     If the name is already present, returns immediately.
     """
-    def _is_dbus_name_present(self, name):
+    def _is_dbus_name_present(self, name, session):
         import dbus
         import tichy
         """Check that a dbus name is present"""
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        if session:
+            bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+        else:
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         bus_obj = bus.get_object('org.freedesktop.DBus',
                                  '/org/freedesktop/DBus')
         bus_obj_iface = dbus.proxies.Interface(bus_obj,
@@ -462,12 +468,12 @@ class WaitDBusName(Tasklet):
         all_bus_names = bus_obj_iface.ListNames()
         return name in all_bus_names
 
-    def run(self, name, time_out=None):
-        if self._is_dbus_name_present(name):
+    def run(self, name, time_out=None, session=False):
+        if self._is_dbus_name_present(name, session):
             #logger.info("%s is present", str(name))
             yield None
         else:
-            yield WaitDBusNameChange(name, time_out=time_out)
+            yield WaitDBusNameChange(name, time_out=time_out, session=session)
 
 
 if __name__ == '__main__':
