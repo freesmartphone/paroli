@@ -24,8 +24,6 @@ import tichy
 from tichy import gui
 import sys
 import dbus
-import ecore
-import ecore.evas
 
 from tichy.tasklet import Wait, WaitFirst
 
@@ -297,6 +295,7 @@ class MsgsWrite(tichy.Application):
               number_layout.delete()
               
           if text_layout:
+              logger.info("deleting text layout")
               text_layout.delete()
               parent.window.elm_obj.keyboard_win_set(0)
           

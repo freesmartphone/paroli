@@ -485,7 +485,7 @@ class TopBar(tichy.Service):
                   self.profile_change(0,self.prefs.get_profile())
               except:
                   pass
-          logger.info("topbar created for %s", str(parent))
+          #logger.info("topbar created for %s", str(parent))
         return tb
 
     def tb_deleted(self, *args, **kargs):
