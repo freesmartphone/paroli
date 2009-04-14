@@ -55,13 +55,12 @@ class PowerService(tichy.Service):
             battery = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerSupply/battery')
             self.battery = dbus.Interface(battery, 'org.freesmartphone.Device.PowerSupply')
             self.battery.connect_to_signal('Capacity', self._on_capacity_change)
-            self.battery.connect_to_signal('PowerStatus', self._on_status_change)
-            self._on_capacity_change(self.battery.GetCapacity()) 
+            self.battery.connect_to_signal('PowerStatus', self._on_status_change) 
         except Exception, e:
             logger.warning("can't use freesmartphone power service : %s", e)
         else:
             self._on_capacity_change(self.battery.GetCapacity())
-            self.battery_capacity = 0
+            self.battery_capacity = self.battery.GetCapacity()
             
     def _on_capacity_change(self, percent):
         logger.info("capacity changed to %i", percent)
@@ -77,5 +76,4 @@ class PowerService(tichy.Service):
             bat_value = self.battery.GetCapacity()
             return bat_value
         else: 
-            print dir(self.battery)
             return 50
