@@ -64,6 +64,8 @@ class Dialog(tichy.Application):
         self.box.elm_obj.pack_end(self.button)
         self.button.show()
         
+        self.window.elm_obj.layer_set(99)
+        
         yield tichy.Wait(self, 'done')
 
     def _on_ok_clicked(self, *args):
