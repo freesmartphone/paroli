@@ -251,7 +251,7 @@ class MsgsWrite(tichy.Application):
           
                   textbox.color_set(255, 255, 255, 255)
           
-                  textbox.entry_set("")
+                  textbox.entry_set(str(sms.text))
                   
                   textbox.size_hint_weight_set(1.0, 1.0)
         
