@@ -65,6 +65,14 @@ class TeleApp(tichy.Application):
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + str(signal))
 
+    ##DEBUG FUNCTIONS
+    def test(self, *args, **kargs):
+        logger.info('test called')
+        try:
+            logger.info("test called with %s and %s", args, kargs)
+        except Exception, e:
+            print e
+
     ## CALL FUNCTIONS
     ## call from numpad
     def call(self, emission, signal, source):
@@ -432,7 +440,7 @@ class PINApp2(tichy.Application):
         
         self.edje_obj = self.main.main_layout.Edje
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
-        self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
+        #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 
         yield tichy.Wait(self.main, 'value_received')
 
