@@ -57,7 +57,7 @@ class TeleApp(tichy.Application):
         ##wait until main object emits back signal or delete is requested
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('Tele closing')
-
+        
         self.window.delete()
 
     ##DEBUG FUNCTIONS 
@@ -216,6 +216,10 @@ class TeleCaller2(tichy.Application):
             i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
             if i == 0: #activated
                 logger.debug("call activated")
+
+                self.usage_service = tichy.Service.get('Usage')
+                self.usage_service.occupy_cpu()
+
                 if self.audio_service.muted == 1:
                     self.audio_service.audio_toggle()
                 
@@ -242,6 +246,7 @@ class TeleCaller2(tichy.Application):
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
                     
+            self.usage_service.release_cpu()
             self.storage.caller.value = ""
             self.storage.call = None
             
