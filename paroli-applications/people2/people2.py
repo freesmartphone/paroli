@@ -29,7 +29,7 @@ import ecore
 import ecore.evas
 
 from tichy.tasklet import WaitFirst, Wait
-
+from sim import SIMContact
 
 class People2App(tichy.Application):
     name = 'People'
@@ -127,15 +127,29 @@ class People2App(tichy.Application):
         caller_service.call("window", number, name).start()
     
     #deleting
+    
     def delete_contact(self, emission, signal, source, item, layout):
+        self.delete_contact_taskl(emission, signal, source, item, layout).start()
+        
+    @tichy.tasklet.tasklet
+    def delete_contact_taskl(self, emission, signal, source, item, layout):
         logger.info("delete contact called")
         try:
             self.contact_service.remove(item)
+            if isinstance(item, SIMContact):
+                logger.info("is SIMContact")
+                yield item.delete()
+                #self.sim_service = tichy.Service.get('SIM')
+                #logger.info("remove contact %s from sim", item.name)
+                #yield WaitDBus(self.sim_service.gsm_sim.DeleteEntry, 'contacts',item.sim_index)
+            
         except Exception, ex:
             logger.error("Got error %s", str(ex))
         else:
             layout.delete()
             self.window.restore_orig()
+    
+        yield None
     
     def create_msg(self, emission, source, param, item):
         service = tichy.Service.get('MessageCreate')

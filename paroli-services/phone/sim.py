@@ -221,6 +221,7 @@ class FreeSmartPhoneSim(tichy.Service):
                 return ret
             ret += 1
 
+    @tichy.tasklet.tasklet
     def remove_contact(self, contact):
         logger.info("remove contact %s from sim", contact.name)
         yield WaitDBus(self.gsm_sim.DeleteEntry, 'contacts',
