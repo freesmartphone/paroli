@@ -164,14 +164,12 @@ class Launcher(dbus.service.Object):
             self.screen = None
 
     def create_screen(self):
-        #window = tichy.gui.Window(480,580)
-        #window.show()
         window = None
         return window
 
     @dbus.service.method("org.tichy.Launcher")
     def Quit(self):
-        """Quit tichy"""
+        """Quit paroli"""
         logger.info("quit mainloop")
         tichy.mainloop.quit()
 
