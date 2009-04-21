@@ -140,5 +140,5 @@
     actions: SetDisplayBrightness("0", 0)
 -
     trigger: IdleState()
-    filters: HasAttr(status, "lock")
+    filters: HasAttr(status, "suspend")
     actions: Suspend()
