@@ -49,6 +49,7 @@ class Launcher_App2(tichy.Application):
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
+        self.window.window.elm_obj.on_del_add(self._remove_link_signals)
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.bg_m, "tb"):
 
@@ -89,7 +90,6 @@ class Launcher_App2(tichy.Application):
         self.storage = tichy.Service.get('TeleCom2')
         self.edje_obj.add_callback("*", "launch_app", self.launch_app)
         self.edje_obj.add_callback("*", "embryo", self.embryo)
-        self.edje_obj.add_callback("test", "*", self.test)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         ##current hack
         #self.standalone = True
@@ -120,9 +120,11 @@ class Launcher_App2(tichy.Application):
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         self.ready = 1
-        
+                
         yield tichy.Wait(self.window, 'backs')
+        self._remove_link_signals()
         self.window.delete()   # Don't forget to close the window
+        
 
     def unblock_screen(self, *args, **kargs):
         logger.info('unblocking screen')
@@ -152,6 +154,7 @@ class Launcher_App2(tichy.Application):
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
+        logger.info("launching %s", str(signal))
         if self.ready != 0:
             self._remove_link_signals()
             self._launch_app(str(signal)).start()
@@ -186,10 +189,16 @@ class Launcher_App2(tichy.Application):
         yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
     
     def _remove_link_signals(self, *args, **kargs):
+        if self.settings:
+            logger.info("disconnecting settings")
+            self.button.disconnect(self.aux_btn_settings_conn)
         for i in self.app_objs:
             self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
+            logger.debug("some callback wasn't found")
     
     def _recreate_link_signals(self, *args, **kargs):
+        if self.settings:
+            self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
         for i in self.app_objs:
             self.app_objs[i][0].Edje.signal_callback_add("*", "launch_app", self.launch_app)
     
@@ -257,14 +266,19 @@ class Launcher_App2(tichy.Application):
                 pass
 
     def time_setting_start(self, emission, signal, source):
-        self.edje_obj.signal("stop_clock_update", "*")
+        logger.info("time setting called")
+        self.button.disconnect(self.aux_btn_profile_conn)
+        self.edje_obj.Edje.signal_emit("stop_clock_update", "*")
         self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission, 1)
         self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
-        self.button.disconnect(self.aux_btn_profile_conn)
 
     def time_setting_stop(self, emission, signal, source):
         edje = emission
-        time_text = edje.part_text_get('clock')
+        #time = time.localtime()
+        #time_text = edje.part_text_get('clock')
+        
+        time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
+        
         self.button.disconnect(self.aux_btn_time_set_conn)
         self.button.disconnect(self.aux_btn_held_conn)
         numbers = str(time_text).split(':') 
@@ -281,10 +295,11 @@ class Launcher_App2(tichy.Application):
             self.set_alarm(new_time).start() 
             logger.info("Set alarm at %s", new_time)
         elif source == "time":
+            logger.info("Set time to %s", new_time)
             self.set_time(new_time).start() 
             
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
-        self.edje_obj.signal("start_clock_update", "*")
+        self.edje_obj.Edje.signal_emit("start_clock_update", "*")
 
     @tichy.tasklet.tasklet
     def set_time(self, new_time):
@@ -308,8 +323,8 @@ class Launcher_App2(tichy.Application):
     def adjust_time(self, *args, **kargs):
         edje = args[2]
         nmin = args[3]
-        
-        time_text = edje.part_text_get('clock')
+        time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
+        #time_text = edje.part_text_get('clock')
         numbers = time_text.split(':') 
         hour = int(numbers[0])
         min = int(numbers[1])
@@ -345,10 +360,8 @@ class Launcher_App2(tichy.Application):
         edje.part_text_set('clock', time_text)
     
     def open_settings(self, *args, **kargs):
-        print "settings called"
         if self.settings == True:
             self.launch_app(None, 'Settings', None)
-        
     
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)
@@ -379,13 +392,13 @@ class Launcher_App2(tichy.Application):
         self.audio_service.set_speaker_volume(new)
         logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
     
-    ##DEBUG FUNCTIONS
-    def test(self, emission, source, param):
-        logger.info('test called')
-        try:
-            self.connector.emit('call_active')
-        except Exception, e:
-            print e
+    ###DEBUG FUNCTIONS
+    #def test(self, emission, source, param):
+        #logger.info('test called')
+        #try:
+            #self.connector.emit('call_active')
+        #except Exception, e:
+            #print e
     
             
     def embryo(self, emission, signal, source):

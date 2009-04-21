@@ -39,6 +39,7 @@ class Slot(dbus.service.Object):
         self.args = None
  
     def set_action(self, func, args):
+        logger.info("action set to %s with %s", str(func), str(args))
         self.action = func
         self.args = args
 
@@ -96,6 +97,8 @@ class FreeSmartPhoneAlarmService(tichy.Service):
     def set_alarm(self, ttime, func, *args):
         try:
             self.slot.set_action(func, *args)
+            print func
+            print args
             yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(ttime.value) )
         except Exception, ex:
             logger.error("Exception : %s", ex)
