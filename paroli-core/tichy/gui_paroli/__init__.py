@@ -46,9 +46,13 @@ class EventsLoop(object):
         This method only return after we call `quit`.
         """
         ecore.main_loop_begin()
+        ecore.x.on_window_delete_request_add(self.test)
         #elementary.run()
         # XXX: elementary also has a run method : elementary.run(),
         #      how does it work with ecore.main_loop ?
+
+    def test(self, *args, **kargs):
+        logger.info("delete request with %s %s", args, kargs)
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)
@@ -223,58 +227,61 @@ class elm_list(tichy.Object):
     
       def _redraw_view(self, *args, **kargs):
           logger.info("list redrawing")
-          self.sort()
-          if self.box.elm_obj.is_deleted() == False:
-              self.box.elm_obj.delete()
-          self.box = elm_box(self.Elm_win.elm_obj)
-          self.items = []
-          testcounter = 0
-          for item in self.model:
-              if self.Elm_win.elm_obj.is_deleted() == True:
-                  logger.info(str(self.model))
-                  logger.info("window deleted")
-              ly = elementary.Layout(self.Elm_win.elm_obj)
-              ly.file_set(self.EdjeFile, self.EdjeGroup)              
-              edje_obj = ly.edje_get()
-              for part, attribute in self.label_list:
-                if hasattr(item, attribute):
-                    value = getattr(item, attribute)
-                    if isinstance(value, tichy.Item):
-                        value = unicode(value.get_text())
-                    txt = unicode(value).encode('utf-8')
-                    edje_obj.part_text_set(part,txt)
-              
-              ##check for optional display elements
-              if edje_obj.data_get('attribute1') != None:
-                  attribute = edje_obj.data_get('attribute1')
-                  if edje_obj.data_get('attribute2') != None:
-                      item_cp = getattr(item,attribute)
-                      attribute = edje_obj.data_get('attribute2')
-                  else:  
-                      item_cp = item
-                  if edje_obj.data_get('value') == 'None':
-                      value = None
-                  else:
-                      value = edje_obj.data_get('value')
-                  signal = edje_obj.data_get('signal')
-                  if attribute[-2] == "(":
-                      test = getattr(item_cp,attribute[:-2])()
-                  else:
-                      test = getattr(item_cp,attribute)
-                  if test == value:
-                      edje_obj.signal_emit(signal,'*')
+          if self.Elm_win.elm_obj.is_deleted() == True:
+                self._remove_cb()
+          else:
+              self.sort()
+              if self.box.elm_obj.is_deleted() == False:
+                  self.box.elm_obj.delete()
+              self.box = elm_box(self.Elm_win.elm_obj)
+              self.items = []
+              testcounter = 0
+              for item in self.model:
+                  if self.Elm_win.elm_obj.is_deleted() == True:
+                      logger.info(str(self.model))
+                      logger.info("window deleted")
+                  ly = elementary.Layout(self.Elm_win.elm_obj)
+                  ly.file_set(self.EdjeFile, self.EdjeGroup)              
+                  edje_obj = ly.edje_get()
+                  for part, attribute in self.label_list:
+                    if hasattr(item, attribute):
+                        value = getattr(item, attribute)
+                        if isinstance(value, tichy.Item):
+                            value = unicode(value.get_text())
+                        txt = unicode(value).encode('utf-8')
+                        edje_obj.part_text_set(part,txt)
+                  
+                  ##check for optional display elements
+                  if edje_obj.data_get('attribute1') != None:
+                      attribute = edje_obj.data_get('attribute1')
+                      if edje_obj.data_get('attribute2') != None:
+                          item_cp = getattr(item,attribute)
+                          attribute = edje_obj.data_get('attribute2')
+                      else:  
+                          item_cp = item
+                      if edje_obj.data_get('value') == 'None':
+                          value = None
+                      else:
+                          value = edje_obj.data_get('value')
+                      signal = edje_obj.data_get('signal')
+                      if attribute[-2] == "(":
+                          test = getattr(item_cp,attribute[:-2])()
+                      else:
+                          test = getattr(item_cp,attribute)
+                      if test == value:
+                          edje_obj.signal_emit(signal,'*')
 
-              ly.size_hint_min_set(470,60)
-              self.box.elm_obj.pack_end(ly)
-              ly.show()
-              self.items.append([item,edje_obj,ly])
-          
-          self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
-          self.box.elm_obj.show()
-          
-          self.parent.scroller.elm_obj.show()
-          
-          self._renew_callbacks()
+                  ly.size_hint_min_set(470,60)
+                  self.box.elm_obj.pack_end(ly)
+                  ly.show()
+                  self.items.append([item,edje_obj,ly])
+              
+              self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
+              self.box.elm_obj.show()
+              
+              self.parent.scroller.elm_obj.show()
+              
+              self._renew_callbacks()
 
       def _renew_callbacks(self, *args, **kargs):
           logger.info("renewing callbacks")
@@ -289,7 +296,10 @@ class elm_list(tichy.Object):
       def _remove_cb(self, *args, **kargs):
           logger.info('window removed, removing cb')
           for i in self.cb_list :
-              self.model.disconnect(i)
+              try:
+                  self.model.disconnect(i)
+              except Exception, e:
+                  logger.info("ooops wrong oid")
       
       def _modified(self, *args, **kargs):
           logger.info('scrolled')
