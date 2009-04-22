@@ -96,7 +96,13 @@ class DialogService(tichy.Service):
         assert isinstance(msg, basestring)
         msg = msg % args
         logger.debug("show %s dialog : %s", title, msg)
-        yield Dialog(parent, title, msg)
+        
+        self.error_msgs = tichy.config.getboolean('error_messages','activated', False)
+        
+        if self.error_msgs:
+            yield Dialog(parent, title, msg)
+        else:
+            yield None
 
     @tichy.tasklet.tasklet
     def error(self, parent, msg, *args):
