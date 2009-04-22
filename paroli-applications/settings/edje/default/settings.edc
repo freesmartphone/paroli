@@ -237,6 +237,24 @@ group{
             name: "clicked";
             signal: "mouse,up,1";
             source: "base";
+            action: STATE_SET "selected" 0.0;
+            transition: LINEAR 0.1;
+            target: "base";
+            target: "title";
+            target: "subtitle";
+            after: "to_normal";
+        }
+        program{
+            name: "to_normal";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.1;
+            target: "base";
+            target: "title";
+            target: "subtitle";
+            after: "send_click";
+        }
+        program{
+            name: "send_click";
             action: SIGNAL_EMIT "click" "sublist";
         }
     }
