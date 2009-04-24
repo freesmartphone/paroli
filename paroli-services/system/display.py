@@ -48,6 +48,7 @@ class DisplayService(tichy.Service):
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
+        logger.info("connecting to e dbus iface")
         try:
             yield WaitDBusName('org.enlightenment.wm.service', time_out=120, session=True)
             bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
@@ -57,12 +58,18 @@ class DisplayService(tichy.Service):
             logger.warning("can't use e dbus interface service : %s", e)
         else:
             if not self.theme:
-                self.theme = tichy.settings.Setting('display', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=['illume','testos'])
+                self.theme = tichy.settings.Setting('display', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profile_list())
     
     def get_profile(self):
         return self.iface.Get()
     
+    def get_profile_list(self):
+        profiles = self.iface.List()
+        if profiles.count('default') != 0:
+            profiles.pop(profiles.index('default'))
+        return profiles
+    
     @tichy.tasklet.tasklet
     def set_profile(self, profile):
-        self.iface.Set(profile)
         yield self._connect_dbus()
+        yield WaitDBus(self.iface.Set, profile)
