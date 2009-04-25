@@ -8,7 +8,9 @@ program \
             target: "num_field";\
             target: "num_field-text";\
             target: "del-button";\
+            target: "call-2-text";\
             target: "blocker";\
+            target: "call-2";\
         }
 
 #define _PART_IMAGE_KEYPAD(partname, imagename, off1x, off1y, off2x, off2y ); \
@@ -42,7 +44,7 @@ part\
             description\
             { \
                 state: "default" 0.0;\
-                color: 0 0 0 255;\
+                color: 0 0 0 0;\
                 rel1 \
                 {\
                     relative: 0.01 0.02;\
@@ -102,28 +104,7 @@ part\
             { \
                 state: "clicked" 0.0;\
                 inherit: "default" 0.0;\
-                color: 255 0 0 255;\
-            }\
-        }\
-        part\
-        {\
-            name:partname"-inner";\
-            type: RECT;\
-            mouse_events:0;\
-            description\
-            { \
-                state: "default" 0.0;\
-                color: 0 0 0 255;\
-                rel1 \
-                {\
-                    relative: 0.01 0.02;\
-                    to: partname;\
-                }\
-                rel2 \
-                {\
-                    relative: 0.99 0.98;\
-                    to: partname;\
-                }\
+                color: 255 255 255 255;\
             }\
         }\
         part\
@@ -137,8 +118,8 @@ part\
                 color: 255 255 255 255;\
                 text \
                 {\
-                    align: 0.5 0.1;\
-                    size: 40;\
+                    align: 0.52 0.28;\
+                    size: 41;\
                     text: label;\
                     font: "Sans";\
                 }\
@@ -153,6 +134,12 @@ part\
                     to: partname;\
                 }\
             }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 0 0 0 255;\
+            }\
         }\
         part\
         {\
@@ -165,7 +152,7 @@ part\
                 color: 255 255 255 255;\
                 text \
                 {\
-                    align: 0.5 0.8;\
+                    align: 0.525 0.92;\
                     size: 20;\
                     text: subtext;\
                     font: "Sans";\
@@ -181,9 +168,54 @@ part\
                     to: partname;\
                 }\
             }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 0 0 0 255;\
+            }\
+        }
+#define _PART_KEYPAD_PROG2(partname, label ); \
+        program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
+            action: STATE_SET "default" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-clicked";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            script{\
+                add_sign(label);\
+            }\
         }
 
 #define _PART_KEYPAD_PROG(partname, label ); \
+        program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            transition: LINEAR 0.16667;\
+            target: partname;\
+        }\
         program \
         { \
             name: partname"-unpressed";\
@@ -228,6 +260,10 @@ part\
                     }\
                     snprintf(txt, 60, "%s%s", old, num);\
                     set_text(PART:"num_field-text", txt);\
+                    if (strcmp(state, "active") == 0)\
+                    {\
+                        emit(num,"dtmf");\
+                    }\
               }\
            }\
         }
@@ -260,10 +296,8 @@ part\
                 snprintf(txt2, 60, "%s%s", pin, num);\
                 num = "*";\
                 snprintf(txt, 60, "%s%s", old, num);\
-                if(strlen(pin) < 4) {\
-                   set_text(PART:"pin-text", txt2);\
-                   emit(txt2,"embryo");\
-                   set_text(PART:"num_field-text", txt);\
-                }\
+                set_text(PART:"pin-text", txt2);\
+                emit(txt2,"embryo");\
+                set_text(PART:"num_field-text", txt);\
            }\
         }

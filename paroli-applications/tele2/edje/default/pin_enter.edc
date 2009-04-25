@@ -3,7 +3,7 @@
 group{
     name: "pin_enter";
     min: 480 590;
-    max: 480 640;
+    max: 480 590;
     script {
         
         public del_digit() {
@@ -116,14 +116,14 @@ group{
                 color: 0 0 0 255;
                 rel1 
                 {
-                   relative:0.0 0.0;
-                   offset: 51 28;
+                   relative:0.1062 0.105;
+//                    offset: 51 28;
                    to: "base";
                 }
                 rel2 
                 {
-                   relative:0.0 0.0;
-                   offset: 430 72;
+                   relative:0.8959 0.17375;
+//                    offset: 430 72;
                    to: "base";
                 }
             }
@@ -160,26 +160,60 @@ group{
               
          part {
             name: "call-button";
-            type: IMAGE;
+            type: RECT;
             mouse_events: 1;
             description {
                state: "default" 0.0;
+               color: 0 0 0 255;
                rel1 {
-                  relative: 0.0 0.0;
-                  offset: 1 120;
-                  to: "base";
+                  relative: 0.01 0.206;
+//                   offset: 1 120;
+//                   to: "base";
                }
                rel2 {
-                  relative: 0.0 0.0;
-                  offset: 319 189;
-                  to: "base";
+                  relative: 0.6645 0.354;
+//                   offset: 319 189;
+//                   to: "base";
                }
-               image {
-                  normal: "enter.png";
-               }
+//                image {
+//                   normal: "enter.png";
+//                }
                visible: 1;
             }
          }
+        part
+        {
+            name: "call-button-text";
+            type: TEXT;
+            mouse_events: 0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text 
+                {
+                    align: 0.50 0.45;
+                    size: 41;
+                    text: "Enter";
+                    font: "Sans";
+                }
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "call-button";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "call-button";
+                }
+            }
+            description 
+            { 
+                state: "clicked" 0.0;
+                color: 0 0 0 255;
+            }
+        }
 
          part {
             name: "del-button";
@@ -188,13 +222,13 @@ group{
             description {
                state: "default" 0.0;
                rel1 {
-                  relative: 0.0 0.0;
-                  offset: 320 120;
+                  relative: 0.6667 0.206;
+//                   offset: 320 120;
                   to: "base";
                }
                rel2 {
-                  relative: 0.0 0.0;
-                  offset: 479 189;
+                  relative: 0.9999 0.354;
+//                   offset: 479 189;
                   to: "base";
                }
                image {
@@ -204,19 +238,32 @@ group{
             }
          }
 
-        _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 190, 160, 279);
-        _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 190,  319, 279);
-        _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 190,  479, 279);
-        _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 280, 160, 369);
-        _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 280,  319, 369);
-        _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 280,  479, 369);
-        _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 370,  160, 459);
-        _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 370,  319, 459);
-        _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 370,  479, 459);
-        _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 460,  160, 549);
-        _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 460, 319, 549);
-        _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 460, 479, 549);
-           
+//         _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 190, 160, 279);
+//         _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 190,  319, 279);
+//         _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 190,  479, 279);
+//         _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 280, 160, 369);
+//         _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 280,  319, 369);
+//         _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 280,  479, 369);
+//         _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 370,  160, 459);
+//         _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 370,  319, 459);
+//         _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 370,  479, 459);
+//         _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 460,  160, 549);
+//         _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 460, 319, 549);
+//         _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 460, 479, 549);
+        
+        _PART_KEYPAD("button-1-2", "1", "", 0.01, 0.3615,  0.3345, 0.5095);
+        _PART_KEYPAD("button-2-2", "2", "ABC", 0.34, 0.3615,  0.6645, 0.5095);
+        _PART_KEYPAD("button-3-2", "3", "DEF", 0.6745, 0.3615,  0.989, 0.5095);
+        _PART_KEYPAD("button-4-2", "4", "GHI", 0.01, 0.517,  0.3345, 0.665);
+        _PART_KEYPAD("button-5-2", "5", "JKL", 0.34, 0.517,  0.6645, 0.665);
+        _PART_KEYPAD("button-6-2", "6", "MNO", 0.6745, 0.517,  0.989, 0.665);
+        _PART_KEYPAD("button-7-2", "7", "PQRS", 0.01, 0.6725,  0.3345, 0.8205);
+        _PART_KEYPAD("button-8-2", "8", "TUV", 0.34, 0.6725,  0.6645, 0.8205);
+        _PART_KEYPAD("button-9-2", "9", "WXYZ", 0.6745, 0.6725,  0.989, 0.8205);
+        _PART_KEYPAD("button-star-2", "*", "", 0.01, 0.828,  0.3345, 0.976);
+        _PART_KEYPAD("button-0-2", "0", "+", 0.34, 0.828,  0.6645, 0.976);
+        _PART_KEYPAD("button-hash-2", "#", "", 0.6745, 0.828,  0.989, 0.976);
+        
         part
         {
             name: "pin-text";
@@ -284,21 +331,21 @@ group{
         }
 
 //         programs ROW TWO
-           _PART_PIN_ENTER_KEYPAD_PROG("button-1", "1");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-2", "2");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-3", "3");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-1-2", "1");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-2-2", "2");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-3-2", "3");
 //         programs ROW THREE
-           _PART_PIN_ENTER_KEYPAD_PROG("button-4", "4");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-5", "5");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-6", "6");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-4-2", "4");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-5-2", "5");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-6-2", "6");
 //         programs ROW FOUR
-           _PART_PIN_ENTER_KEYPAD_PROG("button-7", "7");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-8", "8");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-9", "9");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-7-2", "7");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-8-2", "8");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-9-2", "9");
 //         programs ROW FIVE
-           _PART_PIN_ENTER_KEYPAD_PROG("button-star", "*");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-0", "0");
-           _PART_PIN_ENTER_KEYPAD_PROG("button-hash", "#");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-star-2", "*");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-0-2", "0");
+           _PART_PIN_ENTER_KEYPAD_PROG("button-hash-2", "#");
 
     }
 }
