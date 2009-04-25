@@ -57,7 +57,6 @@ class TeleApp(tichy.Application):
         ##wait until main object emits back signal or delete is requested
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('Tele closing')
-        
         self.window.delete()
 
     ##DEBUG FUNCTIONS 
@@ -246,7 +245,6 @@ class TeleCaller2(tichy.Application):
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
                     
-            self.usage_service.release_cpu()
             self.storage.caller.value = ""
             self.storage.call = None
             
