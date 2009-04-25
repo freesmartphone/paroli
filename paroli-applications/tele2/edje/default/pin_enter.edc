@@ -214,6 +214,35 @@ group{
                 color: 0 0 0 255;
             }
         }
+        
+        part
+        {
+            name: "call-button-effecter";
+            type: RECT;
+            mouse_events: 0;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                visible:0;
+                rel1 
+                {
+                    relative: 0.0 0.0;
+                    to: "call-button";
+                }
+                rel2 
+                {
+                    relative: 1.0 1.0;
+                    to: "call-button";
+                }
+            }
+            description 
+            { 
+                state: "clicked" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
+            }
+        }
 
          part {
             name: "del-button";
@@ -235,6 +264,32 @@ group{
                   normal: "backspace.png";
                }
                visible: 1;
+            }
+         }
+         
+         part{
+            name: "del-button-effecter";
+            type: RECT;
+            mouse_events: 0;
+            description {
+               state: "default" 0.0;
+               color: 255 255 255 255;
+               rel1 {
+                  relative: 0.0 0.0;
+//                   offset: 320 110;
+                  to: "del-button";
+               }
+               rel2 {
+                  relative: 1.0 1.0;
+//                   offset: 479 179;
+                  to: "del-button";
+               }
+               visible: 0;
+            }
+            description{
+                state: "visible" 0.0;
+                inherit: "default" 0.0;
+                visible:1;
             }
          }
 
@@ -306,28 +361,46 @@ group{
             action: SIGNAL_EMIT "num_field_pressed" "num_field-text";
         }
              */
+        
+        program 
+        { 
+            name: "call-2-clicked";
+            signal: "mouse,down,1";
+            source: "call-button";
+            action: STATE_SET "clicked" 0.0;
+            target: "call-button-effecter";
+        }
         program 
         { 
             name: "call-button-clicked";
-            signal: "mouse,clicked,1";
+            signal: "mouse,up,1";
             source: "call-button";
-             
             script{
+               set_state(PART:"call-button-effecter", "default", 0.0);
                send_pin();
             }
              
         }
-          
+        program 
+        { 
+            name: "del-button-changer";
+            signal: "mouse,down,1";
+            source: "del-button";
+            script{
+//                 start_timer("del_all");
+                del_digit();
+                set_state(PART:"del-button-effecter", "visible", 0.0);
+            }
+        }
         program 
         { 
             name: "del-button-clicked";
-            signal: "mouse,clicked,1";
+            signal: "mouse,up,1";
             source: "del-button";
-             
             script{
-               del_digit();
+//                 stop_timer();
+                set_state(PART:"del-button-effecter", "default", 0.0);
             }
-              
         }
 
 //         programs ROW TWO

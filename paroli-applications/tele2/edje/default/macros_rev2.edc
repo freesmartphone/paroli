@@ -271,12 +271,23 @@ part\
 #define _PART_PIN_ENTER_KEYPAD_PROG(partname, label ); \
         program \
         { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
             name: partname"-unpressed";\
             signal: "mouse,up,1";\
             source: partname;\
             action: STATE_SET "default" 0.0;\
-            transition: LINEAR 0.16667;\
             target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
         }\
         program \
         { \
