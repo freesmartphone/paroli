@@ -21,7 +21,7 @@
 import logging
 
 ##name the logger
-logger = logging.getLogger('hello_world')
+logger = logging.getLogger('settings')
 
 ##import os module to load edj files
 import os
@@ -80,7 +80,8 @@ class Settings(tichy.Application):
         logger.info('Settings closing')
         
         ##we delete the window object (the class would also delete all children object)
-        del self.groups
+        #del self.groups
+        self.item_list._remove_cb()
         self.window.delete()
         
     def _show_sublist(self, emission, signal, source, group):
@@ -126,6 +127,7 @@ class SettingsSublist(tichy.Application):
     
         for i in self.cb_list:
             i[0].disconnect(i[1])
+
         self.edje_obj.elm_obj.visible_set(False)
         self.edje_obj.delete()
         parent.restore_orig()
@@ -176,8 +178,8 @@ class NumberSettingApp(tichy.Application):
             text = text.strip()
             setting.set(text).start()
         
-        self.edje_obj.visible_set(False)
-        self.edje_obj.delete()
+        self.edje_obj.Edje.visible_set(False)
+        self.edje_obj.Edje.delete()
         layout.elm_obj.show()
 
 class StringSettingApp(tichy.Application):

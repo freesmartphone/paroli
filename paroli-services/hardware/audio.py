@@ -46,8 +46,8 @@ class FSOAudio(tichy.Service):
             self.speaker_volume = tichy.Int(50)
         tichy.settings.FSOSetting('phone', 'ring-volume', tichy.Int,  options=[0,25,50,75,100])
         tichy.settings.FSOSetting('phone', 'message-volume', tichy.Int, options=[0,25,50,75,100])
-        tichy.settings.FSOSetting('phone', 'ring-vibration', tichy.Int,  options=[0,1])
-        tichy.settings.FSOSetting('phone', 'message-vibration', tichy.Int, options=[0,1])
+        tichy.settings.FSOSetting('phone', 'ring-vibration', bool,  options=[False,True])
+        tichy.settings.FSOSetting('phone', 'message-vibration', bool,  options=[False,True])
         yield None
         
     @tichy.tasklet.tasklet
