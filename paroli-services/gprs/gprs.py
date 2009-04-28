@@ -111,7 +111,8 @@ class GprsService(tichy.Service):
 
     def get_status(self):
         if self.iface:
-            return self.iface.GetNetworkStatus()['registration']
+            status = self.iface.GetNetworkStatus()['registration']
+            return status
 
     @tichy.tasklet.tasklet
     def set_status(self, val):

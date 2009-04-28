@@ -62,3 +62,13 @@ class UsageService(tichy.Service):
     def release_cpu(self):
         logger.info("releasing resource")
         self.iface.ReleaseResource('CPU')
+
+    def request_resource(self, resource):
+        logger.info("requesting resource %s", str(resource))
+        if resource in self.iface.ListResources():
+            yield self.iface.RequestResource(resource)
+            
+    def release_resource(self, resource):
+        logger.info("releasing resource %s", str(resource))
+        if resource in self.iface.ListResources():
+            self.iface.ReleaseResource(resource)
