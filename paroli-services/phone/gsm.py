@@ -235,6 +235,21 @@ class FreeSmartPhoneGSM(GSMService):
                 provider = yield tichy.Wait(self, 'provider-modified')
                 logger.info("provider is '%s'", provider)
             self._keep_alive().start()
+            yield tichy.Service.get('ConfigService').wait_initialized()
+            self.config_service = tichy.Service.get("ConfigService")
+            logger.info("got config service")
+            self.values = self.config_service.get_items("call_forwarding")
+            if self.values != None: self.values = dict(self.values)
+            logger.info("realized values is none")
+            self.SettingReason = tichy.settings.ListSetting('Call Forwarding', 'Reason', tichy.Text, value='unconditional', setter=self.ForwardingSetReason, options=["unconditional","mobile busy","no reply","not reachable","all","all conditional"], model=tichy.List([ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy", self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel = [('title','name')])
+            
+            self.SettingForwarding = tichy.settings.ToggleSetting('Call Forwarding', 'active', tichy.Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
+            self.SettingChannels = tichy.settings.Setting('Call Forwarding', 'channels', tichy.Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
+            
+            self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Target Number', tichy.Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
+            
+            self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Timeout', tichy.Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
+            
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
@@ -357,6 +372,106 @@ class FreeSmartPhoneGSM(GSMService):
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
+    ##for settings
+
+    @tichy.tasklet.tasklet
+    def ToggleForwarding(self, *args):
+        reason = self.ForwardingGetReason()
+        if self.GetForwardingStatus(reason) == 'inactive':
+              
+              channel = self.ForwardingGet('class')
+              number = self.ForwardingGet('number')
+              timeout = self.ForwardingGet('timeout')
+              try:
+                  if reason == "no reply":
+                      yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout)))
+                  else:
+                      yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
+              except Exception, e:
+                  #yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
+                  print e
+                  print Exception
+                  
+        else:
+            self.gsm_network.DisableCallForwarding( reason )
+
+    def GetForwardingStatus(self, reason='unconditional'):
+        status = self.gsm_network.GetCallForwarding(reason)
+        if len(status) == 0:
+            ret = "inactive"
+        else:
+            ret = "active"
+        return ret        
+    
+    def ForwardingGetReason(self):
+        return self.SettingReason.value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetClass(self, *args, **kargs):
+        #print "here are the args ", args
+        value = "%s,%s,%s" % (str(args[0]), self.ForwardingGet('number'), self.ForwardingGet('timeout'))
+        self.set_param(value)
+        yield value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetNumber(self, *args, **kargs):
+        print "here are the args ", args
+        value = "%s,%s,%s" % (self.ForwardingGet('class'), str(args[0]), self.ForwardingGet('timeout'))
+        self.set_param(value)
+        yield value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetTimeout(self, *args, **kargs):
+        print "here are the args ", args
+        value = "%s,%s,%s" % (self.ForwardingGet('class'), self.ForwardingGet('number'), str(args[0]))
+        self.set_param(value)
+        yield value
+    
+    def set_param(self, value):
+        reason = self.ForwardingGetReason().encode('ascii')
+        try:
+            self.config_service.set_item('call_forwarding', reason.replace(' ','_'), value)
+            self.values = self.config_service.get_items("call_forwarding")
+            if self.values != None: self.values = dict(self.values)
+        except Exception, e:
+            print e
+            print Exception
+    
+    def ForwardingGet(self, cat, reason=False):
+        if reason:
+            reason = reason
+        else:
+            reason = self.ForwardingGetReason().encode('ascii')
+        attribute = {'class':0,'number':1,'timeout':2}
+        if self.values != None:
+            if self.values.has_key(reason.replace(' ','_')):
+                logger.info("trying to get value")
+                vals_list = self.values[reason.replace(' ','_')].split(',')
+                if len(vals_list) >= attribute[cat]+1:
+                    ret = vals_list[attribute[cat]]
+                else:
+                    ret = None
+            else:
+                ret = None
+        else:
+            ret = None
+        return ret
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetReason(self, *args, **kargs):
+        #print "forwardingSetReason"
+        #print self.ForwardingGet('class')
+        #print args
+        #print kargs
+        yield 'moo'
+
+    def action(self, *args, **kargs):
+        item = args[0]
+        self.SettingReason.set(item[0].name).start()
+        args[2].emit('back')
+        self.SettingChannels.set(self.ForwardingGet('class',reason=item[0].name)).start()
+        self.SettingTargetNumber.set(self.ForwardingGet('number',reason=item[0].name)).start()
+
 class TestGsm(GSMService):
     """Fake service that can be used to test without GSM drivers
     """
@@ -374,12 +489,97 @@ class TestGsm(GSMService):
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
         self.network_strength = 100
-        #yield self._ask_pin()
+        yield tichy.Service.get('ConfigService').wait_initialized()
+        self.config_service = tichy.Service.get("ConfigService")
+        logger.info("got config service")
+        self.values = self.config_service.get_items("call_forwarding")
+        if self.values != None: self.values = dict(self.values)
+        logger.info("realized values is none")
+        self.SettingReason = tichy.settings.ListSetting('Call Forwarding', 'Reason', tichy.Text, value='unconditional', setter=self.ForwardingSetReason, options=["unconditional","mobile busy","no reply","not reachable","all","all conditional"], model=tichy.List([ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy", self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel = [('title','name')])
+        self.SettingChannels = tichy.settings.Setting('Call Forwarding', 'channels', tichy.Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
+        self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Target Number', tichy.Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
+        self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Timeout', tichy.Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
+        
         if len(self.logs) == 0:    
             for i in range(3):
                 call = Call('0049110', direction='out')
                 self.logs.insert(0, call)
         yield None
+    
+    #@tichy.tasklet.tasklet
+    #def ToggleForwarding(self):
+    
+    #def GetForwardingStatus(self, reason):
+        
+    
+    def ForwardingGetReason(self):
+        return self.SettingReason.value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetClass(self, *args, **kargs):
+        #print "here are the args ", args
+        value = "%s,%s,%s" % (str(args[0]), self.ForwardingGet('number'), self.ForwardingGet('timeout'))
+        self.set_param(value)
+        yield value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetNumber(self, *args, **kargs):
+        print "here are the args ", args
+        value = "%s,%s,%s" % (self.ForwardingGet('class'), str(args[0]), self.ForwardingGet('timeout'))
+        self.set_param(value)
+        yield value
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetTimeout(self, *args, **kargs):
+        print "here are the args ", args
+        value = "%s,%s,%s" % (self.ForwardingGet('class'), self.ForwardingGet('number'), str(args[0]))
+        self.set_param(value)
+        yield value
+    
+    def set_param(self, value):
+        reason = self.ForwardingGetReason().encode('ascii')
+        try:
+            self.config_service.set_item('call_forwarding', reason.replace(' ','_'), value)
+            self.values = self.config_service.get_items("call_forwarding")
+            if self.values != None: self.values = dict(self.values)
+        except Exception, e:
+            print e
+            print Exception
+    
+    def ForwardingGet(self, cat, reason=False):
+        if reason:
+            reason = reason
+        else:
+            reason = self.ForwardingGetReason().encode('ascii')
+        attribute = {'class':0,'number':1,'timeout':2}
+        if self.values != None:
+            if self.values.has_key(reason.replace(' ','_')):
+                logger.info("trying to get value")
+                vals_list = self.values[reason.replace(' ','_')].split(',')
+                if len(vals_list) >= attribute[cat]+1:
+                    ret = vals_list[attribute[cat]]
+                else:
+                    ret = None
+            else:
+                ret = None
+        else:
+            ret = None
+        return ret
+    
+    @tichy.tasklet.tasklet
+    def ForwardingSetReason(self, *args, **kargs):
+        #print "forwardingSetReason"
+        #print self.ForwardingGet('class')
+        #print args
+        #print kargs
+        yield 'moo'
+
+    def action(self, *args, **kargs):
+        item = args[0]
+        self.SettingReason.set(item[0].name).start()
+        args[2].emit('back')
+        self.SettingChannels.set(self.ForwardingGet('class',reason=item[0].name)).start()
+        self.SettingTargetNumber.set(self.ForwardingGet('number',reason=item[0].name)).start()
 
     def create_call(self, number, direction='out'):
         call = Call(number, direction=direction)
@@ -438,3 +638,9 @@ class TestGsm(GSMService):
 
     def get_provider(self):
         return 'Charlie Telecom'
+
+class ListSettingObject():
+      
+      def __init__(self, name, action):
+          self.name = name
+          self.action = action

@@ -226,7 +226,7 @@ class elm_list(tichy.Object):
           self.Elm_win.elm_obj.on_del_add(self._remove_cb)
     
       def _redraw_view(self, *args, **kargs):
-          logger.info("list redrawing")
+          #logger.info("list redrawing")
           if self.Elm_win.elm_obj.is_deleted() == True:
                 self._remove_cb()
           else:
@@ -246,10 +246,13 @@ class elm_list(tichy.Object):
                   for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
+                        #logger.info("value is %s", str(value))
                         if isinstance(value, tichy.Item):
                             value = unicode(value.get_text())
                         txt = unicode(value).encode('utf-8')
                         edje_obj.part_text_set(part,txt)
+                    else:
+                        logger.info(" %s doesn't have attribute %s", str(item), str(attribute))
                   
                   ##check for optional display elements
                   if edje_obj.data_get('attribute1') != None:
@@ -290,16 +293,16 @@ class elm_list(tichy.Object):
                     i[1].signal_callback_add(cb[0], cb[1] , cb[2], i)
 
       def sort(self,*args,**kargs):
-          logger.info("list sorting")
+          logger.debug("list sorting")
           self.model.sort(self._comp_fct)
     
       def _remove_cb(self, *args, **kargs):
-          logger.info('window removed, removing cb')
+          logger.debug('window removed, removing cb')
           for i in self.cb_list :
               try:
                   self.model.disconnect(i)
               except Exception, e:
-                  logger.info("ooops wrong oid")
+                  logger.debug("ooops wrong oid")
       
       def _modified(self, *args, **kargs):
           logger.info('scrolled')

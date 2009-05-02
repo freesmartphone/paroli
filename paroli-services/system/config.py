@@ -75,7 +75,7 @@ class ConfigService(tichy.Service):
             ret = contents.items(section)
         else:
             logger.info("doesn't have section %s", str(section))
-            print contents.sections()
+            logger.info("valid sections are %s", str(contents.sections()))
             ret = None
         return ret
         
@@ -84,7 +84,7 @@ class ConfigService(tichy.Service):
             #file = self._open(path,'w')
         #else:
         path = self.base_path + self.path
-        file = open(path, 'w')
+        file = open(path, 'w+')
         
         
         logger.info("parsing done")

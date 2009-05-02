@@ -100,6 +100,8 @@ class Setting(tichy.Object):
     @tichy.tasklet.tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
+        if value == None:
+            value = ''
         yield self.Setter(value)
         self.Value.value = value
         self.options.emit('updated')
@@ -116,7 +118,7 @@ class Setting(tichy.Object):
                     new = self.options[current_index + 1]
             else:
                 new = self.options[0]
-                
+            
             logger.info("new value: %s", new)    
             self.set(new).start()
 
@@ -143,6 +145,31 @@ class NumberSetting(Setting):
     def rotate(self, parent, layout):
         fe = tichy.Service.get("FreeEdit")
         fe.NumberEdit(self, parent, layout).start()
+
+class ListSetting(Setting):
+    """ Setting for List values, on click it will produce a list-window
+    """
+    
+    def __init__(self, group, name, type, value=None, setter=None, options="", model=None, ListLabel=None, **kargs):
+
+        assert issubclass(type, Item), type
+        self.group = group
+        self.name = name
+        self.type = type
+        self.Value = type.as_type(value) if value is not None else type()
+        self.Setter = setter or self.setter
+        self.options = tichy.List(options)
+
+        self.model = model
+        self.ListLabel = ListLabel
+
+        # register the setting into the list of all settings
+        Setting.groups.setdefault(group, {})[name] = self
+    
+    def rotate(self, parent, layout):
+        self.Setter("scan").start()
+        fe = tichy.Service.get("FreeEdit")
+        fe.ListEdit(self, parent, self.model, self.ListLabel, layout).start()
 
 class ToggleSetting(Setting):
     """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter

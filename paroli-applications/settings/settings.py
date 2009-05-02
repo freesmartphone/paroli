@@ -157,6 +157,9 @@ class FreeEditService(tichy.Service):
     def NumberEdit(self, setting, parent, layout):
         return NumberSettingApp(setting, parent, layout)
 
+    def ListEdit(self, setting, parent, model, ListLabel, layout):
+        return ListSettingApp(setting, parent, model, ListLabel, layout)
+
 class NumberSettingApp(tichy.Application):
     name = "NumberSetting"
     
@@ -181,6 +184,61 @@ class NumberSettingApp(tichy.Application):
         self.edje_obj.Edje.visible_set(False)
         self.edje_obj.Edje.delete()
         layout.elm_obj.show()
+
+class ListSettingApp(tichy.Application):
+    
+    name = 'ListSetting'
+
+    def run(self, setting, parent, model, list_label, layout, *args, **kargs):
+    
+        layout.elm_obj.hide()
+      
+        self.parent = parent
+      
+        self.edje_file = os.path.join(os.path.dirname(__file__), 'settings.edj')
+      
+        self.window = gui.elm_list_subwindow(parent, self.edje_file, "main", "list")
+        
+        self.edje_obj = self.window.main_layout
+        
+        self.edje_obj.Edje.signal_emit("sublist_mode","*")
+        
+        self.ItemList = model
+        self.cb_list = tichy.List()
+        
+        #for i in tichy.Setting.groups[group]:
+            #o = tichy.Setting.groups[group][i]
+            #self.settings.append(o)
+            
+        def comp(m1, m2):
+            if m1.name == None or m1.name == "":
+                return cmp(m2, m1)
+            else:  
+                return cmp(m2.name, m1.name)
+        
+        self.list_label = list_label
+        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, "group", list_label, comp)
+        
+        #for i in self.settings:
+            #if hasattr(i, 'options'):
+                #oid = i.options.connect('updated', self.item_list._redraw_view)
+                #self.cb_list.append([i.options,oid])
+        
+        self.item_list.add_callback("*", "sublist", self.action)
+    
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'))
+    
+        #for i in self.cb_list:
+            #i[0].disconnect(i[1])
+
+        self.edje_obj.elm_obj.visible_set(False)
+        self.edje_obj.delete()
+        self.item_list._remove_cb()
+        layout.elm_obj.show()
+        
+    def action(self, emission, signal, source, item):
+        item[0].action(item, self.parent, self.edje_obj)
+        logger.info("action called")
 
 class StringSettingApp(tichy.Application):
     name = "StringSetting"
@@ -219,4 +277,3 @@ class StringSettingApp(tichy.Application):
         self.edje_obj.elm_obj.visible_set(False)
         self.edje_obj.delete()
         layout.elm_obj.show()
-        
