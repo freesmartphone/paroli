@@ -139,7 +139,7 @@ class FreeSmartPhoneSim(tichy.Service):
         #set sim info variable to be used by various apps
         #logger.info("Get sim info")
         try:
-            msg_center = tichy.settings.NumberSetting('sim', 'Service Center', tichy.Text, value=self.gsm_sim.GetServiceCenterNumber(), setter=self.SetServiceCenterNumber)
+            msg_center = tichy.settings.NumberSetting('Messages', 'Service Center', tichy.Text, value=self.gsm_sim.GetServiceCenterNumber(), setter=self.SetServiceCenterNumber)
         except Exception, e:
             print Exception
             print e
