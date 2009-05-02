@@ -238,18 +238,25 @@ class FreeSmartPhoneGSM(GSMService):
             yield tichy.Service.get('ConfigService').wait_initialized()
             self.config_service = tichy.Service.get("ConfigService")
             logger.info("got config service")
+            
+            ##call forwaring setting start
             self.values = self.config_service.get_items("call_forwarding")
             if self.values != None: self.values = dict(self.values)
             logger.info("realized values is none")
             self.SettingReason = tichy.settings.ListSetting('Call Forwarding', 'Reason', tichy.Text, value='unconditional', setter=self.ForwardingSetReason, options=["unconditional","mobile busy","no reply","not reachable","all","all conditional"], model=tichy.List([ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy", self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel = [('title','name')])
             
             self.SettingForwarding = tichy.settings.ToggleSetting('Call Forwarding', 'active', tichy.Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
+            
             self.SettingChannels = tichy.settings.Setting('Call Forwarding', 'channels', tichy.Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
             
             self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Target Number', tichy.Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
             
             self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Timeout', tichy.Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
             
+            ##call forwaring setting stop
+            ##call identifaction setting start
+            self.SettingChannels = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
+            ##call identifaction setting stop
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
@@ -373,6 +380,19 @@ class FreeSmartPhoneGSM(GSMService):
 
 
     ##for settings
+
+    ##call identification
+    
+    def GetCallIdentification(self):
+        ret = self.gsm_network.GetCallingIdentification()
+        return ret
+    
+    @tichy.tasklet.tasklet
+    def SetCallIdentifaction(self, value):
+        yield WaitDBus(self.gsm_network.SetCallingIdentification, value)
+        yield value
+        
+    ##call forwarding
 
     @tichy.tasklet.tasklet
     def ToggleForwarding(self, *args):
