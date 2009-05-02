@@ -99,7 +99,7 @@ class DialogService(tichy.Service):
         
         self.error_msgs = tichy.config.getboolean('error_messages','activated', False)
         
-        if self.error_msgs:
+        if self.error_msgs or title == "Ussd":
             yield Dialog(parent, title, msg)
         else:
             yield None
