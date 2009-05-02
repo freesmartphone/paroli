@@ -95,6 +95,19 @@ class FreeSmartPhoneSMS(tichy.Service):
                                              self.on_incoming_unstored_message)
             self.sim_iface.connect_to_signal("IncomingStoredMessage",
                                              self.on_incoming_message)
+            
+            self.sms_iface.connect_to_signal("IncomingMessageReceipt",
+                                             self.on_incoming_unstored_message)
+            
+            
+            ##stuff for settings
+            
+            self.config_service = tichy.Service.get("ConfigService")
+            self.values = self.config_service.get_items("Messages")
+            if self.values != None: self.values = dict(self.values)
+            
+            self.ReportSetting = tichy.settings.Setting('Messages', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
+            
         except Exception, e:
             logger.error("can't use freesmartphone SMS : %s", e)
             self.sim_iface = None
@@ -122,7 +135,11 @@ class FreeSmartPhoneSMS(tichy.Service):
     @tichy.tasklet.tasklet
     def send(self, sms):
         logger.info("Sending message to %s", sms.peer)
-        properties = dict(type='sms-submit', alphabet='gsm_default')
+        if self.GetDeliveryReport() == 'on':
+            properties = {'type':'sms-submit','alphabet': 'gsm_default','status-report-request':True}
+        else:
+            logger.info("no delivery report value is %s", self.GetDeliveryReport())
+            properties = dict(type='sms-submit', alphabet='gsm_default')
         index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
                                           str(sms.peer), unicode(sms.text),
                                           properties)
@@ -132,7 +149,7 @@ class FreeSmartPhoneSMS(tichy.Service):
     def on_incoming_unstored_message(self, *args, **kargs):
         logger.info("incoming unstored message")
         print args
-        self._on_incoming_unstored_message(args[0]).start()
+        self._on_incoming_unstored_message(args).start()
 
     @tichy.tasklet.tasklet
     def _on_incoming_unstored_message(self, message):
@@ -142,12 +159,16 @@ class FreeSmartPhoneSMS(tichy.Service):
         #message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
         #status = str(message[0])
         peer = str(message[0])
-        text = unicode(message[1])
+        if message[2]['type'] == 'sms-status-report':
+            text = unicode(message[2]['status-message']) + unicode(', message was received: ') + unicode(message[2]['timestamp'])
+        else:
+            text = unicode(message[1])
         messages_service = tichy.Service.get('Messages')
-        message = messages_service.create(peer, text, 'in')
-        yield messages_service.add(message)
+        store_message = messages_service.create(peer, text, 'in')
+        yield messages_service.add(store_message)
         # We delete the message from the SIM
-        self.sms_iface.AckMessage(message)
+        if message[2]['type'] != 'sms-status-report':
+            self.sms_iface.AckMessage(store_message)
         #yield WaitDBus(self.sim_iface.DeleteMessage, index)
 
     def on_incoming_message(self, index):
@@ -170,7 +191,28 @@ class FreeSmartPhoneSMS(tichy.Service):
         yield WaitDBus(self.sim_iface.DeleteMessage, index)
         logger.info("deleted %d", index)
 
-
+    #settings functions begin
+    def GetDeliveryReport(self):
+        if self.values != None:
+            ret = self.values['deliveryreport']
+        else: 
+            self.SetDeliveryReport('off')
+            ret = 'off'
+        
+        return ret
+        
+    @tichy.tasklet.tasklet    
+    def SetParam(self, value):
+        self.SetDeliveryReport(value)
+        yield value
+    
+    def SetDeliveryReport(self, value):
+        try:
+            self.config_service.set_item('Messages', 'DeliveryReport', value)
+        except Exception, e:
+            print e
+            print Exception
+          
 class TestSms(tichy.Service):
 
     service = 'SMS'
@@ -178,6 +220,13 @@ class TestSms(tichy.Service):
 
     @tichy.tasklet.tasklet
     def init(self):
+        yield tichy.Service.get('ConfigService').wait_initialized()
+        self.config_service = tichy.Service.get("ConfigService")
+        self.values = self.config_service.get_items("Messages")
+        
+        if self.values != None: self.values = dict(self.values)
+        logger.info("init done")
+        self.ReportSetting = tichy.settings.Setting('Messages', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
         yield None
 
     def create(self, number='', text='', direction='out'):
@@ -201,3 +250,25 @@ class TestSms(tichy.Service):
         logger.info("Incoming message %d", 0)
         sms = self.create('0123456789', msg, 'in')
         tichy.Service.get('Messages').add(sms).start()
+
+    #settings functions begin
+    def GetDeliveryReport(self):
+        if self.values != None:
+            ret = self.values['deliveryreport']
+        else: 
+            self.SetDeliveryReport('off')
+            ret = 'off'
+        
+        return ret
+        
+    @tichy.tasklet.tasklet    
+    def SetParam(self, value):
+        self.SetDeliveryReport(value)
+        yield value
+    
+    def SetDeliveryReport(self, value):
+        try:
+            self.config_service.set_item('Messages', 'DeliveryReport', value)
+        except Exception, e:
+            print e
+            print Exception
