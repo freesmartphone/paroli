@@ -219,17 +219,17 @@ class ListSettingApp(tichy.Application):
         self.list_label = list_label
         self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, "group", list_label, comp)
         
-        #for i in self.settings:
-            #if hasattr(i, 'options'):
-                #oid = i.options.connect('updated', self.item_list._redraw_view)
-                #self.cb_list.append([i.options,oid])
+        for i in self.ItemList:
+            if hasattr(i, 'connect'):
+                oid = i.connect('updated', self.item_list._redraw_view)
+                self.cb_list.append([i,oid])
         
         self.item_list.add_callback("*", "sublist", self.action)
     
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'))
     
-        #for i in self.cb_list:
-            #i[0].disconnect(i[1])
+        for i in self.cb_list:
+            i[0].disconnect(i[1])
 
         self.edje_obj.elm_obj.visible_set(False)
         self.edje_obj.delete()
@@ -250,7 +250,8 @@ class StringSettingApp(tichy.Application):
         self.window = gui.elm_list_subwindow(parent, self.edje_file, "stringsetting","entry", layout.elm_obj)
         self.edje_obj = self.window.main_layout
         
-        self.edje_obj.Edje.signal_emit(str(setting.name),"set_text")
+        if setting != None:
+            self.edje_obj.Edje.signal_emit(str(setting.name),"set_text")
         
         textbox = gui.elementary.Entry(parent.window.elm_obj)
 
@@ -268,12 +269,16 @@ class StringSettingApp(tichy.Application):
         
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window.main_layout, 'save'), tichy.Wait(self.window.main_layout, 'back'),tichy.Wait(parent, 'back'))
         
+        self.edje_obj.elm_obj.visible_set(False)
+        if setting != None:
+            self.edje_obj.delete()
+        layout.elm_obj.show()
+        
         if i == 0: ##save clicked
             text = str(textbox.entry_get()).replace("<br>","")
             text = text.strip()
-            self.edje_obj.Edje.signal_emit("save-notice","*")
-            setting.set(text).start()
-            
-        self.edje_obj.elm_obj.visible_set(False)
-        self.edje_obj.delete()
-        layout.elm_obj.show()
+            if setting != None:
+                self.edje_obj.Edje.signal_emit("save-notice","*")
+                setting.set(text).start()
+            else:
+                yield text
