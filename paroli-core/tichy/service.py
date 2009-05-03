@@ -188,5 +188,10 @@ class Service(Item):
             Service.__all_services[service] = instance
             return instance
 
+    @classmethod
+    def end_all(cls):
+        for i in Service.__all_services.keys():
+            Service.__all_services[i].emit("closing")
+    
 def get(service):
     return Service.get(service)

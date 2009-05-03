@@ -234,4 +234,6 @@ if __name__ == '__main__':
 
     logger.info("starting mainloop")
     tichy.mainloop.run()
+    tichy.Service.end_all()
+    
     logger.info("quit")
