@@ -231,9 +231,9 @@ class FreeSmartPhoneGSM(GSMService):
             yield self._turn_on()
             logger.info("register on the network")
             register = yield self._register()
-            if register:
-                provider = yield tichy.Wait(self, 'provider-modified')
-                logger.info("provider is '%s'", provider)
+            #if register:
+                #provider = yield tichy.Wait(self, 'provider-modified')
+                
             self._keep_alive().start()
             yield tichy.Service.get('ConfigService').wait_initialized()
             self.config_service = tichy.Service.get("ConfigService")
@@ -254,9 +254,11 @@ class FreeSmartPhoneGSM(GSMService):
             self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Timeout', tichy.Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
             
             ##call forwaring setting stop
+            
             ##call identifaction setting start
             self.SettingChannels = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
             ##call identifaction setting stop
+            
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
@@ -323,6 +325,7 @@ class FreeSmartPhoneGSM(GSMService):
             if provider != self.provider:
                 self.provider = provider
                 self.emit('provider-modified', self.provider)
+                logger.info("provider is '%s'", self.provider)
         if 'strength' in status:
             strength = int(status['strength'])
             if strength != self.network_strength:
