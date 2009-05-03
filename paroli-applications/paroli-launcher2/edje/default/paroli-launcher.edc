@@ -36,7 +36,7 @@ styles
 collections{
     #include "topbar.edc"
     group { name: "main";
-          min: 480 590;
+          min: 480 520;
           max: 480 590;
           script {
              public clock_updating_timer_id = 0;

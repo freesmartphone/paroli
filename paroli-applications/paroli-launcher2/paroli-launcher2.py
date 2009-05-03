@@ -120,7 +120,7 @@ class Launcher_App2(tichy.Application):
         self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         self.ready = 1
-                
+        
         yield tichy.Wait(self.window, 'backs')
         self._remove_link_signals()
         self.window.delete()   # Don't forget to close the window

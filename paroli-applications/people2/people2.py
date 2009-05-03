@@ -322,13 +322,10 @@ class CreateContact(tichy.Application):
                 if i == 1: #save
                     send = 1
                     break
-            
-          logger.info("broke loop")
           
           if send == 1:
-              logger.info("send is one")
               if text_layout:
-                text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+                  text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
               contacts_service = tichy.Service.get('Contacts')
               if contact not in contacts_service.contacts:
                   name = str(textbox.entry_get()).replace("<br>","")
@@ -336,7 +333,6 @@ class CreateContact(tichy.Application):
                   contacts_service.add(new_contact)
                   contacts_service.contacts.emit('inserted')
               else:
-                  logger.info("updating contact")
                   if mode == "name":
                       name = str(textbox.entry_get()).replace("<br>","")
                       logger.info("updating name")
