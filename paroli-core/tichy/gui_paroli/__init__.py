@@ -34,7 +34,7 @@ logger = logging.getLogger('gui')
 
 import tichy
 
-class EventsLoop(object):
+class EventsLoop(tichy.Object):
 
     def __init__(self):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
@@ -63,6 +63,8 @@ class EventsLoop(object):
         timer.delete()
 
     def quit(self):
+        self.emit("closing")
+        logger.info("emitted closing")
         ecore.main_loop_quit()
         elementary.shutdown()
         
