@@ -217,7 +217,7 @@ class TeleCaller2(tichy.Application):
                 logger.debug("call activated")
 
                 self.usage_service = tichy.Service.get('Usage')
-                self.usage_service.occupy_cpu()
+                yield self.usage_service.occupy_cpu()
 
                 if self.audio_service.muted == 1:
                     self.audio_service.audio_toggle()
@@ -388,7 +388,12 @@ class TeleCallerService(tichy.Service):
         yield self._do_sth()
     
     def call(self, parent, number, name=None):
-        return TeleCaller2('nothing', number, name)
+        self.storage = tichy.Service.get('TeleCom2')
+        if self.storage.call == None:
+            return TeleCaller2('nothing', number, name)
+        else:
+            self.dialog = tichy.Service.get('Dialog')
+            return self.dialog.dialog(None, "Error", "there is already an active call")
 
     def _do_sth(self):
         pass
