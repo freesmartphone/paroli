@@ -245,6 +245,9 @@ class TeleCaller2(tichy.Application):
                 except Exception, e:
                     logger.error("Got error in caller : %s", e)
                     
+            
+            yield self.usage_service.release_cpu()
+                    
             self.storage.caller.value = ""
             self.storage.call = None
             

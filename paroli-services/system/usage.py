@@ -54,21 +54,33 @@ class UsageService(tichy.Service):
             self.iface = dbus.Interface(self.obj, 'org.freesmartphone.Usage')
         except Exception, e:
             logger.warning("can't use fso usage interface service : %s", e)
-    
-    def occupy_cpu(self):
-        logger.info("requesting resource")
-        self.iface.RequestResource('CPU')
-    
-    def release_cpu(self):
-        logger.info("releasing resource")
-        self.iface.ReleaseResource('CPU')
-
-    def request_resource(self, resource):
-        logger.info("requesting resource %s", str(resource))
-        if resource in self.iface.ListResources():
-            yield self.iface.RequestResource(resource)
             
-    def release_resource(self, resource):
-        logger.info("releasing resource %s", str(resource))
+    @tichy.tasklet.tasklet
+    def occupy_cpu(self):
+        yield self.request_resource('CPU')
+    
+    @tichy.tasklet.tasklet
+    def release_cpu(self):
+        yield self.release_resource('CPU')
+
+    @tichy.tasklet.tasklet
+    def request_resource(self, resource):
+        logger.debug("requesting resource %s", str(resource))
         if resource in self.iface.ListResources():
-            self.iface.ReleaseResource(resource)
+            state = yield WaitDBus(self.iface.GetResourceState,resource)
+            if state == False:
+                yield WaitDBus(self.iface.RequestResource,resource)
+            else:
+                logger.debug("not requesting resource %s as it has been already requested", str(resource) )
+        yield None
+    
+    @tichy.tasklet.tasklet          
+    def release_resource(self, resource):
+        logger.debug("releasing resource %s", str(resource))
+        if resource in self.iface.ListResources():
+            state = yield WaitDBus(self.iface.GetResourceState,resource)
+            if state == True:
+                yield WaitDBus(self.iface.ReleaseResource,resource)
+            else:
+                logger.debug("not releasing resource %s as it has been already requested", str(resource) )
+        yield None
