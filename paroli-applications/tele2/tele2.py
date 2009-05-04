@@ -161,7 +161,10 @@ class TeleCaller2(tichy.Application):
             self.audio_service.audio_toggle()
             
         self.button = tichy.Service.get('Buttons')
-        self.button.connect('aux_button_pressed', self.audio_rotate)
+        self.button_oid = self.button.connect('aux_button_pressed', self.audio_rotate)
+        
+        self.TopBarService = tichy.Service.get("TopBar")
+        self.TopBarService.volume_change(self.audio_service.get_speaker_volume())
         
         self.main.connect("dehide", self.dehide_call)
         self.main.connect("hide", self.hide_call)
@@ -268,6 +271,8 @@ class TeleCaller2(tichy.Application):
                 self.main.delete()
             self.storage.window = None
             raise    
+        self.TopBarService.profile_change()
+        self.button.disconnect(self.button_oid)
     
     def hide_call(self, *args, **kargs):
         logger.info("hiding caller")
@@ -295,7 +300,7 @@ class TeleCaller2(tichy.Application):
             else:
                 new = all_values[current_index + 1]
             self.audio_service.set_speaker_volume(new)
-            
+            self.TopBarService.volume_change(str(new))
             logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
         except Exception, e:
             logger.info(str(Exception))
