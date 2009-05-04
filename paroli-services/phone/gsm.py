@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 #    Paroli (formerly: Tichy)
 #
@@ -243,7 +244,8 @@ class FreeSmartPhoneGSM(GSMService):
             self.values = self.config_service.get_items("call_forwarding")
             if self.values != None: self.values = dict(self.values)
             logger.info("realized values is none")
-            self.SettingReason = tichy.settings.ListSetting('Call Forwarding', 'Reason', tichy.Text, value='unconditional', setter=self.ForwardingSetReason, options=["unconditional","mobile busy","no reply","not reachable","all","all conditional"], model=tichy.List([ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy", self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel = [('title','name')])
+
+            self.SettingReason = tichy.settings.ListSetting('Call Forwarding','Reason',tichy.Text,value='unconditional', setter=self.ForwardingSetReason,options=["unconditional","mobile busy","no reply","not reachable","all","allconditional"],model=tichy.List([ ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy",self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel =[('title','name')])
             
             self.SettingForwarding = tichy.settings.ToggleSetting('Call Forwarding', 'active', tichy.Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
             
@@ -256,11 +258,11 @@ class FreeSmartPhoneGSM(GSMService):
             ##call forwaring setting stop
             
             ##call identifaction setting start
-            self.SettingChannels = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
+            self.CallIdentification = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
             ##call identifaction setting stop
             
             ##network selection etc begin
-            self.SettingChannels = tichy.settings.Setting('Network', 'Registration', tichy.Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
+            self.NetworkRegistration = tichy.settings.Setting('Network', 'Registration', tichy.Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
             
             self.scanning = False
             self.NetworkList = tichy.List()
