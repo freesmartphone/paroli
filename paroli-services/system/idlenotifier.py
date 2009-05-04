@@ -43,8 +43,7 @@ class FreeSmartPhoneIdleNotifier(tichy.Service):
             obj = bus.get_object('org.freesmartphone.odeviced', 
                           '/org/freesmartphone/Device/IdleNotifier/0')
             self.iface = dbus.Interface(obj, 'org.freesmartphone.Device.IdleNotifier')
-            suspend_setting = tichy.settings.Setting('phone', 'suspend-time', tichy.Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[0, 15, 30, 60])
-            dim_setting = tichy.settings.Setting('phone', 'dim-time', tichy.Int, value=self.get_timeout('idle_dim'), setter=self.set_idle_dim, options=[0, 5, 10, 20])
+            suspend_setting = tichy.settings.Setting('phone', 'suspend-time', tichy.Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[-1, 15, 30, 60])
             
         except Exception, e:
             logger.warning("can't use freesmartphone IdleNotifier service : %s", e)
