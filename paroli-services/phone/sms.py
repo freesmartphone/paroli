@@ -88,7 +88,7 @@ class FreeSmartPhoneSMS(tichy.Service):
             self.sms_iface = dbus.Interface(gsm,
                                             'org.freesmartphone.GSM.SMS')
 
-            logger.info("Listening to incoming SMS")
+            logger.info("Listening for incoming SMS")
             # XXX: we should use the IncomigMessage method, but there
             #      is a bug in the framework.
             self.sms_iface.connect_to_signal("IncomingMessage",
