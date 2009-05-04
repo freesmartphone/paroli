@@ -143,6 +143,15 @@ class FreeSmartPhoneSim(tichy.Service):
         except Exception, e:
             print Exception
             print e
+        
+        ##pin setting start
+        self.PinSetting = tichy.settings.ToggleSetting('SIM', 'PIN', tichy.Text, value=self.GetAuthRequired(), 
+                                                                setter=self.SetAuthRequired, options=["on","off"])
+
+        self.ChangePinSetting = tichy.settings.ToggleSetting('SIM', 'Change PIN', tichy.Text, value="", 
+                                                                setter=self.ChangeAuthCode)
+        ##pin setting stop  
+        
         #logger.info("message center is %s", str(msg_center))
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
         yield None
@@ -241,6 +250,57 @@ class FreeSmartPhoneSim(tichy.Service):
                 raise
             raise PINError(pin)
 
+    def GetAuthRequired(self):
+        val = self.gsm_sim.GetAuthCodeRequired()
+        
+        if val:
+            ret = 'on'
+        else:
+            ret = 'off'
+         
+        return ret
+
+    @tichy.tasklet.tasklet
+    def SetAuthRequired(self, val):
+        
+        editor = tichy.Service.get('TelePIN2')
+        
+        pin = yield editor.edit(None, name="Enter PIN",  input_method='number')
+        
+        current = self.gsm_sim.GetAuthCodeRequired()
+        
+        try:
+            self.gsm_sim.SetAuthCodeRequired(not(current),  pin)
+        
+        except Exception,  e:
+            dialog = tichy.Service.get("Dialog")
+            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+        
+        ret = self.GetAuthRequired()
+        
+        yield ret
+
+    @tichy.tasklet.tasklet
+    def ChangeAuthCode(self, val):
+        
+        editor = tichy.Service.get('TelePIN2')
+        
+        old_pin = yield editor.edit(None, text="Enter old PIN",  input_method='number')
+        
+        current = self.gsm_sim.GetAuthCodeRequired()
+        
+        new_pin = yield editor.edit(None, text="Enter new PIN",  input_method='number')
+        
+        try:
+            self.gsm_sim.ChangeAuthCode(old_pin,  new_pin)
+        
+        except Exception,  e:
+            dialog = tichy.Service.get("Dialog")
+            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+        
+        ret = ""
+        
+        yield ret
 
 class TestSim(tichy.Service):
 

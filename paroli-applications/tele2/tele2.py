@@ -449,6 +449,11 @@ class PINApp2(tichy.Application):
             tb.signal_emit("show_pin_title", "*")
         
         self.edje_obj = self.main.main_layout.Edje
+        
+        if text != "":
+              print text
+              tb.part_text_set("title",  text)
+        
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 
