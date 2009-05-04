@@ -94,7 +94,7 @@ class DialogService(tichy.Service):
                 The message
         """
         assert isinstance(msg, basestring)
-        msg = msg % args
+        msg = msg
         logger.debug("show %s dialog : %s", title, msg)
         
         self.error_msgs = tichy.config.getboolean('error_messages','activated', False)
@@ -117,3 +117,4 @@ class DialogService(tichy.Service):
                 The message
         """
         yield self.dialog(parent, "Error", msg, *args)
+

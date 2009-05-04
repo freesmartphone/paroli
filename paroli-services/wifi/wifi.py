@@ -115,8 +115,6 @@ class WifiService(tichy.Service):
     def property_changed(self, *args, **kargs):
         if args[0] == 'Devices':
             self.get_device()
-        #elif args[0] == 'Status':
-            #self.test()
 
     def get_device(self):
         ## device
