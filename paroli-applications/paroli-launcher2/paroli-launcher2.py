@@ -461,7 +461,7 @@ class TopBar(tichy.Service):
     def init(self):
         yield tichy.Service.get('Prefs').wait_initialized()
         yield tichy.Service.get('Power').wait_initialized()
-        yield tichy.Service.get('Gprs').wait_initialized()
+#        yield tichy.Service.get('Gprs').wait_initialized()
         self.gsm = tichy.Service.get('GSM')
         self.power = tichy.Service.get('Power')
         self.prefs = tichy.Service.get('Prefs')
@@ -526,6 +526,11 @@ class TopBar(tichy.Service):
         for i in self.tb_list:
             logger.info("profile display changed to %s", self.prefs.get_profile())
             i.edje_get().signal_emit(self.prefs.get_profile(), "profile-change")
+
+    def volume_change(self, *args, **kargs):
+        for i in self.tb_list:
+            logger.info("volume display changed to %s", str(args[0]))
+            i.edje_get().signal_emit(str(args[0]), "profile-change")
 
     def battery_status(self, *args, **kargs):
         for i in self.tb_list:
