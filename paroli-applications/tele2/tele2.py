@@ -139,7 +139,9 @@ class TeleCaller2(tichy.Application):
         self.gsm_service = tichy.Service.get('GSM')
         self.dialog = tichy.Service.get('Dialog')
         self.audio_service = tichy.Service.get('Audio')
+        self.usage_service = tichy.Service.get('Usage')
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
+        yield self.usage_service.occupy_cpu()
         
         if layout:
             self.main = parent
@@ -215,9 +217,6 @@ class TeleCaller2(tichy.Application):
             i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
             if i == 0: #activated
                 logger.debug("call activated")
-
-                self.usage_service = tichy.Service.get('Usage')
-                yield self.usage_service.occupy_cpu()
 
                 if self.audio_service.muted == 1:
                     self.audio_service.audio_toggle()
