@@ -461,7 +461,7 @@ class TopBar(tichy.Service):
     def init(self):
         yield tichy.Service.get('Prefs').wait_initialized()
         yield tichy.Service.get('Power').wait_initialized()
-#        yield tichy.Service.get('Gprs').wait_initialized()
+        yield tichy.Service.get('Gprs').wait_initialized()
         self.gsm = tichy.Service.get('GSM')
         self.power = tichy.Service.get('Power')
         self.prefs = tichy.Service.get('Prefs')
