@@ -259,6 +259,17 @@ class FreeSmartPhoneGSM(GSMService):
             self.SettingChannels = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
             ##call identifaction setting stop
             
+            ##network selection etc begin
+            self.SettingChannels = tichy.settings.Setting('Network', 'Registration', tichy.Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
+            
+            self.scanning = False
+            self.NetworkList = tichy.List()
+            self.ListLabel = [('title','name'),('subtitle','status')]
+            
+            self.scan_setting = tichy.settings.ListSetting('Network', 'List', tichy.Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
+            
+            ##network selection end
+            
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
@@ -384,6 +395,52 @@ class FreeSmartPhoneGSM(GSMService):
 
     ##for settings
 
+    ##network selection
+    def GetRegStatus(self):
+        d = self.gsm_network.GetStatus()
+        if d['registration'] != 'unregistered':
+            ret = ("%s with %s") % (d['registration'], d['provider'])
+        else:
+            ret = 'not registered'
+            
+        return ret
+    
+    @tichy.tasklet.tasklet
+    def SetRegStatus(self, val):
+        if self.GetRegStatus() != 'not registered':
+            yield WaitDBus(self.gsm_network.Unregister)
+            ret = "not registered"
+        else:
+            yield WaitDBus(self.gsm_network.Register)
+            ret = "registered"
+        yield ret
+
+    def RegisterWithProvider_pre(self, *args, **kargs):
+        self.RegisterWithProvider(*args, **kargs).start()
+        
+    @tichy.tasklet.tasklet
+    def RegisterWithProvider(self, *args, **kargs):
+        Provider = args[0][0]
+        edje_obj = args[2]
+        if Provider.status != 'current':
+            yield WaitDBus(self.gsm_network.RegisterWithProvider, Provider.Pid)
+        edje_obj.emit("back")
+
+    @tichy.tasklet.tasklet
+    def run_scan(self, val):
+      if self.scanning == False:
+          self.scanning = True
+          self.NetworkList.clear()
+          providers = yield WaitDBus(self.gsm_network.ListProviders)
+          
+          for i in providers:
+              if i[1] != 'forbidden':
+                  obj = Provider(i, self.RegisterWithProvider_pre)
+                  self.NetworkList.append(obj)
+          self.scanning = False
+          
+      yield "scan"
+
     ##call identification
     
     def GetCallIdentification(self):
@@ -402,7 +459,7 @@ class FreeSmartPhoneGSM(GSMService):
         reason = self.ForwardingGetReason()
         if self.GetForwardingStatus(reason) == 'inactive':
               
-              channel = self.ForwardingGet('class')
+              channel = self.ForwardingGet('status')
               number = self.ForwardingGet('number')
               timeout = self.ForwardingGet('timeout')
               try:
@@ -411,7 +468,7 @@ class FreeSmartPhoneGSM(GSMService):
                   else:
                       yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
               except Exception, e:
-                  #yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
+                  yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
                   print e
                   print Exception
                   
@@ -431,7 +488,6 @@ class FreeSmartPhoneGSM(GSMService):
     
     @tichy.tasklet.tasklet
     def ForwardingSetClass(self, *args, **kargs):
-        #print "here are the args ", args
         value = "%s,%s,%s" % (str(args[0]), self.ForwardingGet('number'), self.ForwardingGet('timeout'))
         self.set_param(value)
         yield value
@@ -482,10 +538,6 @@ class FreeSmartPhoneGSM(GSMService):
     
     @tichy.tasklet.tasklet
     def ForwardingSetReason(self, *args, **kargs):
-        #print "forwardingSetReason"
-        #print self.ForwardingGet('class')
-        #print args
-        #print kargs
         yield 'moo'
 
     def action(self, *args, **kargs):
@@ -494,6 +546,16 @@ class FreeSmartPhoneGSM(GSMService):
         args[2].emit('back')
         self.SettingChannels.set(self.ForwardingGet('class',reason=item[0].name)).start()
         self.SettingTargetNumber.set(self.ForwardingGet('number',reason=item[0].name)).start()
+
+class Provider(tichy.Object):
+    def __init__(self, obj, action):
+        self.Pid = obj[0]
+        self.status = obj[1]
+        print self.status
+        self.name = obj[2]
+        self.abbr = obj[3]
+        self.NetworkType = obj[4]
+        self.action = action
 
 class TestGsm(GSMService):
     """Fake service that can be used to test without GSM drivers
