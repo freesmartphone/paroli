@@ -236,6 +236,15 @@ class FreeSmartPhoneGSM(GSMService):
                 #provider = yield tichy.Wait(self, 'provider-modified')
                 
             self._keep_alive().start()
+            
+            ##network selection end
+            
+        except Exception, ex:
+            logger.error("Error : %s", ex)
+            raise
+        
+        try:
+            
             yield tichy.Service.get('ConfigService').wait_initialized()
             self.config_service = tichy.Service.get("ConfigService")
             logger.info("got config service")
@@ -269,9 +278,7 @@ class FreeSmartPhoneGSM(GSMService):
             self.ListLabel = [('title','name'),('subtitle','status')]
             
             self.scan_setting = tichy.settings.ListSetting('Network', 'List', tichy.Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
-            
-            ##network selection end
-            
+        
         except Exception, ex:
             logger.error("Error : %s", ex)
             raise
