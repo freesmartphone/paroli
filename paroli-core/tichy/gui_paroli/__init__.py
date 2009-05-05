@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Openmoko
@@ -77,6 +78,10 @@ class elm_window(tichy.Object):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
         self.elm_obj.autodel_set(True)
+        self.elm_obj.on_del_add(self.closing)
+        
+    def closing(self, *args, **kargs):
+        self.emit("closing")
         
 class elm_layout(tichy.Object):
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
