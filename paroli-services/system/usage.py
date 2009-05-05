@@ -56,13 +56,13 @@ class UsageService(tichy.Service):
         except Exception, e:
             logger.warning("can't use fso usage interface service : %s", e)
             
-    @tichy.tasklet.tasklet
+    #@tichy.tasklet.tasklet
     def occupy_cpu(self):
-        yield self.request_resource('CPU')
+        return self.request_resource('CPU')
     
-    @tichy.tasklet.tasklet
+    #@tichy.tasklet.tasklet
     def release_cpu(self):
-        yield self.release_resource('CPU')
+        return self.release_resource('CPU')
 
     @tichy.tasklet.tasklet
     def request_resource(self, resource):
