@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -144,14 +145,16 @@ class FreeSmartPhoneSim(tichy.Service):
             print Exception
             print e
         
-        ##pin setting start
-        self.PinSetting = tichy.settings.ToggleSetting('SIM', 'PIN', tichy.Text, value=self.GetAuthRequired(), 
-                                                                setter=self.SetAuthRequired, options=["on","off"])
+        try:
+            ##pin setting start
+            self.PinSetting = tichy.settings.ToggleSetting('SIM', 'PIN', tichy.Text, value=self.GetAuthRequired(),setter=self.SetAuthRequired,options=["on","off"])
 
-        self.ChangePinSetting = tichy.settings.ToggleSetting('SIM', 'Change PIN', tichy.Text, value="", 
-                                                                setter=self.ChangeAuthCode)
-        ##pin setting stop  
-        
+            self.ChangePinSetting = tichy.settings.ToggleSetting('SIM', 'Change PIN', tichy.Text, value="",setter=self.ChangeAuthCode)
+            ##pin setting stop  
+        except Exception, ex:
+            logger.error("Error : %s", ex)
+            raise
+            
         #logger.info("message center is %s", str(msg_center))
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
         yield None
