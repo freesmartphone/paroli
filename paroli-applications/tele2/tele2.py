@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Openmoko
@@ -55,9 +56,11 @@ class TeleApp(tichy.Application):
         self.edje_obj.add_callback("*", "call", self.call)
 
         ##wait until main object emits back signal or delete is requested
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'))
         logger.info('Tele closing')
-        self.window.delete()
+        
+        if i != 2:
+            self.window.delete()
 
     ##DEBUG FUNCTIONS 
     ## msgs from embryo
@@ -181,6 +184,7 @@ class TeleCaller2(tichy.Application):
             # XXX: we should use an other way to check for a call object !
             if not isinstance(number, (basestring, tichy.Text)):
                 call = number
+                self.main.window.connect("close",call.release().start)
                 self.storage.call = call
                 self.main.emit('call_active')
                 self.edje_obj.signal_emit('to_incoming_state',"*")
@@ -204,6 +208,7 @@ class TeleCaller2(tichy.Application):
                 self.edje_obj.show()
                 call = self.gsm_service.create_call(number)
                 call.connect("error", self.dialog.error)
+                self.main.window.connect("close",call.release().start)
                 self.storage.caller.value = call.number.get_text()
                 self.storage.call = call
                 self.main.emit('call_active')
@@ -253,22 +258,24 @@ class TeleCaller2(tichy.Application):
             self.storage.caller.value = ""
             self.storage.call = None
             
-            if layout:
-                layout.elm_obj.show()
-                self.layout.elm_obj.delete()
-                self.main.restore_orig()
-                self.main.bg_m.onclick = 'back'
-            else:
-                self.main.delete()
+            if self.main.window.elm_obj.is_deleted() == False:
+                if layout:
+                    layout.elm_obj.show()
+                    self.layout.elm_obj.delete()
+                    self.main.restore_orig()
+                    self.main.bg_m.onclick = 'back'
+                else:
+                    self.main.delete()
             self.storage.window = None
         except Exception, e:
             logger.error("Got error in caller : %s", e)
-            if layout:
-                layout.elm_obj.show()
-                self.main.restore_orig()
-                self.main.bg_m.onclick = 'back'
-            else:
-                self.main.delete()
+            if self.main.window.elm_obj.is_deleted() == False:
+                if layout:
+                    layout.elm_obj.show()
+                    self.main.restore_orig()
+                    self.main.bg_m.onclick = 'back'
+                else:
+                    self.main.delete()
             self.storage.window = None
             raise    
         self.TopBarService.profile_change()
@@ -439,7 +446,7 @@ class PINApp2(tichy.Application):
     name = 'PINApp2'
     icon = 'icon.png'
 
-    def run(self, window, text="", name=None, input_method=None):
+    def run(self, window, text="", name=None, input_method=None, variable=None):
 
         logger.info("PIN2 called")
         ##set edje_file
@@ -462,11 +469,16 @@ class PINApp2(tichy.Application):
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 
-        yield tichy.Wait(self.main, 'value_received')
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.main, 'value_received'),tichy.Wait(self.window.window,'closing'))
 
-        number = self.edje_obj.part_text_get("pin-text")
-        self.main.delete()
-        yield number
+        if i == 0: #value_received
+            number = self.edje_obj.part_text_get("pin-text")
+            if variable != None:
+                variable.value = number
+            self.main.delete()
+            yield number
+        elif i == 1:
+            tichy.mainloop.quit()
 
     def embryo(self, emission, signal, source):
         logger.info('embryo says: ' + signal)

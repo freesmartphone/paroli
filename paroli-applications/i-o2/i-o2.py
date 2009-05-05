@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 OpenMoko
@@ -73,11 +74,12 @@ class I_O2_App(tichy.Application):
 
         self.item_list.Elm_win = self.window.window
 
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'), tichy.Wait(self.window.window,'closing'))
         
-        self.contacts.disconnect(self.oid)
-        self.window.delete()
-        del self.item_list
+        if i != 2:
+            self.contacts.disconnect(self.oid)
+            self.window.delete()
+            del self.item_list
     
     def to_edit_mode(self, emission, source, param):
         for item in self.item_list.items:

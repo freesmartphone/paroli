@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 OpenMoko
@@ -72,12 +73,13 @@ class MsgsApp2(tichy.Application):
         
         self.item_list.add_callback("details", "*", self.msg_details)
 
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
         logger.info('Messages closing')
         
-        self.contacts.disconnect(self.oid)
-        self.window.delete()
-        del self.item_list
+        if i != 2:
+            self.contacts.disconnect(self.oid)
+            self.window.delete()
+            del self.item_list
       
     ##DEBUG FUNCTIONS
     ## general output check

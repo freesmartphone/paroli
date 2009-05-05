@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Settings app
 #
 #    copyright 2009 Openmoko (mirko@openmoko.org)
@@ -74,15 +75,14 @@ class Settings(tichy.Application):
         
         self.item_list.add_callback("*", "sublist", self._show_sublist)
         
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
-        #,tichy.Wait(self.button, 'aux_button_pressed')
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing
         logger.info('Settings closing')
         
         ##we delete the window object (the class would also delete all children object)
-        #del self.groups
-        self.item_list._remove_cb()
-        self.window.delete()
+        if i != 2:
+            self.item_list._remove_cb()
+            self.window.delete()
         
     def _show_sublist(self, emission, signal, source, group):
         logger.info("showing sublist from group %s", str(group[0]))
