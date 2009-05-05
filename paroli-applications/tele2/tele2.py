@@ -144,7 +144,7 @@ class TeleCaller2(tichy.Application):
         self.audio_service = tichy.Service.get('Audio')
         self.usage_service = tichy.Service.get('Usage')
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
-        yield self.usage_service.occupy_cpu()
+        self.usage_service.occupy_cpu().start()
         
         if layout:
             self.main = parent
@@ -253,7 +253,7 @@ class TeleCaller2(tichy.Application):
                     logger.error("Got error in caller : %s", e)
                     
             
-            yield self.usage_service.release_cpu()
+            self.usage_service.release_cpu().start()
                     
             self.storage.caller.value = ""
             self.storage.call = None
