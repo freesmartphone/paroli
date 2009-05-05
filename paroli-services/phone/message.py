@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -67,7 +68,7 @@ class Message(tichy.Item):
         assert direction in ['in', 'out'], direction
         self.direction = direction
         self.status = status or direction == 'out' and 'read' or 'unread'
-        assert self.status in ['read', 'unread'], status
+        assert self.status in ['read', 'unread', 'unsent', 'sent'], status
 
     def get_text(self):
         return self.text
@@ -235,11 +236,11 @@ class MessagesService(tichy.Service):
             logger.info("save all messages of type %s", cls.storage)
             cls._save_all()
 
-    def create(self, number, text, direction, **kargs):
+    def create(self, number, text, direction, status=None,**kargs):
         """Create a new message
         The arguments are the same as `Message.__init__`
         """
-        msg = PhoneMessage(number, text, direction, **kargs)
+        msg = PhoneMessage(number, text, direction, status, **kargs)
         if msg.status == 'unread':
             msg.connect('read',self._update_unread)
         return msg

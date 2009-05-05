@@ -336,12 +336,14 @@ class MsgsWrite(tichy.Application):
         connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
         """
         logger.info("send message called")
+        message_service = tichy.Service.get('Messages')
+        message = message_service.create(number=sms.peer, text=sms.text, direction='out')
         try:
-            message_service = tichy.Service.get('Messages')
-            message = message_service.create(number=sms.peer, text=sms.text, direction='out')
             logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
         except Exception, ex:
+            msg.status = 'unsent'
+            message_service.add(msg)
             logger.error("Got error %s", ex)
     
     def callback(self, *args, **kargs):
