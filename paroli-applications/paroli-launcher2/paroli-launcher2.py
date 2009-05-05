@@ -50,7 +50,7 @@ class Launcher_App2(tichy.Application):
         self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
-        self.window.window.elm_obj.on_del_add(self._remove_link_signals)
+        
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.bg_m, "tb"):
 
@@ -122,9 +122,21 @@ class Launcher_App2(tichy.Application):
         
         self.ready = 1
         
-        yield tichy.Wait(self.window, 'backs')
-        self._remove_link_signals()
-        self.window.delete()   # Don't forget to close the window
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'backs'),tichy.Wait(self.window.window,'closing'))
+        
+        self.dialog = tichy.Service.get("Dialog")
+        keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
+        print "keep_alive", keep_alive
+        #self._remove_link_signals()
+        
+        if keep_alive == "no":
+            logger.info("keep alive set to no: %s", str(keep_alive))
+            tichy.mainloop.quit()
+        else:
+            logger.info("keep alive set to %s", str(keep_alive))
+        
+        if self.window.window.elm_obj.is_deleted() == False:
+            self.window.delete()   # Don't forget to close the window
         
 
     def unblock_screen(self, *args, **kargs):
@@ -194,6 +206,7 @@ class Launcher_App2(tichy.Application):
             logger.info("disconnecting settings")
             self.button.disconnect(self.aux_btn_settings_conn)
         for i in self.app_objs:
+            print self.app_objs[i]
             self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
             logger.debug("some callback wasn't found")
     
