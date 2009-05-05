@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -48,7 +49,7 @@ class UsageService(tichy.Service):
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
         try:
-            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
+            yield WaitDBusName('org.freesmartphone.ousaged', time_out=120)
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             self.obj = bus.get_object('org.freesmartphone.ousaged', '/org/freesmartphone/Usage')
             self.iface = dbus.Interface(self.obj, 'org.freesmartphone.Usage')
@@ -66,21 +67,23 @@ class UsageService(tichy.Service):
     @tichy.tasklet.tasklet
     def request_resource(self, resource):
         logger.debug("requesting resource %s", str(resource))
-        if resource in self.iface.ListResources():
-            state = yield WaitDBus(self.iface.GetResourceState,resource)
-            if state == False:
-                yield WaitDBus(self.iface.RequestResource,resource)
-            else:
-                logger.debug("not requesting resource %s as it has been already requested", str(resource) )
+        if hasattr(self, "iface"):
+            if resource in self.iface.ListResources():
+                state = yield WaitDBus(self.iface.GetResourceState,resource)
+                if state == False:
+                    yield WaitDBus(self.iface.RequestResource,resource)
+                else:
+                    logger.debug("not requesting resource %s as it has been already requested", str(resource) )
         yield None
     
     @tichy.tasklet.tasklet          
     def release_resource(self, resource):
         logger.debug("releasing resource %s", str(resource))
-        if resource in self.iface.ListResources():
-            state = yield WaitDBus(self.iface.GetResourceState,resource)
-            if state == True:
-                yield WaitDBus(self.iface.ReleaseResource,resource)
-            else:
-                logger.debug("not releasing resource %s as it has been already requested", str(resource) )
+        if hasattr(self, "iface"):
+            if resource in self.iface.ListResources():
+                state = yield WaitDBus(self.iface.GetResourceState,resource)
+                if state == True:
+                    yield WaitDBus(self.iface.ReleaseResource,resource)
+                else:
+                    logger.debug("not releasing resource %s as it has been already requested", str(resource) )
         yield None

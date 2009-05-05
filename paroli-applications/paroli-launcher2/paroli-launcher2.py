@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 OpenMoko
@@ -525,7 +526,10 @@ class TopBar(tichy.Service):
     def profile_change(self, *args, **kargs):
         for i in self.tb_list:
             logger.info("profile display changed to %s", self.prefs.get_profile())
-            i.edje_get().signal_emit(self.prefs.get_profile(), "profile-change")
+            try:
+                i.edje_get().signal_emit(self.prefs.get_profile(), "profile-change")
+            except:
+                pass
 
     def volume_change(self, *args, **kargs):
         for i in self.tb_list:

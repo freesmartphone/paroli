@@ -248,16 +248,34 @@ class FreeSmartPhoneGSM(GSMService):
             yield tichy.Service.get('ConfigService').wait_initialized()
             self.config_service = tichy.Service.get("ConfigService")
             logger.info("got config service")
+        
+        except Exception, ex:
+            logger.error("Error in try retrieving config service : %s", ex)
+        
+        try:
             
             ##call forwaring setting start
             self.values = self.config_service.get_items("call_forwarding")
             if self.values != None: self.values = dict(self.values)
             logger.info("realized values is none")
 
+        except Exception, ex:
+            logger.error("Error in try call forwarding setting : %s", ex)
+            
+            
+        try:
+
             self.SettingReason = tichy.settings.ListSetting('Call Forwarding','Reason',tichy.Text,value='unconditional', setter=self.ForwardingSetReason,options=["unconditional","mobile busy","no reply","not reachable","all","allconditional"],model=tichy.List([ ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy",self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel =[('title','name')])
             
             self.SettingForwarding = tichy.settings.ToggleSetting('Call Forwarding', 'active', tichy.Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
             
+        
+        except Exception, ex:
+            logger.error("Error in try call forwarding setting list : %s", ex)
+            
+            
+        try:
+
             self.SettingChannels = tichy.settings.Setting('Call Forwarding', 'channels', tichy.Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
             
             self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Target Number', tichy.Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
@@ -266,12 +284,29 @@ class FreeSmartPhoneGSM(GSMService):
             
             ##call forwaring setting stop
             
+        
+        except Exception, ex:
+            logger.error("Error in try Error in try call forwarding setting : %s", ex)
+            
+        try:
+
             ##call identifaction setting start
             self.CallIdentification = tichy.settings.Setting('Network', 'Call Identification', tichy.Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
             ##call identifaction setting stop
+        
+        except Exception, ex:
+            logger.error("Error in network identification setting: %s", ex)
             
+        try:    
             ##network selection etc begin
             self.NetworkRegistration = tichy.settings.Setting('Network', 'Registration', tichy.Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
+            
+        
+        except Exception, ex:
+            logger.error("Error in network registration setting : %s", ex)
+            
+            
+        try:
             
             self.scanning = False
             self.NetworkList = tichy.List()
@@ -280,8 +315,8 @@ class FreeSmartPhoneGSM(GSMService):
             self.scan_setting = tichy.settings.ListSetting('Network', 'List', tichy.Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
         
         except Exception, ex:
-            logger.error("Error : %s", ex)
-            raise
+            logger.error("Error in network list setting : %s", ex)
+            #raise
         
     def _turn_on(self):
         """turn on the antenna
