@@ -345,7 +345,7 @@ class MsgsWrite(tichy.Application):
             dialog = tichy.Service.get("Dialog")
             msg.status = 'unsent'
             message_service.add(msg)
-            yield dialog.dialog.(None, "MSgs Error", "unable to send message, saved as draft")
+            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft")
             logger.error("Got error %s", ex)
     
     def callback(self, *args, **kargs):
