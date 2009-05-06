@@ -108,8 +108,8 @@ class PhoneMessage(Message):
 
     storage = 'Phone'
 
-    def __init__(self, peer, text, direction, **kargs):
-        super(PhoneMessage, self).__init__(peer, text, direction, **kargs)
+    def __init__(self, peer, text, direction, status=None, **kargs):
+        super(PhoneMessage, self).__init__(peer, text, direction, status=None, **kargs)
         self.connect('modified', self._on_modified)
 
     def _on_modified(self, message):
