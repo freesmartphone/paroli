@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Openmoko
@@ -150,10 +151,12 @@ class ListSetting(Setting):
     """ Setting for List values, on click it will produce a list-window
     """
     
-    def __init__(self, group, name, type, value=None, setter=None, options="", model=None, ListLabel=None, **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options="", model=None, ListLabel=None, edje_group=None, save_button=False, **kargs):
 
         assert issubclass(type, Item), type
         self.group = group
+        self.edje_group = edje_group
+        self.save_button = save_button
         self.name = name
         self.type = type
         self.Value = type.as_type(value) if value is not None else type()
@@ -169,7 +172,7 @@ class ListSetting(Setting):
     def rotate(self, parent, layout):
         self.Setter("scan").start()
         fe = tichy.Service.get("FreeEdit")
-        fe.ListEdit(self, parent, self.model, self.ListLabel, layout).start()
+        fe.ListEdit(self, parent, self.model, self.ListLabel, layout, self.edje_group, self.save_button).start()
 
 class ToggleSetting(Setting):
     """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter
