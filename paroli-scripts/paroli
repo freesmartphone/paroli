@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 #    Paroli
 #
@@ -188,12 +189,28 @@ def launch(name, options):
 if __name__ == '__main__':
     options = parse_options()
 
-    if options.launch:
-        launch(options.launch, options)
-        sys.exit(0)
-
     setup_logging()
     tichy.config.parse(cfg_file=options.cfg_file)
+    
+    if tichy.config.getboolean('dbus','activated', False):
+        logger.info("connect to dbus")
+        if options.bus == 'system':
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        else:
+            bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+        
+        if bus.list_activatable_names().count('org.tichy.launcher') != 0:
+      logger.info("paroli already running")
+            if options.launch:
+    logger.info("running launch")
+                launch(options.launch, options)
+                sys.exit(0)
+        
+        bus_name = dbus.service.BusName('org.tichy.launcher', bus)
+
+
+        logger.info("start launcher service")
+        launcher = Launcher(bus, '/Launcher')
 
     # We set the default service before importing the plugins
     set_default_services()
@@ -209,17 +226,6 @@ if __name__ == '__main__':
             tichy.plugins.import_all(plugins_dir)
         except IOError:
             logger.info("failed to load plugins in %s", plugins_dir)
-
-    if tichy.config.getboolean('dbus','activated', False):
-        logger.info("connect to dbus")
-        if options.bus == 'system':
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-        else:
-            bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
-        bus_name = dbus.service.BusName('org.tichy.launcher', bus)
-
-        logger.info("start launcher service")
-        launcher = Launcher(bus, '/Launcher')
 
     logger.info("start InitAll")
     InitAll().start()
