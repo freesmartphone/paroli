@@ -200,9 +200,9 @@ if __name__ == '__main__':
             bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
         
         if bus.list_activatable_names().count('org.tichy.launcher') != 0:
-      logger.info("paroli already running")
+            logger.info("paroli already running")
             if options.launch:
-    logger.info("running launch")
+                logger.info("running launch")
                 launch(options.launch, options)
                 sys.exit(0)
         
