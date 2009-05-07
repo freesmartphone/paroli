@@ -469,7 +469,7 @@ class PINApp2(tichy.Application):
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.main, 'value_received'),tichy.Wait(self.window.window,'closing'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.main, 'value_received'),tichy.Wait(self.main.window,'closing'))
 
         if i == 0: #value_received
             number = self.edje_obj.part_text_get("pin-text")
