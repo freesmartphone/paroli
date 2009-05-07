@@ -55,6 +55,9 @@ class DisplayService(tichy.Service):
             bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
             self.obj = bus.get_object('org.enlightenment.wm.service', '/org/enlightenment/wm/RemoteObject')
             self.iface = dbus.Interface(self.obj, 'org.enlightenment.wm.Profile')
+
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=120, session=False)
+
             bus2 = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             self.bobj = bus2.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Display/gta02_bl')
             self.biface = dbus.Interface(self.bobj, 'org.freesmartphone.Device.Display')
