@@ -195,7 +195,7 @@ class FreeSmartPhoneSim(tichy.Service):
 
         ret = []
         for entry in entries:
-            logger.debug("Got message %s", entry)
+            #logger.debug("Got message %s", entry)
             index = entry[0]
             status = str(entry[1]) # "read"|"sent"|"unread"|"unsent"
             peer = str(entry[2])
