@@ -107,7 +107,7 @@ class MsgsApp2(tichy.Application):
         detail_layout.elm_obj.show()
 
         textbox = gui.elementary.Entry(self.window.window.elm_obj)
-        textbox.entry_set(str(text))
+        textbox.entry_set(text.value)
         
         textbox.size_hint_weight_set(1.0, 1.0)
         textbox.editable_set(False)
