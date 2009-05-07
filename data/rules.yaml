@@ -142,7 +142,7 @@
     #
     trigger: IdleState()
     filters: HasAttr(status, "busy")
-    actions: SetDisplayBrightness("0", 90)
+    actions: SetDisplayBrightness("0", 99)
 -
     trigger: IdleState()
     filters: HasAttr(status, "idle_dim")
