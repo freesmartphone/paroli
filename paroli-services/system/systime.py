@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Jeremy Chang (jeremy@openmoko.org)
@@ -46,8 +47,52 @@ class FreeSmartPhoneTimeService(tichy.Service):
             rtc_obj = bus.get_object('org.freesmartphone.odeviced', 
                           '/org/freesmartphone/Device/RealTimeClock/rtc0')
             self.rtc = dbus.Interface(rtc_obj, 'org.freesmartphone.Device.RealTimeClock')
+            
+            self.ListLabel = [('title','name'),('value','value')]
+            
+            self.hour = TimeSetting("hour",3,tichy.List(range(24)), "int")
+            
+            self.minute =  TimeSetting("minute",4,tichy.List(range(60)), "int")
+            
+            self.ValueList = tichy.List()
+            self.ValueList.append(self.hour)
+            self.ValueList.append(self.minute)
+            
+            self.time_setting = tichy.settings.ListSetting('Time', 'set time', tichy.Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+            
+            self.ValueList.connect('save', self.UpdateSystemTime)
+            
         except Exception, e:
             logger.warning("can't use freesmartphone RealTimeClock service : %s", e)
+
+    def test(self, *args, **kargs):
+        logger.info("test called")
+
+    @tichy.tasklet.tasklet
+    def set_time(self, val):
+        yield val
+
+    def UpdateSystemTime(self, *args, **kargs):
+        logger.info("time updating called")
+        year = time.localtime(self.rtc.GetCurrentTime())[0]
+        month = time.localtime(self.rtc.GetCurrentTime())[1]
+        day = time.localtime(self.rtc.GetCurrentTime())[2]
+        hour = self.hour.value
+        print hour
+        minute = self.minute.value
+        print minute
+        sec = time.localtime(self.rtc.GetCurrentTime())[5]
+        wday = time.localtime(self.rtc.GetCurrentTime())[6]
+        yday = time.localtime(self.rtc.GetCurrentTime())[7]
+        isdst = time.localtime(self.rtc.GetCurrentTime())[8]
+        new_time = time.mktime((year, month, day, hour, minute, sec, wday, yday, isdst))
+        ltime = time.asctime((year, month, day, hour, minute, sec, wday, yday, isdst))
+        print ltime
+        print ltime[3]
+        timeSetCmd = 'date -s ' + ltime.split()[3]
+        #XXX: here seems a dirty quick way (os.system).
+        os.system(timeSetCmd)
+        self.rtc.SetCurrentTime(int(new_time))
 
     def get_current_time(self):
         seconds = self.rtc.GetCurrentTime()
@@ -68,3 +113,18 @@ class FreeSmartPhoneTimeService(tichy.Service):
             logger.error("Exception : %s", ex)
             raise
 
+class TimeSetting(tichy.Object):
+    def __init__(self, name, rep_part, val_range, type_arg):
+        self.service = tichy.Service.get('SysTime')
+        self.name = name
+        self.value = time.localtime(self.service.rtc.GetCurrentTime())[rep_part]
+        self.rep_part = rep_part
+        self.val_range = val_range
+        self.val_type = type_arg
+
+    def action(self, *args, **kargs):
+        pass
+        
+    def __repr__(self):
+        time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
+        return time

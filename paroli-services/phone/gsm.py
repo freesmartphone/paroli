@@ -88,6 +88,7 @@ class GSMService(tichy.Service):
 
     def _on_logs_modified(self, logs):
         self._save_logs()
+        self.update_missed_call_count()
 
     def _save_logs(self):
         """Save the logs into a file"""

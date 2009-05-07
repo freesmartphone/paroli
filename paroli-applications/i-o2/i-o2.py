@@ -76,6 +76,12 @@ class I_O2_App(tichy.Application):
 
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'), tichy.Wait(self.window.window,'closing'))
         
+        for i in self.callLogs:
+            i.missed = False
+            i.check()
+        
+        self.callLogs.emit("modified")
+        
         if i != 2:
             self.contacts.disconnect(self.oid)
             self.window.delete()

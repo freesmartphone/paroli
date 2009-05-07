@@ -157,8 +157,8 @@ class FreeEditService(tichy.Service):
     def NumberEdit(self, setting, parent, layout):
         return NumberSettingApp(setting, parent, layout)
 
-    def ListEdit(self, setting, parent, model, ListLabel, layout):
-        return ListSettingApp(setting, parent, model, ListLabel, layout)
+    def ListEdit(self, setting, parent, model, ListLabel, layout, edje_group, save_button):
+        return ListSettingApp(setting, parent, model, ListLabel, layout, edje_group, save_button)
 
 class NumberSettingApp(tichy.Application):
     name = "NumberSetting"
@@ -189,12 +189,13 @@ class ListSettingApp(tichy.Application):
     
     name = 'ListSetting'
 
-    def run(self, setting, parent, model, list_label, layout, *args, **kargs):
+    def run(self, setting, parent, model, list_label, layout, group="group",save_button=False, *args, **kargs):
     
         layout.elm_obj.hide()
       
         self.parent = parent
-      
+        self.setting = setting
+        
         self.edje_file = os.path.join(os.path.dirname(__file__), 'settings.edj')
       
         self.window = gui.elm_list_subwindow(parent, self.edje_file, "main", "list")
@@ -202,6 +203,9 @@ class ListSettingApp(tichy.Application):
         self.edje_obj = self.window.main_layout
         
         self.edje_obj.Edje.signal_emit("sublist_mode","*")
+        
+        if save_button:
+            self.edje_obj.Edje.signal_emit("save_button","*")
         
         self.ItemList = model
         self.cb_list = tichy.List()
@@ -216,8 +220,10 @@ class ListSettingApp(tichy.Application):
             else:  
                 return cmp(m2.name, m1.name)
         
+        item_group = group or "group"
+        
         self.list_label = list_label
-        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, "group", list_label, comp)
+        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
         
         for i in self.ItemList:
             if hasattr(i, 'connect'):
@@ -225,7 +231,10 @@ class ListSettingApp(tichy.Application):
                 self.cb_list.append([i,oid])
         
         self.item_list.add_callback("*", "sublist", self.action)
-    
+        self.item_list.add_callback("pressed", "decrease", self.decrease)
+        self.item_list.add_callback("pressed", "increase", self.increase)
+        self.edje_obj.Edje.signal_callback_add("pressed", "save", self.save)
+        
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'))
     
         for i in self.cb_list:
@@ -239,6 +248,43 @@ class ListSettingApp(tichy.Application):
     def action(self, emission, signal, source, item):
         item[0].action(item, self.parent, self.edje_obj)
         logger.info("action called")
+
+    def EnableSaveButton(self, *args, **kargs):
+        self.edje_obj.Edje.signal_emit("EnableSave","*")
+
+    def save(self, *args, **kargs):
+        logger.info("save triggered")
+        self.ItemList.emit('save')
+
+    def increase(self, emission, signal, source, item):
+        if item[0].val_type == "int":
+            current = item[0].val_range.index(int(emission.part_text_get('value')))
+        else:
+            current = item[0].val_range.index(emission.part_text_get('value'))
+        if len(item[0].val_range)-1 > current:
+            new = item[0].val_range[current+1]
+        else:
+            new = item[0].val_range[0]
+        
+        item[0].value = new
+        
+        emission.part_text_set('value', str(new))
+
+    def decrease(self, emission, signal, source, item):
+        print source
+        print signal
+        if item[0].val_type == "int":
+            current = item[0].val_range.index(int(emission.part_text_get('value')))
+        else:
+            current = item[0].val_range.index(emission.part_text_get('value'))
+        if current < 0:
+            new = item[0].val_range[len(item[0].val_range)-1]
+        else:
+            new = item[0].val_range[current-1]
+            
+        item[0].value = new
+        
+        emission.part_text_set('value', str(new))
 
 class StringSettingApp(tichy.Application):
     name = "StringSetting"

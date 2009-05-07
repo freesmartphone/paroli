@@ -1,11 +1,11 @@
 [Desktop Entry]
 Name=Paroli
-TryExec=paroli
+TryExec=paroli --launch Paroli-Launcher2
 Icon=paroli
 GenericName=paroli
 Comment=Paroli
 StartupNotify=false
-Exec=paroli
+Exec=paroli --launch Paroli-Launcher2
 Terminal=false
 Type=Application
 Categories=Office;
