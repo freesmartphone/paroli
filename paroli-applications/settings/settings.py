@@ -315,16 +315,19 @@ class StringSettingApp(tichy.Application):
         
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window.main_layout, 'save'), tichy.Wait(self.window.main_layout, 'back'),tichy.Wait(parent, 'back'))
         
-        self.edje_obj.elm_obj.visible_set(False)
-        if setting != None:
-            self.edje_obj.delete()
-        layout.elm_obj.show()
-        
         if i == 0: ##save clicked
             text = str(textbox.entry_get()).replace("<br>","")
             text = text.strip()
             if setting != None:
                 self.edje_obj.Edje.signal_emit("save-notice","*")
+                self.edje_obj.elm_obj.visible_set(False)
+                if setting != None:
+                    self.edje_obj.delete()
+                layout.elm_obj.show()
                 setting.set(text).start()
             else:
+                self.edje_obj.elm_obj.visible_set(False)
+                if setting != None:
+                    self.edje_obj.delete()
+                layout.elm_obj.show()
                 yield text
