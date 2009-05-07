@@ -1,10 +1,11 @@
 [Desktop Entry]
 Name=Paroli
+TryExec=paroli
 Icon=paroli
 GenericName=paroli
 Comment=Paroli
 StartupNotify=false
-Exec=dbus-send --system --print-reply --dest=org.tichy.launcher /Launcher org.tichy.Launcher.Launch string:Paroli-Launcher2
+Exec=paroli
 Terminal=false
 Type=Application
 Categories=Office;
