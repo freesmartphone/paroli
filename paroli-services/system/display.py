@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -54,11 +55,28 @@ class DisplayService(tichy.Service):
             bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
             self.obj = bus.get_object('org.enlightenment.wm.service', '/org/enlightenment/wm/RemoteObject')
             self.iface = dbus.Interface(self.obj, 'org.enlightenment.wm.Profile')
+
+            yield WaitDBusName('org.freesmartphone.odeviced', time_out=120, session=False)
+
+            bus2 = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            self.bobj = bus2.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Display/gta02_bl')
+            self.biface = dbus.Interface(self.bobj, 'org.freesmartphone.Device.Display')
+
+            self.Brightness = tichy.settings.Setting('display', 'Brightness', tichy.Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
+
         except Exception, e:
             logger.warning("can't use e dbus interface service : %s", e)
         else:
             if not self.theme:
                 self.theme = tichy.settings.Setting('display', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profile_list())
+
+    def getBrightness(self, *args, **kargs):
+        return self.biface.GetBrightness()
+
+    @tichy.tasklet.tasklet
+    def setBrightness(self, value):
+        yield WaitDBus(self.biface.SetBrightness, value)
+        yield value
     
     def get_profile(self):
         return self.iface.Get()
