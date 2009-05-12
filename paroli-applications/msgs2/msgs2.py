@@ -222,6 +222,7 @@ class MsgsWrite(tichy.Application):
                   else:
                       logger.info("back pressed in text")
                       number_layout.elm_obj.show()
+                      edje_obj = number_layout.elm_obj.edje_get()
                   
                   edje_obj.signal_callback_add("num_field_pressed", "*", self.num_field_action)
                   self.number_layout = number_layout
@@ -353,7 +354,7 @@ class MsgsWrite(tichy.Application):
         except Exception, ex:
             message.status = 'unsent'
             message_service.add(message)
-            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft \n Error was %s", ex)
+            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft Error was %s", ex)
             logger.error("Got error %s", ex)
     
     def callback(self, *args, **kargs):
