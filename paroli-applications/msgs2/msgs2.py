@@ -344,14 +344,15 @@ class MsgsWrite(tichy.Application):
         logger.info("send message called")
         message_service = tichy.Service.get('Messages')
         message = message_service.create(number=sms.peer, text=sms.text, direction='out')
+        dialog = tichy.Service.get("Dialog")
         try:
             logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
+            yield dialog.dialog(None, "Report", "Message sent")
         except Exception, ex:
-            dialog = tichy.Service.get("Dialog")
             message.status = 'unsent'
-            message_service.add(msg)
-            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft")
+            message_service.add(message)
+            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft \n Error was %s", ex)
             logger.error("Got error %s", ex)
     
     def callback(self, *args, **kargs):
