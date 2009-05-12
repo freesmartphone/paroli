@@ -96,14 +96,14 @@ class MsgsApp2(tichy.Application):
         service.write(self.window, signal).start()
     
     def msg_details(self, emission, signal, source, item):
-        number = item[0].peer
+        number = item[0].peer.get_text()
         text = item[0].text
         timestamp = item[0].timestamp.local_repr()
         
         detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "message_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
-        edje_obj.part_text_set('name-text',str(number).encode('utf8'))
-        edje_obj.part_text_set('name-info',str(timestamp).encode('utf8'))
+        edje_obj.part_text_set('name-text',unicode(number).encode('utf8'))
+        edje_obj.part_text_set('name-info',unicode(timestamp).encode('utf8'))
         detail_layout.elm_obj.show()
 
         textbox = gui.elementary.Entry(self.window.window.elm_obj)
