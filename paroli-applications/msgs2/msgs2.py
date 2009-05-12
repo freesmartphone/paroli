@@ -111,6 +111,7 @@ class MsgsApp2(tichy.Application):
         
         textbox.size_hint_weight_set(1.0, 1.0)
         textbox.editable_set(False)
+        textbox.line_wrap_set(True)
         textbox.show()
         
         sc = gui.elementary.Scroller(self.window.window.elm_obj)
@@ -264,8 +265,8 @@ class MsgsWrite(tichy.Application):
                   sc = gui.elementary.Scroller(parent.window.elm_obj)
                   sc.content_set(textbox)
                   
+                  textbox.line_wrap_set(True)
                   text_layout.elm_obj.content_set('entry', sc)
-                  
                   sc.show()
                   
                   textbox.editable_set(True)        
