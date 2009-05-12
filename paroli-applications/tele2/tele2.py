@@ -278,7 +278,10 @@ class TeleCaller2(tichy.Application):
                     self.main.delete()
             self.storage.window = None
             raise    
-        self.TopBarService.profile_change()
+        try:
+            self.TopBarService.profile_change()
+        except:
+            pass
         self.button.disconnect(self.button_oid)
     
     def hide_call(self, *args, **kargs):
