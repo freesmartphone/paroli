@@ -189,6 +189,7 @@ class MsgsWrite(tichy.Application):
           send = 0
           number = ""
           full = False
+          pre_text = None
           
           self.window = parent
           
@@ -253,7 +254,10 @@ class MsgsWrite(tichy.Application):
           
                   textbox.color_set(255, 255, 255, 255)
           
-                  textbox.entry_set(str(sms.text))
+                  if pre_text != None:
+                      textbox.entry_set(unicode(pre_text).encode("utf-8"))
+                  else:
+                      textbox.entry_set(unicode(sms.text).encode("utf-8"))
                   
                   textbox.size_hint_weight_set(1.0, 1.0)
         
@@ -276,6 +280,8 @@ class MsgsWrite(tichy.Application):
                       text_layout.elm_obj.hide()
                       logger.info("win set False")
                       self.window.window.elm_obj.keyboard_win_set(False)
+                      pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
+                      pre_text = pre_text.strip()
                       continue
                   else:
                       print "breaking"
@@ -288,7 +294,7 @@ class MsgsWrite(tichy.Application):
           
           logger.info("broke loop")
           if send == 1:
-              text = str(textbox.entry_get()).replace("<br>","")
+              text =  unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
               sms.text = text.strip()
               text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
               yield self.send_sms(sms)
@@ -343,7 +349,7 @@ class MsgsWrite(tichy.Application):
             yield message.send()
         except Exception, ex:
             dialog = tichy.Service.get("Dialog")
-            msg.status = 'unsent'
+            message.status = 'unsent'
             message_service.add(msg)
             yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft")
             logger.error("Got error %s", ex)
