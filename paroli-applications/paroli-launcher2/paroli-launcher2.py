@@ -51,6 +51,8 @@ class Launcher_App2(tichy.Application):
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
         
+        #self.window.window.elm_obj.mirko_kbd(True)
+        
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.bg_m, "tb"):
 
@@ -60,7 +62,7 @@ class Launcher_App2(tichy.Application):
         
         if self.advanced == False:
             ##create list of apps from list of registered apps
-            apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Pixels","Paroli-Contacts"]
+            apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Paroli-Contacts"]
         else:
             apps = []
             for app in tichy.Application.subclasses:
@@ -160,7 +162,7 @@ class Launcher_App2(tichy.Application):
         app = args[1]
         edje_obj = self.app_objs[app][0]
         text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
-        if hasattr(self.storage.window, "window"):
+        if hasattr(self.storage.window, "window") and app == 'Tele' and value !='' :
             self.storage.window.window.elm_obj.on_hide_add(self._recreate_link_signals)
             #self.storage.window.window.elm_obj.on_show_add(self._remove_link_signals)
         edje_obj.Edje.part_text_set('testing_textblock',text)
@@ -181,7 +183,7 @@ class Launcher_App2(tichy.Application):
         # XXX: The launcher shouldn't know anything about this app
         if name == 'Tele' and self.storage.call != None:
             self.storage.window.emit("dehide")
-        elif self.active_app == None or self.active_app == "Tele":
+        elif self.active_app == None or (self.active_app == "Tele" and self.storage.call != None):
             #self.edje_obj.Edje.signal_emit("unready","*")
             app = tichy.Application.find_by_name(name)
             self.active_app = name
@@ -206,7 +208,6 @@ class Launcher_App2(tichy.Application):
             logger.info("disconnecting settings")
             self.button.disconnect(self.aux_btn_settings_conn)
         for i in self.app_objs:
-            print self.app_objs[i]
             self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
             logger.debug("some callback wasn't found")
     

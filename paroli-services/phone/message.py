@@ -188,7 +188,7 @@ class MessagesService(tichy.Service):
             msg : `Message`
                 The message we add
         """
-        logger.info("Add to messages : %s", msg)
+        logger.info("Add to messages : %s", unicode(msg).encode("utf-8"))
         assert isinstance(msg, Message)
         self.messages.append(msg)
         yield msg.save()

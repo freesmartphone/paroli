@@ -1,6 +1,6 @@
 fonts {
-   font: "Inspiration-Regular.ttf" "Sans-Bold";
-   font: "Inspiration-Bold.ttf"   "Sans";
+//    font: "Inspiration-Regular.ttf" "Sans-Bold";
+//    font: "Inspiration-Bold.ttf"   "Sans";
 }
 
 images {

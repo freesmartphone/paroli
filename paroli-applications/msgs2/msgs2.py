@@ -96,14 +96,14 @@ class MsgsApp2(tichy.Application):
         service.write(self.window, signal).start()
     
     def msg_details(self, emission, signal, source, item):
-        number = item[0].peer
+        number = item[0].peer.get_text()
         text = item[0].text
         timestamp = item[0].timestamp.local_repr()
         
         detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "message_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
-        edje_obj.part_text_set('name-text',str(number).encode('utf8'))
-        edje_obj.part_text_set('name-info',str(timestamp).encode('utf8'))
+        edje_obj.part_text_set('name-text',unicode(number).encode('utf8'))
+        edje_obj.part_text_set('name-info',unicode(timestamp).encode('utf8'))
         detail_layout.elm_obj.show()
 
         textbox = gui.elementary.Entry(self.window.window.elm_obj)
@@ -111,6 +111,7 @@ class MsgsApp2(tichy.Application):
         
         textbox.size_hint_weight_set(1.0, 1.0)
         textbox.editable_set(False)
+        textbox.line_wrap_set(True)
         textbox.show()
         
         sc = gui.elementary.Scroller(self.window.window.elm_obj)
@@ -189,6 +190,7 @@ class MsgsWrite(tichy.Application):
           send = 0
           number = ""
           full = False
+          pre_text = None
           
           self.window = parent
           
@@ -220,6 +222,7 @@ class MsgsWrite(tichy.Application):
                   else:
                       logger.info("back pressed in text")
                       number_layout.elm_obj.show()
+                      edje_obj = number_layout.elm_obj.edje_get()
                   
                   edje_obj.signal_callback_add("num_field_pressed", "*", self.num_field_action)
                   self.number_layout = number_layout
@@ -253,15 +256,18 @@ class MsgsWrite(tichy.Application):
           
                   textbox.color_set(255, 255, 255, 255)
           
-                  textbox.entry_set(str(sms.text))
+                  if pre_text != None:
+                      textbox.entry_set(unicode(pre_text).encode("utf-8"))
+                  else:
+                      textbox.entry_set(unicode(sms.text).encode("utf-8"))
                   
                   textbox.size_hint_weight_set(1.0, 1.0)
         
                   sc = gui.elementary.Scroller(parent.window.elm_obj)
                   sc.content_set(textbox)
                   
+                  textbox.line_wrap_set(True)
                   text_layout.elm_obj.content_set('entry', sc)
-                  
                   sc.show()
                   
                   textbox.editable_set(True)        
@@ -276,6 +282,8 @@ class MsgsWrite(tichy.Application):
                       text_layout.elm_obj.hide()
                       logger.info("win set False")
                       self.window.window.elm_obj.keyboard_win_set(False)
+                      pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
+                      pre_text = pre_text.strip()
                       continue
                   else:
                       print "breaking"
@@ -288,7 +296,7 @@ class MsgsWrite(tichy.Application):
           
           logger.info("broke loop")
           if send == 1:
-              text = str(textbox.entry_get()).replace("<br>","")
+              text =  unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
               sms.text = text.strip()
               text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
               yield self.send_sms(sms)
@@ -338,14 +346,15 @@ class MsgsWrite(tichy.Application):
         logger.info("send message called")
         message_service = tichy.Service.get('Messages')
         message = message_service.create(number=sms.peer, text=sms.text, direction='out')
+        dialog = tichy.Service.get("Dialog")
         try:
             logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
+            yield dialog.dialog(None, "Report", "Message sent")
         except Exception, ex:
-            dialog = tichy.Service.get("Dialog")
-            msg.status = 'unsent'
-            message_service.add(msg)
-            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft")
+            message.status = 'unsent'
+            message_service.add(message)
+            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft Error was %s", ex)
             logger.error("Got error %s", ex)
     
     def callback(self, *args, **kargs):

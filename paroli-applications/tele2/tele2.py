@@ -36,9 +36,6 @@ class TeleApp(tichy.Application):
 
     def run(self, parent=None, standalone=False):
 
-        # XXX: We whouldn't have to use this big try block if the
-        #      launcher app automatically removed the parent window.
-        #try:
         ##set edje_file
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
 
@@ -216,7 +213,9 @@ class TeleCaller2(tichy.Application):
 
                 def call_release_pre(emission, source, param):
                     # XXX: we should connect to the error callback
+                    
                     logger.info('call_release_pre')
+                    self.edje_obj.signal_callback_del("release", "call", call_release_pre)
                     call.release().start()
                     self.storage.call = None
                         
@@ -234,12 +233,14 @@ class TeleCaller2(tichy.Application):
                 def call_release(emission, source, param):
                     logger.info("releasing call")
                     # XXX: we should connect to the error callback
+                    self.edje_obj.signal_callback_del("release", "call", call_release)
                     try:
                         call.release().start()
                     except Exception, e:
                         self.main.emit('call_error')
 
                 self.edje_obj.signal_callback_add("release", "call", call_release)
+                
                 yield tichy.WaitFirst(tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
 
             if call.status not in ['released', 'releasing']:
@@ -278,7 +279,10 @@ class TeleCaller2(tichy.Application):
                     self.main.delete()
             self.storage.window = None
             raise    
-        self.TopBarService.profile_change()
+        try:
+            self.TopBarService.profile_change()
+        except:
+            pass
         self.button.disconnect(self.button_oid)
     
     def hide_call(self, *args, **kargs):

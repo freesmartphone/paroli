@@ -79,9 +79,27 @@ class elm_window(tichy.Object):
         self.elm_obj.title_set(title)
         self.elm_obj.autodel_set(True)
         self.elm_obj.on_del_add(self.closing)
+        #self.elm_obj.on_resize_add(self.info)
+        
+        #self.size = self.elm_obj.size_get()
+        #print dir(self.size)
+        #print self.size[0]
         
     def closing(self, *args, **kargs):
         self.emit("closing")
+        
+    def info(self, *args, **kargs):
+        print self.elm_obj.size_get()
+        layer = self.elm_obj.layer_get()
+        print layer
+        if self.elm_obj.size_get() != self.size:
+            if self.size[0] == 1:
+                self.size = self.elm_obj.size_get()
+            else:
+                self.elm_obj.layer_set(layer-1)
+                print self.elm_obj.layer_get()
+                self.elm_obj.resize(self.size[0],self.size[1])
+        
         
 class elm_layout(tichy.Object):
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
@@ -172,7 +190,7 @@ class elm_layout_subwindow(elm_layout_window):
         self.bg = window.bg_m.bg
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
-        print self.bg.Edje.part_exists("content-swallow")
+        #print self.bg.Edje.part_exists("content-swallow")
         #self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
 
@@ -256,6 +274,8 @@ class elm_list(tichy.Object):
                         #logger.info("value is %s", str(value))
                         if isinstance(value, tichy.Item):
                             value = unicode(value.get_text())
+                        elif isinstance(value, tichy.Text):
+                            value = value.value
                         txt = unicode(value).encode('utf-8')
                         edje_obj.part_text_set(part,txt)
                     else:
