@@ -15,8 +15,8 @@ group "E_Config" struct {
   value "font_cache" int: 512;
   value "edje_cache" int: 8;
   value "edje_collection_cache" int: 24;
-  value "zone_desks_x_count" int: 4;
-  value "zone_desks_y_count" int: 1;
+  value "zone_desks_x_count" int: 0;
+  value "zone_desks_y_count" int: 0;
   value "use_virtual_roots" int: 0;
   value "show_desktop_icons" int: 0;
   value "edge_flip_dragging" int: 0;
@@ -234,8 +234,8 @@ group "E_Config" struct {
   group "modules" list {
     group "E_Config_Module" struct {
       value "name" string: "pager";
-      value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
+      value "enabled" uchar: 0;
+      value "delayed" uchar: 0;
       value "priority" int: 0;
     }
   }
