@@ -339,7 +339,7 @@ class FreeSmartPhoneGSM(GSMService):
             yield self._ask_pin()
 
     def _on_call_status(self, call_id, status, properties):
-        logger.info("call status %s %s %s", call_id, status, properties)
+        #logger.info("call status %s %s %s", call_id, status, properties)
         call_id = int(call_id)
         status = str(status)
 
@@ -423,18 +423,18 @@ class FreeSmartPhoneGSM(GSMService):
 
     @tichy.tasklet.tasklet
     def _activate(self, call):
-        logger.info("activate call %s", str(call.number))
+        #logger.info("activate call %s", str(call.number))
         yield WaitDBus(self.gsm_call.Activate, call.__id)
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
-        logger.info("send dtmf %s to call %s", code, str(call.number))
+        #logger.info("send dtmf %s to call %s", code, str(call.number))
         assert call.status == 'active'
         yield WaitDBus(self.gsm_call.SendDtmf, code)
 
     @tichy.tasklet.tasklet
     def _release(self, call):
-        logger.info("release call %s", str(call.number))
+        #logger.info("release call %s", str(call.number))
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
