@@ -347,7 +347,7 @@ class TeleCaller2(tichy.Application):
         if param == 'call-button':
 
             if state[0] == 'default':
-                #logger.debug("nothing to be done")
+                logger.debug("nothing to be done")
 
             elif state[0] == 'incoming':
                 self.accept_call(emission)
