@@ -386,7 +386,7 @@ class MsgsWrite(tichy.Application):
         message = message_service.create(number=sms.peer, text=sms.text, direction='out')
         dialog = tichy.Service.get("Dialog")
         try:
-            logger.info("sending message: %s to : %s", sms.text, sms.peer)
+            #logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
             yield dialog.dialog(None, "Report", "Message sent")
         except Exception, ex:

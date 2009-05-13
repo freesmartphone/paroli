@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -239,7 +240,7 @@ class TestSms(tichy.Service):
 
     @tichy.tasklet.tasklet
     def send(self, sms):
-        logger.info("Sending message to %s", sms.peer)
+        #logger.info("Sending message to %s", sms.peer)
         yield tichy.tasklet.Sleep(2)
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)

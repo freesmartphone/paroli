@@ -734,7 +734,7 @@ class TestGsm(GSMService):
 
     @tichy.tasklet.tasklet
     def _activate(self, call):
-        logger.info("activate call %s", str(call.number))
+        logger.info("activate call")
         yield Sleep(1)
         call._active()
 

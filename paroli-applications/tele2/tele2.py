@@ -77,7 +77,6 @@ class TeleApp(tichy.Application):
     def call(self, emission, signal, source):
         number = TelNumber(signal)
         if ((number[0].isdigit() or (number[0] == '+' and number[1] != '0')) and number[1:].isdigit()):
-            logger.info(number.get_text())
             emission.part_text_set('num_field-text','')
             TeleCaller2(self.window, number, None, self.edje_obj).start(err_callback=self.throw)
         elif signal[0] in ['*'] :
@@ -141,6 +140,7 @@ class TeleCaller2(tichy.Application):
         self.audio_service = tichy.Service.get('Audio')
         self.usage_service = tichy.Service.get('Usage')
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
+        logger.info("occupy cpu")
         self.usage_service.occupy_cpu().start()
         
         if layout:
@@ -254,6 +254,7 @@ class TeleCaller2(tichy.Application):
                     logger.error("Got error in caller : %s", e)
                     
             
+            logger.info("releasing cpu")
             self.usage_service.release_cpu().start()
                     
             self.storage.caller.value = ""
@@ -346,7 +347,7 @@ class TeleCaller2(tichy.Application):
         if param == 'call-button':
 
             if state[0] == 'default':
-                logger.debug("nothing to be done")
+                #logger.debug("nothing to be done")
 
             elif state[0] == 'incoming':
                 self.accept_call(emission)
