@@ -338,11 +338,12 @@ class MsgsWrite(tichy.Application):
     
     #send_request
     def send_request(self, layout, entry, **kargs):
-        print layout
-        print entry
+
         counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","").strip()
         if len(counter) == 0:
             self.send_empty(layout).start()
+        elif len(counter) > 159:
+            self.dialog.dialog("layout", "Error", "Text too long, only single messages possible at the moment, please shorten your text").start()
         else:
             layout.emit("send")
     
