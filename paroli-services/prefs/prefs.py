@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -85,7 +86,7 @@ class FreeSmartPhonePrefs(tichy.Service):
                 self.prefs,
                 'org.freesmartphone.Preferences')
                 
-            profile = tichy.settings.Setting('phone', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profiles())
+            profile = tichy.settings.Setting('phone', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profiles(), listenObject=self.prefs, signal="Notify" )
         except Exception, e:
             logger.warning("can't use freesmartphone Preferences : %s", e)
             self.prefs = None

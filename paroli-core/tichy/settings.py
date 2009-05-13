@@ -78,7 +78,6 @@ class Setting(tichy.Object):
         if listenObject:
             listenObject.connect_to_signal(signal, self.change_val)
 
-
         # register the setting into the list of all settings
         Setting.groups.setdefault(group, {})[name] = self
 
@@ -122,6 +121,11 @@ class Setting(tichy.Object):
             
             logger.info("new value: %s", new)    
             self.set(new).start()
+
+    def change_val(self, val):
+        logger.info("set to: %s", val)
+        self.Value.value = val
+        self.options.emit('updated')
 
     # Redirect `connect` and `disconnect` to the value
     def connect(self, *args, **kargs):
