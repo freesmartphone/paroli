@@ -271,8 +271,7 @@ class ListSettingApp(tichy.Application):
         emission.part_text_set('value', str(new))
 
     def decrease(self, emission, signal, source, item):
-        print source
-        print signal
+
         if item[0].val_type == "int":
             current = item[0].val_range.index(int(emission.part_text_get('value')))
         else:
@@ -313,7 +312,7 @@ class StringSettingApp(tichy.Application):
         
         textbox.show()
         
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window.main_layout, 'save'), tichy.Wait(self.window.main_layout, 'back'),tichy.Wait(parent, 'back'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.edje_obj,'save'), tichy.Wait(self.edje_obj,'back'),tichy.Wait(parent,'back'))
         
         if i == 0: ##save clicked
             text = str(textbox.entry_get()).replace("<br>","")
@@ -321,8 +320,7 @@ class StringSettingApp(tichy.Application):
             if setting != None:
                 self.edje_obj.Edje.signal_emit("save-notice","*")
                 self.edje_obj.elm_obj.visible_set(False)
-                if setting != None:
-                    self.edje_obj.delete()
+                self.edje_obj.delete()
                 layout.elm_obj.show()
                 setting.set(text).start()
             else:
@@ -331,3 +329,7 @@ class StringSettingApp(tichy.Application):
                     self.edje_obj.delete()
                 layout.elm_obj.show()
                 yield text
+        else:
+            self.edje_obj.elm_obj.visible_set(False)
+            self.edje_obj.delete()
+            layout.elm_obj.show()
