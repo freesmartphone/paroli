@@ -877,7 +877,16 @@ group { name: "edit_number";
         program
         {
             name: "next-button-send";
-            action: SIGNAL_EMIT "next" "main_command";
+            script{
+                new num[40];
+                  num[39] = get_text(PART:"num_field-text",num,40);
+                  if (strlen(num) > 3 ) {
+                      emit("next", "main_command");
+                  }
+                  else {
+                      emit("too_short", "main_command");
+                  }
+            }
         }
 /*
         program 

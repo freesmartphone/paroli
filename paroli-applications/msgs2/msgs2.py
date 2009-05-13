@@ -183,6 +183,7 @@ class MsgsWrite(tichy.Application):
     name = 'MsgsWriteApp'
     
     def run(self, parent, sms, mode, layout=None, *args, **kargs):
+        self.dialog = tichy.Service.get("Dialog")
         try:
           self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
           number_layout = 0
@@ -228,6 +229,8 @@ class MsgsWrite(tichy.Application):
                   self.number_layout = number_layout
                   parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
                   
+                  number_layout.connect("too_short", self.error_win, "number too short")
+                  
                   i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
                   
                   if i == 0: #back
@@ -261,6 +264,8 @@ class MsgsWrite(tichy.Application):
                   else:
                       textbox.entry_set(unicode(sms.text).encode("utf-8"))
                   
+                  self.counter(textbox, "event", text_layout)
+                  
                   textbox.size_hint_weight_set(1.0, 1.0)
         
                   sc = gui.elementary.Scroller(parent.window.elm_obj)
@@ -275,7 +280,10 @@ class MsgsWrite(tichy.Application):
                   textbox.focus()
                   textbox.show()
               
-              logger.info("just before waiting")
+                  textbox.on_key_down_add(self.counter, text_layout)
+                  
+                  text_layout.connect("send_request", self.send_request, textbox)
+              
               i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'send'))
               if i == 0: #back
                   if full:
@@ -284,6 +292,7 @@ class MsgsWrite(tichy.Application):
                       self.window.window.elm_obj.keyboard_win_set(False)
                       pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
                       pre_text = pre_text.strip()
+                      textbox.on_key_down_del(self.counter)
                       continue
                   else:
                       print "breaking"
@@ -321,6 +330,34 @@ class MsgsWrite(tichy.Application):
         except Exception, e:
             print e
             print Exception
+    
+    #counter
+    def counter(self, entry, event, layout, **kargs):
+        counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","")
+        layout.Edje.part_text_set( "counter-text", str(len(counter)))
+    
+    #send_request
+    def send_request(self, layout, entry, **kargs):
+        print layout
+        print entry
+        counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","").strip()
+        if len(counter) == 0:
+            self.send_empty(layout).start()
+        else:
+            layout.emit("send")
+    
+    @tichy.tasklet.tasklet
+    def send_empty(self, layout, **kargs):
+        send = yield self.dialog.option_dialog("SMS empty", "The SMS contians no text, send it anyway?", "YES", "no")
+    
+        if send == "no":
+            pass
+        else:
+            layout.emit("send")
+    
+    #error window
+    def error_win(self, layout, message):
+        self.dialog.dialog(layout, "Error", message).start()
     
     ## switch to either open contacts or save number
     def num_field_action(self, emission, signal, source):
