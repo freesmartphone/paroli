@@ -235,7 +235,7 @@ class ListSettingApp(tichy.Application):
         self.item_list.add_callback("pressed", "increase", self.increase)
         self.edje_obj.Edje.signal_callback_add("pressed", "save", self.save)
         
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'))
+        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'),tichy.Wait(self.ItemList, 'save'))
     
         for i in self.cb_list:
             i[0].disconnect(i[1])
