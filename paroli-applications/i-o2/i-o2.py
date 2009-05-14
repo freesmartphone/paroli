@@ -68,6 +68,10 @@ class I_O2_App(tichy.Application):
 
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
+        if len(self.callLogs) == 0:
+            self.edje_obj.Edje.signal_emit("ListEmpty", "python")
+            self.oid2 = self.callLogs.connect('inserted', self.restore_edit)
+
         self.item_list.add_callback("new_call", "*", self.create_call)
         self.item_list.add_callback("new_msg", "*", self.create_msg)
         self.item_list.add_callback("save_number", "*", self.create_contact)
@@ -86,6 +90,9 @@ class I_O2_App(tichy.Application):
             self.contacts.disconnect(self.oid)
             self.window.delete()
             del self.item_list
+    
+    def restore_edit(self, *args, **kargs):
+        self.edje_obj.Edje.signal_emit("ListFilled", "python")
     
     def to_edit_mode(self, emission, source, param):
         for item in self.item_list.items:
@@ -107,6 +114,9 @@ class I_O2_App(tichy.Application):
                 
         for item in self.item_list.items:
                 item[1].signal_emit("to_default_mode", "*")
+    
+        if len(self.callLogs) == 0:
+            self.edje_obj.Edje.signal_emit("ListEmpty", "python")
     
     def create_call(self, emission, source, param, callLog):
         number = callLog[0].number.value

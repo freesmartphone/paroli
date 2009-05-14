@@ -166,6 +166,42 @@ group {
                normal: "Done.png";
             }
          }
+         description{
+             state: "ListEmpty" 0.0;
+             inherit: "default" 0.0;
+             visible:0;
+         }
+      }
+      part{
+         name: "list-empty-text";
+         type: TEXT;
+         description {
+            state: "default" 0.0;
+            min: 152 18;
+            max: 152 18;
+            rel1 {
+               relative: 0.0 0.0;
+               offset: 306 29;
+               to: "base";
+            }
+            rel2 {
+               relative: 0.0 0.0;
+               offset: 458 47;
+               to: "base";
+            }
+            text {
+               font: "Sans";
+               text: "no call records";
+               align: 0.1 0.5;
+               size: 18;
+            }
+            visible: 0;
+         }
+         description{
+             state: "ListEmpty" 0.0;
+             inherit: "default" 0.0;
+             visible:1;
+         }
       }
       part{
          name:"list";
@@ -207,6 +243,22 @@ group {
          script {
             edit_done_button_clicked(1);
          }
+      }
+      program { 
+         name: "empty_init";
+         signal: "ListEmpty";
+         source: "*";
+         action: STATE_SET "ListEmpty" 0.0;
+         target: "list-empty-text";
+         target: "edit-done-button";
+      }
+      program { 
+         name: "list_filled";
+         signal: "ListFilled";
+         source: "*";
+         action: STATE_SET "default" 0.0;
+         target: "list-empty-text";
+         target: "edit-done-button";
       }
    }
 }
