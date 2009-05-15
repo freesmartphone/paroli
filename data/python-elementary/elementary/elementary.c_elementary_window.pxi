@@ -140,8 +140,3 @@ cdef class Window(Object):
         cdef Ecore_X_Window xwin
         xwin = elm_win_xwindow_get(self.obj)
         return xwin
-
-    def x_window_virtual_keyboard_state_set(self, type):
-        cdef Ecore_X_Window x_win
-        x_win = elm_win_xwindow_get(self.obj)
-        ecore_x_e_virtual_keyboard_state_set(x_win, type)

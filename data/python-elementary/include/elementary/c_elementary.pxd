@@ -41,18 +41,6 @@ cdef enum Elm_Win_Keyboard_Mode:
     ELM_WIN_KEYBOARD_TERMINAL
     ELM_WIN_KEYBOARD_PASSWORD
 
-cdef enum Ecore_X_Virtual_Keyboard_State:
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_UNKNOWN
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_ALPHA
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_NUMERIC
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_PIN
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_PHONE_NUMBER
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_HEX
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_TERMINAL
-    ECORE_X_VIRTUAL_KEYBOARD_STATE_PASSWORD
-
 cdef enum Elm_Hover_Axis:
     ELM_HOVER_AXIS_NONE
     ELM_HOVER_AXIS_HORIZONTAL
@@ -85,7 +73,6 @@ cdef enum Elm_Genlist_Item_Flags:
 cdef extern from "Ecore_X.h":
     ctypedef unsigned int Ecore_X_ID
     ctypedef Ecore_X_ID Ecore_X_Window
-    void ecore_x_e_virtual_keyboard_state_set(Ecore_X_Window win, Ecore_X_Virtual_Keyboard_State state)
     
 
 # For Debugging
@@ -171,12 +158,11 @@ cdef extern from "Elementary.h":
     
     # X specific call - wont't work on non-x engines (return 0)
     Ecore_X_Window elm_win_xwindow_get(evas.c_evas.Evas_Object *obj)
-    void x_window_virtual_keyboard_state_set(evas.c_evas.Evas_Object *obj, Ecore_X_Virtual_Keyboard_State state)
     
     evas.c_evas.Evas_Object *elm_win_inwin_add(evas.c_evas.Evas_Object *obj)
     void elm_win_inwin_activate(evas.c_evas.Evas_Object *obj)
     void elm_win_inwin_style_set(evas.c_evas.Evas_Object *obj, char *style)
-    void         elm_win_inwin_content_set(evas.c_evas.Evas_Object *obj, evas.c_evas.Evas_Object *content)
+    void elm_win_inwin_content_set(evas.c_evas.Evas_Object *obj, evas.c_evas.Evas_Object *content)
     
     # Background object
     evas.c_evas.Evas_Object *elm_bg_add(evas.c_evas.Evas_Object *parent)
