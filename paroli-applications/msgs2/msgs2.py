@@ -207,7 +207,9 @@ class MsgsWrite(tichy.Application):
           while True:
           
               if full:
-                
+                  
+                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                  
                   if number_layout == 0:
 
                       number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
@@ -244,6 +246,8 @@ class MsgsWrite(tichy.Application):
               if sms.text == "" or mode == "forward":
                   
                   text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateText")
+                  
+                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
                   
                   text_layout.elm_obj.layer_set(99)
                   
@@ -289,7 +293,7 @@ class MsgsWrite(tichy.Application):
                   if full:
                       text_layout.elm_obj.hide()
                       logger.info("win set False")
-                      self.window.window.elm_obj.keyboard_win_set(False)
+                      parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                       pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
                       pre_text = pre_text.strip()
                       textbox.on_key_down_del(self.counter)
@@ -300,7 +304,7 @@ class MsgsWrite(tichy.Application):
               if i == 1: #send
                   send = 1
                   logger.info("win set False")
-                  self.window.window.elm_obj.keyboard_win_set(False)
+                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                   break
           
           logger.info("broke loop")

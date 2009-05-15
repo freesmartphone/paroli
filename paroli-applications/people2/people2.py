@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 OpenMoko
@@ -65,6 +66,9 @@ class People2App(tichy.Application):
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
         ##wait until main object emits back signal or delete is requested
+        
+        self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
+        
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')
         #self.main.emit('closed')
@@ -248,7 +252,8 @@ class CreateContact(tichy.Application):
           while True:
           
               if full or mode == "number":
-                  parent.window.elm_obj.keyboard_win_set(False)
+                  
+                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                   
                   if number_layout == 0:
                     
@@ -282,8 +287,11 @@ class CreateContact(tichy.Application):
                           break
               
               if mode != "number":
+                  
+                parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
+                  
                 if text_layout == 0:
-                
+                    
                     text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
                     
                     edje_obj = text_layout.elm_obj.edje_get()
@@ -306,6 +314,7 @@ class CreateContact(tichy.Application):
                 else:
                     text_layout.elm_obj.show()
                 
+                
                 parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
                 
                 textbox.focus()
@@ -316,6 +325,7 @@ class CreateContact(tichy.Application):
                 if i == 0: #back
                     if full:
                         text_layout.elm_obj.hide()
+                        parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                         continue
                     else:
                         break
@@ -343,7 +353,7 @@ class CreateContact(tichy.Application):
                       
                   layout.elm_obj.show()
           
-          parent.window.elm_obj.keyboard_win_set(False)
+          parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
           
           if number_layout:
               number_layout.delete()
