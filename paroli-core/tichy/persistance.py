@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)

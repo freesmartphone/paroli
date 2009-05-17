@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -206,6 +207,7 @@ class Wait(Tasklet):
         self.obj = obj
         self.event = event
         self.connect_id = None
+        #logger.info("%s waiting for '%s'", str(self.obj), str(self.event))
 
     def _callback(self, o, *args):
         """This is the callback that is triggered by the signal"""
@@ -216,6 +218,8 @@ class Wait(Tasklet):
                    # to disconnect to the signal
         o.disconnect(self.connect_id)
         self.connect_id = None
+
+        #logger.info("on %s called '%s'", str(o), str(self.event))
 
         # We can finally call our real callback
         try:
@@ -250,6 +254,7 @@ class WaitFirst(Tasklet):
         self.tasklets = tasklets
 
     def _callback(self, *args):
+        #logger.info("waitfirst returned with %s", str(args))
         i = args[-1]
         values = args[:-1]
         if self.done:

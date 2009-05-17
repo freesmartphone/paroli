@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 Mirko Lindner (mirko@openmoko.org)
@@ -49,7 +50,7 @@ class GprsService(tichy.Service):
             self.config_service = tichy.Service.get("ConfigService")
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
-            logger.info("values: %s", str(self.values))
+            #logger.info("values: %s", str(self.values))
             password = tichy.settings.StringSetting('gprs', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
             user = tichy.settings.StringSetting('gprs', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
             apn = tichy.settings.StringSetting('gprs', 'apn', tichy.Text, value=self.get_apn(), setter=self.set_apn)

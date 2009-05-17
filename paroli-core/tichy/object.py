@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Tichy
 #
 #    copyright 2008 Guillaume Chereau (charlie@openmoko.org)
@@ -139,6 +140,7 @@ class Object(object):
                `event` : str
                    The name of the event to emit.
         """
+        
         for callback, obj, extra_args in self.__listeners.get(event, [])[:]:
             eargs = args + extra_args
             call = callback(obj, *eargs)

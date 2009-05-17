@@ -458,7 +458,7 @@ class PINApp2(tichy.Application):
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         
         self.main = gui.elm_layout_window(self.edje_file, "pin_enter")
-        logger.info("PIN2 main generated")
+        #logger.info("PIN2 main generated")
         
         if hasattr(self.main.bg_m, "tb"):
             tb = self.main.bg_m.tb.Edje
@@ -468,8 +468,7 @@ class PINApp2(tichy.Application):
         self.edje_obj = self.main.main_layout.Edje
         
         if text != "":
-              print text
-              tb.part_text_set("title",  text)
+            tb.part_text_set("title",  text)
         
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
@@ -486,10 +485,9 @@ class PINApp2(tichy.Application):
             tichy.mainloop.quit()
 
     def embryo(self, emission, signal, source):
-        logger.info('embryo says: ' + signal)
+        logger.info('embryo says: XXXX')
 
     def call_btn_pressed(self,emission, signal, source):
-        logger.info(signal)
         self.main.emit('value_received')
 
 

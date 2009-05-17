@@ -66,7 +66,7 @@ class Settings(tichy.Application):
         for i in tichy.Setting.groups:
             t = tichy.Text(i)
             self.groups.append(tichy.Text(i))
-        
+
         def comp(m1, m2):
             return cmp(m2, m1)
         

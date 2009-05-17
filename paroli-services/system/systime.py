@@ -78,17 +78,13 @@ class FreeSmartPhoneTimeService(tichy.Service):
         month = time.localtime(self.rtc.GetCurrentTime())[1]
         day = time.localtime(self.rtc.GetCurrentTime())[2]
         hour = self.hour.value
-        print hour
         minute = self.minute.value
-        print minute
         sec = time.localtime(self.rtc.GetCurrentTime())[5]
         wday = time.localtime(self.rtc.GetCurrentTime())[6]
         yday = time.localtime(self.rtc.GetCurrentTime())[7]
         isdst = time.localtime(self.rtc.GetCurrentTime())[8]
         new_time = time.mktime((year, month, day, hour, minute, sec, wday, yday, isdst))
         ltime = time.asctime((year, month, day, hour, minute, sec, wday, yday, isdst))
-        print ltime
-        print ltime[3]
         timeSetCmd = 'date -s ' + ltime.split()[3]
         #XXX: here seems a dirty quick way (os.system).
         os.system(timeSetCmd)
