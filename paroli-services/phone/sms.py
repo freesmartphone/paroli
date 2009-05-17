@@ -141,9 +141,12 @@ class FreeSmartPhoneSMS(tichy.Service):
         else:
             logger.info("no delivery report value is %s", self.GetDeliveryReport())
             properties = dict(type='sms-submit', alphabet='gsm_default')
-        index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
+        try:
+            index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
                                           str(sms.peer), unicode(sms.text),
                                           properties)
+        except Ex, e:
+            logger.info ("%s %s", str(Ex), str(e))
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)
 
