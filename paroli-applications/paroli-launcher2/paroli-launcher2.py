@@ -51,8 +51,6 @@ class Launcher_App2(tichy.Application):
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
         
-        #self.window.window.elm_obj.mirko_kbd(True)
-        
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.bg_m, "tb"):
 
@@ -528,18 +526,18 @@ class TopBar(tichy.Service):
             i.edje_get().signal_emit(str(args[1]), "gsm_change")
         
     def gprs_status(self, *args, **kargs):
-        logger.info("gprs status change in launcher to %s", str(args[1]))
+        logger.debug("gprs status change in launcher to %s", str(args[1]))
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gprs_status")
         
     def battery_capacity(self, *args, **kargs):
         for i in self.tb_list:
-            logger.info("capacity change in launcher to %s", str(args[1]))
+            logger.debug("capacity change in launcher to %s", str(args[1]))
             i.edje_get().signal_emit(str(args[1]), "battery_change")
 
     def profile_change(self, *args, **kargs):
         for i in self.tb_list:
-            logger.info("profile display changed to %s", self.prefs.get_profile())
+            logger.debug("profile display changed to %s", self.prefs.get_profile())
             try:
                 i.edje_get().signal_emit(self.prefs.get_profile(), "profile-change")
             except:
@@ -547,12 +545,12 @@ class TopBar(tichy.Service):
 
     def volume_change(self, *args, **kargs):
         for i in self.tb_list:
-            logger.info("volume display changed to %s", str(args[0]))
+            logger.debug("volume display changed to %s", str(args[0]))
             i.edje_get().signal_emit(str(args[0]), "profile-change")
 
     def battery_status(self, *args, **kargs):
         for i in self.tb_list:
-            logger.info("battery status change in launcher")
+            logger.debug("battery status change in launcher")
             if args[1] == "charging":
                 i.edje_get().signal_emit(args[1], "battery_status_charging")
             elif args[1] == "discharging":
