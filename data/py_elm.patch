@@ -53,25 +53,7 @@ Index: ./include/elementary/c_elementary.pxd
      
      # Label object  
      evas.c_evas.Evas_Object *elm_label_add(evas.c_evas.Evas_Object *parent)
-Index: ./setup.py
-===================================================================
---- ./setup.py	(revision 40567)
-+++ ./setup.py	(working copy)
-@@ -1,3 +1,4 @@
-+# -*- coding: utf-8 -*-
- import sys
- import os
- 
-@@ -24,6 +25,9 @@
- class elementary_build_ext(build_ext):
-     def finalize_options(self):
-         build_ext.finalize_options(self)
-+        self.include_dirs.remove('/usr/include/python2.5')
-+        print self.include_dirs
-+        self.include_dirs.insert(1,'/home/mirko/python2.6')
-         self.include_dirs.insert(0,'include')
-         self.pyrex_include_dirs.extend(self.include_dirs)
- 
+
 Index: ./elementary/elementary.c_elementary_scroller.pxi
 ===================================================================
 --- ./elementary/elementary.c_elementary_scroller.pxi	(revision 40567)
