@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 Mirko Lindner (mirko@openmoko.org)
@@ -73,7 +74,7 @@ class WifiService(tichy.Service):
             self.NetworkList = tichy.List()
             self.ListLabel = [('title','name'),('subtitle','info')]
             
-            self.scan_setting = tichy.settings.ListSetting('wifi', 'scan', tichy.Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
+            self.scan_setting = tichy.settings.ListSetting('wifi', 'scan', tichy.Text, value="Networks", setter=self.run_scan, options=['Networks'], model=self.NetworkList, ListLabel=self.ListLabel)
             
             if self.get_power():
                 self.get_device()
