@@ -29,7 +29,7 @@ from tel_number import TelNumber
 from dialog import Dialog
 
 class TeleApp(tichy.Application):
-    name = 'Tele'
+    name = 'Dialer'
     icon = 'icon.png'
     category = 'launcher'
     launcher_info = ['TeleCom2',"caller"]

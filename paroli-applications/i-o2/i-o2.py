@@ -31,7 +31,7 @@ import ecore
 from tichy.tasklet import Wait, WaitFirst
 
 class I_O2_App(tichy.Application):
-    name = 'I/O'
+    name = 'Call-Log'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     launcher_info = ['GSM',"missed_call_count"]
