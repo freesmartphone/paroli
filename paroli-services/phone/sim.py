@@ -175,7 +175,7 @@ class FreeSmartPhoneSim(tichy.Service):
         entries = yield retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
                                           'contacts')
         logger.info("Got %d contacts" % len(entries))
-        logger.debug('get contacts : %s', entries)
+        #logger.debug('get contacts : %s', entries)
 
         ret = []
         for entry in entries:
@@ -214,7 +214,7 @@ class FreeSmartPhoneSim(tichy.Service):
         yield ret
 
     def add_contact(self, name, number):
-        logger.info("add %s : %s into the sim" % (name, number))
+        #logger.info("add %s : %s into the sim" % (name, number))
         index = self._get_free_index()
         contact = SIMContact(name=name, tel=number, sim_index=index)
         self.indexes[index] = contact
@@ -314,7 +314,7 @@ class TestSim(tichy.Service):
 
     @tichy.tasklet.tasklet
     def get_contacts(self):
-        yield [SIMContact(name='test', tel='099872394', sim_index=0),SIMContact(name='test2', tel='099872394', sim_index=0),SIMContact(name='test3', tel='099872394', sim_index=0),SIMContact(name='test4', tel='099872394', sim_index=0),SIMContact(name='test5', tel='099872394', sim_index=0),SIMContact(name='test6', tel='099872394', sim_index=0),SIMContact(name='test7', tel='099872394', sim_index=0),SIMContact(name='test8', tel='099872394', sim_index=0),SIMContact(name='test9', tel='099872394', sim_index=0),SIMContact(name='test10', tel='099872394', sim_index=0),SIMContact(name='test11', tel='099872394', sim_index=0),SIMContact(name='test12', tel='099872394', sim_index=0),SIMContact(name='test13', tel='099872394', sim_index=0),SIMContact(name='test14', tel='099872394', sim_index=0),SIMContact(name='test15', tel='099872394', sim_index=0),SIMContact(name='test16', tel='099872394', sim_index=0),SIMContact(name='test17', tel='099872394', sim_index=0)]
+        yield [SIMContact(name='atest', tel='099872394', sim_index=0),SIMContact(name='btest2', tel='099872394', sim_index=0),SIMContact(name='ctest3', tel='099872394', sim_index=0),SIMContact(name='dtest4', tel='099872394', sim_index=0),SIMContact(name='etest5', tel='099872394', sim_index=0),SIMContact(name='ftest6', tel='099872394', sim_index=0),SIMContact(name='ttest7', tel='099872394', sim_index=0),SIMContact(name='htest8', tel='099872394', sim_index=0),SIMContact(name='utest9', tel='099872394', sim_index=0),SIMContact(name='otest10', tel='099872394', sim_index=0),SIMContact(name='ptest11', tel='099872394', sim_index=0),SIMContact(name='ptest12', tel='099872394', sim_index=0),SIMContact(name='rtest13', tel='099872394', sim_index=0),SIMContact(name='qtest14', tel='099872394', sim_index=0),SIMContact(name='ltest15', tel='099872394', sim_index=0),SIMContact(name='ztest16', tel='099872394', sim_index=0),SIMContact(name='ytest17', tel='099872394', sim_index=0)]
 
     @tichy.tasklet.tasklet
     def get_messages(self):
@@ -322,14 +322,14 @@ class TestSim(tichy.Service):
 
     @tichy.tasklet.tasklet
     def add_contact(self, name, number):
-        logger.info("add %s : %s into the sim" % (name, number))
+        #logger.info("add %s : %s into the sim" % (name, number))
         index = 0
         contact = SIMContact(name=name, tel=number, sim_index=index)
         yield contact
 
     @tichy.tasklet.tasklet
     def remove_contact(self, contact):
-        logger.info("remove contact %s from sim", contact.name)
+        #logger.info("remove contact %s from sim", contact.name)
         yield None
 
     @tichy.tasklet.tasklet
