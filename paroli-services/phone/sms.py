@@ -96,6 +96,8 @@ class FreeSmartPhoneSMS(tichy.Service):
                                              self.on_incoming_unstored_message)
             self.sim_iface.connect_to_signal("IncomingStoredMessage",
                                              self.on_incoming_message)
+            self.sim_iface.connect_to_signal("MemoryFull",
+                                             self.on_memory_full)
             
             self.sms_iface.connect_to_signal("IncomingMessageReceipt",
                                              self.on_incoming_unstored_message)
@@ -170,6 +172,7 @@ class FreeSmartPhoneSMS(tichy.Service):
         messages_service = tichy.Service.get('Messages')
         store_message = messages_service.create(peer, text, 'in')
         yield messages_service.add(store_message)
+        tichy.Service.get('Sounds').Message()
         # We delete the message from the SIM
         if message[2]['type'] != 'sms-status-report':
             self.sms_iface.AckMessage(store_message)
@@ -190,10 +193,17 @@ class FreeSmartPhoneSMS(tichy.Service):
         messages_service = tichy.Service.get('Messages')
         message = messages_service.create(peer, text, 'in')
         yield messages_service.add(message)
+        tichy.Service.get('Sounds').Message()
         # We delete the message from the SIM
         logger.info("deleting %d", index)
         yield WaitDBus(self.sim_iface.DeleteMessage, index)
         logger.info("deleted %d", index)
+
+    def on_memory_full(self, *args, **kargs):
+        logger.info("SIM full")
+        ##not yielding as this is not meant to block anything
+        tichy.Service.get('Dialog').dialog("window", 'SIM', "your SIM card is full, please delete messages").start()
+        
 
     #settings functions begin
     def GetDeliveryReport(self):

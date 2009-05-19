@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -51,6 +52,18 @@ class VibratorService(tichy.Service):
 
         except Exception, e:
             logger.warning("can't use freesmartphone vibrator : %s", e)
+
+    def IncomingSMS(self):
+        logger.info("starting vibrator for incoming SMS")
+        if not self.vibrator:
+            return
+        self.vibrator.BlinkSeconds(1, 200, 200)
+
+    def IncomingCall(self):
+        logger.info("starting vibrator for incoming call")
+        if not self.vibrator:
+            return
+        self.vibrator.SetBlinking(600, 500)
 
     def start(self):
         """Start the vibrator"""

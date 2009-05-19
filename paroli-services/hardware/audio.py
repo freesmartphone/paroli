@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -109,9 +110,17 @@ class FSOAudio(tichy.Service):
         logger.info("Stop all sounds")
         self.audio.StopAllSounds()
 
-    def play(self, filepath):
+    def ringtone(self, ringtype):
+        if ringtype == "call":
+            logger.info("playing ringtone")
+            self.play("/usr/share/sounds/phone_ringing.ogg", 1)
+        if ringtype == "message":
+            logger.info("playing smstone")
+            self.play("/usr/share/sounds/notify_message.mp3")
+
+    def play(self, filepath, loop=0, length=0):
         try:
-            self.audio.PlaySound( filepath, 0, 0 )
+            self.audio.PlaySound( filepath, loop, length )
         except dbus.DBusException, e:
             assert e.get_dbus_name() == "org.freesmartphone.Device.Audio.PlayerError", \
                                             "wrong error returned"

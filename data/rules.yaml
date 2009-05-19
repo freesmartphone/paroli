@@ -44,17 +44,9 @@
              - HasAttr(duration, 2)
     actions: Command('poweroff')
 -
-    #
-    # Call -> Audio Scenario Handling
-    #
-    trigger: IncomingMessage()
-    actions: MessageTone(play)
-
--
     while: CallListContains("incoming")
     filters: Not(CallListContains("active"))
     actions:
-             - RingTone()
              - SetDisplayBrightness("0", 90)
              - OccupyResource(CPU)
 

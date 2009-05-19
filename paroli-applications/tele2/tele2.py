@@ -141,7 +141,7 @@ class TeleCaller2(tichy.Application):
         self.usage_service = tichy.Service.get('Usage')
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
-        self.usage_service.occupy_cpu().start()
+        #self.usage_service.occupy_cpu().start()
         
         if layout:
             self.main = parent
@@ -181,6 +181,11 @@ class TeleCaller2(tichy.Application):
             # XXX: we should use an other way to check for a call object !
             if not isinstance(number, (basestring, tichy.Text)):
                 call = number
+                try:
+                    self.SoundsService = tichy.Service.get("Sounds")
+                    self.SoundsService.call()
+                except Exception,e:
+                    logger.info("%s %s", str(Exception), str(e))
                 self.main.window.connect("close",call.release().start)
                 self.storage.call = call
                 self.main.emit('call_active')
@@ -191,6 +196,7 @@ class TeleCaller2(tichy.Application):
 
                 def make_active(emission, source, param):
                     # XXX: we should connect to the error callback
+                    self.SoundsService.Stop()
                     call.activate().start()
 
                 self.storage.caller.value = call.number.get_text()
@@ -251,12 +257,13 @@ class TeleCaller2(tichy.Application):
                     except Exception, e:
                         self.main.emit('call_error')
                 except Exception, e:
+                    self.SoundsService.Stop()
                     logger.error("Got error in caller : %s", e)
                     
             
-            logger.info("releasing cpu")
-            self.usage_service.release_cpu().start()
-                    
+            #logger.info("releasing cpu")
+            #self.usage_service.release_cpu().start()
+            self.SoundsService.Stop()        
             self.storage.caller.value = ""
             self.storage.call = None
             
@@ -271,6 +278,7 @@ class TeleCaller2(tichy.Application):
             self.storage.window = None
         except Exception, e:
             logger.error("Got error in caller : %s", e)
+            self.SoundsService.Stop()
             if self.main.window.elm_obj.is_deleted() == False:
                 if layout:
                     layout.elm_obj.show()
