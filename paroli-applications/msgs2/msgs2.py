@@ -320,7 +320,7 @@ class MsgsWrite(tichy.Application):
           if text_layout:
               logger.info("deleting text layout")
               text_layout.delete()
-              parent.window.elm_obj.keyboard_win_set(0)
+              parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
           
           if layout != None:
               layout.elm_obj.show()
