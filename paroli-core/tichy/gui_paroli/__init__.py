@@ -39,6 +39,10 @@ class EventsLoop(tichy.Object):
 
     def __init__(self):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
+        try:
+            elementary.c_elementary.theme_overlay_add("/usr/share/elementary/themes/paroli.edj")
+        except:
+            logger.info("can't add elementary theme overlay, please update your bindings")
         elementary.init()
 
     def run(self):
@@ -46,6 +50,8 @@ class EventsLoop(tichy.Object):
 
         This method only return after we call `quit`.
         """
+        
+        
         ecore.main_loop_begin()
         ecore.x.on_window_delete_request_add(self.test)
         #elementary.run()
@@ -110,6 +116,8 @@ class elm_layout(tichy.Object):
         self.Edje = self.elm_obj.edje_get()
         
     def relay(self, emission, signal, source):
+        logger.info("%s relaying %s", str(self), str(signal))
+        print type(signal)
         self.emit(signal)
     
     def add(self, part, element):
@@ -127,6 +135,8 @@ class elm_scroller(tichy.Object):
         self.elm_obj = elementary.Scroller(win.elm_obj)
         self.elm_obj.size_hint_weight_set(1.0, 1.0)
         self.elm_obj.size_hint_align_set(-1.0, -1.0)
+        if hasattr(self.elm_obj, "bounce_set"):
+            self.elm_obj.bounce_set(0, 0)
         self.elm_obj.show()
         
 class elm_box(tichy.Object):
@@ -247,6 +257,7 @@ class elm_list(tichy.Object):
           self.callbacks = []
           self.sort()
           self.items = []
+          self.letter_index = {}
           self._redraw_view()
           self.Elm_win.elm_obj.on_del_add(self._remove_cb)
     
@@ -260,7 +271,8 @@ class elm_list(tichy.Object):
                   self.box.elm_obj.delete()
               self.box = elm_box(self.Elm_win.elm_obj)
               self.items = []
-              testcounter = 0
+              self.letter_index = {}
+              #self.model.sort()
               for item in self.model:
                   if self.Elm_win.elm_obj.is_deleted() == True:
                       logger.info(str(self.model))
@@ -271,11 +283,15 @@ class elm_list(tichy.Object):
                   for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
-                        #logger.info("value is %s", str(value))
+                        if self.label_list.index((part, attribute)) == 0:
+                            if self.letter_index.has_key(value[0]) == False:
+                                self.letter_index[value[0]] = self.model.index(item)
+                        
                         if isinstance(value, tichy.Item):
                             value = unicode(value.get_text())
                         elif isinstance(value, tichy.Text):
                             value = value.value
+                        
                         txt = unicode(value).encode('utf-8')
                         edje_obj.part_text_set(part,txt)
                     else:
@@ -354,7 +370,16 @@ class elm_list(tichy.Object):
           
           self.items.remove(index)
           self._redraw_box()
-          
+      
+      def jump_to_index(self, key):
+          if self.letter_index.has_key(key):
+              position = self.letter_index[key]
+              point_y = 60 * int(position)
+              if hasattr(self.parent.scroller.elm_obj, 'region_show'):
+                  self.parent.scroller.elm_obj.region_show(0, point_y, 480, 60)
+              else:
+                  logger.info("scroller doesn't have method bounce_set please update your bindings")
+      
 ###XXX: everything below is deprecated and will be removed
 #class Widget(tichy.Object):
     #def __init__(self, parent, etk_obj = None, item = None, expand = False, **kargs):
