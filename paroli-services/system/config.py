@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 Mirko Lindner (mirko@openmoko.org)
@@ -65,33 +66,41 @@ class ConfigService(tichy.Service):
             raise
     
     def get_items(self, section, path=False):
-        contents = self.main_cfg
+        try:
+            contents = self.main_cfg
 
-        logger.info("contents: %s", str(contents))
+            logger.info("contents: %s", str(contents))
 
-        if contents == None:
-            ret = None
-        elif contents.has_section(section):
-            ret = contents.items(section)
-        else:
-            logger.info("doesn't have section %s", str(section))
-            logger.info("valid sections are %s", str(contents.sections()))
-            ret = None
-        return ret
+            if contents == None:
+                ret = None
+            elif contents.has_section(section):
+                ret = contents.items(section)
+            else:
+                logger.info("doesn't have section %s", str(section))
+                logger.info("valid sections are %s", str(contents.sections()))
+                ret = None
+            return ret
+            
+        except Exception, e:
+            logger.warning("can't get item : %s", e)
         
     def set_item(self, section, option, value, path=False):
         #if path:
             #file = self._open(path,'w')
         #else:
-        path = self.base_path + self.path
-        file = open(path, 'w+')
-        
-        
-        logger.info("parsing done")
-        if not self.main_cfg.has_section(section):
-            self.main_cfg.add_section(section)
+        try:
+            path = self.base_path + self.path
+            file = open(path, 'w+')
             
-        self.main_cfg.set(section, option, value)
-        self.main_cfg.write(file)
+            
+            logger.info("parsing done")
+            if not self.main_cfg.has_section(section):
+                self.main_cfg.add_section(section)
+                
+            self.main_cfg.set(section, option, value)
+            self.main_cfg.write(file)
+            file.close()
+        except Exception, e:
+            logger.warning("can't set item : %s", e)
         #self.main_cfg = self._read()
-        print self.main_cfg.sections()
+        #print self.main_cfg.sections()
