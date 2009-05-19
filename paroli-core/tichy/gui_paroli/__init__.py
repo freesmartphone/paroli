@@ -321,6 +321,7 @@ class elm_list(tichy.Object):
                   self.box.elm_obj.pack_end(ly)
                   ly.show()
                   self.items.append([item,edje_obj,ly])
+                  edje_obj.signal_callback_add("*", "list_command", self.signal_send_others, [item,edje_obj,ly])
               
               self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
               self.box.elm_obj.show()
@@ -356,6 +357,12 @@ class elm_list(tichy.Object):
           self.callbacks.append([signal, source, func])
           for i in self.items:
               i[1].signal_callback_add(signal, source , func, i)
+
+      def signal_send_others(self, emission, signal, source, item):
+          for i in self.items:
+              if i != item:
+                  print i
+                  i[1].signal_emit(signal, "list")
 
       def signal_send(self, signal, source):
           for i in self.items:
