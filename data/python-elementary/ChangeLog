@@ -1,3 +1,0 @@
-13/01/2009
-- Fix hoversel widget callback functionality
-- print tracebacks when exception was raised in a callback function
