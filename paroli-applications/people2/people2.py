@@ -60,14 +60,16 @@ class People2App(tichy.Application):
        
         self.item_list.add_callback("contact_details", "*", self.contact_details)
         #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
-        #self.item_list.add_callback("*", "embryo", self.self_test)
+        self.item_list.add_callback("*", "embryo", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
         
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
         ##wait until main object emits back signal or delete is requested
         
-        self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
+        #self.window.scroller.elm_obj.focus()
+        #self.item_list.jump_to_index('q')
+        #self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
         
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')
@@ -88,7 +90,7 @@ class People2App(tichy.Application):
     
     def contact_details(self, emission, source, param, item):
         number = str(item[0].tel)
-        name = str(item[0].name)
+        name = unicode(item[0].name).encode("utf-8")
         detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "contact_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
         edje_obj.part_text_set('name-text',str(name).encode('utf8'))
