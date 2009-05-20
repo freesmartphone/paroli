@@ -59,7 +59,7 @@ class I_O2_App(tichy.Application):
         def comp(m1, m2):
             return cmp(m2.timestamp, m1.timestamp)
 
-        #  We use Call object to represent call log 
+        #  We use the Call object to as items in the call log 
         self.list_label = [('label', 'number'), ('subtext', 'description')]
         self.item_list = gui.elm_list(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
         
@@ -135,10 +135,3 @@ class I_O2_App(tichy.Application):
     def printer(self, *args, **kargs):
         print args
         print kargs
-
-##move to msgs app later
-
-
-
-## move to launcher app later
-
