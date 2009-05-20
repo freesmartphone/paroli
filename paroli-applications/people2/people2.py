@@ -60,7 +60,9 @@ class People2App(tichy.Application):
        
         self.item_list.add_callback("contact_details", "*", self.contact_details)
         #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
-        self.item_list.add_callback("*", "embryo", self.self_test)
+        #self.item_list.add_callback("mouse,down,1", "*", self.self_test)
+        #self.item_list.add_callback("drag,start", "*", self.self_test)
+        self.item_list.add_callback("send_all", "fold-back", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
         
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
@@ -102,7 +104,7 @@ class People2App(tichy.Application):
         def _update_values(*args, **kargs):
             contact = args[0]
             edje = args[1]
-            edje.part_text_set('name-text',str(contact.name).encode('utf8'))
+            edje.part_text_set('name-text',unicode(contact.name).encode('utf8'))
             edje.part_text_set('number-text',str(contact.tel).encode('utf8'))
             self.contacts.emit("inserted")
 
@@ -242,7 +244,7 @@ class CreateContact(tichy.Application):
           send = 0
           
           if contact != None:
-              name = str(contact.name)
+              name = unicode(contact.name).encode("utf-8")
               number = str(contact.tel)
               layout.elm_obj.hide()
           
@@ -340,13 +342,13 @@ class CreateContact(tichy.Application):
                   text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
               contacts_service = tichy.Service.get('Contacts')
               if contact not in contacts_service.contacts:
-                  name = str(textbox.entry_get()).replace("<br>","")
+                  name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
                   new_contact = contacts_service.create(name.strip(),tel=str(number))
                   contacts_service.add(new_contact)
                   contacts_service.contacts.emit('inserted')
               else:
                   if mode == "name":
-                      name = str(textbox.entry_get()).replace("<br>","")
+                      name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
                       logger.info("updating name")
                       contact.name = name.strip()
                   elif mode == "number":
