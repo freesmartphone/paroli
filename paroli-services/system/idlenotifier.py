@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 Mirko Lindner (mirko@openmoko.org)
@@ -43,10 +44,15 @@ class FreeSmartPhoneIdleNotifier(tichy.Service):
             obj = bus.get_object('org.freesmartphone.odeviced', 
                           '/org/freesmartphone/Device/IdleNotifier/0')
             self.iface = dbus.Interface(obj, 'org.freesmartphone.Device.IdleNotifier')
-            suspend_setting = tichy.settings.Setting('phone', 'suspend-time', tichy.Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[-1, 15, 30, 60])
+            suspend_setting = tichy.settings.Setting('phone', 'suspend-time', tichy.Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[-1, 20, 30, 60])
+            
+            #self.iface.connect_to_signal("State", self.dim)
             
         except Exception, e:
             logger.warning("can't use freesmartphone IdleNotifier service : %s", e)
+
+    def dim(self, *args, **kargs):
+        print str(args)
 
     def get_timeout(self, state):
         timeouts = self.iface.GetTimeouts()
