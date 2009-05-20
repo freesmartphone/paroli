@@ -78,70 +78,60 @@ group
                 visible:0;
             }
         }
-        part
-        {
-            name:"close";
-            type:RECT;
-            description
-            {
-              color: 0 0 0 255;
+        part {
+            name: "back-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+               state: "default" 0.0;
+               min: 114 33;
+               max: 114 33;
               rel1 
               {
-                  relative: 0.05 0.05;
-                  to: "base";
+                 relative: 0.0 0.0;
+                 offset: 9 20;
+                 to: "base";
               }
               rel2 
               {
-                  relative: 0.15 0.15;
+                  relative: 0.0 0.0;
+                  offset: 123 53;
                   to: "base";
               }
+               image {
+                  normal: "back.png";
+               }
+               visible: 1;
             }
-        }
-        part
-        {
-            name:"close-text";
-            type:TEXT;
-            description
-            {
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.1 0.15;
-                    size: 12;
-                    text: "Back";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "close";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "close";
-                }
+         }
+         part {
+            name: "back-button-effecter";
+            type: RECT;
+            mouse_events: 0;
+            description {
+                state: "default" 0.0;
+                visible:0;
             }
-        }
-        part
-        {
-            name:"close-clickable";
-            type:RECT;
-            description
-            {
-                color: 0 235 235 0;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "close";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "close";
-                }
+            description {
+               state: "clicked" 0.0;
+               min: 114 33;
+               max: 114 33;
+               color: 255 255 255 255;
+              rel1 
+              {
+                 relative: 0.0 0.0;
+                 offset: 9 20;
+                 to: "base";
+              }
+              rel2 
+              {
+                  relative: 0.0 0.0;
+                  offset: 123 53;
+                  to: "base";
+              }
+               visible: 1;
             }
-        }
+         }
         part
         {
             name:"name";
@@ -337,12 +327,30 @@ group
     }
     programs 
     {
-        program
-        {
-            name: "close-clickable-pressed";
+        program 
+        { 
+            name: "back-button-down";
+            signal: "mouse,down,1";
+            source: "back-button";
+            action: STATE_SET "clicked" 0.0;
+            target: "back-button-effecter";
+        }
+        program 
+        { 
+            name: "back-button-up";
+            signal: "mouse,up,1";
+            source: "back-button";
+            action: STATE_SET "default" 0.0;
+            target: "back-button-effecter";
+            after:"back-button-clicked";
+        }
+        
+        program 
+        { 
+            name: "back-button-clicked";
             signal: "mouse,clicked,1";
-            source: "close-clickable";
-            action: SIGNAL_EMIT "close_details" "people";
+            source: "back-button";
+            action: SIGNAL_EMIT "close_details" "edje";
         }
           program
           {
