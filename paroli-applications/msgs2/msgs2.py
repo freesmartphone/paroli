@@ -392,7 +392,7 @@ class MsgsWrite(tichy.Application):
         try:
             #logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
-            yield dialog.dialog(None, "Report", "Message sent")
+            yield dialog.dialog(None, "Report", "Message sent to %s", unicode(sms.peer).encode("utf-8"))
         except Exception, ex:
             message.status = 'unsent'
             message_service.add(message)
