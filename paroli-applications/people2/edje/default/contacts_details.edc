@@ -561,7 +561,7 @@ group
             name: "back-button-clicked";
             signal: "mouse,clicked,1";
             source: "back-button";
-            action: SIGNAL_EMIT "back" "main_command";
+            action: SIGNAL_EMIT "close_details" "edje";
         }
         program
         {
