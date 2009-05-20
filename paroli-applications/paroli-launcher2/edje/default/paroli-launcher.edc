@@ -332,10 +332,10 @@ collections{
                 part {
                    name:  "invisible-slider";
                    type: RECT;
-                   dragable {
-                      x: 1 1 0;
-                      y: 0 0 0;
-                   }
+//                    dragable {
+//                       x: 1 1 0;
+//                       y: 0 0 0;
+//                    }
                    description { 
                       state: "default" 0.0;
                       color:0 0 0 255;
@@ -663,7 +663,7 @@ collections{
                  script {
                     clock_cb(1);
                  }
-              }
+              }/*
               program
               {
                  name: "slider-action";
@@ -672,7 +672,7 @@ collections{
                  script {
                     check_slider_action(1)
                  }
-              }
+              }*/
               program 
               {
                   name: "unblock";

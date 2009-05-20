@@ -117,8 +117,8 @@ class Launcher_App2(tichy.Application):
         self.systime = tichy.Service.get('SysTime')
         self.alarm = tichy.Service.get('Alarm')
         
-        self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
-        self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
+        #self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
+        #self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         self.ready = 1
         
