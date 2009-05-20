@@ -361,7 +361,6 @@ class elm_list(tichy.Object):
       def signal_send_others(self, emission, signal, source, item):
           for i in self.items:
               if i != item:
-                  print i
                   i[1].signal_emit(signal, "list")
 
       def signal_send(self, signal, source):
