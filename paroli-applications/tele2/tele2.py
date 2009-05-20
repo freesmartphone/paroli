@@ -175,6 +175,8 @@ class TeleCaller2(tichy.Application):
         self.edje_obj.signal_callback_add("*", "dtmf", self.send_dtmf)
         self.edje_obj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
         self.edje_obj.signal_callback_add("audio-toggle", "del-button", self.speaker_toggle)
+        self.SoundsService = tichy.Service.get("Sounds")
+    
 
         try:
             # The case when we have an incoming call
@@ -182,7 +184,6 @@ class TeleCaller2(tichy.Application):
             if not isinstance(number, (basestring, tichy.Text)):
                 call = number
                 try:
-                    self.SoundsService = tichy.Service.get("Sounds")
                     self.SoundsService.call()
                 except Exception,e:
                     logger.info("%s %s", str(Exception), str(e))
@@ -224,6 +225,7 @@ class TeleCaller2(tichy.Application):
                     self.edje_obj.signal_callback_del("release", "call", call_release_pre)
                     call.release().start()
                     self.storage.call = None
+                    logger.info('call_release_pre done')
                         
                 self.edje_obj.signal_callback_add("release", "call", call_release_pre)
 
@@ -252,6 +254,7 @@ class TeleCaller2(tichy.Application):
             if call.status not in ['released', 'releasing']:
                 try:
                     try:
+                        logger.info("call not in released or releasing")
                         call.release().start()
                         yield tichy.Wait(call, 'released')
                     except Exception, e:
