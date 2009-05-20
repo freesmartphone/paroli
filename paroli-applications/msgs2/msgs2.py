@@ -393,11 +393,11 @@ class MsgsWrite(tichy.Application):
             #logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()
             yield dialog.dialog(None, "Report", "Message sent to %s", unicode(sms.peer).encode("utf-8"))
-        except Exception, ex:
+        except Exception,e:
             message.status = 'unsent'
             message_service.add(message)
-            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft Error was %s", ex)
-            logger.error("Got error %s", ex)
+            yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft Error was %s", e)
+            logger.error("Got error %s", e)
     
     def callback(self, *args, **kargs):
         print args
