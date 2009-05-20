@@ -147,8 +147,8 @@ class FreeSmartPhoneSMS(tichy.Service):
             index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
                                           str(sms.peer), unicode(sms.text),
                                           properties)
-        except Ex, e:
-            logger.info ("%s %s", str(Ex), str(e))
+        except Exception, e:
+            logger.info ("%s %s", str(Exception), str(e))
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)
 
