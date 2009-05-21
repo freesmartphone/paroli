@@ -8,9 +8,8 @@ program \
             target: "num_field";\
             target: "num_field-text";\
             target: "del-button";\
-            target: "call-2-text";\
             target: "blocker";\
-            target: "call-2";\
+            target: "call-button";\
         }
 
 #define _PART_IMAGE_KEYPAD(partname, imagename, off1x, off1y, off2x, off2y ); \
