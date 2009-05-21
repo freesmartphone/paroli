@@ -319,7 +319,6 @@ group { name: "item";
                 }
                 set_int(drag_value,0);
             }
-            
         }
         
         program{
@@ -379,8 +378,6 @@ group { name: "item";
   
         program{
             name: "rightward-slide";
-//             signal:"drag,stop";
-//             source: "move_button";
             action: STATE_SET "changed" 0.0;
             transition: LINEAR 0.32;
             target:"base";

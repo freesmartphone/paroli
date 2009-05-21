@@ -9,6 +9,10 @@ group { name: "item";
       item: "signal" "unknown";
     }
    script {
+   
+      public drag_value;
+      public mouse_x;
+   
       public check_slider_action(val) {
          new Float:dx;
          new Float:dy;
@@ -208,22 +212,25 @@ group { name: "item";
          }
       }
       part {
-         name:  "invisible-slider";
-         type: RECT;
-         dragable {
-            x: 1 1 0;
-            y: 0 0 0;
-         }
+        name:  "invisible-slider";
+        type: RECT;
+        ignore_flags: ON_HOLD;
+        dragable {
+           x: 1 1 0;
+           y: 0 0 0;
+           confine:"label-bg";
+        }
          description { 
             state: "default" 0.0;
             color:0 0 0 255;
-            fixed: 1 1;
+            min: 470 60;
+//             fixed: 1 1;
             rel1 {
-               relative: 0.0 0.05;
+               relative: 0.0 0.0;
                to: "label-bg";
             }
             rel2 {
-               relative: 1.0 0.95;
+               relative: 1.0 1.0;
                to: "label-bg";
             } 
          }
@@ -252,7 +259,7 @@ group { name: "item";
             }
          }
          description { 
-            state: "fade-out" 0.0;
+            state: "to-the-right" 0.0;
             inherit: "default" 0.0;
             rel1.to: "item";
             rel2.to: "item";
@@ -260,7 +267,7 @@ group { name: "item";
          }
          description { 
             state: "edit_mode" 0.0;
-            inherit: "fade-out" 0.0;
+            inherit: "to-the-right" 0.0;
          }
          description { 
             state: "edit_mode_deselected" 0.0;
@@ -298,14 +305,14 @@ group { name: "item";
          type: IMAGE;
          description { 
             state: "default" 0.0;
-            min: 88 35;
-            max: 88 35;
+//             min: 88 35;
+//             max: 88 35;
             rel1 {
                relative: 0.0 0.0;
                to: "item_bg";
             }
             rel2 {
-               relative: 0.25 1.0;
+               relative: 0.0 0.0;
                to: "item_bg";
             } 
             image {
@@ -355,7 +362,7 @@ group { name: "item";
             }
          }
          description { 
-            state: "fade-out" 0.0;
+            state: "to-the-right" 0.0;
             inherit: "default" 0.0;
             rel1.to: "item";
             rel2.to: "item";
@@ -363,7 +370,7 @@ group { name: "item";
          }
          description { 
             state: "edit_mode" 0.0;
-            inherit: "fade-out" 0.0;
+            inherit: "to-the-right" 0.0;
          }
          description { 
             state: "edit_mode_deselected" 0.0;
@@ -380,14 +387,109 @@ group { name: "item";
               set_text(PART:"delete-flag","1");
           }
       }
-      program {
-         name: "slider-action";
-         signal: "mouse,up,1";
-         source: "invisible-slider";
-         script {
-            check_slider_action(1)
-         }
-      }
+//       program {
+//          name: "slider-action";
+//          signal: "mouse,up,1";
+//          source: "invisible-slider";
+//          script {
+//             check_slider_action(1)
+//          }
+//       }
+        program{
+            name: "all_catcher";
+            signal: "*";
+            source: "invisible-slider";
+            script{
+                emit(sig,"embryo");
+            }
+        }
+      program{
+            name: "drag_catcher";
+            signal: "drag,start";
+            source: "invisible-slider";
+            script{
+                new x;
+                new y;
+                set_int(drag_value,1);
+                get_mouse(x,y)
+                set_int(mouse_x,x)
+                emit("drag_start","embryo")
+            }                   
+        }
+        program{
+            name: "drag_catcher2_5";
+            signal: "hold,off";
+            source: "invisible-slider";
+            script{
+                if (get_int(drag_value) == 1){
+                    run_program(PROGRAM:"drag_catcher2");
+                }
+            }                   
+        }
+        program{
+            name: "clickable-pressed";
+            signal: "mouse,clicked,1";
+            source: "invisible-slider";
+            script{
+                if (get_int(drag_value) != 1){
+                  emit( "new_call", "label");
+                }
+                set_int(drag_value,0);
+            }
+        }
+        program{
+            name: "drag_killer";
+            signal: "drag,stop";
+            source: "invisible-slider";
+            script{
+                set_int(drag_value,0);
+            }
+        }
+        program{
+            name: "drag_catcher2";
+            script{
+                new x;
+                new y;
+                get_mouse(x, y);
+                if (x - get_int(mouse_x) < -30){
+                        run_program(PROGRAM:"fold-back");
+                        emit("left swipe", "embryo");
+                        set_int(drag_value,0);
+                }else if (x - get_int(mouse_x) > 30){
+                        run_program(PROGRAM:"rightward-slide");
+                        emit("close_all", "embryo");
+                        set_int(drag_value,0);
+                }else{
+                    set_int(drag_value,0);
+                }
+            }                   
+        }
+        program{
+            name: "rightward-slide";
+            action: STATE_SET "to-the-right" 0.0;
+            transition: LINEAR 0.32;
+            target:"subtext";
+            target: "item";
+            target:"label";
+            after:"send_all_close";
+        }
+        
+        program{
+            name:"send_all_close";
+            script{
+                emit("fold-back","list_command");
+            }
+        }
+        program{
+            name: "fold-back";
+            signal: "fold-back";
+            source: "list";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.32;
+            target:"subtext";
+            target: "item";
+            target:"label";
+        }
       program {
          name: "msg-pressed";
          signal: "mouse,up,1";

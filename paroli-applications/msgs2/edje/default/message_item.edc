@@ -248,7 +248,7 @@ group { name: "item";
         part{
             name: "clickable";
             type: RECT;
-//             ignore_flags: ON_HOLD;
+            ignore_flags: ON_HOLD;
             dragable {
                 x: 1 1 0;
                 y: 0 0 0;
@@ -360,6 +360,16 @@ group { name: "item";
             }                   
         }
         program{
+            name: "drag_catcher2_5";
+            signal: "hold,off";
+            source: "clickable";
+            script{
+                if (get_int(drag_value) == 1){
+                    run_program(PROGRAM:"drag_catcher2");
+                }
+            }                   
+        }
+        program{
             name: "drag_catcher2";
             signal: "drag,stop";
             source: "clickable";
@@ -379,6 +389,14 @@ group { name: "item";
                     set_int(drag_value,0);
                 }
             }                   
+        }
+        program{
+            name: "drag_killer";
+            signal: "drag,stop";
+            source: "clickable";
+            script{
+                set_int(drag_value,0);
+            }
         }
         program{
             name: "clickable-pressed";
@@ -414,13 +432,13 @@ group { name: "item";
         program{
             name:"send_all_close";
             script{
-                emit("send_all","fold-back");
+                emit("fold-back","list_command");
             }
         }
         program{
             name: "fold-back";
             signal: "fold-back";
-            source: "*";
+            source: "list";
             action: STATE_SET "default" 0.0;
             transition: LINEAR 0.32;
             target:"base";
