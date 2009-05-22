@@ -191,7 +191,7 @@ class TeleCaller2(tichy.Application):
                 self.storage.call = call
                 self.main.emit('call_active')
                 self.edje_obj.signal_emit('to_incoming_state',"*")
-                self.edje_obj.part_text_set('num_field-text',str(call.number.get_text()))
+                self.edje_obj.part_text_set('num_field-text',unicode(call.number.get_text()).encode('utf-8'))
                 self.edje_obj.layer_set(2)
                 self.edje_obj.show()
 
@@ -205,7 +205,7 @@ class TeleCaller2(tichy.Application):
                 self.edje_obj.signal_callback_add("activate", "call", make_active)
 
             else:   # If not it means we want to initiate the call first
-                display = str(TelNumber(number).get_text())
+                display = unicode(TelNumber(number).get_text()).encode("utf-8")
                 self.edje_obj.part_text_set('num_field-text',display)
                 self.edje_obj.signal_emit('to_dialing_state',"*")
                 self.edje_obj.layer_set(2)

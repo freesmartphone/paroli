@@ -9,6 +9,12 @@ images {
    image: "minus.png" COMP;
    image: "plus.png" COMP;
 
+   image: "call_activate.png" COMP;
+   image: "call_activate2.png" COMP;
+   image: "call_activate_clicked.png" COMP;
+   image: "call_end.png" COMP;
+   image: "call_end_pressed.png" COMP;
+   image: "call_end2.png" COMP;
    image: "call.png" COMP;
    image: "end_call.png" COMP;
    image: "answer.png" COMP;
