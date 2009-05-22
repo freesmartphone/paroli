@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 export DISPLAY=:0
 cd /usr/share/nfs-paroli/paroli-scripts/
