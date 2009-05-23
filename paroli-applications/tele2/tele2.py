@@ -52,6 +52,10 @@ class TeleApp(tichy.Application):
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
 
+        ## close the Tele app, with the back button
+        self.edje_obj.add_callback("back-button", "*", self.signal)
+        logger.info('Tele closing signal received from back-button')
+        
         ##wait until main object emits back signal or delete is requested
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'))
         logger.info('Tele closing')
