@@ -1,14 +1,12 @@
 fonts {
-   // We use Bold font for nearly everything. by Will.
+//  We use Bold font for nearly everything. by Will.
 //    font: "Inspiration-Bold.ttf"   "Sans";
 }
 
-styles
-{
-    style 
-    {
-      name: "textblock_style";
-      base: "font=Sans font_size=24 align=left valign=top color=#0ff  wrap=word";
+styles {
+    style {
+        name: "textblock_style";
+        base: "font=Sans font_size=24 align=left valign=top color=#0ff  wrap=word";
     }
 }
 
@@ -38,13 +36,11 @@ images {
    image: "back.png" COMP;
 }
 
-collections
-{
+collections {
     #include "macros.edc"
     #include "dialpad.edc"
     #include "message_item.edc"
     #include "message_list.edc"
     #include "message_details.edc"
     #include "messaging.edc"
-
 }
