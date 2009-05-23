@@ -93,7 +93,7 @@ group { name: "edit-name";
                     to: "base";
                 }
                image {
-                  normal: "Next_button.png";
+                  normal: "next.png";
                }
                visible: 1;
             }
@@ -104,6 +104,8 @@ group { name: "edit-name";
              type:RECT;
               description { state: "default" 0.0;
                   color: 0 0 0 255;
+                  min: 285 15;
+                  max: 285 35;
                   rel1 {
                           relative: 0.0 0.0;
                           offset: 18 141;
@@ -228,7 +230,7 @@ group { name: "edit-name";
                 description 
                 { 
                     state: "default" 0.0;
-                    visible:0;
+                    visible:0; 
                 }
                 description { state: "save" 0.0;
                   color: 255 255 255 255;

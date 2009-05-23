@@ -1,4 +1,6 @@
-group{
+
+
+group {
     name: "tb";
     min: 440 50;
     script {
@@ -10,43 +12,38 @@ group{
             
             date(year, month, day, yearday, weekday, hour, minute, second);
             s = 60.0 - second;
-                  while (s < 0.0) s = s + 5.0;
+            while (s < 0.0) s = s + 5.0;
             timer(60.0 - second, "clock_cb", 1);
-            if ((hour < 10) && (minute < 10)) 
-              {snprintf(buf, 10, "0%i:0%i", hour, minute);}
-            else if ((hour < 10) && (minute >= 10))
-              {snprintf(buf, 10, "0%i:%i", hour, minute);}
-            else if ((hour >= 10) && (minute < 10))
-              {snprintf(buf, 10, "%i:0%i", hour, minute);}
-            else if ((hour >= 10) && (minute >= 10)) 
-              {snprintf(buf, 10, "%i:%i", hour, minute);}
+            if ((hour < 10) && (minute < 10)) {
+                snprintf(buf, 10, "0%i:0%i", hour, minute);
+            } else if ((hour < 10) && (minute >= 10)) {
+                snprintf(buf, 10, "0%i:%i", hour, minute);
+            } else if ((hour >= 10) && (minute < 10)) {
+                snprintf(buf, 10, "%i:0%i", hour, minute);
+            } else if ((hour >= 10) && (minute >= 10)) {
+                snprintf(buf, 10, "%i:%i", hour, minute);
+            }
             set_text(PART:"clock", buf);
         }
-        
-      }
-    parts
-    {
-        part 
-        {
+    }
+    
+    parts {
+        part {
             name: "base";
             type: RECT;
             mouse_events: 1;
-            description 
-            { 
+            description { 
                 state:   "default"  0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                 }
             }
         }
-        part
-        {
+        part {
             name: "clock";
             type: TEXT;
             mouse_events:0;
@@ -70,253 +67,249 @@ group{
             }
         }
     }
-    programs
-    {
-        program 
-        { 
+    programs {
+        program { 
             name: "init";
             signal: "load";
             source: "*";
-            script
-            {
-                clock_cb(1);
-            }
+            script {clock_cb(1);}
         }
-        program 
-        { 
+        program { 
             name: "top-bar-clicked";
             signal: "mouse,up,1";
             source: "base";
             action: SIGNAL_EMIT "top-bar" "del-button";
         }
     }
-    
 }
 
 group { 
-   name: "main";
-   min: 480 590;
-   max: 480 640;
-   script {
-      public edit_done_button_clicked(val) {
-         new state_name[30];
-         new Float:dummy;
-         get_state(PART:"edit-done-button", state_name, 30, dummy);
-         if (!strcmp(state_name, "default")) {
-            set_state(PART:"edit-done-button", "edit_mode", 1.0);
-            emit("to_edit_mode", "edit-done-button");
-         } else {
-            set_state(PART:"edit-done-button", "default", 0.0);
-            emit("to_default_mode", "edit-done-button");
-         }
-      }
-   }
-   parts {
-      part{
-         name: "base";
-         type: RECT;
-         description{ state: "default" 0.0;
-            color:0 0 0 255;
-            rel1{
-               relative: 0.0 0.0;
+    name: "main";
+    min: 480 590;
+    max: 480 640;
+    script {
+        public edit_done_button_clicked(val) {
+            new state_name[30];
+            new Float:dummy;
+            get_state(PART:"edit-done-button", state_name, 30, dummy);
+            if (!strcmp(state_name, "default")) {
+                set_state(PART:"edit-done-button", "edit_mode", 1.0);
+                emit("to_edit_mode", "edit-done-button");
+            } else {
+                set_state(PART:"edit-done-button", "default", 0.0);
+                emit("to_default_mode", "edit-done-button");
             }
-            rel2 {
-               relative: 1.0 1.0;
+        }
+    }
+    parts {
+        part {
+            name: "base";
+            type: RECT;
+            description { 
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1 {
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
             }
-         }
-      }
-      part {
-         name: "edit-done-button";
-         type: IMAGE;
-         description {
-            state: "default" 0.0;
-            min: 42 18;
-            max: 42 18;
-            rel1 {
-               relative: 0.0 0.0;
-               offset: 416 29;
-               to: "base";
+        }
+        part {
+            name: "edit-done-button";
+            type: IMAGE;
+            description {
+                state: "default" 0.0;
+                min: 42 18;
+                max: 42 18;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 416 29;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 458 47;
+                    to: "base";
+                }
+                image {
+                    normal: "Edit.png";
+                }
+                visible: 1;
             }
-            rel2 {
-               relative: 0.0 0.0;
-               offset: 458 47;
-               to: "base";
+            description {
+                state: "edit_mode" 0.0;
+                inherit: "default" 0.0;
+                min: 56 18;
+                max: 56 18;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 401 28;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 457 46;
+                    to: "base";
+                }
+                image {
+                    normal: "Done.png";
+                }
             }
-            image {
-               normal: "Edit.png";
-            }
-            visible: 1;
-         }
-         description {
-            state: "edit_mode" 0.0;
-            inherit: "default" 0.0;
-            min: 56 18;
-            max: 56 18;
-            rel1 {
-               relative: 0.0 0.0;
-               offset: 401 28;
-               to: "base";
-            }
-            rel2 {
-               relative: 0.0 0.0;
-               offset: 457 46;
-               to: "base";
-            }
-            image {
-               normal: "Done.png";
-            }
-         }
-         description{
-             state: "ListEmpty" 0.0;
-             inherit: "default" 0.0;
-             visible:0;
-         }
-      }
-      part{
-         name: "list-empty-text";
-         type: TEXT;
-         description {
-            state: "default" 0.0;
-            min: 152 18;
-            max: 152 18;
-            rel1 {
-               relative: 0.0 0.0;
-               offset: 306 29;
-               to: "base";
-            }
-            rel2 {
-               relative: 0.0 0.0;
-               offset: 458 47;
-               to: "base";
-            }
-            text {
-               font: "Sans";
-               text: "no call records";
-               align: 0.1 0.5;
-               size: 18;
-            }
-            visible: 0;
-         }
-         description{
-             state: "ListEmpty" 0.0;
-             inherit: "default" 0.0;
-             visible:1;
-         }
-      }
-      part{
-         name:"list";
-         type:SWALLOW;
-         description { 
-            state: "default" 0.0;
-            color: 255 255 255 255;
-            rel1 { to:"base";
-               relative: 0.0 0.0;
-               offset: 0 99;
-            }
-            rel2 {to:"base";
-               relative: 1.0 1.0;
-//                offset: 450 582;
-            }
-         }
-      }
-      part{
-         name: "layover";
-         type: RECT;
-         mouse_events: 0;
-         description{ state: "default" 0.0;
-            visible:0;
-            color:0 255 0 100;
-            rel1{
-               relative: 0.0 0.0;
-            }
-            rel2 {
-               relative: 1.0 1.0;
-            }
-         }
-      }
-   }
-   programs {  
-      program { 
-         name: "edit_clicked";
-         signal: "mouse,up,1";
-         source: "edit-done-button";
-         script {
-            edit_done_button_clicked(1);
-         }
-      }
-      program { 
-         name: "empty_init";
-         signal: "ListEmpty";
-         source: "*";
-         action: STATE_SET "ListEmpty" 0.0;
-         target: "list-empty-text";
-         target: "edit-done-button";
-      }
-      program { 
-         name: "list_filled";
-         signal: "ListFilled";
-         source: "*";
-         action: STATE_SET "default" 0.0;
-         target: "list-empty-text";
-         target: "edit-done-button";
-      }
-   }
-}
-
-  
-    
-group{
-      name: "history-label";
-      min: 80 30;
-      max: 480 30;
-      parts{
-        part{
-          name: base;
-          type: RECT;
-          description{
-            state: "default" 0.0;
-            color: 0 0 0 255;
-            rel1{
-              relative: 0.0 0.0;
-            }
-            rel2{
-              relative: 1.0 1.0;
-            }
-          }
+            description{
+                state: "ListEmpty" 0.0;
+                inherit: "default" 0.0;
+                visible:0;
+            }  
         }
         part{
-          name: text;
-          type: TEXT;
-          description{
-            state: "default" 0.0;
-            color: 255 255 255 255;
-            text {
+            name: "list-empty-text";
+            type: TEXT;
+            description {
+                state: "default" 0.0;
+                min: 152 18;
+                max: 152 18;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 306 29;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 458 47;
+                    to: "base";
+                }
+                text {
+                    font: "Sans";
+                    text: "no call records";
+                    align: 0.1 0.5;
+                    size: 18;
+                }
+                visible: 0;
+            }
+            description{
+                state: "ListEmpty" 0.0;
+                inherit: "default" 0.0;
+                visible:1;
+            }
+        }
+        part {
+            name:"list";
+            type:SWALLOW;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                rel1 { 
+                    to:"base";
+                    relative: 0.0 0.0;
+                    offset: 0 99;
+                }
+                rel2 {to:"base";
+                    relative: 1.0 1.0;
+//                    offset: 450 582;
+                }
+            }
+        }
+        part{
+            name: "layover";
+            type: RECT;
+            mouse_events: 0;
+            description{ 
+                state: "default" 0.0;
+                visible:0;
+                color:0 255 0 100;
+                rel1 {
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
+            }
+        }
+    }
+    programs {  
+        program { 
+            name: "edit_clicked";
+            signal: "mouse,up,1";
+            source: "edit-done-button";
+            script {
+                edit_done_button_clicked(1);
+            }
+        }
+        program { 
+            name: "empty_init";
+            signal: "ListEmpty";
+            source: "*";
+            action: STATE_SET "ListEmpty" 0.0;
+            target: "list-empty-text";
+            target: "edit-done-button";
+        }
+        program { 
+            name: "list_filled";
+            signal: "ListFilled";
+            source: "*";
+            action: STATE_SET "default" 0.0;
+            target: "list-empty-text";
+            target: "edit-done-button";
+        }
+    }
+}
+
+    
+group {
+    name: "history-label";
+    min: 80 30;
+    max: 480 30;
+    parts{
+        part{
+            name: base;
+            type: RECT;
+            description {
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 {
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
+            }
+        }
+        part {
+            name: text;
+            type: TEXT;
+            description {
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
                     align: 0.0 0.0;
                     size: 20;
                     text: "Missed";
                     font: "Sans";
+                }
+                rel1 {
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
             }
-            rel1{
-              relative: 0.0 0.0;
+            description {
+                state: "Missed" 0.0;
+                inherit:"default" 0.0;
+                color: 255 0 0 255;
             }
-            rel2{
-              relative: 1.0 1.0;
+            description {
+                state: "Outgoing" 0.0;
+                inherit:"default" 0.0;
             }
-          }
-          description{
-            state: "Missed" 0.0;
-            inherit:"default" 0.0;
-            color: 255 0 0 255;
-          }
-          description{
-            state: "Outgoing" 0.0;
-            inherit:"default" 0.0;
-          }
-          description{
-            state: "Incoming" 0.0;
-            inherit:"default" 0.0;
-            color: 0 255 0 255;
-          }
+            description {
+                state: "Incoming" 0.0;
+                inherit:"default" 0.0;
+                color: 0 255 0 255;
+            }
         }
-      }
     }
+}
+

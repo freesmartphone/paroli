@@ -1,163 +1,163 @@
 #include "contacts_macros.edc"
 
-group { name: "edit_number";
-    min: 480 590;
-    max: 480 590;
-    script{
+group { 
+    name: "edit_number";
+    min:  480 575;
+    max:  480 575;
+    script {
         public zero = 0;
         public mytimer = 0;
         public calltimer_s = 0;
         public calltimer_m = 0;
         public calltimer_h = 0;
+        public del_button_pressed = 0;
         
-        public start_timer(func[]){
+        public start_timer(func[]) {
             new local_timer = timer(2.0, func, 1);
-            emit("starting timer","embryo");\
+            emit("starting timer","embryo");
             set_int(mytimer, local_timer);
         }
         
-        public del_all(s){
+        public del_all(s) {
             set_text(PART:"num_field-text","");
         }
         
-        public add_plus(s){
+        public add_plus(s) {
             cancel_timer(get_int(mytimer));
             set_int(mytimer,0);
             del_digit();
-            emit("add plus","embryo");\
-            new state[30];\
-            new Float:floaty;\
-            if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0)
-            {
-                if (strcmp(state, "default") == 0)\
-                {
-                  add_sign("+")
+            emit("add plus","embryo");
+            new state[30];
+            new Float: floaty;
+            if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
+                if (strcmp(state, "default") == 0) {
+                    add_sign("+")
                 }
             }
         }
         
-        public add_sign(sign[]){
-                new old[40];
-                old[20] = get_text(PART:"num_field-text",old,40);
-                new txt[60];
-                new num[3];
-                num[0] = sign[0];
-                new state[30];
-                new Float:floaty;
-                if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0)\
-                {\
-                    if (strcmp(state, "pin") == 0)\
-                    {\
-                      new pin[40];\
-                      pin[39] = get_text(PART:"pin-text",pin,39);\
-                      emit(pin,"embryo");\
-                      new txt2[60];\
-                      emit(num,"embryo");\
-                      snprintf(txt2, 60, "%s%s", pin, num);\
-                      set_text(PART:"pin-text", txt2);\
-                      emit(txt2,"embryo");\
-                      num = "*";\
-                    }\
-                    snprintf(txt, 60, "%s%s", old, num);\
-                    set_text(PART:"num_field-text", txt);\
-                    if (strcmp(state, "active") == 0)\
-                    {\
-                        emit(num,"dtmf");\
-                    }\
+        public add_sign(sign[]) {
+            new old[40];
+            old[20] = get_text(PART:"num_field-text",old,40);
+            new txt[60];
+            new num[3];
+            num[0] = sign[0];
+            new state[30];
+            new Float: floaty;
+            set_state(PART:"del-button", "number", 0.0);
+            if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
+                if (strcmp(state, "pin") == 0) {
+                    new pin[40];
+                    pin[39] = get_text(PART:"pin-text",pin,39);
+                    emit(pin,"embryo");
+                    new txt2[60];
+                    emit(num,"embryo");
+                    snprintf(txt2, 60, "%s%s", pin, num);
+                    set_text(PART:"pin-text", txt2);
+                    emit(txt2,"embryo");
+                    num = "*";
                 }
+                snprintf(txt, 60, "%s%s", old, num);
+                set_text(PART:"num_field-text", txt);
+                if (strcmp(state, "active") == 0) {
+                    emit(num,"dtmf");
+                }
+            }
         }
         
-        public set_flag(s){
+        public set_flag(s) {
             set_int(zero,1);
             cancel_timer(get_int(mytimer));
             set_int(mytimer,0);
         }
         
-        public stop_timer(){
-            if (get_int(mytimer) != 0){
+        public stop_timer() {
+            if (get_int(mytimer) != 0) {
                 cancel_timer(get_int(mytimer));
             }
         }
         
-        public calltime(val){
+        public calltime(val) {
             new hour[60];
             new minute[60];
             new second[60];
             new all[180];
             timer(1.0, "calltime", 1);
             set_state(PART:"duration_timer", "active", 0.0);
-            if (get_int(calltimer_s) < 59){
+            if (get_int(calltimer_s) < 59) {
                 set_int(calltimer_s,get_int(calltimer_s)+1);
-                                
-            }else{
+            } else {
                 set_int(calltimer_s,0);
                 set_int(calltimer_m,get_int(calltimer_m)+1);
             }
-            
-            
-            if (get_int(calltimer_m) == 60){
+            if (get_int(calltimer_m) == 60) {
                 set_int(calltimer_m,0);
                 set_int(calltimer_h,get_int(calltimer_h)+1);
             }
-            
-            
-            if (get_int(calltimer_h) == 0){
+            if (get_int(calltimer_h) == 0) {
                 snprintf(hour, 60, "%s", "");
-            }else{
+            } else {
                 snprintf(hour, 60, "%i:", get_int(calltimer_h));
             }
-            
-            if (get_int(calltimer_m) == 0){
+            if (get_int(calltimer_m) == 0) {
                 snprintf(minute, 60, "%s", "00:");
-            }else if (get_int(calltimer_m) < 10){
+            } else if (get_int(calltimer_m) < 10) {
                 snprintf(minute, 60, "%s%i:", "0", get_int(calltimer_m));
-            }
-            else{
+            } else {
                 snprintf(minute, 60, "%i:", get_int(calltimer_h));
             }
-            
             if (get_int(calltimer_s) < 10){
                 snprintf(second, 60, "%s%i", "0", get_int(calltimer_s));
-            }else{
+            } else {
                 snprintf(second, 60, "%i", get_int(calltimer_s));
             }
-            
             snprintf(all, 180, "%s%s%s", hour, minute, second);
             set_text(PART:"duration_timer",all);
         }
         
         public del_digit() {
+            emit("del_digit near you", "embryo");
             new state[30];
             new Float:floaty;
-            if (get_state(PART:"del-button", state[0], 30, floaty) == 0)
-              {
-                if (strcmp(state, "default") == 0){
-                  new old[40];
-                  old[39] = get_text(PART:"num_field-text",old,40);
-                  new len = strlen(old);
-                  new txt[61];
-                  snprintf(txt, 60, "%i%s", len, old);
-                  emit(txt, "embryo");
-                  if (len != 0)
-                      {
+            if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                if (strcmp(state, "default") == 0) {
+                    new old[40];
+                    old[39] = get_text(PART:"num_field-text",old,40);
+                    new len = strlen(old);
+                    new txt[61];
+                    snprintf(txt, 60, "%i%s", len, old);
+                    emit(txt, "embryo");
+                    if (len != 0) {
                         new num[39];
                         strnprep(num, old, len-1);
                         set_text(PART:"num_field-text",num);
-                        
-                        
-                      }
-                }
-                else if (strcmp(state, "pin") == 0) {
-                  new old[40];
-                  old[39] = get_text(PART:"num_field-text",old,40);
-                  new old2[40];
-                  old2[39] = get_text(PART:"pin-text",old2,40);
-                  new len = strlen(old);
-                  new txt[61];
-                  snprintf(txt, 60, "%i%s", len, old);
-                  emit(txt, "embryo");
-                  if (len != 0)
-                      {
+                    } else {
+                        set_int(del_button_pressed,1);
+                    }
+                } else if (strcmp(state, "number") == 0){
+                    new old[40];
+                    old[39] = get_text(PART:"num_field-text",old,40);
+                    new len = strlen(old);
+                    new txt[61];
+                    snprintf(txt, 60, "%i%s", len, old);
+                    emit(txt, "embryo");
+                    if (len != 0) {
+                        new num[39];
+                        strnprep(num, old, len-1);
+                        set_text(PART:"num_field-text",num);
+                    } else {
+                        set_int(del_button_pressed,1);
+                    }
+                } else if (strcmp(state, "pin") == 0) {
+                    new old[40];
+                    old[39] = get_text(PART:"num_field-text",old,40);
+                    new old2[40];
+                    old2[39] = get_text(PART:"pin-text",old2,40);
+                    new len = strlen(old);
+                    new txt[61];
+                    snprintf(txt, 60, "%i%s", len, old);
+                    emit(txt, "embryo");
+                    if (len != 0) {
                         new num[39];
                         strnprep(num, old, len-1);
                         set_text(PART:"num_field-text",num);
@@ -165,284 +165,236 @@ group { name: "edit_number";
                         new num2[39];
                         strnprep(num2, old2, len-1);
                         set_text(PART:"pin-text",num2);
-                      }
-                }
-                else if (strcmp(state, "incoming") == 0) {
-                  emit("mute-toggle", "del-button");
-                  set_state(PART:"del-button", "silent", 0.0);
-                }
-                else if (strcmp(state, "active") == 0) {
-                  emit("audio-toggle", "del-button");
-                  set_state(PART:"del-button", "muted", 0.0);
-                }
-                else if (strcmp(state, "muted") == 0) {
-                  emit("audio-toggle", "del-button");
-                  set_state(PART:"del-button", "active", 0.0);
-                }
-                else {
+                    }
+                } else if (strcmp(state, "incoming") == 0) {
+                    emit("mute-toggle", "del-button");
+                    set_state(PART:"del-button", "silent", 0.0);
+                } else if (strcmp(state, "active") == 0) {
+                    emit("audio-toggle", "del-button");
+                    set_state(PART:"del-button", "muted", 0.0);
+                } else if (strcmp(state, "muted") == 0) {
+                    emit("audio-toggle", "del-button");
+                    set_state(PART:"del-button", "active", 0.0);
+                } else {
                     emit("coming soon to a cinema near you", "embryo");
                 }
             }
         }
         
-//         public call_btn() {
-//             new state[30];
-//             new txt[60];
-//             new Float:floaty;
-//             if (get_state(PART:"call-2-text", state[0], 30, floaty) == 0)
-//               {
-//                 if (strcmp(state, "default") == 0){
-//                   snprintf(txt, 60, "state is %s", state);
-//                   emit(txt, "embryo");
-//                   
-//                   new num[40];
-//                   num[39] = get_text(PART:"num_field-text",num,40);
-//                   if (strlen(num) > 0 ) {
-//                       emit(num, "call");
-//                   }
-//                   else {
-//                       emit("ooops too little data", "embryo");
-//                   }
-//                 }
-//                 else if (strcmp(state, "incoming") == 0){
-//                   emit("activate", "call");
-//                 }
-//                 else if ((strcmp(state, "active") == 0) || 
-//                   (strcmp(state, "dialing") == 0)){
-//                   emit("releasing", "embryo");  
-//                   emit("release", "call");  
-//                 }
-//                 else if (strcmp(state, "pin") == 0){
-//                   new num[40];
-//                   num[39] = get_text(PART:"pin-text",num,40);
-//                   emit(num, "sending_pin");
-//                 }
-//               }
-//             else 
-//               {
-//                 emit("blew up", "embryo");
-//               }
-//         }
+//        public call_btn() {
+//            new state[30];
+//            new txt[60];
+//            new Float:floaty;
+//            if (get_state(PART:"call-2-text", state[0], 30, floaty) == 0) {
+//                if (strcmp(state, "default") == 0) {
+//                    snprintf(txt, 60, "state is %s", state);
+//                    emit(txt, "embryo");
+//                  
+//                    new num[40];
+//                    num[39] = get_text(PART:"num_field-text",num,40);
+//                    if (strlen(num) > 0 ) {
+//                        emit(num, "call");
+//                    } else {
+//                        emit("ooops too little data", "embryo");
+//                    }
+//                } else if (strcmp(state, "incoming") == 0) {
+//                    emit("activate", "call");
+//                } else if ((strcmp(state, "active") == 0) || 
+//                    (strcmp(state, "dialing") == 0)){
+//                    emit("releasing", "embryo");  
+//                    emit("release", "call");  
+//                } else if (strcmp(state, "pin") == 0){
+//                    new num[40];
+//                    num[39] = get_text(PART:"pin-text",num,40);
+//                    emit(num, "sending_pin");
+//                }
+//            } else {
+//                emit("blew up", "embryo");
+//            }
+////             if (strcmp(state, "default") == 0) {
+////                 new num[40];
+////                 num[39] = get_text(PART:"num_field-text",num,40);
+////                 emit(num, "call");
+////             }
+//        }
     }
 
-    parts
-    {
-        part 
-        {
+    parts {
+        part {
             name: "base";
             type: RECT;
-            description 
-            { 
-                state:   "default"  0.0;
-                color: 0 0 0 255;
+            description { 
+                state: "default"  0.0;
+                color: 0 0 0 155;
             }
         }
-                part {
+        part {
             name: "back-button";
             type: IMAGE;
             mouse_events: 1;
             description {
-               state: "default" 0.0;
-               min: 114 33;
-               max: 114 33;
-              rel1 
-              {
-                 relative: 0.0 0.0;
-                 offset: 9 20;
-                 to: "base";
-              }
-              rel2 
-              {
-                  relative: 0.0 0.0;
-                  offset: 123 53;
-                  to: "base";
-              }
-               image {
-                  normal: "back.png";
-               }
-               visible: 1;
-            }
-         }
-         part{
-            name:"next-button";
-            type:RECT;
-            description { state: "default" 0.0;
-                  visible:1;
-                  color: 0 0 0 255;
-                  rel1 {
-                          relative: 0.8 0.00;
-                          to: "base";
-                  }
-                  rel2 {
-                          relative: 1.0 0.08;
-                          to: "base";
-                  }
-            }
-            description { state: "wait" 0.0;
-                  inherit:"default" 0.0;
-            }
-           }
-           part{
-            name:"next-button-text";
-            type:TEXT;
-            mouse_events:0;
-            description { state: "default" 0.0;
-                  color: 255 255 255 255;
-                  text {
-                          align: 0.5 0.5;
-                          size: 24;
-                          text: "Next";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.0 0.0;
-                          to: "next-button";
-                  }
-                  rel2 {
-                          relative: 1.0 1.0;
-                          to: "next-button";
-                  }
+                state: "default" 0.0;
+                min: 114 33;
+                max: 114 33;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 9 20;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 123 53;
+                    to: "base";
+                }
+                image {
+                    normal: "back.png";
+                }
+                visible: 0;
             }
         }
-
-        part
-        {
+         
+        part {
+            name: "next-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+                state: "default" 0.0;                
+                min: 159 69;
+                max: 159 69;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 320 19;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 479 88;
+                    to: "base";
+                }                
+                image {
+                    normal: "next.png";
+                }
+                visible: 1;
+            }
+            description {
+                state: "clicked" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "next_pressed.png";
+            }
+        }
+        part {
             name: "num_field";
             type: RECT;
-            description 
-            { 
+            description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                   relative:0.1062 0.153;
+                rel1 {
+                    relative:0.1062 0.253;
 //                    offset: 51 48;
-                   to: "base";
+                    to: "base";
                 }
-                rel2 
-                {
-                   relative:0.8959 0.22175;
+                rel2 {
+                    relative:0.8959 0.32175;
 //                    offset: 430 92;
-                   to: "base";
+                    to: "base";
                 }
             }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "incoming" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "dialing" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "active" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "releasing" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "pin" 0.0;
+                inherit:"default" 0.0;
             }
         }        
-        part
-        {
+        part {
             name: "num_field-text";
             type: TEXT;
             mouse_events: 0;
-            description 
-            { 
+            description { 
                 state: "default" 0.0;
                 color: 255 255 255 255;
-                text 
-                {
+                text {
                     align: 0.0 1.0;
                     size: 48;
                     text: "";
                     font: "Sans";
                     elipsis: 1.0; 
                 }
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
                     to: "num_field";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to: "num_field";
                 }
             }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "incoming" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "dialing" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "active" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "releasing" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "pin" 0.0;
+                inherit:"default" 0.0;
             }
         }
-        part{
+        part {
             name:"duration_timer";
             type: TEXT;
             mouse_events: 0;
-            description
-            {
-              visible:0;
+            description {
+                visible:0;
             }
-            description
-            {
-              state: "active" 0.0;
+            description {
+                state: "active" 0.0;
                 color: 255 255 255 255;
-                text 
-                {
+                text {
                     align: 0.0 1.0;
                     size: 16;
                     text: "09";
                     font: "Sans";
                 }
-                rel1 
-                {
-                   relative: 0.1062 0.2153;
+                rel1 {
+                    relative: 0.1062 0.2153;
 //                    offset: 51 93;
-                   to: "base";
+                    to: "base";
                 }
-                rel2 
-                {
-                   relative: 0.3375 0.1656;
+                rel2 {
+                    relative: 0.3375 0.1656;
 //                    offset: 162 106;
-                   to: "base";
+                    to: "base";
                 }
             }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit: "active" 0.0;
-              text.text: "incoming...";
+            description {
+                state: "incoming" 0.0;
+                inherit: "active" 0.0;
+                text.text: "incoming...";
             }
         }/*
          part {
@@ -614,54 +566,45 @@ group { name: "edit_number";
             }
         }*/
 //           _PART_KEYPAD("call-2", "Call", "", 0.01, 0.206,  0.6645, 0.354);
-
-         part {
+        part {
             name: "del-button";
             type: IMAGE;
             mouse_events: 1;
             description {
-               state: "default" 0.0;
-               rel1 {
-                  relative: 0.6667 0.206;
-//                   offset: 320 110;
-                  to: "base";
-               }
-               rel2 {
-                  relative: 0.9999 0.354;
-//                   offset: 479 179;
-                  to: "base";
-               }
-               image {
-                  normal: "backspace.png";
-               }
-               visible: 1;
+                min: 159 69;
+                max: 159 69;
+                state: "default" 0.0;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 1 19;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 160 88;
+                    to: "base";
+                }
+                image {
+                    normal: "backspace.png";
+                }
+                visible: 1;
             }
-         }
-         part{
-            name: "del-button-effecter";
-            type: RECT;
-            mouse_events: 0;
             description {
-               state: "default" 0.0;
-               color: 255 255 255 255;
-               rel1 {
-                  relative: 0.0 0.0;
-//                   offset: 320 110;
-                  to: "del-button";
-               }
-               rel2 {
-                  relative: 1.0 1.0;
-//                   offset: 479 179;
-                  to: "del-button";
-               }
-               visible: 0;
+                state: "clicked" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "backspace_pressed.png";
             }
-            description{
-                state: "visible" 0.0;
-                inherit: "default" 0.0;
-                visible:1;
+            description {
+                state: "number" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back.png";
             }
-         }
+            description {
+                state: "number-pressed" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back_pressed.png";
+            }
+        }
 
 //         _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 180, 160, 269);
 //         _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 180,  319, 269);
@@ -707,107 +650,102 @@ group { name: "edit_number";
         _PART_KEYPAD("button-hash", "#", "", 0.66, 0.84,  1.0, 1.0);
          */
         
-        part
-        {
+        part {
             name:"blocker";
             type: RECT;
             mouse_events:1;
-            description
-            { 
+            description { 
                 state: "default" 0.0;
                 visible:0;
             }
-            description
-            {
-              state: "incoming" 0.0;
-              color: 0 0 0 100;
-              rel1 
-              {
-                  relative: 0.0 0.0;
-                  offset: 0 230;
-                  to: "base";
-              }
-              rel2 
-              {
-                  relative: 0.0 0.0;
-                  offset: 480 640;
-                  to: "base";
-              }
+            description {
+                state: "incoming" 0.0;
+                color: 0 0 0 100;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 0 230;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 480 640;
+                    to: "base";
+                }
             }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"incoming" 0.0;
+            description {
+                state: "dialing" 0.0;
+                inherit:"incoming" 0.0;
             }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "active" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "pin" 0.0;
+                inherit:"default" 0.0;
             }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"incoming" 0.0;
+            description {
+                state: "releasing" 0.0;
+                inherit:"incoming" 0.0;
             }
         }
-        part
-        {
+        part {
             name: "pin-text";
             type: TEXT;
             mouse_events: 0;
-            description 
-            { 
+            description { 
                 state: "default" 0.0;
                 color: 255 0 0 255;
-                visible:1;
-                text
-                {
+                visible: 1;
+                text {
                     align: 0.5 0.0;
                     size: 18;
                     text: "";
                     font: "Sans";
                 }
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
                     to: "base";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to: "base";
                 }
             }
         }
     }
-    programs
-    {
-        program 
-        { 
-            name: "num_field-clicked";
+    programs {
+        program { 
+            name:   "num_field-clicked";
             signal: "mouse,clicked,1";
             source: "num_field";
             action: SIGNAL_EMIT "num_field_pressed" "num_field-text";
         }
-        program 
-        { 
+        program { 
             name: "back-button-clicked";
             signal: "mouse,clicked,1";
             source: "back-button";
             action: SIGNAL_EMIT "back" "main_command";
         }
-        program 
-        { 
-            name: "next-button-clicked";
-            signal: "mouse,clicked,1";
+        program { 
+            name: "next-button-pressed";
+            signal: "mouse,down,1";
+            source: "next-button";
+            action: STATE_SET "clicked" 0.0;
+            target: "next-button";
+        } 
+        program {
+            name: "next-button";
+            signal: "mouse,up,1";
             source: "next-button";
             action: SIGNAL_EMIT "next" "main_command";
+            after: "next-button-unpressed";
         }
+        program {
+            name: "next-button-unpressed";
+            action: STATE_SET "default" 0.0;
+            target: "next-button";
+        }     
 /*
         program 
         { 
@@ -832,49 +770,63 @@ group { name: "edit_number";
             name: "del-button-changer";
             signal: "mouse,down,1";
             source: "del-button";
-            script{
+            script {
                 start_timer("del_all");
                 del_digit();
-                set_state(PART:"del-button-effecter", "visible", 0.0);
+                new old[40];
+                old[39] = get_text(PART:"num_field-text",old,40);
+                new len = strlen(old);
+                if (len != 0) {
+                    set_state(PART:"del-button", "number-pressed", 0.0);
+                } else {
+                    set_state(PART:"del-button", "clicked", 0.0);
+                }
             }
         }
-        program 
-        { 
+        program { 
             name: "del-button-clicked";
             signal: "mouse,up,1";
             source: "del-button";
-            script{
+            script {
                 stop_timer();
-                set_state(PART:"del-button-effecter", "default", 0.0);
+                if (get_int(del_button_pressed) == 1) {
+                    set_int(del_button_pressed,0);
+                    emit("back","main_command");
+                }
+                new old[40];
+                old[39] = get_text(PART:"num_field-text",old,40);
+                new len = strlen(old);
+                if (len != 0) {
+                    set_state(PART:"del-button", "number", 0.0);
+                } else {
+                    set_state(PART:"del-button", "default", 0.0);
+                }
+                
             }
         }
-        program 
-        { 
-            name: "button-0-timer-on";
+        program { 
+            name:   "button-0-timer-on";
             signal: "mouse,down,1";
             source: "button-0-2";
-            script{
+            script {
                 new state[30];
                 new Float:floaty;
-                if (get_state(PART:"del-button", state[0], 30, floaty) == 0)
-                {
-                    if (strcmp(state, "pin") != 0){
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (strcmp(state, "pin") != 0) {
                         start_timer("add_plus");
                     }
                 }
             }
         }
-        program 
-        { 
+        program {
             name: "button-0-timer-off";
             signal: "mouse,up,1";
             source: "button-0-2";
-            script{
+            script {
                 new state[30];
                 new Float:floaty;
-                if (get_state(PART:"del-button", state[0], 30, floaty) == 0)
-                {
-                    if (strcmp(state, "pin") != 0){
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (strcmp(state, "pin") != 0) {
                         stop_timer();
                     }
                 }
@@ -889,112 +841,110 @@ group { name: "edit_number";
 //            _PART_STATE_CHANGE_PROG("pin", 0.0);
            
 //         programs ROW TWO
-           _PART_KEYPAD_PROG2("button-1-2", "1");
-           _PART_KEYPAD_PROG2("button-2-2", "2");
-           _PART_KEYPAD_PROG2("button-3-2", "3");
+        _PART_KEYPAD_PROG2("button-1-2", "1");
+        _PART_KEYPAD_PROG2("button-2-2", "2");
+        _PART_KEYPAD_PROG2("button-3-2", "3");
 //         programs ROW THREE
-           _PART_KEYPAD_PROG2("button-4-2", "4");
-           _PART_KEYPAD_PROG2("button-5-2", "5");
-           _PART_KEYPAD_PROG2("button-6-2", "6");
+        _PART_KEYPAD_PROG2("button-4-2", "4");
+        _PART_KEYPAD_PROG2("button-5-2", "5");
+        _PART_KEYPAD_PROG2("button-6-2", "6");
 //         programs ROW FOUR
-           _PART_KEYPAD_PROG2("button-7-2", "7");
-           _PART_KEYPAD_PROG2("button-8-2", "8");
-           _PART_KEYPAD_PROG2("button-9-2", "9");
+        _PART_KEYPAD_PROG2("button-7-2", "7");
+        _PART_KEYPAD_PROG2("button-8-2", "8");
+        _PART_KEYPAD_PROG2("button-9-2", "9");
 //         programs ROW FIVE
-           _PART_KEYPAD_PROG2("button-star-2", "*");
-           _PART_KEYPAD_PROG2("button-0-2", "0");
-           _PART_KEYPAD_PROG2("button-hash-2", "#");
+        _PART_KEYPAD_PROG2("button-star-2", "*");
+        _PART_KEYPAD_PROG2("button-0-2", "0");
+        _PART_KEYPAD_PROG2("button-hash-2", "#");
 
            
 //         programs ROW TWO
-//            _PART_KEYPAD_PROG("button-1", "1");
-//            _PART_KEYPAD_PROG("button-2", "2");
-//            _PART_KEYPAD_PROG("button-3", "3");
+//        _PART_KEYPAD_PROG("button-1", "1");
+//        _PART_KEYPAD_PROG("button-2", "2");
+//        _PART_KEYPAD_PROG("button-3", "3");
 // //         programs ROW THREE
-//            _PART_KEYPAD_PROG("button-4", "4");
-//            _PART_KEYPAD_PROG("button-5", "5");
-//            _PART_KEYPAD_PROG("button-6", "6");
+//        _PART_KEYPAD_PROG("button-4", "4");
+//        _PART_KEYPAD_PROG("button-5", "5");
+//        _PART_KEYPAD_PROG("button-6", "6");
 // //         programs ROW FOUR
-//            _PART_KEYPAD_PROG("button-7", "7");
-//            _PART_KEYPAD_PROG("button-8", "8");
-//            _PART_KEYPAD_PROG("button-9", "9");
+//        _PART_KEYPAD_PROG("button-7", "7");
+//        _PART_KEYPAD_PROG("button-8", "8");
+//        _PART_KEYPAD_PROG("button-9", "9");
 // //         programs ROW FIVE
-//            _PART_KEYPAD_PROG("button-star", "*");
-//            _PART_KEYPAD_PROG("button-0", "0");
-//            _PART_KEYPAD_PROG("button-hash", "#");
+//        _PART_KEYPAD_PROG("button-star", "*");
+//        _PART_KEYPAD_PROG("button-0", "0");
+//        _PART_KEYPAD_PROG("button-hash", "#");
 
-        program 
-        { 
-            name: "mute-error";
+        program { 
+            name:   "mute-error";
             signal: "mute-button";
             source: "error";
             action: STATE_SET "active" 0.0;
             target: "del-button";
         }
-        program 
-        { 
-            name: "incoming";
+        program { 
+            name:   "incoming";
             signal: "to_incoming_state";
             source: "*";
             action: STATE_SET "incoming" 0.0;
             target: "duration_timer";
         }
-        program 
-        { 
-            name: "start_counter";
-            signal: "to_active_state";\
-            source: "*";\
-            script{
+        program { 
+            name:   "start_counter";
+            signal: "to_active_state";
+            source: "*";
+            script {
                 calltime(1);
             }
         }
     }
 }
 
-group{
+group {
     name:"profile";
     min: 480 580;
     max: 480 590;
-    parts{
-        part{
-            name:"text";
-            type:"TEXT";
-            mouse_events:0;
-            description{ 
+    parts {
+        part {
+            name: "text";
+            type: "TEXT";
+            mouse_events: 0;
+            description { 
                 state: "default" 0.0;
-                color:255 255 255 255;
+                color: 255 255 255 255;
                 text {
-                        align: 0.5 0.5;
-                        size: 48;
-                        text: "asd";
-                        font: "Sans";
+                    align: 0.5 0.5;
+                    size: 48;
+                    text: "asd";
+                    font: "Sans";
                 }
-                rel1{
-                      relative: 0.0 0.0;
-                  }
-                  rel2 {
-                      relative: 1.0 1.0;
-                  }
+                rel1 {
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
             }
-            description{ 
+            description {
                 state: "invisible" 0.0;
-                color:0 0 0 255;
+                color: 0 0 0 255;
             }
         }
     }
-    programs{
-        program{
-            name:"fading";
-            signal:"load";
-            source:"*";
+    programs {
+        program {
+            name:   "fading";
+            signal: "load";
+            source: "*";
             action: STATE_SET "invisible" 0.0;
             transition: LINEAR 2.0;
-            target:"text";
-            after:"erase";
+            target: "text";
+            after:  "erase";
         }
-        program{
-            name:"erase";
+        program {
+            name: "erase";
             action: SIGNAL_EMIT "erase" "edje";
         }
     }
 }
+
