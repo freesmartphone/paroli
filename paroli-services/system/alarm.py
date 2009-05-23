@@ -171,3 +171,15 @@ class TimeSetting(tichy.Object):
     def __repr__(self):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time
+        
+class TestAlarmService(tichy.Service):
+    service = 'Alarm'
+  
+    def __init__(self):
+        super(TestAlarmService, self).__init__()
+        self.alarm = None
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('alarm service init')
+        yield None
