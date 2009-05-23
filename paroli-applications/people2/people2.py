@@ -64,7 +64,8 @@ class People2App(tichy.Application):
         #self.item_list.add_callback("drag,start", "*", self.self_test)
         self.item_list.add_callback("send_all", "fold-back", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
-        
+
+        self.edje_obj.add_callback("back-button", "*", self.signal)
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
         ##wait until main object emits back signal or delete is requested
@@ -79,7 +80,14 @@ class People2App(tichy.Application):
         
         self.window.delete()
         #del self.item_list
-                    
+    
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("people2.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+        
+        
     ##DEBUG FUNCTIONS
     ## general output check
     def self_test(self, *args, **kargs):
