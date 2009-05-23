@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -73,3 +74,22 @@ class UssdService(tichy.Service):
                 logger.info("error in ussd: %s", e)
         else:
             logger.info("unable to send ussd request")
+
+class UssdTestService(tichy.Service):
+    """The 'Button' service
+
+    This service can be used to listen to the input signals form hw buttons
+    """
+
+    service = 'Ussd'
+    name = 'Test'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(UssdTestService, self).__init__()
+        self.last = None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        logger.info('init')
+        yield None

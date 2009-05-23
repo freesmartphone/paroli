@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Jeremy Chang (jeremy@openmoko.org)
@@ -47,10 +48,13 @@ class Slot(dbus.service.Object):
     def Alarm(self):
         logger.info( "!!!!!!!!!!!!!! Alarm !!!!!!!!!!!!!!!!!!" )
         try:
-            if self.action is not None:
-                self.action(self.args)
-            self.action = None
-            self.args = None
+            #if self.action is not None:
+                #self.action(self.args)
+            #self.action = None
+            #self.args = None
+            self.AlarmService = tichy.Service.get("Alarm")
+            self.AlarmService.ring()
+            
         except Exception, ex:
             logger.info( "Alarm except %s", ex )
 
@@ -77,13 +81,58 @@ class FreeSmartPhoneAlarmService(tichy.Service):
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.otimed', time_out=120)
+            yield tichy.Service.get('SysTime').wait_initialized()
+            
+            self.rtc = tichy.Service.get("SysTime").rtc
+            
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             alarm_obj = bus.get_object('org.freesmartphone.otimed', 
                           '/org/freesmartphone/Time/Alarm')
             self.alarm = dbus.Interface(alarm_obj, 'org.freesmartphone.Time.Alarm')
-            logger.info('Alarm service OK! %s', self.alarm)
+            
+            self.ListLabel = [('title','name'),('value','value')]
+            
+            self.hour = TimeSetting("hour",3,tichy.List(range(24)), "int")
+            
+            self.minute =  TimeSetting("minute",4,tichy.List(range(60)), "int")
+            
+            self.AlarmList = tichy.List()
+            self.AlarmList.append(self.hour)
+            self.AlarmList.append(self.minute)
+            
+            self.alarm_setting = tichy.settings.ListSetting('Time', 'set alarm', tichy.Text, value="set", setter=self.SetAlarm, options=['set'], model=self.AlarmList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+            
+            self.AlarmList.connect('save', self.UpdateAlarmTime)
+            
         except Exception, e:
             logger.warning("can't use freesmartphone Alarm service : %s", e)
+
+    @tichy.tasklet.tasklet
+    def SetAlarm(self, val):
+        yield val
+
+    def UpdateAlarmTime(self, *args, **kargs):
+        logger.info("alarm updating called")
+        now = self.rtc.GetCurrentTime()
+        year = time.localtime(self.rtc.GetCurrentTime())[0]
+        month = time.localtime(self.rtc.GetCurrentTime())[1]
+        day = time.localtime(self.rtc.GetCurrentTime())[2]
+        hour = self.hour.value
+        minute = self.minute.value
+        sec = 0
+        wday = time.localtime(self.rtc.GetCurrentTime())[6]
+        yday = time.localtime(self.rtc.GetCurrentTime())[7]
+        isdst = time.localtime(self.rtc.GetCurrentTime())[8]
+        
+        new_time = time.mktime((year, month, day, hour, minute, sec, wday, yday, isdst))
+        
+        if int(now) - int(new_time) > 0:
+            alarm = time.mktime((year, month, day+1, hour, minute, sec, wday+1, yday+1, isdst))
+        else:
+            alarm = new_time
+         
+        yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(alarm) ) 
+        
 
     @tichy.tasklet.tasklet
     def clear_alarm(self):
@@ -104,3 +153,21 @@ class FreeSmartPhoneAlarmService(tichy.Service):
             logger.error("Exception : %s", ex)
             raise
 
+    def ring(self, *args):
+        logger.info("ring ring")
+
+class TimeSetting(tichy.Object):
+    def __init__(self, name, rep_part, val_range, type_arg):
+        self.service = tichy.Service.get('SysTime')
+        self.name = name
+        self.value = time.localtime(self.service.rtc.GetCurrentTime())[rep_part]
+        self.rep_part = rep_part
+        self.val_range = val_range
+        self.val_type = type_arg
+
+    def action(self, *args, **kargs):
+        pass
+        
+    def __repr__(self):
+        time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
+        return time

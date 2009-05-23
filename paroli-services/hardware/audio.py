@@ -133,18 +133,13 @@ class ParoliAudio(tichy.Service):
     name = 'Test'
 
     def __init__(self):
-        
+        super(ParoliAudio, self).__init__()
         self.device = None
         self.muted = 0
         self.volume = tichy.Int.as_type(55)
 
     @tichy.tasklet.tasklet
     def init(self):
-        logger.info("init of audio")
-        tichy.settings.FSOSetting('phone', 'ring-volume', tichy.Int,  options=[0,25,50,75,100])
-        tichy.settings.FSOSetting('phone', 'message-volume', tichy.Int, options=[0,25,50,75,100])
-        tichy.settings.FSOSetting('phone', 'ring-vibration', tichy.Int,  options=[0,1])
-        tichy.settings.FSOSetting('phone', 'message-vibration', tichy.Int, options=[0,1])
         yield self._do_sth()
         
     def _do_sth(self):
@@ -170,4 +165,3 @@ class ParoliAudio(tichy.Service):
 
     def stop_all_sounds(self):
         logger.info("Stop all sounds")
-

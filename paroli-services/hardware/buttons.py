@@ -29,7 +29,7 @@ import logging
 logger = logging.getLogger('buttons')
 
 
-class ButtonService(tichy.Service):
+class ButtonTestService(tichy.Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons
@@ -39,7 +39,7 @@ class ButtonService(tichy.Service):
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(ButtonService, self).__init__()
+        super(ButtonTestService, self).__init__()
         logger.info('button service init')
         self._connect_dbus().start() 
         self.last = None

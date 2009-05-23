@@ -109,6 +109,18 @@ class FreeSmartPhoneTimeService(tichy.Service):
             logger.error("Exception : %s", ex)
             raise
 
+class TimeTestService(tichy.Service):
+    service = 'SysTime'
+    name = 'Test'
+  
+    def __init__(self):
+        super(TimeTestService, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('systime service init')
+        yield None
+
 class TimeSetting(tichy.Object):
     def __init__(self, name, rep_part, val_range, type_arg):
         self.service = tichy.Service.get('SysTime')
