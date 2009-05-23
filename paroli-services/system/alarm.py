@@ -174,6 +174,7 @@ class TimeSetting(tichy.Object):
         
 class TestAlarmService(tichy.Service):
     service = 'Alarm'
+    name = 'Test'
   
     def __init__(self):
         super(TestAlarmService, self).__init__()
