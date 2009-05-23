@@ -2,8 +2,8 @@
 
 group { 
     name: "edit_number";
-    min: 480 575;
-    max: 480 575;
+    min:  480 575;
+    max:  480 575;
     script {
         public zero = 0;
         public mytimer = 0;
@@ -28,7 +28,7 @@ group {
             del_digit();
             emit("add plus","embryo");
             new state[30];
-            new Float:floaty;
+            new Float: floaty;
             if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
                 if (strcmp(state, "default") == 0) {
                     add_sign("+")
@@ -43,7 +43,7 @@ group {
             new num[3];
             num[0] = sign[0];
             new state[30];
-            new Float:floaty;
+            new Float: floaty;
             set_state(PART:"del-button", "number", 0.0);
             if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
                 if (strcmp(state, "pin") == 0) {
@@ -103,7 +103,7 @@ group {
                 snprintf(minute, 60, "%s", "00:");
             } else if (get_int(calltimer_m) < 10) {
                 snprintf(minute, 60, "%s%i:", "0", get_int(calltimer_m));
-            } else{
+            } else {
                 snprintf(minute, 60, "%i:", get_int(calltimer_h));
             }
             if (get_int(calltimer_s) < 10){
@@ -181,44 +181,42 @@ group {
             }
         }
         
-//         public call_btn() {
-//             new state[30];
-//             new txt[60];
-//             new Float:floaty;
-//             if (get_state(PART:"call-2-text", state[0], 30, floaty) == 0)
-//               {
-//                 if (strcmp(state, "default") == 0){
-//                   snprintf(txt, 60, "state is %s", state);
-//                   emit(txt, "embryo");
-//                   
-//                   new num[40];
-//                   num[39] = get_text(PART:"num_field-text",num,40);
-//                   if (strlen(num) > 0 ) {
-//                       emit(num, "call");
-//                   }
-//                   else {
-//                       emit("ooops too little data", "embryo");
-//                   }
-//                 }
-//                 else if (strcmp(state, "incoming") == 0){
-//                   emit("activate", "call");
-//                 }
-//                 else if ((strcmp(state, "active") == 0) || 
-//                   (strcmp(state, "dialing") == 0)){
-//                   emit("releasing", "embryo");  
-//                   emit("release", "call");  
-//                 }
-//                 else if (strcmp(state, "pin") == 0){
-//                   new num[40];
-//                   num[39] = get_text(PART:"pin-text",num,40);
-//                   emit(num, "sending_pin");
-//                 }
-//               }
-//             else 
-//               {
-//                 emit("blew up", "embryo");
-//               }
-//         }
+//        public call_btn() {
+//            new state[30];
+//            new txt[60];
+//            new Float:floaty;
+//            if (get_state(PART:"call-2-text", state[0], 30, floaty) == 0) {
+//                if (strcmp(state, "default") == 0) {
+//                    snprintf(txt, 60, "state is %s", state);
+//                    emit(txt, "embryo");
+//                  
+//                    new num[40];
+//                    num[39] = get_text(PART:"num_field-text",num,40);
+//                    if (strlen(num) > 0 ) {
+//                        emit(num, "call");
+//                    } else {
+//                        emit("ooops too little data", "embryo");
+//                    }
+//                } else if (strcmp(state, "incoming") == 0) {
+//                    emit("activate", "call");
+//                } else if ((strcmp(state, "active") == 0) || 
+//                    (strcmp(state, "dialing") == 0)){
+//                    emit("releasing", "embryo");  
+//                    emit("release", "call");  
+//                } else if (strcmp(state, "pin") == 0){
+//                    new num[40];
+//                    num[39] = get_text(PART:"pin-text",num,40);
+//                    emit(num, "sending_pin");
+//                }
+//            } else {
+//                emit("blew up", "embryo");
+//            }
+////             if (strcmp(state, "default") == 0) {
+////                 new num[40];
+////                 num[39] = get_text(PART:"num_field-text",num,40);
+////                 emit(num, "call");
+////             }
+//        }
     }
 
     parts {
@@ -226,7 +224,7 @@ group {
             name: "base";
             type: RECT;
             description { 
-                state:   "default"  0.0;
+                state: "default"  0.0;
                 color: 0 0 0 155;
             }
         }
@@ -675,20 +673,20 @@ group {
                 }
             }
             description {
-              state: "dialing" 0.0;
-              inherit:"incoming" 0.0;
+                state: "dialing" 0.0;
+                inherit:"incoming" 0.0;
             }
             description {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
+                state: "active" 0.0;
+                inherit:"default" 0.0;
             }
             description {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
+                state: "pin" 0.0;
+                inherit:"default" 0.0;
             }
             description {
-              state: "releasing" 0.0;
-              inherit:"incoming" 0.0;
+                state: "releasing" 0.0;
+                inherit:"incoming" 0.0;
             }
         }
         part {
@@ -698,7 +696,7 @@ group {
             description { 
                 state: "default" 0.0;
                 color: 255 0 0 255;
-                visible:1;
+                visible: 1;
                 text {
                     align: 0.5 0.0;
                     size: 18;
@@ -718,7 +716,7 @@ group {
     }
     programs {
         program { 
-            name: "num_field-clicked";
+            name:   "num_field-clicked";
             signal: "mouse,clicked,1";
             source: "num_field";
             action: SIGNAL_EMIT "num_field_pressed" "num_field-text";
@@ -807,7 +805,7 @@ group {
             }
         }
         program { 
-            name: "button-0-timer-on";
+            name:   "button-0-timer-on";
             signal: "mouse,down,1";
             source: "button-0-2";
             script {
@@ -843,58 +841,58 @@ group {
 //            _PART_STATE_CHANGE_PROG("pin", 0.0);
            
 //         programs ROW TWO
-           _PART_KEYPAD_PROG2("button-1-2", "1");
-           _PART_KEYPAD_PROG2("button-2-2", "2");
-           _PART_KEYPAD_PROG2("button-3-2", "3");
+        _PART_KEYPAD_PROG2("button-1-2", "1");
+        _PART_KEYPAD_PROG2("button-2-2", "2");
+        _PART_KEYPAD_PROG2("button-3-2", "3");
 //         programs ROW THREE
-           _PART_KEYPAD_PROG2("button-4-2", "4");
-           _PART_KEYPAD_PROG2("button-5-2", "5");
-           _PART_KEYPAD_PROG2("button-6-2", "6");
+        _PART_KEYPAD_PROG2("button-4-2", "4");
+        _PART_KEYPAD_PROG2("button-5-2", "5");
+        _PART_KEYPAD_PROG2("button-6-2", "6");
 //         programs ROW FOUR
-           _PART_KEYPAD_PROG2("button-7-2", "7");
-           _PART_KEYPAD_PROG2("button-8-2", "8");
-           _PART_KEYPAD_PROG2("button-9-2", "9");
+        _PART_KEYPAD_PROG2("button-7-2", "7");
+        _PART_KEYPAD_PROG2("button-8-2", "8");
+        _PART_KEYPAD_PROG2("button-9-2", "9");
 //         programs ROW FIVE
-           _PART_KEYPAD_PROG2("button-star-2", "*");
-           _PART_KEYPAD_PROG2("button-0-2", "0");
-           _PART_KEYPAD_PROG2("button-hash-2", "#");
+        _PART_KEYPAD_PROG2("button-star-2", "*");
+        _PART_KEYPAD_PROG2("button-0-2", "0");
+        _PART_KEYPAD_PROG2("button-hash-2", "#");
 
            
 //         programs ROW TWO
-//            _PART_KEYPAD_PROG("button-1", "1");
-//            _PART_KEYPAD_PROG("button-2", "2");
-//            _PART_KEYPAD_PROG("button-3", "3");
+//        _PART_KEYPAD_PROG("button-1", "1");
+//        _PART_KEYPAD_PROG("button-2", "2");
+//        _PART_KEYPAD_PROG("button-3", "3");
 // //         programs ROW THREE
-//            _PART_KEYPAD_PROG("button-4", "4");
-//            _PART_KEYPAD_PROG("button-5", "5");
-//            _PART_KEYPAD_PROG("button-6", "6");
+//        _PART_KEYPAD_PROG("button-4", "4");
+//        _PART_KEYPAD_PROG("button-5", "5");
+//        _PART_KEYPAD_PROG("button-6", "6");
 // //         programs ROW FOUR
-//            _PART_KEYPAD_PROG("button-7", "7");
-//            _PART_KEYPAD_PROG("button-8", "8");
-//            _PART_KEYPAD_PROG("button-9", "9");
+//        _PART_KEYPAD_PROG("button-7", "7");
+//        _PART_KEYPAD_PROG("button-8", "8");
+//        _PART_KEYPAD_PROG("button-9", "9");
 // //         programs ROW FIVE
-//            _PART_KEYPAD_PROG("button-star", "*");
-//            _PART_KEYPAD_PROG("button-0", "0");
-//            _PART_KEYPAD_PROG("button-hash", "#");
+//        _PART_KEYPAD_PROG("button-star", "*");
+//        _PART_KEYPAD_PROG("button-0", "0");
+//        _PART_KEYPAD_PROG("button-hash", "#");
 
         program { 
-            name: "mute-error";
+            name:   "mute-error";
             signal: "mute-button";
             source: "error";
             action: STATE_SET "active" 0.0;
             target: "del-button";
         }
         program { 
-            name: "incoming";
+            name:   "incoming";
             signal: "to_incoming_state";
             source: "*";
             action: STATE_SET "incoming" 0.0;
             target: "duration_timer";
         }
         program { 
-            name: "start_counter";
-            signal: "to_active_state";\
-            source: "*";\
+            name:   "start_counter";
+            signal: "to_active_state";
+            source: "*";
             script {
                 calltime(1);
             }
@@ -908,12 +906,12 @@ group {
     max: 480 590;
     parts {
         part {
-            name:"text";
-            type:"TEXT";
-            mouse_events:0;
-            description {
+            name: "text";
+            type: "TEXT";
+            mouse_events: 0;
+            description { 
                 state: "default" 0.0;
-                color:255 255 255 255;
+                color: 255 255 255 255;
                 text {
                     align: 0.5 0.5;
                     size: 48;
@@ -929,22 +927,22 @@ group {
             }
             description {
                 state: "invisible" 0.0;
-                color:0 0 0 255;
+                color: 0 0 0 255;
             }
         }
     }
-    programs{
-        program{
-            name:"fading";
-            signal:"load";
-            source:"*";
+    programs {
+        program {
+            name:   "fading";
+            signal: "load";
+            source: "*";
             action: STATE_SET "invisible" 0.0;
             transition: LINEAR 2.0;
-            target:"text";
-            after:"erase";
+            target: "text";
+            after:  "erase";
         }
-        program{
-            name:"erase";
+        program {
+            name: "erase";
             action: SIGNAL_EMIT "erase" "edje";
         }
     }
