@@ -42,7 +42,6 @@ collections
     #include "dialpad_numbers.edc"
     #include "contacts_details.edc"
     #include "contacts_item.edc"
-    #include "edit_name.edc"
     #include "edit_contact_name.edc"
     #include "edit_number_type.edc"
     #include "contacts_list.edc"
