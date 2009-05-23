@@ -1,0 +1,16 @@
+data/usefull_stuff
+data/todo
+data/paroli*
+data/.eric*
+vala-tests
+edje-tests
+
+.directory
+*.orig
+paroli-applications/log
+paroli-applications/jamendo-loader
+*.txt
+.svn
+*.ogg
+*.edj
+.fuse*
