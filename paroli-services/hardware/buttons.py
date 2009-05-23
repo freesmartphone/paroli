@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -71,3 +72,20 @@ class ButtonService(tichy.Service):
             
         self.emit(text, seconds)
 
+class ButtonService(tichy.Service):
+    """The 'Button' service
+
+    This service can be used to listen to the input signals form hw buttons
+    """
+
+    service = 'Buttons'
+    name = 'Test'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(ButtonService, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('IdleNotifier test service init')
+        yield None

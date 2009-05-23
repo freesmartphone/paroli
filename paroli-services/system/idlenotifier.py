@@ -66,3 +66,16 @@ class FreeSmartPhoneIdleNotifier(tichy.Service):
     @tichy.tasklet.tasklet
     def set_idle_dim(self, time):
         yield self.iface.SetTimeout('idle_dim', int(time))
+
+
+class PhoneIdleNotifier(tichy.Service):
+    service = 'FSOIdleNotifier'
+    name = 'Test'
+
+    def __init__(self):
+        super(PhoneIdleNotifier, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('IdleNotifier test service init')
+        yield None
