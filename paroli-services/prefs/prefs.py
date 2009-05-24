@@ -110,6 +110,7 @@ class FreeSmartPhonePrefs(tichy.Service):
 class TestPrefs(PrefsService):
 
     service = 'Prefs'
+    name = 'Test'
 
     class Service(item.Item):
 
