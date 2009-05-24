@@ -100,3 +100,22 @@ class UsageService(tichy.Service):
                 else:
                     logger.debug("not releasing resource %s as it has been already released", str(resource) )
         yield None
+
+class UsageTestService(tichy.Service):
+    """The 'Usage' service
+
+    This service can be used to listen to the power signals and control the device power.
+    """
+
+    service = 'Usage'
+    name = 'Test'
+
+    def __init__(self):
+        super(UsageTestService, self).__init__()
+
+    def init(self):
+        """ initialize service and connect to dbus object
+        """
+        logger.info('usage test service init')
+        yield None
+
