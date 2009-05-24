@@ -80,3 +80,16 @@ class SoundsService(tichy.Service):
             self.vibra_service.stop()
         except Exception, e:
             logger.info("got error in Stop %s", str(e))
+            
+
+class SoundsTestService(tichy.Service):
+
+    service = 'Sounds'
+    name = 'Test'
+
+    def __init__(self):
+        super(SoundsTestService, self).__init__()
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield None

@@ -104,7 +104,7 @@ class UsageService(tichy.Service):
 class UsageTestService(tichy.Service):
     """The 'Usage' service
 
-    This service can be used to listen to the power signals and control the device power.
+   This service can be used to listen to the power signals and control the device power.
     """
 
     service = 'Usage'
@@ -118,4 +118,3 @@ class UsageTestService(tichy.Service):
         """
         logger.info('usage test service init')
         yield None
-

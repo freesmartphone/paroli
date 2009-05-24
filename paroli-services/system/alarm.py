@@ -172,12 +172,12 @@ class TimeSetting(tichy.Object):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time
         
-class TestAlarmService(tichy.Service):
+class AlarmTestService(tichy.Service):
     service = 'Alarm'
     name = 'Test'
   
     def __init__(self):
-        super(TestAlarmService, self).__init__()
+        super(AlarmTestService, self).__init__()
         self.alarm = None
 
     def init(self):

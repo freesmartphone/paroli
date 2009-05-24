@@ -107,7 +107,7 @@ class FreeSmartPhonePrefs(tichy.Service):
     def __getitem__(self, name):
         return FreeSmartPhonePrefs.Service(self, name)
 
-class TestPrefs(tichy.Service):
+class TestPrefs(PrefsService):
 
     service = 'Prefs'
     name = 'Test'

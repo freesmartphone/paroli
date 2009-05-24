@@ -79,11 +79,8 @@ class PowerService(tichy.Service):
         else: 
             return 50
 
-class PowerTestService(tichy.Service):
-    """The 'Power' service
 
-    This service can be used to listen to the power signals and control the device power.
-    """
+class PowerTestService(tichy.Service):
 
     service = 'Power'
     name = 'Test'
