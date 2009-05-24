@@ -245,3 +245,18 @@ class WifiNetwork(tichy.Object):
         else:
             self.info = self.WiFiSecurity
         self.action = action
+        
+class WifiTestService(tichy.Service):
+    """The 'Wifi' service
+    """
+
+    service = 'Wifi'
+    name = 'Test'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(WifiTestService, self).__init__()
+
+    def init(self):
+        logger.info('wifi service init')
+        yield None
