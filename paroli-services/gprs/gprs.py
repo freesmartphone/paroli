@@ -157,7 +157,7 @@ class GprsService(tichy.Service):
             print e
             print Exception
 
-class GprsService(tichy.Service):
+class GprsTestService(tichy.Service):
     """The 'Gprs' service
     """
 
@@ -165,7 +165,7 @@ class GprsService(tichy.Service):
     name = 'Test'
 
     def __init__(self):
-        super(GprsService, self).__init__()
+        super(GprsTestService, self).__init__()
 
     def init(self):
         yield None
