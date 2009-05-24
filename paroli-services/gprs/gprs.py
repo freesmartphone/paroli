@@ -26,8 +26,6 @@ import tichy
 import logging
 logger = logging.getLogger('gprs')
 
-
-
 class GprsService(tichy.Service):
     """The 'Gprs' service
     """
@@ -158,3 +156,16 @@ class GprsService(tichy.Service):
         except Exception, e:
             print e
             print Exception
+
+class GprsService(tichy.Service):
+    """The 'Gprs' service
+    """
+
+    service = 'Gprs'
+    name = 'Test'
+
+    def __init__(self):
+        super(GprsService, self).__init__()
+
+    def init(self):
+        yield None
