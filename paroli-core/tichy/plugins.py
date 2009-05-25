@@ -49,7 +49,7 @@ def import_single(dir):
         __import__(name)
         logger.info("import %s", dir)
     except ImportError, e:
-        logger.error("can't import %s : %s", dir, e)
+        logger.exception("can't import %s : %s", dir, e)
         raise
     finally:
         sys.path[:] = sys_path

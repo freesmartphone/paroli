@@ -89,7 +89,7 @@ class FSOPrefsServices(tichy.Service):
                 
             profile = tichy.settings.Setting('phone', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profiles(), listenObject=self.prefs, signal="Notify" )
         except Exception, e:
-            logger.warning("can't use freesmartphone Preferences : %s", e)
+            logger.exception("can't use freesmartphone Preferences : %s", e)
             self.prefs = None
 
     def get_profile(self):
@@ -129,6 +129,7 @@ class FallbackPrefsSerices(tichy.Service):
                                 self.name, name, profile)
                     return value
                 except KeyError:
+                    logger.exception("__getitem__: %s", e)
                     pass
             raise KeyError(name)
 

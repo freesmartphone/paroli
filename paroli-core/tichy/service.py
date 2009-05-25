@@ -106,7 +106,7 @@ class Service(Item):
             try:
                 yield service.wait_initialized()
             except Exception, ex:
-                logger.error("service %s failed to init", service.service)
+                logger.exception("service %s failed to init", service.service)
         logger.info("all services have been initialized")
 
     def __init__(self):
@@ -125,7 +125,7 @@ class Service(Item):
             self.initialized = True
             self.emit('initialized')
         except Exception, ex:
-            logger.error("Can't init service %s : %s", self.service, ex)
+            logger.exception("Can't init service %s : %s", self.service, ex)
             dialog = tichy.Service.get('Dialog')
             msg = "can't init service %s : %s"
             yield dialog.error(None, msg, self.service, ex)
@@ -171,14 +171,13 @@ class Service(Item):
         """
         try:
             return Service.__all_services[service]
-        except KeyError:
+        except KeyError, e:
             # This is a hack to allow plugins to require service
             # before they have been initialized. It should be avoided,
             # and so we log a warning in that case.
             if service not in [x.service for x in Service.subclasses]:
                 raise
-            msg = "trying to access service '%s' before call to init"
-            logger.warning(msg, service)
+            logger.exception("trying to access service '%s' before call to init", service)
             cls = [x for x in Service.subclasses if x.service == service]
             # We get the default service if it is set
             if service in Service.__defaults:

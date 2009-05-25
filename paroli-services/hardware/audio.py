@@ -105,7 +105,7 @@ class FSOAudioService(tichy.Service):
             self.audio = dbus.Interface(audio, 'org.freesmartphone.Device.Audio')
 
         except Exception, e:
-            logger.warning("can't use freesmartphone audio : %s", e)
+            logger.exception("can't use freesmartphone audio : %s", e)
             raise tichy.ServiceUnusable
     
     def _do_sth(self):
@@ -162,6 +162,7 @@ class FSOAudioService(tichy.Service):
         try:
             self.audio.PlaySound( filepath, loop, length )
         except dbus.DBusException, e:
+            logger.exception("play: %s", e)
             assert e.get_dbus_name() == "org.freesmartphone.Device.Audio.PlayerError", \
                                             "wrong error returned"
         else:

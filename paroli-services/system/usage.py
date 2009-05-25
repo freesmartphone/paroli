@@ -75,7 +75,7 @@ class FSOUsageService(tichy.Service):
             self.obj = bus.get_object('org.freesmartphone.ousaged', '/org/freesmartphone/Usage')
             self.iface = dbus.Interface(self.obj, 'org.freesmartphone.Usage')
         except Exception, e:
-            logger.warning("can't use fso usage interface service : %s", e)
+            logger.exception("can't use fso usage interface service : %s", e)
             
     #@tichy.tasklet.tasklet
     def occupy_cpu(self):
@@ -97,8 +97,8 @@ class FSOUsageService(tichy.Service):
                         yield WaitDBus(self.iface.RequestResource,resource)
                         logger.debug("requested resource %s", str(resource))
                         self.flags[resource] = True
-                    except Ex, e:
-                        logger.info ("%s %s", str(Ex), str(e))
+                    except Exception, e:
+                        logger.exception ("%s %s", str(Exception), str(e))
                 else:
                     logger.debug("not requesting resource %s as it has been already requested", str(resource) )
         yield None
@@ -115,8 +115,8 @@ class FSOUsageService(tichy.Service):
                         yield WaitDBus(self.iface.ReleaseResource,resource)
                         logger.debug("released resource %s", str(resource))
                         self.flags[resource] = False
-                    except Ex, e:
-                        logger.info ("%s %s", str(Ex), str(e))
+                    except Exception, e:
+                        logger.exception ("%s %s", str(Exception), str(e))
                 else:
                     logger.debug("not releasing resource %s as it has been already released", str(resource) )
         yield None

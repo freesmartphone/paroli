@@ -346,7 +346,7 @@ class elm_list(tichy.Object):
               try:
                   self.model.disconnect(i)
               except Exception, e:
-                  logger.debug("ooops wrong oid")
+                  logger.exception("ooops wrong oid")
       
       def _modified(self, *args, **kargs):
           logger.info('scrolled')

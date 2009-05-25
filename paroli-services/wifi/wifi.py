@@ -100,7 +100,7 @@ class FSOWifiService(tichy.Service):
             self.connect("closing", self.closing)
             
         except Exception, e:
-            logger.warning("can't use wifi service : %s", e)
+            logger.exception("can't use wifi service : %s", e)
             raise
             
     def closing(self, *args, **kargs):

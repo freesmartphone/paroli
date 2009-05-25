@@ -67,7 +67,7 @@ class FSOVibratorService(tichy.Service):
             self.vibrator = dbus.Interface(vibrator, 'org.freesmartphone.Device.LED')
 
         except Exception, e:
-            logger.warning("can't use freesmartphone vibrator : %s", e)
+            logger.exception("can't use freesmartphone vibrator : %s", e)
 
     def IncomingSMS(self):
         logger.info("starting vibrator for incoming SMS")

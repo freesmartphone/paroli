@@ -113,7 +113,7 @@ class FSOSMSService(tichy.Service):
             self.ReportSetting = tichy.settings.Setting('Messages', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
             
         except Exception, e:
-            logger.error("can't use freesmartphone SMS : %s", e)
+            logger.exception("can't use freesmartphone SMS : %s", e)
             self.sim_iface = None
         yield None
 
@@ -149,7 +149,7 @@ class FSOSMSService(tichy.Service):
                                           str(sms.peer), unicode(sms.text),
                                           properties)
         except Exception, e:
-            logger.info ("%s %s", str(Exception), str(e))
+            logger.exception ("%s %s", str(Exception), str(e))
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)
 

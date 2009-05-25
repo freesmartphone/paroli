@@ -152,7 +152,7 @@ class PhoneMessage(Message):
                 message = PhoneMessage(**kargs)
                 ret.append(message)
             except Exception, ex:
-                logger.error("can't create message : %s", ex)
+                logger.exception("can't create message : %s", ex)
         yield ret
         
     def __get_number(self):
@@ -222,7 +222,7 @@ class FallbackMessagesService(tichy.Service):
                             cls.storage)
                 all_messages += messages
             except Exception, ex:
-                logger.warning("can't get messages : %s", ex)
+                logger.exception("can't get messages : %s", ex)
                 continue
             assert all(isinstance(x, Message) for x in messages)
         self.messages[:] = all_messages

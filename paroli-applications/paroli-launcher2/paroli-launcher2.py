@@ -331,7 +331,7 @@ class Launcher_App2(tichy.Application):
             alarm_file = args[0]
             self.audio_service.play(alarm_file)
         except Exception, ex:
-            logger.info( "Play alarm audio %s exception: %s", alarm_file, ex )
+            logger.exception( "Play alarm audio %s exception: %s", alarm_file, ex )
 
     def adjust_time(self, *args, **kargs):
         edje = args[2]
@@ -518,7 +518,8 @@ class TopBar(tichy.Service):
         try:
             self.tb_list.remove(args[0])
         except Exception,e:
-            dir(e)
+            logger.exception("tb_deleted: %s", e)
+            logger.debug("%s", dir(e))
 
     def network_strength(self, *args, **kargs):
         logger.info("network strength %s", str(args[1]))

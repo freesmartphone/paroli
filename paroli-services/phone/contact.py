@@ -198,7 +198,7 @@ class Contact(tichy.Item):
             contact = yield cls.import_(self)
             tichy.Service.get('Contacts').add(contact)
         except Exception, ex:
-            logger.error("can't import contact : %s", ex)
+            logger.exception("can't import contact : %s", ex)
             yield tichy.Dialog(view.window, "Error",
                                "can't import the contact")
 
@@ -312,7 +312,7 @@ class FallbackContactsService(tichy.Service):
                 logger.info("Got %d contacts from %s", len(contacts),
                             cls.storage)
             except Exception, ex:
-                logger.warning("can't get contacts : %s", ex)
+                logger.exception("can't get contacts : %s", ex)
                 continue
             assert all(isinstance(x, Contact) for x in contacts)
             all_contacts.extend(contacts)

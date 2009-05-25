@@ -149,7 +149,7 @@ class MsgsApp2(tichy.Application):
             messages_service = tichy.Service.get('Messages')
             messages_service.remove(message).start()
         except Exception, ex:
-            logger.error("Got error %s", str(ex))
+            logger.exception("Got error %s", str(ex))
         else:
             layout.delete()
             self.window.restore_orig()
@@ -393,10 +393,10 @@ class MsgsWrite(tichy.Application):
             yield message.send()
             yield dialog.dialog(None, "Report", "Message sent to %s", unicode(sms.peer).encode("utf-8"))
         except Exception,e:
+            logger.exception("Got error %s", e)
             message.status = 'unsent'
             message_service.add(message)
             yield dialog.dialog(None, "MSgs Error", "unable to send message, saved as draft Error was %s", e)
-            logger.error("Got error %s", e)
     
     def callback(self, *args, **kargs):
         logger.debug('callback %s %s', args, kargs)

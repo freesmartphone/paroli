@@ -79,7 +79,7 @@ class FSOPowerService(tichy.Service):
             self.battery.connect_to_signal('Capacity', self._on_capacity_change)
             self.battery.connect_to_signal('PowerStatus', self._on_status_change) 
         except Exception, e:
-            logger.warning("can't use freesmartphone power service : %s", e)
+            logger.exception("can't use freesmartphone power service : %s", e)
         else:
             self._on_capacity_change(self.battery.GetCapacity())
             self.battery_capacity = self.battery.GetCapacity()

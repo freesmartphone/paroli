@@ -186,7 +186,7 @@ class TeleCaller2(tichy.Application):
                 try:
                     self.SoundsService.call()
                 except Exception,e:
-                    logger.info("%s %s", str(Exception), str(e))
+                    logger.exception("%s %s", str(Exception), str(e))
                 self.main.window.connect("close",call.release().start)
                 self.storage.call = call
                 self.main.emit('call_active')
@@ -245,6 +245,7 @@ class TeleCaller2(tichy.Application):
                     try:
                         call.release().start()
                     except Exception, e:
+                        logger.exception('TeleCaller2')
                         self.main.emit('call_error')
 
                 self.edje_obj.signal_callback_add("release", "call", call_release)
@@ -258,10 +259,11 @@ class TeleCaller2(tichy.Application):
                         call.release().start()
                         yield tichy.Wait(call, 'released')
                     except Exception, e:
+                        logger.exception('TeleCaller2')
                         self.main.emit('call_error')
                 except Exception, e:
+                    logger.exception("Got error in caller : %s", e)
                     self.SoundsService.Stop()
-                    logger.error("Got error in caller : %s", e)
                     
             
             #logger.info("releasing cpu")
@@ -280,7 +282,7 @@ class TeleCaller2(tichy.Application):
                     self.main.delete()
             self.storage.window = None
         except Exception, e:
-            logger.error("Got error in caller : %s", e)
+            logger.exception("Got error in caller : %s", e)
             self.SoundsService.Stop()
             if self.main.window.elm_obj.is_deleted() == False:
                 if layout:
@@ -326,8 +328,7 @@ class TeleCaller2(tichy.Application):
             self.TopBarService.volume_change(str(new))
             logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
         except Exception, e:
-            logger.info(str(Exception))
-            logger.info(str(e))
+            logger.exception('%s %s', str(Exception), str(e))
 
     def gui_signals(self,emission, source, param):
         pass

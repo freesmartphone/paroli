@@ -55,7 +55,7 @@ class Persistance(object):
         try:
             return open(path, mod)
         except IOError, ex:
-            logger.warning("can't open file : %s", ex)
+            logger.exception("can't open file : %s", ex)
             raise
 
     def save(self, data):
@@ -81,7 +81,8 @@ class Persistance(object):
         
         try:
             file = self._open()
-        except IOError, ex:
+        except IOError, e:
+            logger.exception('%s %s', str(IOError), str(e))
             return None
 
         # Try to load it as a pickle first

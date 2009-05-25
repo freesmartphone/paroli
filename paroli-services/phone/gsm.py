@@ -122,10 +122,10 @@ class GSMService(tichy.Service):
             try:
                 yield sim.send_pin(pin)
                 break
-            except sim.PINError:
+            except sim.PINError, e:
                 if i == 4: # after 3 times we give up
                     raise
-                logger.info("pin wrong : %s", pin)
+                logger.exception("pin wrong : %s", e)
 
     def update_missed_call_count(self):
         count = 0
@@ -242,7 +242,7 @@ class FSOGSMService(GSMService):
             ##network selection end
             
         except Exception, ex:
-            logger.error("Error : %s", ex)
+            logger.exception("Error : %s", ex)
             raise
         
         try:
@@ -252,7 +252,7 @@ class FSOGSMService(GSMService):
             logger.info("got config service")
         
         except Exception, ex:
-            logger.error("Error in try retrieving config service : %s", ex)
+            logger.exception("Error in try retrieving config service : %s", ex)
         
         try:
             
@@ -262,7 +262,7 @@ class FSOGSMService(GSMService):
             logger.info("realized values is none")
 
         except Exception, ex:
-            logger.error("Error in try call forwarding setting : %s", ex)
+            logger.exception("Error in try call forwarding setting : %s", ex)
             
             
         try:
@@ -273,7 +273,7 @@ class FSOGSMService(GSMService):
             
         
         except Exception, ex:
-            logger.error("Error in try call forwarding setting list : %s", ex)
+            logger.exception("Error in try call forwarding setting list : %s", ex)
             
             
         try:
@@ -288,7 +288,7 @@ class FSOGSMService(GSMService):
             
         
         except Exception, ex:
-            logger.error("Error in try Error in try call forwarding setting : %s", ex)
+            logger.exception("Error in try Error in try call forwarding setting : %s", ex)
             
         try:
 
@@ -297,7 +297,7 @@ class FSOGSMService(GSMService):
             ##call identifaction setting stop
         
         except Exception, ex:
-            logger.error("Error in network identification setting: %s", ex)
+            logger.exception("Error in network identification setting: %s", ex)
             
         try:    
             ##network selection etc begin
@@ -305,7 +305,7 @@ class FSOGSMService(GSMService):
             
         
         except Exception, ex:
-            logger.error("Error in network registration setting : %s", ex)
+            logger.exception("Error in network registration setting : %s", ex)
             
             
         try:
@@ -317,7 +317,7 @@ class FSOGSMService(GSMService):
             self.scan_setting = tichy.settings.ListSetting('Network', 'List', tichy.Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
         
         except Exception, ex:
-            logger.error("Error in network list setting : %s", ex)
+            logger.exception("Error in network list setting : %s", ex)
             #raise
         
     def _turn_on(self):
@@ -334,9 +334,10 @@ class FSOGSMService(GSMService):
         logger.info("turn on antenna power")
         try:
             yield WaitDBus(self.gsm_device.SetAntennaPower, True)
-        except dbus.exceptions.DBusException, ex:
-            if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
+        except dbus.exceptions.DBusException, e:
+            if e.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
                 raise
+            logger.exception("_turn_on %s", str(e))
             yield self._ask_pin()
 
     def _on_call_status(self, call_id, status, properties):
@@ -514,8 +515,8 @@ class FSOGSMService(GSMService):
                   else:
                       yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
               except Exception, e:
-                  yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
                   logger.exception('ToggleForwarding')
+                  yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
                   
         else:
             self.gsm_network.DisableCallForwarding( reason )
@@ -759,10 +760,10 @@ class FallbackGSMService(GSMService):
             try:
                 yield sim.send_pin(pin)
                 break
-            except sim.PINError:
+            except sim.PINError, e:
                 if i == 4: # after 3 times we give up
                     raise
-                logger.info("pin wrong : %s", pin)
+                logger.exception("pin wrong : %s", e)
 
     def get_provider(self):
         return 'Charlie Telecom'

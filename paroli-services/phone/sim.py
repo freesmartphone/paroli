@@ -68,7 +68,7 @@ def retry_on_sim_busy(method, *args):
         except dbus.exceptions.DBusException, ex:
             if not is_busy_error(ex): # This is an other error
                 raise
-            logger.info("sim busy, retry in 5 seconds")
+            logger.exception("sim busy, retry in 5 seconds")
             yield WaitFirst(Sleep(5),
                             WaitDBusSignal(gsm_sim, 'ReadyStatus'))
             continue
@@ -130,7 +130,7 @@ class FSOSIMService(tichy.Service):
                                           'org.freesmartphone.GSM.SIM')
             
         except Exception, e:
-            logger.warning("can't use freesmartphone SIM : %s", e)
+            logger.exception("can't use freesmartphone SIM : %s", e)
             self.gsm = None
 
         self.indexes = {}       # map sim_index -> contact
@@ -152,7 +152,7 @@ class FSOSIMService(tichy.Service):
             self.ChangePinSetting = tichy.settings.ToggleSetting('SIM', 'Change PIN', tichy.Text, value="",setter=self.ChangeAuthCode)
             ##pin setting stop  
         except Exception, ex:
-            logger.error("Error : %s", ex)
+            logger.exception("Error : %s", ex)
             raise
             
         #logger.info("message center is %s", str(msg_center))
@@ -251,6 +251,7 @@ class FSOSIMService(tichy.Service):
         except dbus.exceptions.DBusException, ex:
             if ex.get_dbus_name() not in ['org.freesmartphone.GSM.SIM.AuthFailed', 'org.freesmartphone.GSM.SIM.InvalidIndex']:
                 raise
+            logger.exception("send_pin : %s", ex)
             raise PINError(pin)
 
     def GetAuthRequired(self):
@@ -276,6 +277,7 @@ class FSOSIMService(tichy.Service):
             self.gsm_sim.SetAuthCodeRequired(not(current),  pin)
         
         except Exception,  e:
+            logger.exception('SetAuthCodeRequired')
             dialog = tichy.Service.get("Dialog")
             yield dialog.dialog(None,  "Error",  str(e),  Exception)
         
@@ -298,6 +300,7 @@ class FSOSIMService(tichy.Service):
             self.gsm_sim.ChangeAuthCode(old_pin,  new_pin)
         
         except Exception,  e:
+            logger.exception('ChangeAuthCode')
             dialog = tichy.Service.get("Dialog")
             yield dialog.dialog(None,  "Error",  str(e),  Exception)
         

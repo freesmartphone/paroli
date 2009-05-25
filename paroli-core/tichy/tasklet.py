@@ -146,11 +146,11 @@ class Tasklet(object):
         assert self.closed == False, "Trying to send to a closed tasklet"
         try:
             value = self.generator.send(value)
-        except StopIteration:
+        except StopIteration, e:
             # We don't propagate StopIteration
             self.close()
             value = None
-        except Exception:
+        except Exception, e:
             # Make sure we free the memory
             self.close()
             self.err_callback(*sys.exc_info())
@@ -161,11 +161,13 @@ class Tasklet(object):
         """Throw an exeption into the tasklet generator"""
         try:
             value = self.generator.throw(type, value, traceback)
-        except StopIteration:
+        except StopIteration, e:
+            logger.exception("throw: %s", e)
             # We don't propagate StopIteration
             self.close()
             value = None
-        except Exception:
+        except Exception, e:
+            logger.exception("throw: %s", e)
             self.err_callback(*sys.exc_info())
             # Make sure we free the memory
             self.close()
@@ -224,7 +226,8 @@ class Wait(Tasklet):
         # We can finally call our real callback
         try:
             self.callback(*args)
-        except Exception:
+        except Exception, e:
+            logger.exception("_callback: %s", e)
             self.err_callback(*sys.exc_info())
 
         # We give a hint to the garbage collector
@@ -417,7 +420,8 @@ class Producer(Tasklet):
         # possible return and exception from the generator function
         try:
             value = self.generator.send(value)
-        except Exception:
+        except Exception, e:
+            logger.exception("send: %s", e)
             self.close()
             self.err_callback(*sys.exc_info())
             return
@@ -427,7 +431,8 @@ class Producer(Tasklet):
         """Throw an exeption into the tasklet generator"""
         try:
             value = self.generator.throw(type, value, traceback)
-        except Exception:
+        except Exception, e:
+            logger.exception("throw: %s", e)
             self.close()
             self.err_callback(*sys.exc_info())
             return

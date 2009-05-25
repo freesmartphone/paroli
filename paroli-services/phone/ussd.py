@@ -60,7 +60,7 @@ class FSOUssdService(tichy.Service):
             self.input_intf = dbus.Interface(input_dev, 'org.freesmartphone.GSM.Network')
             self.input_intf.connect_to_signal('IncomingUssd', self._on_incoming_ussd)
         except Exception, e:
-            logger.warning("can't use freesmartphone ussd service : %s", e)
+            logger.exception("can't use freesmartphone ussd service : %s", e)
             self.input_intf = None
             
     def _on_incoming_ussd(self, *args, **kargs):
@@ -72,7 +72,7 @@ class FSOUssdService(tichy.Service):
             try:
                 self.input_intf.SendUssdRequest(s)
             except Exception, e:
-                logger.info("error in ussd: %s", e)
+                logger.exception("error in ussd: %s", e)
         else:
             logger.info("unable to send ussd request")
 

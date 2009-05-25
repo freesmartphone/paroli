@@ -65,7 +65,7 @@ class FSOIdleNotifierService(tichy.Service):
             #self.iface.connect_to_signal("State", self.dim)
             
         except Exception, e:
-            logger.warning("can't use freesmartphone IdleNotifier service : %s", e)
+            logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
 
     def dim(self, *args, **kargs):
         logger.debug('dim %s', str(args))

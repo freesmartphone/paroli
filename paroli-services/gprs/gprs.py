@@ -70,7 +70,7 @@ class FSOGprsService(tichy.Service):
             self.iface.connect_to_signal("NetworkStatus", self.status_change)
             self.iface.connect_to_signal("ContextStatus", self.context_status_change)
         except Exception, e:
-            logger.warning("can't use freesmartphone gprs service : %s", e)
+            logger.exception("can't use freesmartphone gprs service : %s", e)
             raise
             
             self.pdp_id = None

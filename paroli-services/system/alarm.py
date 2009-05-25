@@ -56,7 +56,7 @@ class Slot(dbus.service.Object):
             self.AlarmService.ring()
             
         except Exception, ex:
-            logger.info( "Alarm except %s", ex )
+            logger.exception( "Alarm except %s", ex )
 
 
 class FSOAlarmService(tichy.Service):
@@ -107,7 +107,7 @@ class FSOAlarmService(tichy.Service):
             self.AlarmList.connect('save', self.UpdateAlarmTime)
             
         except Exception, e:
-            logger.warning("can't use freesmartphone Alarm service : %s", e)
+            logger.exception("can't use freesmartphone Alarm service : %s", e)
 
     @tichy.tasklet.tasklet
     def SetAlarm(self, val):
@@ -141,7 +141,7 @@ class FSOAlarmService(tichy.Service):
         try:
             yield WaitDBus( self.alarm.ClearAlarm, 'org.tichy.notification')
         except Exception, ex:
-            logger.error("Exception : %s", ex)
+            logger.exception("Exception : %s", ex)
             raise
 
     @tichy.tasklet.tasklet
@@ -151,7 +151,7 @@ class FSOAlarmService(tichy.Service):
             logger.debug('set_action %s %s', func, args, )
             yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(ttime.value) )
         except Exception, ex:
-            logger.error("Exception : %s", ex)
+            logger.exception("Exception : %s", ex)
             raise
 
     def ring(self, *args):

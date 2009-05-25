@@ -73,7 +73,7 @@ class FSOButtonService(tichy.Service):
             self.input_intf = dbus.Interface(input_dev, 'org.freesmartphone.Device.Input')
             self.input_intf.connect_to_signal('Event', self._on_button_press)
         except Exception, e:
-            logger.warning("can't use freesmartphone button service : %s", e)
+            logger.exception("can't use freesmartphone button service : %s", e)
             self.input_intf = None
             
     def _on_button_press(self, name, action, seconds):

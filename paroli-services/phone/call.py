@@ -118,6 +118,7 @@ class Call(tichy.Item):
         try:
             yield gsm_service._release(self)
         except Exception, e:
+            logger.exception('released')
             #XXX should the call get a 
             #logger.debug('call error')
             self.emit("error", e)

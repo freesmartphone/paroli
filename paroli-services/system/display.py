@@ -66,7 +66,7 @@ class FSODisplayService(tichy.Service):
             self.Brightness = tichy.settings.Setting('display', 'Brightness', tichy.Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
 
         except Exception, e:
-            logger.warning("can't use e dbus interface service : %s", e)
+            logger.exception("can't use e dbus interface service : %s", e)
         else:
             if not self.theme:
                 self.theme = tichy.settings.Setting('display', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profile_list())

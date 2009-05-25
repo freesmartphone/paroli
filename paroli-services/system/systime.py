@@ -78,7 +78,7 @@ class FSOSysTimeService(tichy.Service):
             self.ValueList.connect('save', self.UpdateSystemTime)
             
         except Exception, e:
-            logger.warning("can't use freesmartphone RealTimeClock service : %s", e)
+            logger.exception("can't use freesmartphone RealTimeClock service : %s", e)
 
     def test(self, *args, **kargs):
         logger.info("test called")
@@ -121,7 +121,7 @@ class FSOSysTimeService(tichy.Service):
             os.system(timeSetCmd)
             yield WaitDBus(self.rtc.SetCurrentTime, int(ttime.value) )
         except Exception, ex:
-            logger.error("Exception : %s", ex)
+            logger.exception("Exception : %s", ex)
             raise
 
 class TimeSetting(tichy.Object):

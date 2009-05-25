@@ -55,7 +55,7 @@ class FallbackConfigService(tichy.Service):
         try:
             return open(compl_path, mod)
         except IOError, ex:
-            logger.warning("can't open file : %s", ex)
+            logger.exception("can't open file : %s", ex)
             raise
 
     def _read(self, path=None):
@@ -63,7 +63,8 @@ class FallbackConfigService(tichy.Service):
             compl_path = path or self.path
             file = self._open(compl_path)
             return self.parser.readfp(file)
-        except IOError, ex:
+        except IOError, e:
+            logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
             return None
             raise
     
@@ -84,7 +85,7 @@ class FallbackConfigService(tichy.Service):
             return ret
             
         except Exception, e:
-            logger.warning("can't get item : %s", e)
+            logger.exception("can't get item : %s", e)
         
     def set_item(self, section, option, value, path=False):
         #if path:
@@ -103,6 +104,6 @@ class FallbackConfigService(tichy.Service):
             self.main_cfg.write(file)
             file.close()
         except Exception, e:
-            logger.warning("can't set item : %s", e)
+            logger.exception("can't set item : %s", e)
         #self.main_cfg = self._read()
         logger.debug('set_item %s', self.main_cfg.sections())
