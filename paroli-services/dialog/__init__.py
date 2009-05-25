@@ -1,1 +1,1 @@
-dialog.py
+import dialog
