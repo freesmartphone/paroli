@@ -1,5 +1,6 @@
 #!/bin/sh
-
-export DISPLAY=:0
 cd /usr/share/nfs-paroli/paroli-scripts/
-python paroli --cfgfile ./paroli.cfg 
+
+DISPLAY=:0 \
+PYTHONPATH=../paroli-services \
+python paroli --cfgfile ./paroli.cfg
