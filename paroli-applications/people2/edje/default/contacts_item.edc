@@ -155,6 +155,12 @@ group { name: "item";
                inherit:"default" 0.0;
                color:255 255 255 180;
             }
+            description
+            { 
+               state: "highlighted" 0.0;
+               inherit:"default" 0.0;
+               color:255 255 255 255;
+            }
          
            description
            { 
@@ -315,12 +321,33 @@ group { name: "item";
             source: "move_button";
             script{
                 if (get_int(drag_value) != 1){
-                  emit( "contact_details", "contacts");
+                  run_program(PROGRAM:"clickable-pressed-part-two")
                 }
                 set_int(drag_value,0);
             }
         }
-        
+        program{
+            name: "clickable-pressed-part-two";
+            action: STATE_SET "highlighted" 0.0;
+            transition: LINEAR 0.15;
+            target: "label";
+            target: "effect-rect";
+            after: "clickable-pressed-part-three";
+        }
+        program{
+            name: "clickable-pressed-part-three";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.15;
+            target: "label";
+            target: "effect-rect";
+            after: "clickable-pressed-part-four";
+        }
+        program{
+            name: "clickable-pressed-part-four";
+            script{
+                emit( "contact_details", "contacts");
+            }
+        }
         program{
             name:"effect-rect";
             signal: "mouse,clicked,1";
