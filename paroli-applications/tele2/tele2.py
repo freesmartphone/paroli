@@ -70,7 +70,7 @@ class TeleApp(tichy.Application):
         try:
             logger.info("test called with %s and %s", args, kargs)
         except Exception, e:
-            print e
+            logger.exception('test')
 
     ## CALL FUNCTIONS
     ## call from numpad

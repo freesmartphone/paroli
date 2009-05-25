@@ -106,7 +106,7 @@ class I_O2_App(tichy.Application):
             if self.item_list.items[i][1].part_text_get("delete-flag") == "1":
                 deleting.append(self.item_list.items[i][0])
             else:
-                print self.item_list.items[i][1].part_text_get("delete-flag")
+                logger.debug('to_default_mode %s', self.item_list.items[i][1].part_text_get("delete-flag"))
         
         deleting.reverse()
         
@@ -133,5 +133,4 @@ class I_O2_App(tichy.Application):
         service.create(self.window, callLog[0].number).start()
 
     def printer(self, *args, **kargs):
-        print args
-        print kargs
+        logger.debug('printer %s %s', args, kargs)

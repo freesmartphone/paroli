@@ -69,7 +69,7 @@ class FreeSmartPhonePrefs(tichy.Service):
 
         def __setitem__(self, key, value):
             self.iface.SetValue(key, value)
-            print self.iface.GetValue(key)
+            logger.debug('__setitem__ %s', self.iface.GetValue(key))
 
     @tichy.tasklet.tasklet
     def init(self):

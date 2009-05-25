@@ -146,8 +146,7 @@ class FreeSmartPhoneAlarmService(tichy.Service):
     def set_alarm(self, ttime, func, *args):
         try:
             self.slot.set_action(func, *args)
-            print func
-            print args
+            logger.debug('set_action %s %s', func, args, )
             yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(ttime.value) )
         except Exception, ex:
             logger.error("Exception : %s", ex)

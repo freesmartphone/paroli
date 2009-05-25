@@ -227,11 +227,11 @@ if __name__ == '__main__':
     logging.basicConfig()
 
     def set_volume(value):
-        print "set volume to %s" % value
+        logger.debug( "set volume to %s", value)
         yield None
 
     def on_volume_modified(value):
-        print "volume changed to %d" % value
+        logger.debug( "volume changed to %d", value)
 
     @tichy.tasklet.tasklet
     def my_task():
@@ -241,7 +241,7 @@ if __name__ == '__main__':
         # volume.connect('modified', on_volume_modified)
         yield volume.set(10)
         assert volume.value == 10
-        print "Done"
+        logger.debug("Done")
 
     my_task().start()
 

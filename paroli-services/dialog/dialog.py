@@ -96,8 +96,7 @@ class Dialog(tichy.Application):
 
     def _on_clicked(self, *args):
         self.val = args[0].name_get()
-        print self.val
-        print args[0]
+        logger.debug('_on_clicked %s %s', self.val, args[0], )
         self.emit('done')
 
     def _on_ok_clicked(self, *args):

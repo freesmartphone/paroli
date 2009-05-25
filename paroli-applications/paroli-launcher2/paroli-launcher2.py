@@ -126,7 +126,7 @@ class Launcher_App2(tichy.Application):
         
         self.dialog = tichy.Service.get("Dialog")
         keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
-        print "keep_alive", keep_alive
+        logger.debug("keep_alive %s", keep_alive)
         #self._remove_link_signals()
         
         if keep_alive == "no":

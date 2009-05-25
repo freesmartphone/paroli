@@ -68,16 +68,14 @@ class GprsService(tichy.Service):
                 try:
                     self.iface.ActivateContext(values["apn"], values["user"], values["pwd"])
                 except Exception, e:
-                    print e
-                    print Exception
+                    logger.exception('activate')
             
     def deactivate(self):
         if self.iface.NetworkStatus()["registration"] != 'unregistered':
             try:
                 self.iface.DeactivateContext()
             except Exception, e:
-                print e
-                print Exception
+                logger.exception('deactivate')
     
     def context_status_change(self, index, status, properties=False):
         try:
@@ -154,8 +152,7 @@ class GprsService(tichy.Service):
         try:
             self.config_service.set_item('PDP', param, value)
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('set_param')
 
 class GprsTestService(tichy.Service):
     """The 'Gprs' service

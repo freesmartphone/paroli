@@ -220,7 +220,7 @@ if __name__ == '__main__':
     plugins_dir = tichy.config.get('plugins', 'path', default_plugins_path)
     plugins_dirs = plugins_dir.split(':')
     for plugins_dir in plugins_dirs:
-        print plugins_dir
+        logger.debug('plugins_dir: %s', plugins_dir)
         try:
             logger.info("try to load plugins in %s", plugins_dir)
             tichy.plugins.import_all(plugins_dir)

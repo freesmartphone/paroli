@@ -142,8 +142,7 @@ class FreeSmartPhoneSim(tichy.Service):
         try:
             msg_center = tichy.settings.NumberSetting('Messages', 'Service Center', tichy.Text, value=self.gsm_sim.GetServiceCenterNumber(), setter=self.SetServiceCenterNumber)
         except Exception, e:
-            print Exception
-            print e
+            logger.exception('init')
         
         try:
             ##pin setting start

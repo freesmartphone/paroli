@@ -105,7 +105,7 @@ class GSMService(tichy.Service):
         # TODO: add some checks for data consistency
         logs = []
         for kargs in data:
-            #print kargs
+            logger.debug('_load_logs %s', kargs)
             call = Call(**kargs)
             logs.append(call)
         self.logs[:] = logs
@@ -514,8 +514,7 @@ class FreeSmartPhoneGSM(GSMService):
                       yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
               except Exception, e:
                   yield tichy.Service.get('Dialog').dialog("window", 'Error', str(e))
-                  print e
-                  print Exception
+                  logger.exception('ToggleForwarding')
                   
         else:
             self.gsm_network.DisableCallForwarding( reason )
@@ -539,14 +538,14 @@ class FreeSmartPhoneGSM(GSMService):
     
     @tichy.tasklet.tasklet
     def ForwardingSetNumber(self, *args, **kargs):
-        print "here are the args ", args
+        logger.debug("here are the args %s", args)
         value = "%s,%s,%s" % (self.ForwardingGet('class'), str(args[0]), self.ForwardingGet('timeout'))
         self.set_param(value)
         yield value
     
     @tichy.tasklet.tasklet
     def ForwardingSetTimeout(self, *args, **kargs):
-        print "here are the args ", args
+        logger.debug("here are the args %s", args)
         value = "%s,%s,%s" % (self.ForwardingGet('class'), self.ForwardingGet('number'), str(args[0]))
         self.set_param(value)
         yield value
@@ -558,8 +557,7 @@ class FreeSmartPhoneGSM(GSMService):
             self.values = self.config_service.get_items("call_forwarding")
             if self.values != None: self.values = dict(self.values)
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('set_param')
     
     def ForwardingGet(self, cat, reason=False):
         if reason:
@@ -596,7 +594,7 @@ class Provider(tichy.Object):
     def __init__(self, obj, action):
         self.Pid = obj[0]
         self.status = obj[1]
-        print self.status
+        logger.debug('__init__ %s', self.status)
         self.name = obj[2]
         self.abbr = obj[3]
         self.NetworkType = obj[4]
@@ -647,21 +645,21 @@ class TestGsm(GSMService):
     
     @tichy.tasklet.tasklet
     def ForwardingSetClass(self, *args, **kargs):
-        #print "here are the args ", args
+        logger.debug("here are the args %s", args)
         value = "%s,%s,%s" % (str(args[0]), self.ForwardingGet('number'), self.ForwardingGet('timeout'))
         self.set_param(value)
         yield value
     
     @tichy.tasklet.tasklet
     def ForwardingSetNumber(self, *args, **kargs):
-        print "here are the args ", args
+        logger.debug("here are the args %s", args)
         value = "%s,%s,%s" % (self.ForwardingGet('class'), str(args[0]), self.ForwardingGet('timeout'))
         self.set_param(value)
         yield value
     
     @tichy.tasklet.tasklet
     def ForwardingSetTimeout(self, *args, **kargs):
-        print "here are the args ", args
+        logger.debug("here are the args %s", args)
         value = "%s,%s,%s" % (self.ForwardingGet('class'), self.ForwardingGet('number'), str(args[0]))
         self.set_param(value)
         yield value
@@ -673,8 +671,7 @@ class TestGsm(GSMService):
             self.values = self.config_service.get_items("call_forwarding")
             if self.values != None: self.values = dict(self.values)
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('set_param')
     
     def ForwardingGet(self, cat, reason=False):
         if reason:

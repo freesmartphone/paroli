@@ -95,15 +95,15 @@ class elm_window(tichy.Object):
         self.emit("closing")
         
     def info(self, *args, **kargs):
-        print self.elm_obj.size_get()
+        logger.debug('info %s', self.elm_obj.size_get())
         layer = self.elm_obj.layer_get()
-        print layer
+        logger.debug('%s', layer)
         if self.elm_obj.size_get() != self.size:
             if self.size[0] == 1:
                 self.size = self.elm_obj.size_get()
             else:
                 self.elm_obj.layer_set(layer-1)
-                print self.elm_obj.layer_get()
+                logger.debug('%s', self.elm_obj.layer_get())
                 self.elm_obj.resize(self.size[0],self.size[1])
         
         
@@ -117,7 +117,7 @@ class elm_layout(tichy.Object):
         
     def relay(self, emission, signal, source):
         logger.info("%s relaying %s", str(self), str(signal))
-        print type(signal)
+        logger.debug('relay %s', type(signal))
         self.emit(signal)
     
     def add(self, part, element):
@@ -186,7 +186,7 @@ class elm_layout_window(tichy.Object):
         self.window.elm_obj.delete()
         
     def printer(self, *args, **kargs):
-        print args
+        logger.debug('printer %s', args)
         
     def restore_orig(self, *args, **kargs):
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)

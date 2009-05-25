@@ -288,7 +288,7 @@ class CreateContact(tichy.Application):
                   i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
               
                   if i == 0: #back
-                      print "breaking"
+                      logger.debug( "breaking")
                       break
                       
                   if i == 1: #next
@@ -380,13 +380,10 @@ class CreateContact(tichy.Application):
           yield ret
           
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('run')
     
     def callback(self, *args, **kargs):
-        print args
-        print kargs
+        logger.debug('callback %s %s', args, kargs)
     
     def err_callback(self, *args, **kargs):
-        print args
-        print kargs
+        logger.debug('callback %s %s', args, kargs)

@@ -154,7 +154,7 @@ class FreeSmartPhoneSMS(tichy.Service):
 
     def on_incoming_unstored_message(self, *args, **kargs):
         logger.info("incoming unstored message")
-        print args
+        logger.debug('on_incoming_unstored_message %s', args)
         self._on_incoming_unstored_message(args).start()
 
     @tichy.tasklet.tasklet
@@ -224,8 +224,7 @@ class FreeSmartPhoneSMS(tichy.Service):
         try:
             self.config_service.set_item('Messages', 'DeliveryReport', value)
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('SetDeliveryReport')
           
 class TestSms(tichy.Service):
 
@@ -284,5 +283,4 @@ class TestSms(tichy.Service):
         try:
             self.config_service.set_item('Messages', 'DeliveryReport', value)
         except Exception, e:
-            print e
-            print Exception
+            logger.exception('SetDeliveryReport')

@@ -103,4 +103,4 @@ class ConfigService(tichy.Service):
         except Exception, e:
             logger.warning("can't set item : %s", e)
         #self.main_cfg = self._read()
-        #print self.main_cfg.sections()
+        logger.debug('set_item %s', self.main_cfg.sections())
