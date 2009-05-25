@@ -72,7 +72,7 @@ class FSOAudio(tichy.Service):
         pass
         
     def get_mic_status(self):
-        logging.info("retriving mic status")
+        logger.info("retriving mic status")
         return self.device.GetMicrophoneMuted()
         
     def set_mic_status(self, val):
@@ -80,11 +80,11 @@ class FSOAudio(tichy.Service):
             self.device.SetMicrophoneMuted(val)
     
     def get_speaker_volume(self):
-        logging.info("retriving speaker status")
+        logger.info("retriving speaker status")
         return self.device.GetSpeakerVolume()
         
     def set_speaker_volume(self, val):
-        logging.info("set speaker vol called")
+        logger.info("set speaker vol called")
         if self.muted != 1:
             self.device.SetSpeakerVolume(int(val))
             logger.info("set volume to %d", self.get_speaker_volume())
