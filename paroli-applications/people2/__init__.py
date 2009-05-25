@@ -30,7 +30,7 @@ import ecore
 import ecore.evas
 
 from tichy.tasklet import WaitFirst, Wait
-from sim import SIMContact
+from phone.sim import SIMContact
 
 class People2App(tichy.Application):
     name = 'People'

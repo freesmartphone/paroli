@@ -27,7 +27,7 @@ from tichy import gui
 import sys
 import ecore
 import dbus
-from tel_number import TelNumber
+from phone.tel_number import TelNumber
 import subprocess
 import re
 import time

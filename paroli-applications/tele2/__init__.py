@@ -25,7 +25,7 @@ import os
 import tichy
 from tichy import gui
 import sys
-from tel_number import TelNumber
+from phone.tel_number import TelNumber
 from dialog import Dialog
 
 class TeleApp(tichy.Application):
