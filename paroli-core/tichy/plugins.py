@@ -25,29 +25,26 @@ import logging
 logger = logging.getLogger('plugins')
 
 
-def get_all_module_paths(dir):
-    for root, dirs, files in os.walk(dir):
-        if '%s.py' % os.path.basename(root) in files:
-            yield root
-            dirs[:] = []
+def _get_all_modules(path):
+    for dir in os.listdir(path):
+        if os.path.exists(os.path.join(path, dir, '__init__.py')): # TODO: check if there is a py std way for this
+            yield dir
+        else:
+            logger.debug('ignored directory "%s"', dir)
 
 
 def import_all(dir):
-    logger.info("import_all %s", dir)
+    logger.debug("import_all %s", dir)
     if not os.path.exists(dir):
-        logger.info("path '%s' does not exist", dir)
+        logger.error("path '%s' does not exist", dir)
         raise IOError
-    for path in get_all_module_paths(dir):
-        import_single(path)
-
-
-def import_single(dir):
-    name = os.path.basename(dir)
     sys_path = sys.path[:]
     sys.path.insert(0, dir)
     try:
-        __import__(name)
-        logger.info("import %s", dir)
+        for module in _get_all_modules(dir):
+            logger.debug("import_all %s %s", dir, module)
+            __import__(module)
+            logger.info("import %s", module)
     except ImportError, e:
         logger.exception("can't import %s : %s", dir, e)
         raise
@@ -56,5 +53,8 @@ def import_single(dir):
 
 
 if __name__ == '__main__':
-    for p in get_all_module_paths("."):
-        print p
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(filename)s:%(lineno)d %(levelname)s %(name)s: %(message)s',
+        )
+    import_all(".")
