@@ -29,17 +29,36 @@ import logging
 logger = logging.getLogger('buttons')
 
 
-class ButtonTestService(tichy.Service):
+class FallbackButtonService(tichy.Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons
     """
 
     service = 'Buttons'
+    name = 'Fallback'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(ButtonTestService, self).__init__()
+        super(FallbackButtonService, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('IdleNotifier test service init')
+        yield None
+
+class FSOButtonService(tichy.Service):
+    """The 'Button' service
+
+    This service can be used to listen to the input signals form hw buttons
+    """
+
+    service = 'Buttons'
+    name = 'FSO'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(FSOButtonService, self).__init__()
         logger.info('button service init')
         self._connect_dbus().start() 
         self.last = None
@@ -71,21 +90,3 @@ class ButtonTestService(tichy.Service):
             text = "%s_button_%s" % (name.lower(), self.last)
             
         self.emit(text, seconds)
-
-class ButtonService(tichy.Service):
-    """The 'Button' service
-
-    This service can be used to listen to the input signals form hw buttons
-    """
-
-    service = 'Buttons'
-    name = 'Test'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(ButtonService, self).__init__()
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('IdleNotifier test service init')
-        yield None

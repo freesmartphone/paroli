@@ -26,18 +26,32 @@ import tichy
 import logging
 logger = logging.getLogger('gprs')
 
-class GprsService(tichy.Service):
+class FallbackGprsService(tichy.Service):
     """The 'Gprs' service
     """
 
     service = 'Gprs'
+    name = 'Fallback'
+
+    def __init__(self):
+        super(FallbackGprsService, self).__init__()
+
+    def init(self):
+        yield None
+
+class FSOGprsService(tichy.Service):
+    """The 'Gprs' service
+    """
+
+    service = 'Gprs'
+    name = 'FSO'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(GprsService, self).__init__()
+        super(FSOGprsService, self).__init__()
 
     def init(self):
-        yield tichy.Service.get('ConfigService').wait_initialized()
+        yield tichy.Service.get('Config').wait_initialized()
         logger.info('gprs service init')
         try:
             yield tichy.tasklet.WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
@@ -45,7 +59,7 @@ class GprsService(tichy.Service):
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             battery = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
             self.iface = dbus.Interface(battery, 'org.freesmartphone.GSM.PDP')
-            self.config_service = tichy.Service.get("ConfigService")
+            self.config_service = tichy.Service.get("Config")
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
             #logger.info("values: %s", str(self.values))
@@ -153,16 +167,3 @@ class GprsService(tichy.Service):
             self.config_service.set_item('PDP', param, value)
         except Exception, e:
             logger.exception('set_param')
-
-class GprsTestService(tichy.Service):
-    """The 'Gprs' service
-    """
-
-    service = 'Gprs'
-    name = 'Test'
-
-    def __init__(self):
-        super(GprsTestService, self).__init__()
-
-    def init(self):
-        yield None

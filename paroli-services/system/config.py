@@ -25,11 +25,13 @@ import tichy
 
 logger = logging.getLogger('ConfigService')
 
-class ConfigService(tichy.Service):
-    service = 'ConfigService'
+class FallbackConfigService(tichy.Service):
+
+    service = 'Config'
+    name = 'Fallback'
   
     def __init__(self):
-        super(ConfigService, self).__init__()
+        super(FallbackConfigService, self).__init__()
 
     @tichy.tasklet.tasklet
     def init(self):

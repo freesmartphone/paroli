@@ -28,20 +28,36 @@ logger = logging.getLogger('wifi')
 
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst
 
-class WifiService(tichy.Service):
+class FallbackWifiService(tichy.Service):
     """The 'Wifi' service
     """
 
     service = 'Wifi'
+    name = 'Fallback'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(WifiService, self).__init__()
+        super(FallbackWifiService, self).__init__()
+
+    def init(self):
+        logger.info('wifi service init')
+        yield None
+
+class FSOWifiService(tichy.Service):
+    """The 'Wifi' service
+    """
+
+    service = 'Wifi'
+    name = 'FSO'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(FSOWifiService, self).__init__()
 
     def init(self):
         logger.info('wifi service init')
         try:
-            self.config_service = tichy.Service.get("ConfigService")
+            self.config_service = tichy.Service.get("Config")
             yield self.config_service.wait_initialized()
             self.usage_service = tichy.Service.get('Usage')
             yield self.usage_service.wait_initialized()
@@ -245,18 +261,3 @@ class WifiNetwork(tichy.Object):
         else:
             self.info = self.WiFiSecurity
         self.action = action
-        
-class WifiTestService(tichy.Service):
-    """The 'Wifi' service
-    """
-
-    service = 'Wifi'
-    name = 'Test'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(WifiTestService, self).__init__()
-
-    def init(self):
-        logger.info('wifi service init')
-        yield None

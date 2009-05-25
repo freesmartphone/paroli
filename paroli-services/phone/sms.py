@@ -68,12 +68,13 @@ class SMS(Message):
         yield ret
 
 
-class FreeSmartPhoneSMS(tichy.Service):
+class FSOSMSService(tichy.Service):
 
     service = 'SMS'
+    name = 'FSO'
 
     def __init__(self):
-        super(FreeSmartPhoneSMS, self).__init__()
+        super(FSOSMSService, self).__init__()
 
     @tichy.tasklet.tasklet
     def init(self):
@@ -105,7 +106,7 @@ class FreeSmartPhoneSMS(tichy.Service):
             
             ##stuff for settings
             
-            self.config_service = tichy.Service.get("ConfigService")
+            self.config_service = tichy.Service.get("Config")
             self.values = self.config_service.get_items("Messages")
             if self.values != None: self.values = dict(self.values)
             
@@ -226,15 +227,15 @@ class FreeSmartPhoneSMS(tichy.Service):
         except Exception, e:
             logger.exception('SetDeliveryReport')
           
-class TestSms(tichy.Service):
+class FallbackSMSService(tichy.Service):
 
     service = 'SMS'
-    name = 'Test'
+    name = 'Fallback'
 
     @tichy.tasklet.tasklet
     def init(self):
-        yield tichy.Service.get('ConfigService').wait_initialized()
-        self.config_service = tichy.Service.get("ConfigService")
+        yield tichy.Service.get('Config').wait_initialized()
+        self.config_service = tichy.Service.get("Config")
         self.values = self.config_service.get_items("Messages")
         
         if self.values != None: self.values = dict(self.values)

@@ -26,12 +26,52 @@ from tichy.tasklet import WaitDBus, WaitDBusName
 import logging
 logger = logging.getLogger('audio')
 
-class FSOAudio(tichy.Service):
+class FallbackAudioService(tichy.Service):
 
     service = 'Audio'
+    name = 'Fallback'
 
     def __init__(self):
-        super(FSOAudio, self).__init__()
+        super(FallbackAudioService, self).__init__()
+        self.device = None
+        self.muted = 0
+        self.volume = tichy.Int.as_type(55)
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        yield self._do_sth()
+        
+    def _do_sth(self):
+        pass
+        
+    def get_mic_status(self):
+        return 0
+        
+    def set_mic_status(self, val):
+        if self.muted != 1:
+            pass
+    
+    def get_speaker_volume(self):
+        return self.volume.value
+        
+    def set_speaker_volume(self, val):
+        if self.muted != 1:
+            self.volume.value = val
+            logger.info("volume set to %d", self.get_speaker_volume())
+        
+    def audio_toggle(self):
+        return 0
+
+    def stop_all_sounds(self):
+        logger.info("Stop all sounds")
+
+class FSOAudioService(tichy.Service):
+
+    service = 'Audio'
+    name = 'FSO'
+
+    def __init__(self):
+        super(FSOAudioService, self).__init__()
         self.device = None
         self.audio = None
         self.muted = 0
@@ -127,41 +167,3 @@ class FSOAudio(tichy.Service):
         else:
             assert False, "PlayerError expected"
 
-class ParoliAudio(tichy.Service):
-
-    service = 'Audio'
-    name = 'Test'
-
-    def __init__(self):
-        super(ParoliAudio, self).__init__()
-        self.device = None
-        self.muted = 0
-        self.volume = tichy.Int.as_type(55)
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._do_sth()
-        
-    def _do_sth(self):
-        pass
-        
-    def get_mic_status(self):
-        return 0
-        
-    def set_mic_status(self, val):
-        if self.muted != 1:
-            pass
-    
-    def get_speaker_volume(self):
-        return self.volume.value
-        
-    def set_speaker_volume(self, val):
-        if self.muted != 1:
-            self.volume.value = val
-            logger.info("volume set to %d", self.get_speaker_volume())
-        
-    def audio_toggle(self):
-        return 0
-
-    def stop_all_sounds(self):
-        logger.info("Stop all sounds")

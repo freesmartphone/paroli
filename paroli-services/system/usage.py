@@ -29,16 +29,36 @@ import logging
 logger = logging.getLogger('usage')
 
 
-class UsageService(tichy.Service):
+class FallbackUsageService(tichy.Service):
     """The 'Usage' service
 
     This service can be used to listen to the power signals and control the device power.
     """
 
     service = 'Usage'
+    name = 'Fallback'
 
     def __init__(self):
-        super(UsageService, self).__init__()
+        super(FallbackUsageService, self).__init__()
+
+    def init(self):
+        """ initialize service and connect to dbus object
+        """
+        logger.info('usage test service init')
+        yield None
+
+
+class FSOUsageService(tichy.Service):
+    """The 'Usage' service
+
+    This service can be used to listen to the power signals and control the device power.
+    """
+
+    service = 'Usage'
+    name = 'FSO'
+
+    def __init__(self):
+        super(FSOUsageService, self).__init__()
 
     def init(self):
         """ initialize service and connect to dbus object
@@ -101,20 +121,3 @@ class UsageService(tichy.Service):
                     logger.debug("not releasing resource %s as it has been already released", str(resource) )
         yield None
 
-class UsageTestService(tichy.Service):
-    """The 'Usage' service
-
-   This service can be used to listen to the power signals and control the device power.
-    """
-
-    service = 'Usage'
-    name = 'Test'
-
-    def __init__(self):
-        super(UsageTestService, self).__init__()
-
-    def init(self):
-        """ initialize service and connect to dbus object
-        """
-        logger.info('usage test service init')
-        yield None

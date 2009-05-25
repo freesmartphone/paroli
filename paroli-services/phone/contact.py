@@ -265,19 +265,21 @@ class PhoneContact(Contact):
         logger.info("Loading phone contacts")
         ret = []
         data = tichy.Persistance('contacts/phone').load()
-        for kargs in data:
-            contact = PhoneContact(**kargs)
-            ret.append(contact)
+        if data:
+            for kargs in data:
+                contact = PhoneContact(**kargs)
+                ret.append(contact)
         yield ret
 
 
-class ContactsService(tichy.Service):
+class FallbackContactsService(tichy.Service):
     """Allow to add and get the phone or sim contacts"""
 
     service = 'Contacts'
+    name = 'Fallback'
 
     def __init__(self):
-        super(ContactsService, self).__init__()
+        super(FallbackContactsService, self).__init__()
         self.contacts = tichy.List()
         # TODO: the problem here is that when we load the contacts we
         # are going to rewrite them !

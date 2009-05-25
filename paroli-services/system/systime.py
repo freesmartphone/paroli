@@ -27,11 +27,26 @@ from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
 import time
 import os
 
-class FreeSmartPhoneTimeService(tichy.Service):
+class FallbackSysTimeService(tichy.Service):
+
     service = 'SysTime'
+    name = 'Fallback'
   
     def __init__(self):
-        super(FreeSmartPhoneTimeService, self).__init__()
+        super(FallbackSysTimeService, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('systime service init')
+        yield None
+
+class FSOSysTimeService(tichy.Service):
+
+    service = 'SysTime'
+    name = 'FSO'
+  
+    def __init__(self):
+        super(FSOSysTimeService, self).__init__()
         self.rtc = None
 
     def init(self):
@@ -108,18 +123,6 @@ class FreeSmartPhoneTimeService(tichy.Service):
         except Exception, ex:
             logger.error("Exception : %s", ex)
             raise
-
-class TimeTestService(tichy.Service):
-    service = 'SysTime'
-    name = 'Test'
-  
-    def __init__(self):
-        super(TimeTestService, self).__init__()
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('systime service init')
-        yield None
 
 class TimeSetting(tichy.Object):
     def __init__(self, name, rep_part, val_range, type_arg):

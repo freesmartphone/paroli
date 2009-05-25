@@ -26,20 +26,21 @@ from tichy.tasklet import WaitDBus, WaitDBusName
 import logging
 logger = logging.getLogger('sounds')
 
-class SoundsService(tichy.Service):
+class FallbackSoundsService(tichy.Service):
 
     service = 'Sounds'
+    name = 'Fallback'
 
     def __init__(self):
-        super(SoundsService, self).__init__()
+        super(FallbackSoundsService, self).__init__()
 
     @tichy.tasklet.tasklet
     def init(self):
         logger.info('init')
         try:
             yield tichy.Service.get('GSM').wait_initialized()
-            yield tichy.Service.get('ConfigService').wait_initialized()
-            self.config_service = tichy.Service.get('ConfigService')
+            yield tichy.Service.get('Config').wait_initialized()
+            self.config_service = tichy.Service.get('Config')
             self.audio_service = tichy.Service.get('Audio')
             self.vibra_service = tichy.Service.get('Vibrator')
             self.values = self.config_service.get_items("sounds")
@@ -80,16 +81,4 @@ class SoundsService(tichy.Service):
             self.vibra_service.stop()
         except Exception, e:
             logger.info("got error in Stop %s", str(e))
-            
 
-class SoundsTestService(tichy.Service):
-
-    service = 'Sounds'
-    name = 'Test'
-
-    def __init__(self):
-        super(SoundsTestService, self).__init__()
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield None

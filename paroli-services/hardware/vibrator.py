@@ -29,7 +29,22 @@ import logging
 logger = logging.getLogger('vibrator')
 
 
-class VibratorService(tichy.Service):
+class FallbackVibratorService(tichy.Service):
+    """The 'Vibrator' service
+
+    """
+
+    service = 'Vibrator'
+    name = 'Fallback'
+
+    def __init__(self):
+        super(FallbackVibratorService, self).__init__()
+
+    def init(self):
+        logger.info('vibrator service init')
+        yield None
+
+class FSOVibratorService(tichy.Service):
     """The 'Vibrator' service
 
     This service can be used to start or stop the device vibrator if
@@ -37,9 +52,10 @@ class VibratorService(tichy.Service):
     """
 
     service = 'Vibrator'
+    name = 'FSO'
 
     def __init__(self):
-        super(VibratorService, self).__init__()
+        super(FSOVibratorService, self).__init__()
         self.vibrator = None
 
     def init(self):

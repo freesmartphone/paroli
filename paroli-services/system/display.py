@@ -29,16 +29,17 @@ import logging
 logger = logging.getLogger('power')
 
 
-class DisplayService(tichy.Service):
+class FSODisplayService(tichy.Service):
     """The 'Power' service
 
     This service can be used to listen to the power signals and control the device power.
     """
 
     service = 'Display'
+    name = 'FSO'
 
     def __init__(self):
-        super(DisplayService, self).__init__()
+        super(FSODisplayService, self).__init__()
 
     def init(self):
         """ initialize service and connect to dbus object

@@ -29,17 +29,38 @@ import logging
 logger = logging.getLogger('power')
 
 
-class PowerService(tichy.Service):
+class FallbackPowerService(tichy.Service):
     """The 'Power' service
 
     This service can be used to listen to the power signals and control the device power.
     """
 
     service = 'Power'
+    name = 'Fallback'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(PowerService, self).__init__()
+        super(FallbackPowerService, self).__init__()
+        self.battery_capacity = 50
+        self.battery_status = ""
+        self.battery = None
+
+    def init(self):
+        logger.info('power service init')
+        yield None
+
+class FSOPowerService(tichy.Service):
+    """The 'Power' service
+
+    This service can be used to listen to the power signals and control the device power.
+    """
+
+    service = 'Power'
+    name = 'FSO'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(FSOPowerService, self).__init__()
         self.battery_capacity = 50
         self.battery_status = ""
         self.battery = None
@@ -79,19 +100,3 @@ class PowerService(tichy.Service):
         else: 
             return 50
 
-
-class PowerTestService(tichy.Service):
-
-    service = 'Power'
-    name = 'Test'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(PowerTestService, self).__init__()
-        self.battery_capacity = 50
-        self.battery_status = ""
-        self.battery = None
-
-    def init(self):
-        logger.info('power service init')
-        yield None

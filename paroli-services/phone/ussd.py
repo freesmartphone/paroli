@@ -29,17 +29,18 @@ import logging
 logger = logging.getLogger('ussd')
 
 
-class UssdService(tichy.Service):
+class FSOUssdService(tichy.Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons
     """
 
     service = 'Ussd'
+    name = 'FSO'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(UssdService, self).__init__()
+        super(FSOUssdService, self).__init__()
         self.last = None
 
     @tichy.tasklet.tasklet
@@ -75,18 +76,18 @@ class UssdService(tichy.Service):
         else:
             logger.info("unable to send ussd request")
 
-class UssdTestService(tichy.Service):
+class FallbackUssdService(tichy.Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons
     """
 
     service = 'Ussd'
-    name = 'Test'
+    name = 'Fallback'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(UssdTestService, self).__init__()
+        super(FallbackUssdService, self).__init__()
         self.last = None
 
     @tichy.tasklet.tasklet

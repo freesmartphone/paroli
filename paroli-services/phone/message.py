@@ -159,16 +159,17 @@ class PhoneMessage(Message):
         return self.peer
     number = property(__get_number)
 
-class MessagesService(tichy.Service):
+class FallbackMessagesService(tichy.Service):
     """The service that stores all the messages
 
     This service provides access to the messages inbox and outbox
     """
 
     service = 'Messages'
+    name = 'Fallback'
 
     def __init__(self):
-        super(MessagesService, self).__init__()
+        super(FallbackMessagesService, self).__init__()
         self.messages = tichy.List()
         self.unread = tichy.Text(0)
         self.messages.connect('appended',self._update_unread)

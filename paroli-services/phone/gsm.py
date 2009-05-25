@@ -141,13 +141,14 @@ class GSMService(tichy.Service):
         self.missed_call_count.value = 0 
 
 
-class FreeSmartPhoneGSM(GSMService):
+class FSOGSMService(GSMService):
     """GSMService that uses freesmartphone DBUS API"""
 
     service = 'GSM'
+    name = 'FSO'
 
     def __init__(self):
-        super(FreeSmartPhoneGSM, self).__init__()
+        super(FSOGSMService, self).__init__()
         self.lines = {}
         self.provider = None
         self.network_strength = None
@@ -246,8 +247,8 @@ class FreeSmartPhoneGSM(GSMService):
         
         try:
             
-            yield tichy.Service.get('ConfigService').wait_initialized()
-            self.config_service = tichy.Service.get("ConfigService")
+            yield tichy.Service.get('Config').wait_initialized()
+            self.config_service = tichy.Service.get("Config")
             logger.info("got config service")
         
         except Exception, ex:
@@ -600,15 +601,15 @@ class Provider(tichy.Object):
         self.NetworkType = obj[4]
         self.action = action
 
-class TestGsm(GSMService):
+class FallbackGSMService(GSMService):
     """Fake service that can be used to test without GSM drivers
     """
 
     service = 'GSM'
-    name = 'Test'
+    name = 'Fallback'
 
     def __init__(self):
-        super(TestGsm, self).__init__()
+        super(FallbackGSMService, self).__init__()
         #self.logs.append(Call('0478657392'))
 
     def init(self):
@@ -617,8 +618,8 @@ class TestGsm(GSMService):
         logger.info("Register on the network")
         self.emit('provider-modified', "Charlie Telecom")
         self.network_strength = 100
-        yield tichy.Service.get('ConfigService').wait_initialized()
-        self.config_service = tichy.Service.get("ConfigService")
+        yield tichy.Service.get('Config').wait_initialized()
+        self.config_service = tichy.Service.get("Config")
         logger.info("got config service")
         self.values = self.config_service.get_items("call_forwarding")
         if self.values != None: self.values = dict(self.values)

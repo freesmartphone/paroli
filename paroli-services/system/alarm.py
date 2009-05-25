@@ -59,11 +59,13 @@ class Slot(dbus.service.Object):
             logger.info( "Alarm except %s", ex )
 
 
-class FreeSmartPhoneAlarmService(tichy.Service):
+class FSOAlarmService(tichy.Service):
+
     service = 'Alarm'
+    name = 'FSO'
   
     def __init__(self):
-        super(FreeSmartPhoneAlarmService, self).__init__()
+        super(FSOAlarmService, self).__init__()
         self.alarm = None
 
     def init(self):
@@ -170,16 +172,18 @@ class TimeSetting(tichy.Object):
     def __repr__(self):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time
-        
-class AlarmTestService(tichy.Service):
+
+class FallbackAlarmService(tichy.Service):
+
     service = 'Alarm'
-    name = 'Test'
+    name = 'Fallback'
   
     def __init__(self):
-        super(AlarmTestService, self).__init__()
+        super(FallbackAlarmService, self).__init__()
         self.alarm = None
 
     def init(self):
         """Connect to the freesmartphone DBus object"""
         logger.info('alarm service init')
         yield None
+

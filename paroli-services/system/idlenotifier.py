@@ -25,11 +25,27 @@ import dbus
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 
-class FreeSmartPhoneIdleNotifier(tichy.Service):
-    service = 'FSOIdleNotifier'
+
+class FallbackIdleNotifier(tichy.Service):
+
+    service = 'IdleNotifier'
+    name = 'Fallback'
+
+    def __init__(self):
+        super(FallbackIdleNotifier, self).__init__()
+
+    def init(self):
+        """Connect to the freesmartphone DBus object"""
+        logger.info('IdleNotifier test service init')
+        yield None
+
+class FSOIdleNotifierService(tichy.Service):
+
+    service = 'IdleNotifier'
+    name = 'FSO'
   
     def __init__(self):
-        super(FreeSmartPhoneIdleNotifier, self).__init__()
+        super(FSOIdleNotifierService, self).__init__()
 
     def init(self):
         """Connect to the freesmartphone DBus object"""
@@ -66,16 +82,3 @@ class FreeSmartPhoneIdleNotifier(tichy.Service):
     @tichy.tasklet.tasklet
     def set_idle_dim(self, time):
         yield self.iface.SetTimeout('idle_dim', int(time))
-
-
-class PhoneIdleNotifier(tichy.Service):
-    service = 'FSOIdleNotifier'
-    name = 'Test'
-
-    def __init__(self):
-        super(PhoneIdleNotifier, self).__init__()
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('IdleNotifier test service init')
-        yield None

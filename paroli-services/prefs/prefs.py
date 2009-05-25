@@ -45,12 +45,13 @@ class PrefsService(Service):
         raise NotImplementedError
 
 
-class FreeSmartPhonePrefs(tichy.Service):
+class FSOPrefsServices(tichy.Service):
 
     service = 'Prefs'
+    name = 'FSO'
 
     def __init__(self):
-        super(FreeSmartPhonePrefs, self).__init__()
+        super(FSOPrefsServices, self).__init__()
 
     class Service(object):
 
@@ -105,17 +106,17 @@ class FreeSmartPhonePrefs(tichy.Service):
         yield self.emit('profile_changed')
 
     def __getitem__(self, name):
-        return FreeSmartPhonePrefs.Service(self, name)
+        return FSOPrefsServices.Service(self, name)
 
-class TestPrefs(PrefsService):
+class FallbackPrefsSerices(tichy.Service):
 
     service = 'Prefs'
-    name = 'Test'
+    name = 'Fallback'
 
     class Service(item.Item):
 
         def __init__(self, prefs, name):
-            super(TestPrefs.Service, self).__init__()
+            super(FallbackPrefsSerices.Service, self).__init__()
             self.prefs = prefs
             self.name = name
             self.attrs = {}
@@ -135,7 +136,7 @@ class TestPrefs(PrefsService):
             self.attrs[name] = value
 
     def __init__(self):
-        phone = TestPrefs.Service(self, 'phone')
+        phone = FallbackPrefsSerices.Service(self, 'phone')
         phone['ring-tone'] = {'default': 'music1'}
         phone['ring-volume'] = {'default': 10, 'silent': 0}
         self.services = {'phone': phone}

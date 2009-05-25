@@ -110,14 +110,15 @@ class SIMContact(Contact):
         ret = yield sim.get_contacts()
         yield ret
 
-class FreeSmartPhoneSim(tichy.Service):
+class FSOSIMService(tichy.Service):
 
     service = 'SIM'
+    name = 'FSO'
 
     PINError = PINError         # Expose the PINError exception
 
     def __init__(self):
-        super(FreeSmartPhoneSim, self).__init__()
+        super(FSOSIMService, self).__init__()
         logger.info("connecting to freesmartphone.GSM dbus interface")
         try:
             # We create the dbus interfaces to org.freesmarphone
@@ -304,10 +305,10 @@ class FreeSmartPhoneSim(tichy.Service):
         
         yield ret
 
-class TestSim(tichy.Service):
+class FallbackSIMService(tichy.Service):
 
     service = 'SIM'
-    name = 'Test'
+    name = 'Fallback'
 
     PINError = PINError
 
