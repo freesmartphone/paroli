@@ -147,12 +147,13 @@ class PhoneMessage(Message):
         logger.info("Loading phone messages")
         ret = []
         data = tichy.Persistance('messages/phone').load()
-        for kargs in data:
-            try:
-                message = PhoneMessage(**kargs)
-                ret.append(message)
-            except Exception, ex:
-                logger.exception("can't create message : %s", ex)
+        if data:
+            for kargs in data:
+                try:
+                    message = PhoneMessage(**kargs)
+                    ret.append(message)
+                except Exception, ex:
+                    logger.exception("can't create message : %s", ex)
         yield ret
         
     def __get_number(self):
@@ -210,8 +211,8 @@ class FallbackMessagesService(tichy.Service):
 
     @tichy.tasklet.tasklet
     def _load_all(self):
-        logger.info("load all messages")
         """load all the messages from all sources"""
+        logger.info("load all messages")
         # TODO: make this coherent with contacts service method
         all_messages = []
         for cls in Message.subclasses:
