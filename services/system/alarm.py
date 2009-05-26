@@ -20,7 +20,7 @@
 
 
 import logging
-logger = logging.getLogger('AlarmService')
+logger = logging.getLogger('services.system.alarm')
 import dbus
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange

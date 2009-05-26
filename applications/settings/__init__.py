@@ -22,7 +22,7 @@
 import logging
 
 ##name the logger
-logger = logging.getLogger('settings')
+logger = logging.getLogger('applications.settings')
 
 ##import os module to load edj files
 import os

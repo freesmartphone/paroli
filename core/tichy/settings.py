@@ -23,7 +23,7 @@ from tichy.item import Item
 from tichy import tasklet
 import tichy
 import logging
-logger = logging.getLogger('settings-service')     
+logger = logging.getLogger('core.tichy.settings')     
 
 class Setting(tichy.Object):
     """Represents a setting value

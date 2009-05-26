@@ -20,7 +20,7 @@
 
 
 import logging
-logger = logging.getLogger('app.i-o')
+logger = logging.getLogger('applications.i-o2')
 
 import os
 import tichy

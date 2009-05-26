@@ -22,7 +22,7 @@ import os.path
 import sys
 
 import logging
-logger = logging.getLogger('plugins')
+logger = logging.getLogger('core.tichy.plugins')
 
 
 def _get_all_modules(path):

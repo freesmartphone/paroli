@@ -22,7 +22,7 @@ __docformat__ = 'reStructuredText'
 """Notifications module"""
 
 import logging
-logger = logging.getLogger('notifications')
+logger = logging.getLogger('core.tichy.notifications')
 
 import tichy
 

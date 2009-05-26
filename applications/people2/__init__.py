@@ -20,7 +20,7 @@
 
 import os
 import logging
-logger = logging.getLogger('app.people')
+logger = logging.getLogger('applications.people2')
 
 import tichy
 from tichy import gui

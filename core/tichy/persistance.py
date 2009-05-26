@@ -33,7 +33,7 @@ try:
 except:
     import pickle
 
-logger = logging.getLogger('persistance')
+logger = logging.getLogger('core.tichy.persistance')
 
 
 class Persistance(object):

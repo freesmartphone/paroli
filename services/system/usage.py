@@ -26,7 +26,7 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('usage')
+logger = logging.getLogger('services.system.usage')
 
 
 class FallbackUsageService(tichy.Service):

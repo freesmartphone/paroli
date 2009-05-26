@@ -26,7 +26,7 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('power')
+logger = logging.getLogger('services.system.display')
 
 
 class FSODisplayService(tichy.Service):

@@ -20,7 +20,7 @@
 
 
 import logging
-logger = logging.getLogger('SysTimeService')
+logger = logging.getLogger('services.system.systime')
 import dbus
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange

@@ -1,16 +1,25 @@
+This is a short document describing the changes that have to be made
+and those that must be made for better integration of other services.
+it also contains lot of cleanups.
+
+DONE for the REBASE
+
++ solve import issue of apps (parts that are used in apps and services
+  should not reside in the services directory. i introduced
+  core/paroli/ to put those parts there).
+
++ remove nfs- (default installation location is /usr/share/paroli)
+
++ rename toplevel dirs (i removed the paroli- in front of the dirnames
+  which makes typing alot easier).
+
 TODOs for REBASE
 
 - cleanup build
 
-- solve import issue of apps
-
 - remove incorrect information from README & docs
 
-- remove nfs-
-
 - prefere and maintain a start script
-
-- rename toplevel dirs
 
 - rename *2 -> *
 

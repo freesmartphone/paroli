@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-logger = logging.getLogger('Tele')
+logger = logging.getLogger('applications.tele2')
 
 import os
 import tichy

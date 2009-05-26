@@ -23,7 +23,7 @@ __docformat__ = 'reStructuredText'
 """Dialog service"""
 
 import logging
-logger = logging.getLogger('Dialog')
+logger = logging.getLogger('services.dialog')
 
 import tichy
 import tichy.gui_paroli as gui

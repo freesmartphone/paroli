@@ -20,7 +20,7 @@
 
 
 import logging
-logger = logging.getLogger('suspendService')
+logger = logging.getLogger('services.system.idlenotifier')
 import dbus
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange

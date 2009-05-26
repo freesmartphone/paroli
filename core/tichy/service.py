@@ -25,7 +25,7 @@ from object import Object
 from item import Item, ItemMetaClass
 
 import logging
-logger = logging.getLogger('Service')
+logger = logging.getLogger('core.tichy.service')
 
 from tichy.tasklet import WaitFirst, Wait, Sleep
 
@@ -82,7 +82,7 @@ class Service(Item):
         """
         logger.info("init all services")
         defaults = cls.__defaults
-        logger.info("defaults service are %s", defaults)
+        logger.debug("defaults service are %s", defaults)
         for service_cls in cls.subclasses:
             service = service_cls.service
             name = service_cls.name
@@ -95,7 +95,7 @@ class Service(Item):
             if service in defaults and name != defaults[service]:
                 logger.debug("skip service %s : no default", service_cls)
                 continue
-            logger.debug("register service %s : %s", service, name)
+            logger.info("register service %s : %s (%s)", service, name, service_cls.__name__)
             instance = service_cls()
             cls.__all_services[service] = instance
 

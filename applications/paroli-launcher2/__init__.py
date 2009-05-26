@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-logger = logging.getLogger('Launcher')
+logger = logging.getLogger('applications.paroli-launcher2')
 
 import os
 import tichy
@@ -65,12 +65,12 @@ class Launcher_App2(tichy.Application):
             apps = []
             for app in tichy.Application.subclasses:
                 if app.category == 'launcher':
-                    logger.info("adding - %s to launcher", app.name)
                     apps.append(app)
-            
+
         box = gui.elm_box(self.window.window.elm_obj)
         self.app_objs = {}
         for app in apps:
+            logger.info("adding - %s to launcher", app.name)
             link_obj = gui.elm_layout(self.window.window, self.edje_file, 'link')        
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
@@ -83,9 +83,8 @@ class Launcher_App2(tichy.Application):
                 attr = 0
             link_obj.elm_obj.show()
             link_obj.add_callback("*", "launch_app", self.launch_app)
-            app_obj = [link_obj,attr]
-            self.app_objs[app.name] = app_obj
-            
+            self.app_objs[app.name] = [link_obj, attr, ]
+
         box.elm_obj.show()
         self.edje_obj.elm_obj.content_set("link-box",box.elm_obj)
         self.storage = tichy.Service.get('TeleCom2')

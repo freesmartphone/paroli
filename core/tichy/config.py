@@ -26,10 +26,10 @@ code.
 """
 
 import ConfigParser
-import logging
 import os
 
-logger = logging.getLogger('config')
+import logging
+logger = logging.getLogger('core.tichy.config')
 
 # The global config instance
 config = None

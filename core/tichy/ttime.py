@@ -25,7 +25,7 @@ import logging
 import tichy
 
 
-logger = logging.getLogger('')
+logger = logging.getLogger('core.tichy.ttime')
 
 class Time(tichy.Item):
     """Item that represent a time

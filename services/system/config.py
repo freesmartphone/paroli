@@ -23,7 +23,7 @@ import logging
 import ConfigParser
 import tichy
 
-logger = logging.getLogger('ConfigService')
+logger = logging.getLogger('services.system.config')
 
 class FallbackConfigService(tichy.Service):
 

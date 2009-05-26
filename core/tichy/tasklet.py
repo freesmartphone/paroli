@@ -30,7 +30,7 @@ import sys
 from types import GeneratorType
 
 import logging
-logger = logging.getLogger('tasklet')
+logger = logging.getLogger('core.tichy.tasklet')
 
 
 def tasklet(func):

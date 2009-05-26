@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import logging
-logger = logging.getLogger('app.msgs')
+logger = logging.getLogger('applications.msgs2')
 
 import tichy
 from tichy import gui
