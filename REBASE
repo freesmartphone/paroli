@@ -1,5 +1,13 @@
 TODOs for REBASE
 
+- cleanup build
+
+- remove incorrect information from README & docs
+
+- remove nfs-
+
+- prefere and maintain a start script
+
 - rename toplevel dirs
 
 - rename *2 -> *
