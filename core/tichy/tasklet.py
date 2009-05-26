@@ -307,7 +307,7 @@ class WaitDBus(Tasklet):
         self.err_callback(type(e), e, sys.exc_info()[2])
 
 # TODO: move all the tichy/dbus related tasklets into
-#       paroli-service/phone because that is the only place where it
+#       service/phone because that is the only place where it
 #       is used
 
 class WaitDBusSignal(Tasklet):

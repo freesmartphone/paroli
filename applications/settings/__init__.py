@@ -27,7 +27,7 @@ logger = logging.getLogger('settings')
 ##import os module to load edj files
 import os
 
-##import main paroli-core module
+##import main core module
 import tichy
 
 ##import gui module to access paroli's gui classes

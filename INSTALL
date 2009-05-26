@@ -12,12 +12,12 @@ phone.  The only needed things are :
 
 Once you have all those things (and of course downloaded paroli from
 the git server), you first need to build the edje files (in the
-directory paroli-application):
+directory paroli/applications):
   
   ./build.sh
 
 Then you can start paroli as a standalone application (in
-paroli-scripts):
+paroli/scripts):
 
   ./paroli
 

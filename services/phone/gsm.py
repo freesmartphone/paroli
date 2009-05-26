@@ -34,7 +34,7 @@ from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
 from call import Call
 from threading import Timer
 
-# TODO: move this tasklet into paroli-service/phone
+# TODO: move this tasklet into service/phone
 
 class WaitFSOResource(Tasklet):
     """Wait for a FSO resource to be available"""

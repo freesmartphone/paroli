@@ -3,7 +3,7 @@
 * Standalone application
 
   To start paroli, first make sure that the edje files have been build
-  (by running ./build in the paroli-applications directory.  Then just
+  (by running ./build in the paroli/applications directory.  Then just
   start paroli.
 
 * With DBUS service

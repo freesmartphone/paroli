@@ -35,8 +35,7 @@ import logging
 
 # This is to make sure that we use the local tichy lib if run from the
 # test directory
-sys.path.insert(0, '../paroli-core/')
-sys.path.insert(0, '../paroli-graphics-backend/')
+sys.path.insert(0, '../core/')
 
 import tichy
 

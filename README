@@ -6,12 +6,12 @@ README
 COMPILE
 
   The python sources don't need to be compiled, but the edje files for
-  the application do. To do so run build.sh in the paroli-application
+  the application do. To do so run build.sh in the paroli/application
   directory.
 
 RUN
 
-  See the instruction in the README file in paroli-script.
+  See the instruction in the README file in paroli/script.
 
 AUTHORS
 

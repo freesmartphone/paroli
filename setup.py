@@ -39,7 +39,7 @@ class my_build(_build):
 
         # compile theme files
         import subprocess
-        result = subprocess.call("cd ./paroli-applications; ./build.sh", shell=True)
+        result = subprocess.call("cd ./applications; ./build.sh", shell=True)
         if result != 0:
             raise Exception("Can't build theme files. Built edje_cc?")
 
@@ -86,9 +86,9 @@ setup(name='Paroli',
       description="Paroli",
       author="Mirko Lindler",
       author_email='mirko@openmoko.org',
-      package_dir = {'': 'paroli-core'},
+      package_dir = {'': 'core'},
       packages = ['tichy', 'tichy.gui_paroli'],
-      scripts= ['paroli-scripts/paroli'],
+      scripts= ['scripts/paroli'],
       # XXX: Those locations may not work on the neo !
       data_files = [('applications',
                      ['data/paroli.desktop',
@@ -100,8 +100,8 @@ setup(name='Paroli',
                     (os.path.join(sys.prefix, 'share/pixmaps/'),
                      ['data/tichy']),
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \
-          + plugins_files('paroli-services', '../../usr/share/paroli/services') \
-          + plugins_files('paroli-applications', '../../usr/share/paroli/applications') \
+          + plugins_files('services', '../../usr/share/paroli/services') \
+          + plugins_files('applications', '../../usr/share/paroli/applications') \
           + dbus_data \
           + sound_data,
 
