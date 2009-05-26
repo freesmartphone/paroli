@@ -1,0 +1,16 @@
+TODOs for REBASE
+
+- rename toplevel dirs
+
+- rename *2 -> *
+
+- check all logger names
+
+- restructure service pakages
+
+	- move abtract (fallback-) classes out of plugin structure?
+
+	- allow separation FSO / pyneo
+
+- add pyneo functionality
+
