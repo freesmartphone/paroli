@@ -149,7 +149,7 @@ class FSOSMSService(tichy.Service):
                                           str(sms.peer), unicode(sms.text),
                                           properties)
         except Exception, e:
-            logger.exception ("%s %s", str(Exception), str(e))
+            logger.exception ("send %s", e)
         logger.info("Store message into messages")
         yield tichy.Service.get('Messages').add(sms)
 

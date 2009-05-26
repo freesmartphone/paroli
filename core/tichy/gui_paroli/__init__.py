@@ -116,7 +116,7 @@ class elm_layout(tichy.Object):
         self.Edje = self.elm_obj.edje_get()
         
     def relay(self, emission, signal, source):
-        logger.info("%s relaying %s", str(self), str(signal))
+        logger.info("%s relaying %s", self, signal)
         logger.debug('relay %s', type(signal))
         self.emit(signal)
     
@@ -160,7 +160,7 @@ class elm_tb(tichy.Object):
             self.bg = elm_layout(parent.window, edje_file, "bg-tb-off")
 
     def signal(self, emission, signal, source):
-        logger.info(" %s emitting %s", str(self.parent), str(self.onclick))
+        logger.info(" %s emitting %s", self.parent, self.onclick)
         self.parent.emit(self.onclick)
 
 class elm_layout_window(tichy.Object):
@@ -275,8 +275,7 @@ class elm_list(tichy.Object):
               #self.model.sort()
               for item in self.model:
                   if self.Elm_win.elm_obj.is_deleted() == True:
-                      logger.info(str(self.model))
-                      logger.info("window deleted")
+                      logger.info('window deleted %s', self.model)
                   ly = elementary.Layout(self.Elm_win.elm_obj)
                   ly.file_set(self.EdjeFile, self.EdjeGroup)              
                   edje_obj = ly.edje_get()
@@ -295,7 +294,7 @@ class elm_list(tichy.Object):
                         txt = unicode(value).encode('utf-8')
                         edje_obj.part_text_set(part,txt)
                     else:
-                        logger.info(" %s doesn't have attribute %s", str(item), str(attribute))
+                        logger.info(" %s doesn't have attribute %s", item, attribute)
                   
                   ##check for optional display elements
                   if edje_obj.data_get('attribute1') != None:
@@ -436,7 +435,7 @@ class elm_list(tichy.Object):
         #Widget.__init__(self, None, etk_obj=etk_obj)
 
     #def delete_request(self,*args,**kargs):
-        #logger.info(str(args))
+        #logger.info('%s', (args))
         #self.emit('delete_request')
 
     #def show(self):

@@ -85,7 +85,7 @@ class Settings(tichy.Application):
             self.window.delete()
         
     def _show_sublist(self, emission, signal, source, group):
-        logger.info("showing sublist from group %s", str(group[0]))
+        logger.info("showing sublist from group %s", group[0])
         SettingsSublist(self.window, self.edje_file, str(group[0]), self.edje_obj).start()
 
 class SettingsSublist(tichy.Application):

@@ -209,7 +209,7 @@ class Wait(Tasklet):
         self.obj = obj
         self.event = event
         self.connect_id = None
-        #logger.info("%s waiting for '%s'", str(self.obj), str(self.event))
+        #logger.info("%s waiting for '%s'", (self.obj), (self.event))
 
     def _callback(self, o, *args):
         """This is the callback that is triggered by the signal"""
@@ -221,7 +221,7 @@ class Wait(Tasklet):
         o.disconnect(self.connect_id)
         self.connect_id = None
 
-        #logger.info("on %s called '%s'", str(o), str(self.event))
+        #logger.info("on %s called '%s'", (o), (self.event))
 
         # We can finally call our real callback
         try:
@@ -257,7 +257,7 @@ class WaitFirst(Tasklet):
         self.tasklets = tasklets
 
     def _callback(self, *args):
-        #logger.info("waitfirst returned with %s", str(args))
+        #logger.info("waitfirst returned with %s", (args))
         i = args[-1]
         values = args[:-1]
         if self.done:
@@ -480,7 +480,7 @@ class WaitDBusName(Tasklet):
 
     def run(self, name, time_out=None, session=False):
         if self._is_dbus_name_present(name, session):
-            #logger.info("%s is present", str(name))
+            #logger.info("%s is present", (name))
             yield None
         else:
             yield WaitDBusNameChange(name, time_out=time_out, session=session)

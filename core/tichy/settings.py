@@ -105,7 +105,7 @@ class Setting(tichy.Object):
         yield self.Setter(value)
         self.Value.value = value
         self.options.emit('updated')
-        logger.info("%s set to %s", self.name, str(self.value))
+        logger.info("%s set to %s", self.name, self.value)
 
     def rotate(self, *args):
         if self.value != None:
@@ -197,7 +197,7 @@ class ToggleSetting(Setting):
         val = yield self.Setter(value)
         self.Value.value = val
         self.options.emit('updated')
-        logger.info("%s set to %s", self.name, str(self.value))
+        logger.info("%s set to %s", self.name, self.value)
     
 class FSOSetting(Setting):
     """Special setting class that hooks into a FSO preference

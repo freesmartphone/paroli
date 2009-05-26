@@ -62,7 +62,7 @@ class FSOGprsService(tichy.Service):
             self.config_service = tichy.Service.get("Config")
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
-            #logger.info("values: %s", str(self.values))
+            #logger.info("values: %s", (self.values))
             password = tichy.settings.StringSetting('gprs', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
             user = tichy.settings.StringSetting('gprs', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
             apn = tichy.settings.StringSetting('gprs', 'apn', tichy.Text, value=self.get_apn(), setter=self.set_apn)
@@ -143,21 +143,21 @@ class FSOGprsService(tichy.Service):
 
     def get_apn(self):
         if self.values != None and "apn" in self.values.keys():
-            #logger.info("values: %s", str(self.values))
+            #logger.info("values: %s", (self.values))
             return str(self.values["apn"])
         else:
             return ""
     
     def get_password(self):
         if self.values != None and "pwd" in self.values.keys():
-            #logger.info("values: %s", str(self.values))
+            #logger.info("values: %s", (self.values))
             return str(self.values["pwd"])
         else:
             return ""
     
     def get_user(self):
         if self.values != None and "user" in self.values.keys():
-            #logger.info("values: %s", str(self.values))
+            #logger.info("values: %s", (self.values))
             return str(self.values["user"])
         else:
             return ""

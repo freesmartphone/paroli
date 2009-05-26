@@ -149,7 +149,7 @@ class MsgsApp2(tichy.Application):
             messages_service = tichy.Service.get('Messages')
             messages_service.remove(message).start()
         except Exception, ex:
-            logger.exception("Got error %s", str(ex))
+            logger.exception("Got error %s", ex)
         else:
             layout.delete()
             self.window.restore_orig()

@@ -62,7 +62,7 @@ class TeleApp(tichy.Application):
     ##DEBUG FUNCTIONS 
     ## msgs from embryo
     def embryo(self, emission, signal, source):
-        logger.info("embryo says:" + str(signal))
+        logger.info("embryo says:" + signal)
 
     ##DEBUG FUNCTIONS
     def test(self, *args, **kargs):
@@ -186,7 +186,7 @@ class TeleCaller2(tichy.Application):
                 try:
                     self.SoundsService.call()
                 except Exception,e:
-                    logger.exception("%s %s", str(Exception), str(e))
+                    logger.exception("TeleCaller2 %s", e)
                 self.main.window.connect("close",call.release().start)
                 self.storage.call = call
                 self.main.emit('call_active')
@@ -309,7 +309,7 @@ class TeleCaller2(tichy.Application):
         self.main.bg_m.onclick = 'hide'
     
     def embryo(self, emission, signal, source):
-        logger.info("embryo says:" + str(signal))
+        logger.info("embryo says:" + signal)
 
     def audio_rotate(self, *args, **kargs):
         try:
@@ -328,7 +328,7 @@ class TeleCaller2(tichy.Application):
             self.TopBarService.volume_change(str(new))
             logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
         except Exception, e:
-            logger.exception('%s %s', str(Exception), str(e))
+            logger.exception('audio_service %s', e)
 
     def gui_signals(self,emission, source, param):
         pass

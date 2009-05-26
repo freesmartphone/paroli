@@ -76,9 +76,9 @@ class FallbackSoundsService(tichy.Service):
         try:
             self.audio_service.stop_all_sounds()
         except Exception, e:
-            logger.exception("got error in Stop %s", str(e))
+            logger.exception("got error in Stop %s", e)
         try:
             self.vibra_service.stop()
         except Exception, e:
-            logger.exception("got error in Stop %s", str(e))
+            logger.exception("got error in Stop %s", e)
 

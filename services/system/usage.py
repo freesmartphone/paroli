@@ -89,35 +89,35 @@ class FSOUsageService(tichy.Service):
     def request_resource(self, resource):
         if hasattr(self, "iface"):
             if resource in self.iface.ListResources():
-                logger.debug("requesting resource %s state", str(resource))
+                logger.debug("requesting resource %s state", resource)
                 state = yield WaitDBus(self.iface.GetResourceState,resource)
                 if state == False and self.flags[resource] == False:
                     try:
-                        logger.debug("requesting resource %s", str(resource))
+                        logger.debug("requesting resource %s", resource)
                         yield WaitDBus(self.iface.RequestResource,resource)
-                        logger.debug("requested resource %s", str(resource))
+                        logger.debug("requested resource %s", resource)
                         self.flags[resource] = True
                     except Exception, e:
-                        logger.exception ("%s %s", str(Exception), str(e))
+                        logger.exception ("request_resource %s", e)
                 else:
-                    logger.debug("not requesting resource %s as it has been already requested", str(resource) )
+                    logger.debug("not requesting resource %s as it has been already requested", resource)
         yield None
     
     @tichy.tasklet.tasklet          
     def release_resource(self, resource):
         if hasattr(self, "iface"):
             if resource in self.iface.ListResources():
-                logger.debug("requesting resource %s state", str(resource))
+                logger.debug("requesting resource %s state", resource)
                 state = yield WaitDBus(self.iface.GetResourceState,resource)
                 if state == True and self.flags[resource] == True:
                     try:
-                        logger.debug("releasing resource %s", str(resource))
+                        logger.debug("releasing resource %s", resource)
                         yield WaitDBus(self.iface.ReleaseResource,resource)
-                        logger.debug("released resource %s", str(resource))
+                        logger.debug("released resource %s", resource)
                         self.flags[resource] = False
                     except Exception, e:
-                        logger.exception ("%s %s", str(Exception), str(e))
+                        logger.exception ("release_resource %s", e)
                 else:
-                    logger.debug("not releasing resource %s as it has been already released", str(resource) )
+                    logger.debug("not releasing resource %s as it has been already released", resource)
         yield None
 

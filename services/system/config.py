@@ -44,7 +44,7 @@ class FallbackConfigService(tichy.Service):
         if not os.path.exists(dir):
             os.makedirs(dir)
         self.main_cfg.read(compl_path)
-        logger.info("settings service %s", str(compl_path))
+        logger.info("settings service %s", compl_path)
         yield "none"    
     
     def _open(self, path, mod='r'):
@@ -79,8 +79,8 @@ class FallbackConfigService(tichy.Service):
             elif contents.has_section(section):
                 ret = contents.items(section)
             else:
-                logger.info("doesn't have section %s", str(section))
-                logger.info("valid sections are %s", str(contents.sections()))
+                logger.info("doesn't have section %s", section)
+                logger.info("valid sections are %s", contents.sections())
                 ret = None
             return ret
             

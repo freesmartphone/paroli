@@ -40,7 +40,7 @@ class Slot(dbus.service.Object):
         self.args = None
  
     def set_action(self, func, args):
-        logger.info("action set to %s with %s", str(func), str(args))
+        logger.info("action set to %s with %s", func, args)
         self.action = func
         self.args = args
 

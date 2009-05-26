@@ -117,7 +117,7 @@ class FSOWifiService(tichy.Service):
             yield WaitDBus(self.power_iface.SetPower,True)
             ret = "active"
 
-        logger.info("new status %s", str(ret))
+        logger.info("new status %s", ret)
         yield ret
 
     def get_power(self):

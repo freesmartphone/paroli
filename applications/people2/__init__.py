@@ -160,7 +160,7 @@ class People2App(tichy.Application):
                 #yield WaitDBus(self.sim_service.gsm_sim.DeleteEntry, 'contacts',item.sim_index)
             
         except Exception, ex:
-            logger.exception("Got error %s", str(ex))
+            logger.exception("Got error %s", ex)
         else:
             layout.delete()
             self.window.restore_orig()

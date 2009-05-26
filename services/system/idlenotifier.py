@@ -68,7 +68,7 @@ class FSOIdleNotifierService(tichy.Service):
             logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
 
     def dim(self, *args, **kargs):
-        logger.debug('dim %s', str(args))
+        logger.debug('dim %s', args)
 
     def get_timeout(self, state):
         timeouts = self.iface.GetTimeouts()

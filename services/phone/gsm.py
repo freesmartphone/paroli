@@ -212,14 +212,14 @@ class FSOGSMService(GSMService):
         except:
             ret = False
         
-        logger.info("ret is %s", str(ret))
+        logger.info("ret is %s", ret)
         
         #self.reg_counter += 1
         
         if not ret:
             t = Timer(30, self._register_jumper)
             t.start()
-            #logger.info("timer obj: %s", str(t))
+            #logger.info("timer obj: %s", t)
 
         yield ret
         
@@ -337,7 +337,7 @@ class FSOGSMService(GSMService):
         except dbus.exceptions.DBusException, e:
             if e.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
                 raise
-            logger.exception("_turn_on %s", str(e))
+            logger.exception("_turn_on %s", e)
             yield self._ask_pin()
 
     def _on_call_status(self, call_id, status, properties):
@@ -425,18 +425,18 @@ class FSOGSMService(GSMService):
 
     @tichy.tasklet.tasklet
     def _activate(self, call):
-        #logger.info("activate call %s", str(call.number))
+        #logger.info("activate call %s", (call.number))
         yield WaitDBus(self.gsm_call.Activate, call.__id)
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
-        #logger.info("send dtmf %s to call %s", code, str(call.number))
+        #logger.info("send dtmf %s to call %s", code, (call.number))
         assert call.status == 'active'
         yield WaitDBus(self.gsm_call.SendDtmf, code)
 
     @tichy.tasklet.tasklet
     def _release(self, call):
-        #logger.info("release call %s", str(call.number))
+        #logger.info("release call %s", (call.number))
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
@@ -739,7 +739,7 @@ class FallbackGSMService(GSMService):
 
     @tichy.tasklet.tasklet
     def _send_dtmf(self, call, code):
-        logger.info("send dtmf %s to call %s", code, str(call.number))
+        logger.info("send dtmf %s to call %s", code, call.number)
         assert call.status == 'active'
         yield Sleep(1)
 

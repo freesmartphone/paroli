@@ -112,7 +112,7 @@ class FSOSIMService(tichy.Service):
             logger.exception("Error : %s", ex)
             raise
             
-        #logger.info("message center is %s", str(msg_center))
+        #logger.info("message center is %s", (msg_center))
         self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
         yield None
 

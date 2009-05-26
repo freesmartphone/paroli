@@ -129,10 +129,10 @@ class Launcher_App2(tichy.Application):
         #self._remove_link_signals()
         
         if keep_alive == "no":
-            logger.info("keep alive set to no: %s", str(keep_alive))
+            logger.info("keep alive set to no: %s", keep_alive)
             tichy.mainloop.quit()
         else:
-            logger.info("keep alive set to %s", str(keep_alive))
+            logger.info("keep alive set to %s", keep_alive)
         
         if self.window.window.elm_obj.is_deleted() == False:
             self.window.delete()   # Don't forget to close the window
@@ -166,7 +166,7 @@ class Launcher_App2(tichy.Application):
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
-        logger.info("launching %s", str(signal))
+        logger.info("launching %s", signal)
         if self.ready != 0:
             self._remove_link_signals()
             self._launch_app(str(signal)).start()
@@ -217,7 +217,7 @@ class Launcher_App2(tichy.Application):
     def quit_app(self, emission, source, name):
     
         emitted = 'back_'+str(self.active_app)    
-        logger.debug('closing' + str(self.active_app))
+        logger.debug('closing' + self.active_app)
         self.main.emit(emitted)
                 
         self.edje_obj.signal("switch_clock_off","*")
@@ -262,7 +262,7 @@ class Launcher_App2(tichy.Application):
         
     def battery_capacity(self, *args, **kargs):
         if self.window.bg_m.tb:
-            logger.info("capacity change in launcher to %s", str(args[1]))
+            logger.info("capacity change in launcher to %s", args[1])
             self.window.bg_m.tb.Edje.signal_emit(str(args[1]), "battery_change")
 
     def battery_status(self, *args, **kargs):
@@ -414,7 +414,7 @@ class Launcher_App2(tichy.Application):
     
             
     def embryo(self, emission, signal, source):
-        logger.info("embryo says:" + str(signal))
+        logger.info("embryo says:" + signal)
     
     def general_test(self, *args, **kargs):
         logger.info("general test called with args: %s and kargs: %s", args, kargs)
@@ -510,7 +510,7 @@ class TopBar(tichy.Service):
                   self.profile_change(0,self.prefs.get_profile())
               except:
                   pass
-          #logger.info("topbar created for %s", str(parent))
+          #logger.info("topbar created for %s", parent)
         return tb
 
     def tb_deleted(self, *args, **kargs):
@@ -521,18 +521,18 @@ class TopBar(tichy.Service):
             logger.debug("%s", dir(e))
 
     def network_strength(self, *args, **kargs):
-        logger.info("network strength %s", str(args[1]))
+        logger.info("network strength %s", args[1])
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gsm_change")
         
     def gprs_status(self, *args, **kargs):
-        logger.debug("gprs status change in launcher to %s", str(args[1]))
+        logger.debug("gprs status change in launcher to %s", args[1])
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gprs_status")
         
     def battery_capacity(self, *args, **kargs):
         for i in self.tb_list:
-            logger.debug("capacity change in launcher to %s", str(args[1]))
+            logger.debug("capacity change in launcher to %s", args[1])
             i.edje_get().signal_emit(str(args[1]), "battery_change")
 
     def profile_change(self, *args, **kargs):
@@ -545,7 +545,7 @@ class TopBar(tichy.Service):
 
     def volume_change(self, *args, **kargs):
         for i in self.tb_list:
-            logger.debug("volume display changed to %s", str(args[0]))
+            logger.debug("volume display changed to %s", args[0])
             i.edje_get().signal_emit(str(args[0]), "profile-change")
 
     def battery_status(self, *args, **kargs):

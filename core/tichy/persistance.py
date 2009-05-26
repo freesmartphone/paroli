@@ -45,7 +45,7 @@ class Persistance(object):
 
     def __init__(self, path):
         self.path = path
-        logger.info("path = %s", str(path))
+        logger.info("path = %s", path)
 
     def _open(self, mod='r'):
         path = os.path.join(self.base_path, self.path)
@@ -82,7 +82,7 @@ class Persistance(object):
         try:
             file = self._open()
         except IOError, e:
-            logger.exception('%s %s', str(IOError), str(e))
+            logger.exception('load %s', e)
             return None
 
         # Try to load it as a pickle first
