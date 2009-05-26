@@ -73,17 +73,8 @@ def setup_logging():
     stdoutput"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(message)s',
-        filename='/var/log/paroli.log',
-        filemode='w+',
+        format='%(asctime)s [%(levelname)s] %(name)s(%(filename)s:%(lineno)d) %(message)s',
         )
-    formatter = logging.Formatter(
-        '%(asctime)s [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(message)s',
-        )
-    stream_log = logging.StreamHandler()
-    stream_log.setFormatter(formatter)
-    stream_log.setLevel(logging.INFO)
-    logger.addHandler(stream_log)
 
 
 class InitAll(tichy.Tasklet):

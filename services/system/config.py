@@ -72,7 +72,7 @@ class FallbackConfigService(tichy.Service):
         try:
             contents = self.main_cfg
 
-            logger.info("contents: %s", str(contents))
+            logger.debug("sections: %s", contents.sections())
 
             if contents == None:
                 ret = None
