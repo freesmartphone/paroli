@@ -24,7 +24,7 @@ import dbus
 import tichy
 from tichy.tasklet import WaitDBus
 
-from tel_number import TelNumber
+from paroli.tel_number import TelNumber
 
 import logging
 logger = logging.getLogger('SMS')

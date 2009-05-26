@@ -72,12 +72,14 @@ def setup_logging():
     """Set up two logging handlers, one in the log file, one in the
     stdoutput"""
     logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s %(name)-8s %(levelname)-8s %(message)s',
-        filename='/var/log/paroli.log', filemode='w+')
-
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(message)s',
+        filename='/var/log/paroli.log',
+        filemode='w+',
+        )
     formatter = logging.Formatter(
-        '%(filename)s %(lineno)d %(name)-8s %(levelname)-8s %(message)s')
+        '%(asctime)s [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(message)s',
+        )
     stream_log = logging.StreamHandler()
     stream_log.setFormatter(formatter)
     stream_log.setLevel(logging.INFO)

@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-
 import gsm
+import contact
 import sms
 import sim
-import tel_number
 import call
 import ussd
 import sounds
-

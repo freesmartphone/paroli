@@ -24,7 +24,7 @@ import logging
 logger = logging.getLogger('Call')
 
 import tichy
-from tel_number import TelNumber
+from paroli.tel_number import TelNumber
 
 class Call(tichy.Item):
     """Class that represents a voice call"""

@@ -25,7 +25,7 @@ import logging
 logger = logging.getLogger('Messages')
 
 import tichy
-from tel_number import TelNumber
+from paroli.tel_number import TelNumber
 
 
 

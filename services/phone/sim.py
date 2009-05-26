@@ -26,89 +26,46 @@ from tichy.tasklet import WaitDBus, WaitDBusSignal, WaitFirst, Sleep
 import logging
 logger = logging.getLogger('SIM')
 
-from contact import Contact
-from message import Message
 from sms import SMS
-from tel_number import TelNumber
-
-class PINError(Exception):
-    def __init__(self, pin):
-        super(PINError, self).__init__("wrong PIN : %s" % pin)
-
-@tichy.tasklet.tasklet
-def retry_on_sim_busy(method, *args):
-    """Attempt a dbus call the the framework and retry if we get a sim
-    busy error
-
-    Every time we get a SIM busy error, we wait for the ReadyStatus
-    signal, or 5 seconds, and we try again.
-
-    If it fails 5 times, we give up and raise an Exception.
-    """
-
-    def is_busy_error(ex):
-        """Check if an exception is due to a SIM busy error"""
-        # There is a little hack to handle cases when the framework
-        # fails to send the SIM.NotReady error.
-        name = ex.get_dbus_name()
-        msg = ex.get_dbus_message()
-        return name == 'org.freesmartphone.GSM.SIM.NotReady' or \
-            msg.endswith('SIM busy')
-
-    bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-    gsm = bus.get_object('org.freesmartphone.ogsmd',
-                         '/org/freesmartphone/GSM/Device',
-                         follow_name_owner_changes=True)
-    gsm_sim = dbus.Interface(gsm, 'org.freesmartphone.GSM.SIM')
-
-    for i in range(5):
-        try:
-            ret = yield WaitDBus(method, *args)
-            yield ret
-        except dbus.exceptions.DBusException, ex:
-            if not is_busy_error(ex): # This is an other error
-                raise
-            logger.exception("sim busy, retry in 5 seconds")
-            yield WaitFirst(Sleep(5),
-                            WaitDBusSignal(gsm_sim, 'ReadyStatus'))
-            continue
-    else:
-        logger.error("SIM always busy")
-        raise Exception("SIM too busy")
+from paroli.sim import SIMContact, PINError
 
 
-class SIMContact(Contact):
-    storage = 'SIM'
+class FallbackSIMService(tichy.Service):
 
-    name = Contact.Field('name', tichy.Text, True)
-    tel = Contact.Field('tel', TelNumber)
-    fields = [name, tel]
+    service = 'SIM'
+    name = 'Fallback'
 
-    def __init__(self, sim_index=None, **kargs):
-        super(SIMContact, self).__init__(sim_index=sim_index, **kargs)
-        self.sim_index = sim_index
-        self.icon = 'pics/sim.png'
+    PINError = PINError
 
-    @classmethod
-    def import_(cls, contact):
-        """create a new contact from an other contact)
-        """
-        assert not isinstance(contact, SIMContact)
-        sim = tichy.Service.get('SIM')
-        ret = yield sim.add_contact(contact.name, contact.tel)
-        yield ret
-
-    def delete(self):
-        sim = tichy.Service.get('SIM')
-        yield sim.remove_contact(self)
-
-    @classmethod
     @tichy.tasklet.tasklet
-    def load(cls):
-        sim = tichy.Service.get('SIM')
-        yield sim.wait_initialized()
-        ret = yield sim.get_contacts()
-        yield ret
+    def get_contacts(self):
+        yield [SIMContact(name='atest', tel='099872394', sim_index=0),SIMContact(name='btest2', tel='099872394', sim_index=0),SIMContact(name='ctest3', tel='099872394', sim_index=0),SIMContact(name='dtest4', tel='099872394', sim_index=0),SIMContact(name='etest5', tel='099872394', sim_index=0),SIMContact(name='ftest6', tel='099872394', sim_index=0),SIMContact(name='ttest7', tel='099872394', sim_index=0),SIMContact(name='htest8', tel='099872394', sim_index=0),SIMContact(name='utest9', tel='099872394', sim_index=0),SIMContact(name='otest10', tel='099872394', sim_index=0),SIMContact(name='ptest11', tel='099872394', sim_index=0),SIMContact(name='ptest12', tel='099872394', sim_index=0),SIMContact(name='rtest13', tel='099872394', sim_index=0),SIMContact(name='qtest14', tel='099872394', sim_index=0),SIMContact(name='ltest15', tel='099872394', sim_index=0),SIMContact(name='ztest16', tel='099872394', sim_index=0),SIMContact(name='ytest17', tel='099872394', sim_index=0)]
+
+    @tichy.tasklet.tasklet
+    def get_messages(self):
+        yield []
+
+    @tichy.tasklet.tasklet
+    def add_contact(self, name, number):
+        #logger.info("add %s : %s into the sim" % (name, number))
+        index = 0
+        contact = SIMContact(name=name, tel=number, sim_index=index)
+        yield contact
+
+    @tichy.tasklet.tasklet
+    def remove_contact(self, contact):
+        #logger.info("remove contact %s from sim", contact.name)
+        yield None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        self.sim_info = {'imsi':'0123456789012345'}
+        yield None
+
+    @tichy.tasklet.tasklet
+    def send_pin(self, pin):
+        logger.info("sending pin")
+        yield None
 
 class FSOSIMService(tichy.Service):
 
@@ -164,6 +121,48 @@ class FSOSIMService(tichy.Service):
         self.gsm_sim.SetServiceCenterNumber(value)
         yield None
 
+    @staticmethod
+    @tichy.tasklet.tasklet
+    def retry_on_sim_busy(method, *args):
+        """Attempt a dbus call the the framework and retry if we get a sim
+        busy error
+
+        Every time we get a SIM busy error, we wait for the ReadyStatus
+        signal, or 5 seconds, and we try again.
+
+        If it fails 5 times, we give up and raise an Exception.
+        """
+
+        def is_busy_error(ex):
+            """Check if an exception is due to a SIM busy error"""
+            # There is a little hack to handle cases when the framework
+            # fails to send the SIM.NotReady error.
+            name = ex.get_dbus_name()
+            msg = ex.get_dbus_message()
+            return name == 'org.freesmartphone.GSM.SIM.NotReady' or \
+                msg.endswith('SIM busy')
+
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        gsm = bus.get_object('org.freesmartphone.ogsmd',
+                             '/org/freesmartphone/GSM/Device',
+                             follow_name_owner_changes=True)
+        gsm_sim = dbus.Interface(gsm, 'org.freesmartphone.GSM.SIM')
+
+        for i in range(5):
+            try:
+                ret = yield WaitDBus(method, *args)
+                yield ret
+            except dbus.exceptions.DBusException, ex:
+                if not is_busy_error(ex): # This is an other error
+                    raise
+                logger.exception("sim busy, retry in 5 seconds")
+                yield WaitFirst(Sleep(5),
+                                WaitDBusSignal(gsm_sim, 'ReadyStatus'))
+                continue
+        else:
+            logger.error("SIM always busy")
+            raise Exception("SIM too busy")
+
     def get_contacts(self):
         """Return the list of all the contacts in the SIM
 
@@ -172,7 +171,7 @@ class FSOSIMService(tichy.Service):
         problem.
         """
         logger.info("Retrieve Phonebook")
-        entries = yield retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
+        entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
                                           'contacts')
         logger.info("Got %d contacts" % len(entries))
         #logger.debug('get contacts : %s', entries)
@@ -191,7 +190,7 @@ class FSOSIMService(tichy.Service):
         """Return the list of all the messages in the SIM
         """
         logger.info("Get all the messages from the SIM")
-        entries = yield retry_on_sim_busy(self.gsm_sim.RetrieveMessagebook, 'all')
+        entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrieveMessagebook, 'all')
 
         ret = []
         for entry in entries:
@@ -307,41 +306,4 @@ class FSOSIMService(tichy.Service):
         ret = ""
         
         yield ret
-
-class FallbackSIMService(tichy.Service):
-
-    service = 'SIM'
-    name = 'Fallback'
-
-    PINError = PINError
-
-    @tichy.tasklet.tasklet
-    def get_contacts(self):
-        yield [SIMContact(name='atest', tel='099872394', sim_index=0),SIMContact(name='btest2', tel='099872394', sim_index=0),SIMContact(name='ctest3', tel='099872394', sim_index=0),SIMContact(name='dtest4', tel='099872394', sim_index=0),SIMContact(name='etest5', tel='099872394', sim_index=0),SIMContact(name='ftest6', tel='099872394', sim_index=0),SIMContact(name='ttest7', tel='099872394', sim_index=0),SIMContact(name='htest8', tel='099872394', sim_index=0),SIMContact(name='utest9', tel='099872394', sim_index=0),SIMContact(name='otest10', tel='099872394', sim_index=0),SIMContact(name='ptest11', tel='099872394', sim_index=0),SIMContact(name='ptest12', tel='099872394', sim_index=0),SIMContact(name='rtest13', tel='099872394', sim_index=0),SIMContact(name='qtest14', tel='099872394', sim_index=0),SIMContact(name='ltest15', tel='099872394', sim_index=0),SIMContact(name='ztest16', tel='099872394', sim_index=0),SIMContact(name='ytest17', tel='099872394', sim_index=0)]
-
-    @tichy.tasklet.tasklet
-    def get_messages(self):
-        yield []
-
-    @tichy.tasklet.tasklet
-    def add_contact(self, name, number):
-        #logger.info("add %s : %s into the sim" % (name, number))
-        index = 0
-        contact = SIMContact(name=name, tel=number, sim_index=index)
-        yield contact
-
-    @tichy.tasklet.tasklet
-    def remove_contact(self, contact):
-        #logger.info("remove contact %s from sim", contact.name)
-        yield None
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        self.sim_info = {'imsi':'0123456789012345'}
-        yield None
-
-    @tichy.tasklet.tasklet
-    def send_pin(self, pin):
-        logger.info("sending pin")
-        yield None
 

@@ -44,6 +44,10 @@ class FallbackVibratorService(tichy.Service):
         logger.info('vibrator service init')
         yield None
 
+    def stop(self):
+        pass
+
+
 class FSOVibratorService(tichy.Service):
     """The 'Vibrator' service
 

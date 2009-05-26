@@ -26,30 +26,28 @@ logger = logging.getLogger('plugins')
 
 
 def _get_all_modules(path):
-    for dir in os.listdir(path):
-        if os.path.exists(os.path.join(path, dir, '__init__.py')): # TODO: check if there is a py std way for this
-            yield dir
+    for directory in os.listdir(path):
+        if os.path.exists(os.path.join(path, directory, '__init__.py')): # TODO: check if there is a py std way for this
+            yield directory
         else:
-            logger.debug('ignored directory "%s"', dir)
+            logger.debug('ignored directory "%s"', directory)
 
 
-def import_all(dir):
-    logger.debug("import_all %s", dir)
-    if not os.path.exists(dir):
-        logger.error("path '%s' does not exist", dir)
+def import_all(directory):
+    logger.debug("import_all %s", directory)
+    if not os.path.exists(directory):
+        logger.error("path '%s' does not exist", directory)
         raise IOError
     sys_path = sys.path[:]
-    sys.path.insert(0, dir)
-    try:
-        for module in _get_all_modules(dir):
-            logger.debug("import_all %s %s", dir, module)
-            __import__(module)
-            logger.info("import %s", module)
-    except ImportError, e:
-        logger.exception("can't import %s : %s", dir, e)
-        raise
-    finally:
-        sys.path[:] = sys_path
+    sys.path.insert(0, directory)
+    for module in _get_all_modules(directory):
+        try:
+            logger.info("loading %s", module)
+            mod = __import__(module)
+            logger.debug("plugin %s has %s", module, dir(mod))
+        except ImportError, e:
+            logger.exception("can't import %s : %s", directory, e)
+    sys.path[:] = sys_path
 
 
 if __name__ == '__main__':
