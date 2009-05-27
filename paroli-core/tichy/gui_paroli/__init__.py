@@ -85,12 +85,10 @@ class elm_window(tichy.Object):
         self.elm_obj.title_set(title)
         self.elm_obj.autodel_set(True)
         self.elm_obj.on_del_add(self.closing)
-        #self.elm_obj.on_resize_add(self.info)
-        
-        #self.size = self.elm_obj.size_get()
-        #print dir(self.size)
-        #print self.size[0]
-        
+    
+    def printer(self, *args, **kargs):
+        logger.info("window printer called with %s and %s", args, kargs)
+    
     def closing(self, *args, **kargs):
         self.emit("closing")
         
@@ -116,8 +114,7 @@ class elm_layout(tichy.Object):
         self.Edje = self.elm_obj.edje_get()
         
     def relay(self, emission, signal, source):
-        logger.info("%s relaying %s", str(self), str(signal))
-        print type(signal)
+        logger.debug("%s relaying %s", str(self), str(signal))
         self.emit(signal)
     
     def add(self, part, element):
@@ -283,9 +280,9 @@ class elm_list(tichy.Object):
                   for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
-                        if self.label_list.index((part, attribute)) == 0:
-                            if self.letter_index.has_key(value[0]) == False:
-                                self.letter_index[value[0]] = self.model.index(item)
+                        #if self.label_list.index((part, attribute)) == 0:
+                            #if self.letter_index.has_key(value[0]) == False:
+                                #self.letter_index[value[0]] = self.model.index(item)
                         
                         if isinstance(value, tichy.Item):
                             value = unicode(value.get_text())
@@ -317,7 +314,8 @@ class elm_list(tichy.Object):
                       if test == value:
                           edje_obj.signal_emit(signal,'*')
 
-                  ly.size_hint_min_set(470,60)
+                  ly.size_hint_min_set(470,100)
+                  ly.size_hint_max_set(470,200)
                   self.box.elm_obj.pack_end(ly)
                   ly.show()
                   self.items.append([item,edje_obj,ly])
