@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 #    Tichy
 #
@@ -115,6 +116,7 @@ class Call(tichy.Item):
         if self.status in ['releasing', 'released']:
             return
         gsm_service = tichy.Service.get('GSM')
+        logger.info("yielding release")
         try:
             yield gsm_service._release(self)
         except Exception, e:
@@ -123,6 +125,7 @@ class Call(tichy.Item):
             self.emit("error", e)
             self.status = 'released'
         else:
+            logger.info("yielding release done")
             self.status = 'releasing'
         self.emit(self.status)
 

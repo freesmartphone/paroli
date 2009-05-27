@@ -93,3 +93,12 @@ class SoundsTestService(tichy.Service):
     @tichy.tasklet.tasklet
     def init(self):
         yield None
+    
+    def call(self, *arg, **kargs):
+        logger.info("SoundService method call")
+            
+    def Message(self, *arg, **kargs):
+        logger.info("SoundService method Message")
+            
+    def Stop(self, *args, **kargs):
+        logger.info("SoundService method Stop")

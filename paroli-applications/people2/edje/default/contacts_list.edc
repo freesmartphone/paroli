@@ -15,50 +15,21 @@ group {
                 }
             }
           }
-          part {
-            name: "back-button";
-            type: IMAGE;
-            description {
-               state: "default" 0.0;
-               min: 159 69;
-               max: 159 69;
-               rel1 {
-                  relative: 0.0 0.0;
-                  offset: 1 19;
-                  to: "base";
-               }
-               rel2 {
-                  relative: 0.0 0.0;
-                  offset: 160 88;
-                  to: "base";
-               }
-               image {
-                  normal: "backspace.png";
-               }
-               visible: 1;
-            }
-            description
-            {
-              state: "clicked" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "backspace_pressed.png";
-            }
-         }
          part {
             name: "add-button";
             type: IMAGE;
             description {
                state: "default" 0.0;
-               min: 159 69;
-               max: 159 69;
+               min: 40 40;
+               max: 40 40;
                rel1 {
                   relative: 0.0 0.0;
-                  offset: 320 19;
+                  offset: 23 19;
                   to: "base";
                }
                rel2 {
                   relative: 0.0 0.0;
-                  offset: 479 88;
+                  offset: 63 69;
                   to: "base";
                }
                image {
@@ -71,11 +42,28 @@ group {
                 inherit: "default" 0.0;
                 visible: 0;
             }
-            description
-            {
-              state: "clicked" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "add_pressed.png";
+         }
+         part {
+            name: "dict-button";
+            type: IMAGE;
+            description {
+               state: "default" 0.0;
+               min: 40 40;
+               max: 40 40;
+               rel1 {
+                  relative: 0.0 0.0;
+                  offset: 123 19;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.0 0.0;
+                  offset: 163 69;
+                  to: "base";
+               }
+               image {
+                  normal: "add.png";
+               }
+               visible: 1;
             }
          }
           part{
@@ -100,6 +88,74 @@ group {
                 rel1.offset: 0 10;
             }
         }
+        part{
+            name: "dict-window";
+            type: RECT;
+            description{ state: "default" 0.0;
+              visible:0;
+              color:255 0 0 255;
+              rel1{
+                    relative: 0.1 0.1;
+                }
+                rel2 {
+                    relative: 0.8 0.5;
+                }
+            }
+            description{
+                state: "look-up" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
+            }
+        }
+        part{
+            name: "dict-window-close";
+            type: RECT;
+            description{ state: "default" 0.0;
+              visible:0;
+              color:0 255 0 255;
+              rel1{
+                    relative: 0.88 0.0;
+                    to: "dict-window";
+                }
+                rel2 {
+                    relative: 1.0 0.33;
+                    to: "dict-window";
+                }
+            }
+            description{
+                state: "look-up" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
+            }
+        }
+        part{
+            name: "dict-window-close-text";
+            type: TEXT;
+            mouse_events:0;
+            description{ state: "default" 0.0;
+              visible:0;
+              color:0 0 0 255;
+              rel1{
+                    relative: 0.0 0.0;
+                    to: "dict-window-close";
+              }
+              rel2 {
+                    relative: 1.0 1.0;
+                    to: "dict-window-close";
+              }
+              text{
+                  align: 0.5 0.5;
+                  font: "Sans";
+                  size: 24;
+                  text: "X";
+              }  
+            }
+            description{
+                state: "look-up" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
+            }
+        }
       }
       
       programs {
@@ -109,43 +165,29 @@ group {
                 signal: "mouse,up,1";
                 source: "add-button";
                 action: SIGNAL_EMIT "add_contact" "contacts-items";
-                after: "add-button-unpressed";
               }
           program 
               { 
-                name: "add-button-unpressed";
-                action: STATE_SET "default" 0.0;
-                target: "add-button";
-              }
-          program
-              {
-                name: "add-button-pressed";
-                signal: "mouse,down,1";
-                source: "add-button";
-                action: STATE_SET "clicked" 0.0;
-                target: "add-button";
-              }
-          program 
-              { 
-                name: "back-button";
+                name: "dict-button";
                 signal: "mouse,up,1";
-                source: "back-button";
-                action: SIGNAL_EMIT "back-button" "back-button";
-                after: "back-button-unpressed";
+                source: "dict-button";
+                script{
+                    set_state(PART:"dict-window", "look-up", 0.0);
+                    set_state(PART:"dict-window-close", "look-up", 0.0);
+                    set_state(PART:"dict-window-close-text", "look-up", 0.0);
+                    emit("opening", "embryo");
+                }
               }
           program 
               { 
-                name: "back-button-unpressed";
-                action: STATE_SET "default" 0.0;
-                target: "back-button";
-              }      
-          program
-              {
-                name: "back-button-pressed";
-                signal: "mouse,down,1";
-                source: "back-button";
-                action: STATE_SET "clicked" 0.0;
-                target: "back-button";
+                name: "dict-button-window-close-button";
+                signal: "mouse,up,1";
+                source: "dict-window-close";
+                script{
+                    set_state(PART:"dict-window", "default", 0.0);
+                    set_state(PART:"dict-window-close", "default", 0.0);
+                    set_state(PART:"dict-window-close-text", "default", 0.0);
+                }
               }
           program 
               { 

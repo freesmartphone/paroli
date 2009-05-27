@@ -167,7 +167,7 @@ group { name: "item";
                 color: 255 255 255 255;
                 text {
                     align: 0.0 0.0;
-                    size: 48;
+                    size: 40;
                     text: "Testos";
                     font: "Sans";
                 }
@@ -195,7 +195,7 @@ group { name: "item";
                 color: 255 255 255 255;
                 text {
                     align: 0.1 0.15;
-                    size: 28;
+                    size: 24;
                     text: "0000-00-0000000";
                     font: "Sans";
                 }

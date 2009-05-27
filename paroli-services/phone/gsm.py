@@ -33,6 +33,7 @@ from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
 
 from call import Call
 from threading import Timer
+import time 
 
 # TODO: move this tasklet into paroli-service/phone
 
@@ -325,6 +326,7 @@ class FreeSmartPhoneGSM(GSMService):
         We need to check if the SIM PIN is required and if so start
         the PIN input application.
         """
+        #timer = time.time()
         logger.info("Check antenna power")
         power = yield WaitDBus(self.gsm_device.GetAntennaPower)
         logger.info("antenna power is %d", power)
@@ -337,6 +339,7 @@ class FreeSmartPhoneGSM(GSMService):
             if ex.get_dbus_name() != 'org.freesmartphone.GSM.SIM.AuthFailed':
                 raise
             yield self._ask_pin()
+        #print time.time() - timer
 
     def _on_call_status(self, call_id, status, properties):
         #logger.info("call status %s %s %s", call_id, status, properties)

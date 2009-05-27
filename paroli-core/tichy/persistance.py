@@ -29,9 +29,9 @@ import os
 
 import logging
 try:
-    import cPickle as pickle
+	import cPickle as pickle
 except:
-    import pickle
+	import pickle
 
 logger = logging.getLogger('persistance')
 
@@ -68,8 +68,8 @@ class Persistance(object):
                 serialized. Usually dictionary or list.
         """
 
-        # Save the object to a python pickle:
-        # http://docs.python.org/library/pickle.html
+	# Save the object to a python pickle:
+	# http://docs.python.org/library/pickle.html
         file = self._open('w')
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
 

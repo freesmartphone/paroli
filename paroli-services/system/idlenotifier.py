@@ -34,6 +34,7 @@ class FreeSmartPhoneIdleNotifier(tichy.Service):
     def init(self):
         """Connect to the freesmartphone DBus object"""
         logger.info('IdleNotifier service init')
+        #yield None
         yield self._connect_dbus()
 
     @tichy.tasklet.tasklet
