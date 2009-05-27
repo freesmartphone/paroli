@@ -75,6 +75,8 @@ class Settings(tichy.Application):
         
         self.item_list.add_callback("*", "sublist", self._show_sublist)
         
+        parent.emit("unblock")
+        
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing
         logger.info('Settings closing')
