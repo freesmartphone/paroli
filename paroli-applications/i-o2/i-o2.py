@@ -78,6 +78,8 @@ class I_O2_App(tichy.Application):
 
         self.item_list.Elm_win = self.window.window
 
+        parent.emit("unblock")
+
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'), tichy.Wait(self.window.window,'closing'))
         
         for i in self.callLogs:
@@ -133,5 +135,5 @@ class I_O2_App(tichy.Application):
         service.create(self.window, callLog[0].number).start()
 
     def printer(self, *args, **kargs):
-        print args
-        print kargs
+        print args[1]
+        #print kargs

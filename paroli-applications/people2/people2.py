@@ -53,19 +53,16 @@ class People2App(tichy.Application):
 
         ##generate app-window
         self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+
         self.edje_obj = self.window.main_layout
 
         self.list_label = [('label','name')]
         self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
        
         self.item_list.add_callback("contact_details", "*", self.contact_details)
-        #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
-        #self.item_list.add_callback("mouse,down,1", "*", self.self_test)
-        #self.item_list.add_callback("drag,start", "*", self.self_test)
         self.item_list.add_callback("send_all", "fold-back", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
-
-        self.edje_obj.add_callback("back-button", "*", self.signal)
+        
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
 
         ##wait until main object emits back signal or delete is requested
@@ -74,25 +71,21 @@ class People2App(tichy.Application):
         #self.item_list.jump_to_index('q')
         #self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
         
+        parent.emit("unblock")
+        
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')
         #self.main.emit('closed')
         
         self.window.delete()
         #del self.item_list
-    
-    def signal(self, emission, signal, source):
-        """ Callback function. It invokes, when the "back" button clicked."""
-        logger.info("people2.py:signal() emmision: %s, signal: %s, source: %s", 
-                    str(emission), str(signal), str(source))
-        self.window.emit('back')
-        
-        
+                    
     ##DEBUG FUNCTIONS
     ## general output check
     def self_test(self, *args, **kargs):
-        txt = "self test called with args: ", args, "and kargs: ", kargs
-        logger.info(txt)
+        #txt = "self test called with args: ", args, "and kargs: ", kargs
+        #logger.info(txt)
+        print args[1]
 
     def create_contact(self, emission, source, param):
         service = tichy.Service.get('ContactCreate')
