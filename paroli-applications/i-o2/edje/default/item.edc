@@ -255,7 +255,7 @@ group { name: "item";
             color: 255 255 255 255;
             text {
                align: 0.0 0.05;
-               size: 38;
+               size: 40;
                text: "Testtos";
                font: "Sans";
             }
@@ -264,7 +264,7 @@ group { name: "item";
                to: "item";
             }
             rel2 {
-               relative: 1.0 0.6;
+               relative: 1.0 0.66;
                to: "item";
             }
          }
@@ -362,13 +362,13 @@ group { name: "item";
             state: "default" 0.0;
             color: 255 255 255 255;
             text {
-               align: 0.0 1.0;
-               size: 12;
+               align: 0.1 0.15;
+               size: 24;
                text: "";
                font: "Sans";
             }
             rel1 {
-               relative: 0.0 0.75;
+               relative: 0.0 0.67;
                to: "item";
             }
             rel2 {
