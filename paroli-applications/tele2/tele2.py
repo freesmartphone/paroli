@@ -55,6 +55,8 @@ class TeleApp(tichy.Application):
         ## close the Tele app, with the back button
         self.edje_obj.add_callback("back", "edje", self.signal) 
         
+        parent.emit("unblock")
+
         ##wait until main object emits back signal or delete is requested
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'))
         logger.info('Tele closing')
@@ -215,7 +217,8 @@ class TeleCaller2(tichy.Application):
 
             else:   # If not it means we want to initiate the call first
                 display = unicode(TelNumber(number).get_text()).encode("utf-8")
-                self.edje_obj.part_text_set('num_field-text',display)
+                logger.info("display is %s", display)
+                self.edje_obj.part_text_set('num_field-text', display)
                 self.edje_obj.signal_emit('to_dialing_state',"*")
                 self.edje_obj.layer_set(2)
                 self.edje_obj.show()
