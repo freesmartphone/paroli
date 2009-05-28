@@ -6,6 +6,8 @@ fonts {
 images {
    image: "back.png" COMP;
    image: "save.png" COMP;
+   image: "next.png" COMP;
+   image: "next_pressed.png" COMP;
    image: "minus.png" COMP;
    image: "plus.png" COMP;
 
@@ -18,7 +20,10 @@ images {
    image: "call.png" COMP;
    image: "end_call.png" COMP;
    image: "answer.png" COMP;
+   image: "back.png" COMP;
+   image: "back_pressed.png" COMP;
    image: "backspace.png" COMP;
+   image: "backspace_pressed.png" COMP;
    image: "speaker.png" COMP;
    image: "mute.png" COMP;
    image: "enter.png" COMP;

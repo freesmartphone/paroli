@@ -58,7 +58,7 @@ class TeleApp(tichy.Application):
         parent.emit("unblock")
 
         ##wait until main object emits back signal or delete is requested
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'),tichy.Wait(self.edje_obj, 'back'))
         logger.info('Tele closing')
         
         if i != 2:
