@@ -63,10 +63,8 @@ class EventsLoop(tichy.Object):
 
     def timeout_add(self, time, callback, *args):
         return ecore.timer_add(time / 1000., callback, *args)
-        pass
 
     def source_remove(self, timer):
-        pass
         timer.delete()
 
     def quit(self):
@@ -76,8 +74,7 @@ class EventsLoop(tichy.Object):
         elementary.shutdown()
         
     def iterate(self):
-        #ecore.main_loop_iterate()
-        pass
+        pass #ecore.main_loop_iterate()
 
 class elm_window(tichy.Object):
     def __init__(self, title="Paroli"):
