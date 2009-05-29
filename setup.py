@@ -87,7 +87,7 @@ setup(name='Paroli',
       author="Mirko Lindler",
       author_email='mirko@openmoko.org',
       package_dir = {'': 'core'},
-      packages = ['tichy', 'tichy.gui_paroli'],
+      packages = ['tichy', 'paroli', 'paroli.gui'],
       scripts= ['scripts/paroli'],
       # XXX: Those locations may not work on the neo !
       data_files = [('applications',

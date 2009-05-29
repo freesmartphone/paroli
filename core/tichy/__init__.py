@@ -41,5 +41,5 @@ from settings import Setting
 
 mainloop = None
 
-import gui_paroli as gui
+from paroli import gui
 mainloop = gui.EventsLoop()

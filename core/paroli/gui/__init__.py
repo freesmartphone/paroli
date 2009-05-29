@@ -31,7 +31,7 @@ import ecore.evas
 #import etk
 
 import logging
-logger = logging.getLogger('core.tichy.gui_paroli')
+logger = logging.getLogger('core.paroli.gui')
 
 import tichy
 
