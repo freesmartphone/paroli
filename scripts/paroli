@@ -1,3 +1,3 @@
 #!/bin/sh -e
 cd /usr/share/paroli/scripts/
-exec python -oo ./paroli.py --cfgfile ./paroli.cfg
+exec python -OO ./paroli.py --cfgfile ./paroli.cfg
