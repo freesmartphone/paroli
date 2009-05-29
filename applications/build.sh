@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 flag_io=
 flag_launcher=
