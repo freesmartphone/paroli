@@ -54,22 +54,22 @@ collections{
                           set_state(PART:"blocker-text", "default", 0.1);
                           timer(0.75, "loading_anim", 1);
                           set_int(anim_var,2);
-                          emit("zero ran through", "embryo");
+//                           emit("zero ran through", "embryo");
                       }else if ( inter == 2) {
                           set_state(PART:"blocker-text", "default", 0.2);
                           timer(0.75, "loading_anim", 2);
                           set_int(anim_var,3);
-                          emit("one ran through", "embryo");
+//                           emit("one ran through", "embryo");
                       }else if ( inter == 3 ) {
                           set_state(PART:"blocker-text", "default", 0.3);
                           timer(0.75, "loading_anim", 0);
                           set_int(anim_var,0);
-                          emit("two ran through", "embryo");
+//                           emit("two ran through", "embryo");
                       }else if ( inter == 0 ) {
                           set_state(PART:"blocker-text", "default", 0.0);
                           timer(0.75, "loading_anim", 0);
                           set_int(anim_var,1);
-                          emit("two ran through", "embryo");
+//                           emit("two ran through", "embryo");
                       }else{
                           new buf[11];
                           snprintf(buf, 10, "%i", inter);
