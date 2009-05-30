@@ -18,15 +18,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import logging
-logger = logging.getLogger('services.system.alarm')
 import dbus
+
 import tichy
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
+from tichy.tasklet import WaitDBus, WaitDBusName
 import time
 
-class Slot(dbus.service.Object):
+import logging
+logger = logging.getLogger('services.fso.alarm')
+
+class FSOSlot(dbus.service.Object):
     """ Alarm notifications will be submitted as dbus method calls, hence 
         alarm receivers need to implement the interface 
         org.freesmartphone.Notification on the root object. Alarm 
@@ -35,7 +36,7 @@ class Slot(dbus.service.Object):
     """
 
     def __init__(self, *args, **kargs):
-        super(Slot, self).__init__(*args, **kargs)
+        super(FSOSlot, self).__init__(*args, **kargs)
         self.action = None
         self.args = None
  
@@ -77,7 +78,7 @@ class FSOAlarmService(tichy.Service):
     def _setup_notification_cb(self):
         bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         bus_name = dbus.service.BusName('org.tichy.notification', bus)
-        self.slot = Slot(bus_name, '/')
+        self.slot = FSOSlot(bus_name, '/')
 
     @tichy.tasklet.tasklet
     def _connect_dbus(self):
@@ -172,18 +173,4 @@ class TimeSetting(tichy.Object):
     def __repr__(self):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time
-
-class FallbackAlarmService(tichy.Service):
-
-    service = 'Alarm'
-    name = 'Fallback'
-  
-    def __init__(self):
-        super(FallbackAlarmService, self).__init__()
-        self.alarm = None
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('alarm service init')
-        yield None
 

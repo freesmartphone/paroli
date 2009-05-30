@@ -26,28 +26,8 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('power')
+logger = logging.getLogger('services.fso.power')
 
-
-class FallbackPowerService(tichy.Service):
-    """The 'Power' service
-
-    This service can be used to listen to the power signals and control the device power.
-    """
-
-    service = 'Power'
-    name = 'Fallback'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(FallbackPowerService, self).__init__()
-        self.battery_capacity = 50
-        self.battery_status = ""
-        self.battery = None
-
-    def init(self):
-        logger.info('power service init')
-        yield None
 
 class FSOPowerService(tichy.Service):
     """The 'Power' service

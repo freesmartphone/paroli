@@ -24,20 +24,7 @@ import dbus
 import tichy
 
 import logging
-logger = logging.getLogger('gprs')
-
-class FallbackGprsService(tichy.Service):
-    """The 'Gprs' service
-    """
-
-    service = 'Gprs'
-    name = 'Fallback'
-
-    def __init__(self):
-        super(FallbackGprsService, self).__init__()
-
-    def init(self):
-        yield None
+logger = logging.getLogger('services.fso.gprs')
 
 class FSOGprsService(tichy.Service):
     """The 'Gprs' service

@@ -23,29 +23,10 @@ __docformat__ = 'reStructuredText'
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy.tasklet import WaitDBusName
 
 import logging
-logger = logging.getLogger('vibrator')
-
-
-class FallbackVibratorService(tichy.Service):
-    """The 'Vibrator' service
-
-    """
-
-    service = 'Vibrator'
-    name = 'Fallback'
-
-    def __init__(self):
-        super(FallbackVibratorService, self).__init__()
-
-    def init(self):
-        logger.info('vibrator service init')
-        yield None
-
-    def stop(self):
-        pass
+logger = logging.getLogger('services.fso.vibrator')
 
 
 class FSOVibratorService(tichy.Service):

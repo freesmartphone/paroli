@@ -21,49 +21,31 @@
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy.tasklet import WaitDBusName
 
 import logging
-logger = logging.getLogger('audio')
+logger = logging.getLogger('services.fso.audio')
 
-class FallbackAudioService(tichy.Service):
 
-    service = 'Audio'
-    name = 'Fallback'
+class FSOSetting(Setting):
+    """Special setting class that hooks into a FSO preference
 
-    def __init__(self):
-        super(FallbackAudioService, self).__init__()
-        self.device = None
-        self.muted = 0
-        self.volume = tichy.Int.as_type(55)
+    It relies on the 'Prefs' service.
+    """
+    @property
+    def value(self):
+        """accessor to the actual value"""
+        prefs = tichy.Service.get('Prefs')
+        return prefs[self.group][self.name]
 
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._do_sth()
-        
-    def _do_sth(self):
-        pass
-        
-    def get_mic_status(self):
-        return 0
-        
-    def set_mic_status(self, val):
-        if self.muted != 1:
-            pass
-    
-    def get_speaker_volume(self):
-        return self.volume.value
-        
-    def set_speaker_volume(self, val):
-        if self.muted != 1:
-            self.volume.value = val
-            logger.info("volume set to %d", self.get_speaker_volume())
-        
-    def audio_toggle(self):
-        return 0
-
-    def stop_all_sounds(self):
-        logger.info("Stop all sounds")
+    @tasklet.tasklet
+    def set(self, value):
+        """Try to set the Setting value and block until it is done"""
+        prefs = tichy.Service.get('Prefs')
+        # XXX: make this asynchronous
+        prefs[self.group][self.name] = value
+        self.options.emit('updated')
+        yield None
 
 class FSOAudioService(tichy.Service):
 

@@ -1,1 +1,7 @@
-import alarm, config, display, idlenotifier, system, systime, usage
+import alarm
+import config
+import display
+import idlenotifier
+import system
+import systime
+import usage

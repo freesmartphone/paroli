@@ -28,23 +28,8 @@ logger = logging.getLogger('prefs')
 
 import dbus
 
+
 # TODO: make the blocking methods asynchronous
-
-class PrefsService(Service):
-
-    def __getitem__(self, name):
-        raise NotImplementedError
-
-    def get_profile(self):
-        raise NotImplementedError
-
-    def set_profile(self, name):
-        raise NotImplementedError
-
-    def get_profiles(self):
-        raise NotImplementedError
-
-
 class FSOPrefsServices(tichy.Service):
 
     service = 'Prefs'
@@ -108,51 +93,3 @@ class FSOPrefsServices(tichy.Service):
     def __getitem__(self, name):
         return FSOPrefsServices.Service(self, name)
 
-class FallbackPrefsSerices(tichy.Service):
-
-    service = 'Prefs'
-    name = 'Fallback'
-
-    class Service(item.Item):
-
-        def __init__(self, prefs, name):
-            super(FallbackPrefsSerices.Service, self).__init__()
-            self.prefs = prefs
-            self.name = name
-            self.attrs = {}
-
-        def __getitem__(self, name):
-            for profile in self.prefs.activated_profiles:
-                try:
-                    value = self.attrs[name][profile]
-                    logger.info("Get %s.%s using profile %s",
-                                self.name, name, profile)
-                    return value
-                except KeyError:
-                    logger.exception("__getitem__: %s", e)
-                    pass
-            raise KeyError(name)
-
-        def __setitem__(self, name, value):
-            self.attrs[name] = value
-
-    def __init__(self):
-        phone = FallbackPrefsSerices.Service(self, 'phone')
-        phone['ring-tone'] = {'default': 'music1'}
-        phone['ring-volume'] = {'default': 10, 'silent': 0}
-        self.services = {'phone': phone}
-        self.profiles = ['default', 'silent', 'outdoor']
-        self.activated_profiles = ['default']
-
-    def __getitem__(self, name):
-        return self.services[name]
-
-    def get_profile(self):
-        return self.activated_profiles[0]
-
-    def get_profiles(self):
-        return self.profiles
-
-    def set_profile(self, name):
-        logger.info("Set profile to \"%s\"", name)
-        self.activated_profiles = [name, 'default']

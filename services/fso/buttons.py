@@ -23,29 +23,11 @@ __docformat__ = 'reStructuredText'
 import dbus
 
 import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy.tasklet import WaitDBusName
 
 import logging
-logger = logging.getLogger('buttons')
+logger = logging.getLogger('services.fso.buttons')
 
-
-class FallbackButtonService(tichy.Service):
-    """The 'Button' service
-
-    This service can be used to listen to the input signals form hw buttons
-    """
-
-    service = 'Buttons'
-    name = 'Fallback'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(FallbackButtonService, self).__init__()
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('IdleNotifier test service init')
-        yield None
 
 class FSOButtonService(tichy.Service):
     """The 'Button' service

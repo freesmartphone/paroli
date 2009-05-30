@@ -24,24 +24,9 @@ import dbus
 import tichy
 
 import logging
-logger = logging.getLogger('wifi')
+logger = logging.getLogger('services.fso.wifi')
 
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst
-
-class FallbackWifiService(tichy.Service):
-    """The 'Wifi' service
-    """
-
-    service = 'Wifi'
-    name = 'Fallback'
-
-    def __init__(self):
-        """Connect to the freesmartphone DBus object"""
-        super(FallbackWifiService, self).__init__()
-
-    def init(self):
-        logger.info('wifi service init')
-        yield None
 
 class FSOWifiService(tichy.Service):
     """The 'Wifi' service

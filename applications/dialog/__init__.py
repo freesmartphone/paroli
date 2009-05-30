@@ -100,7 +100,7 @@ class Dialog(tichy.Application):
         self.emit('done')
 
     def _on_ok_clicked(self, *args):
-        """called when we clock the OK button"""
+        """called when we click the OK button"""
         self.emit('done')
 
 
