@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #    Paroli
 #
-#    copyright 2008 Mirko Lindner (mirko@openmoko.org)
+#    copyright 2008 Jeremy Chang (jeremy@openmoko.org)
 #
 #    This file is part of Paroli.
 #
@@ -18,29 +18,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-__docformat__ = 'reStructuredText'
-
 import tichy
 
 import logging
-logger = logging.getLogger('services.fallback.buttons')
+logger = logging.getLogger('services.fallback.alarm')
 
+class FallbackAlarmService(tichy.Service):
 
-class FallbackButtonService(tichy.Service):
-    """The 'Button' service
-
-    This service can be used to listen to the input signals form hw buttons
-    """
-
-    service = 'Buttons'
+    service = 'Alarm'
     name = 'Fallback'
-
+  
     def __init__(self):
-        """ ctor """
-        super(FallbackButtonService, self).__init__()
+        super(FallbackAlarmService, self).__init__()
+        self.alarm = None
 
     def init(self):
-        """ initing """
-        logger.info('IdleNotifier test service init')
+        """Connect to the freesmartphone DBus object"""
+        logger.info('alarm service init')
         yield None
 

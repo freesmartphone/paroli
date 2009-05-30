@@ -18,15 +18,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
 
+import dbus
+
 import tichy
-import tichy.item as item
-from tichy.service import Service
 from tichy.tasklet import WaitDBusName
 
 import logging
 logger = logging.getLogger('prefs')
-
-import dbus
 
 
 # TODO: make the blocking methods asynchronous

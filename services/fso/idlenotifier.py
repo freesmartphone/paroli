@@ -19,25 +19,14 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import logging
-logger = logging.getLogger('services.system.idlenotifier')
 import dbus
+
 import tichy
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
+from tichy.tasklet import WaitDBusName
 
+import logging
+logger = logging.getLogger('services.fso.idlenotifier')
 
-class FallbackIdleNotifier(tichy.Service):
-
-    service = 'IdleNotifier'
-    name = 'Fallback'
-
-    def __init__(self):
-        super(FallbackIdleNotifier, self).__init__()
-
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('IdleNotifier test service init')
-        yield None
 
 class FSOIdleNotifierService(tichy.Service):
 

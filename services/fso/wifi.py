@@ -21,6 +21,7 @@
 __docformat__ = 'reStructuredText'
 
 import dbus
+
 import tichy
 
 import logging

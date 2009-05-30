@@ -23,7 +23,7 @@ import tichy.item as item
 from tichy.service import Service
 
 import logging
-logger = logging.getLogger('prefs')
+logger = logging.getLogger('service.fallback.prefs')
 
 
 class FallbackPrefsSerices(tichy.Service):

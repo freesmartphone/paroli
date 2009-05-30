@@ -19,10 +19,10 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import dbus
+import time
 
 import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
-import time
 
 import logging
 logger = logging.getLogger('services.fso.alarm')

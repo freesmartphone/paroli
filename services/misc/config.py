@@ -23,12 +23,11 @@ import logging
 import ConfigParser
 import tichy
 
-logger = logging.getLogger('services.system.config')
+logger = logging.getLogger('services.misc.config')
 
-class FallbackConfigService(tichy.Service):
+class ConfigService(tichy.Service):
 
     service = 'Config'
-    name = 'Fallback'
   
     def __init__(self):
         super(FallbackConfigService, self).__init__()

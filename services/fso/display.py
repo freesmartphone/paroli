@@ -26,7 +26,7 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('services.system.display')
+logger = logging.getLogger('services.fso.display')
 
 
 class FSODisplayService(tichy.Service):
@@ -92,3 +92,4 @@ class FSODisplayService(tichy.Service):
     def set_profile(self, profile):
         yield self._connect_dbus()
         yield WaitDBus(self.iface.Set, profile)
+

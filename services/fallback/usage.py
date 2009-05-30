@@ -23,24 +23,24 @@ __docformat__ = 'reStructuredText'
 import tichy
 
 import logging
-logger = logging.getLogger('services.fallback.buttons')
+logger = logging.getLogger('services.fallback.usage')
 
 
-class FallbackButtonService(tichy.Service):
-    """The 'Button' service
+class FallbackUsageService(tichy.Service):
+    """The 'Usage' service
 
-    This service can be used to listen to the input signals form hw buttons
+    This service can be used to listen to the power signals and control the device power.
     """
 
-    service = 'Buttons'
+    service = 'Usage'
     name = 'Fallback'
 
     def __init__(self):
-        """ ctor """
-        super(FallbackButtonService, self).__init__()
+        super(FallbackUsageService, self).__init__()
 
     def init(self):
-        """ initing """
-        logger.info('IdleNotifier test service init')
+        """ initialize service and connect to dbus object
+        """
+        logger.info('usage test service init')
         yield None
 

@@ -26,26 +26,7 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('services.system.usage')
-
-
-class FallbackUsageService(tichy.Service):
-    """The 'Usage' service
-
-    This service can be used to listen to the power signals and control the device power.
-    """
-
-    service = 'Usage'
-    name = 'Fallback'
-
-    def __init__(self):
-        super(FallbackUsageService, self).__init__()
-
-    def init(self):
-        """ initialize service and connect to dbus object
-        """
-        logger.info('usage test service init')
-        yield None
+logger = logging.getLogger('services.fso.usage')
 
 
 class FSOUsageService(tichy.Service):

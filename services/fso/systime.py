@@ -18,27 +18,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-
-import logging
-logger = logging.getLogger('services.system.systime')
 import dbus
-import tichy
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 import time
 import os
 
-class FallbackSysTimeService(tichy.Service):
+import tichy
+from tichy.tasklet import WaitDBus, WaitDBusName
 
-    service = 'SysTime'
-    name = 'Fallback'
-  
-    def __init__(self):
-        super(FallbackSysTimeService, self).__init__()
+import logging
+logger = logging.getLogger('services.fso.systime')
 
-    def init(self):
-        """Connect to the freesmartphone DBus object"""
-        logger.info('systime service init')
-        yield None
 
 class FSOSysTimeService(tichy.Service):
 

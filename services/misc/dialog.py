@@ -23,7 +23,7 @@ __docformat__ = 'reStructuredText'
 """Dialog service"""
 
 import logging
-logger = logging.getLogger('services.dialog')
+logger = logging.getLogger('services.misc.dialog')
 
 import tichy
 from paroli import gui
@@ -104,11 +104,10 @@ class Dialog(tichy.Application):
         self.emit('done')
 
 
-class FallbackDialogService(tichy.Service):
+class DialogService(tichy.Service):
     """Service that can be used to show dialog to the user"""
 
     service = 'Dialog'
-    name = 'Fallback'
 
     @tichy.tasklet.tasklet
     def dialog(self, parent, title, msg, *args):
