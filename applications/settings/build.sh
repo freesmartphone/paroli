@@ -1,5 +1,5 @@
 #!/bin/sh -e
 
 echo "building settings.edj"
-edje_cc $@ -id . -id ../common-for-edje/images -fd . -fd ../common-for-edje/fonts edje/default/settings.edc -o settings.edj
+edje_cc $@ -id . -id ../../resources/images -fd . -fd ../../resources/fonts edje/default/settings.edc -o settings.edj
 chmod +r settings.edj
