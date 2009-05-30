@@ -19,10 +19,10 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import logging
 import ConfigParser
 import tichy
 
+import logging
 logger = logging.getLogger('services.misc.config')
 
 class ConfigService(tichy.Service):
@@ -30,7 +30,7 @@ class ConfigService(tichy.Service):
     service = 'Config'
   
     def __init__(self):
-        super(FallbackConfigService, self).__init__()
+        super(ConfigService, self).__init__()
 
     @tichy.tasklet.tasklet
     def init(self):

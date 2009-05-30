@@ -28,10 +28,9 @@ from threading import Timer
 
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
-from paroli.tel_number import TelNumber
+from paroli.tel_number import TelNumber, ListSettingObject
 from paroli.message import SMS
-from paroli.sim import GSMService, Call
-from paroli.sim import SIMContact, PINError
+from paroli.sim import GSMService, Call, SIMContact, PINError
 
 import logging
 logger = logging.getLogger('service.fso.gsm')
@@ -519,12 +518,6 @@ class Provider(tichy.Object):
         self.abbr = obj[3]
         self.NetworkType = obj[4]
         self.action = action
-
-class ListSettingObject():
-      
-      def __init__(self, name, action):
-          self.name = name
-          self.action = action
 
 class FSOUssdService(tichy.Service):
     """The 'Button' service

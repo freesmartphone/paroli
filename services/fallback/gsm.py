@@ -25,7 +25,7 @@ __docformat__ = 'reStructuredText'
 
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
-from paroli.tel_number import TelNumber
+from paroli.tel_number import TelNumber, ListSettingObject
 from paroli.message import SMS
 from paroli.sim import GSMService
 from paroli.sim import SIMContact, PINError

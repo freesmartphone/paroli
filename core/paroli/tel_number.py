@@ -67,3 +67,10 @@ class TelNumber(tichy.Text):
             self.view_text.value = contact.get_text()
         else:
             self.view_text.value = self.value
+
+class ListSettingObject(object):
+
+      def __init__(self, name, action):
+          self.name = name
+          self.action = action
+

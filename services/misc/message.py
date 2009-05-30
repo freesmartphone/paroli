@@ -21,6 +21,7 @@ __docformat__ = 'reStructuredText'
 
 import tichy
 from paroli.tel_number import TelNumber
+from paroli.message import Message
 
 import logging
 logger = logging.getLogger('service.misc.messages')
@@ -36,7 +37,7 @@ class MessagesService(tichy.Service):
     service = 'Messages'
 
     def __init__(self):
-        super(FallbackMessagesService, self).__init__()
+        super(MessagesService, self).__init__()
         self.messages = tichy.List()
         self.unread = tichy.Text(0)
         self.messages.connect('appended',self._update_unread)
