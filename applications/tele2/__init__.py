@@ -26,7 +26,6 @@ import tichy
 from tichy import gui
 import sys
 from paroli.tel_number import TelNumber
-from dialog import Dialog
 
 class TeleApp(tichy.Application):
     name = 'Dialer'

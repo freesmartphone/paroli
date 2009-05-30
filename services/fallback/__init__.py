@@ -1,7 +1,14 @@
+import alarm
 import audio
 import buttons
+import contact
 import gprs
+import gsm
+import idlenotifier
 import power
 import prefs
+import sounds
+import systime
+import usage
 import vibrator
 import wifi

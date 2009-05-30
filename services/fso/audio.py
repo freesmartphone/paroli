@@ -27,7 +27,7 @@ import logging
 logger = logging.getLogger('services.fso.audio')
 
 
-class FSOSetting(Setting):
+class FSOSetting(tichy.settings.Setting):
     """Special setting class that hooks into a FSO preference
 
     It relies on the 'Prefs' service.
@@ -38,7 +38,7 @@ class FSOSetting(Setting):
         prefs = tichy.Service.get('Prefs')
         return prefs[self.group][self.name]
 
-    @tasklet.tasklet
+    @tichy.tasklet.tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
         prefs = tichy.Service.get('Prefs')

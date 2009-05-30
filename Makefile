@@ -6,6 +6,11 @@ EPATH=/opt/e17
 
 .PHONY: all
 all:
+	cd scripts && \
+	PATH=$(PATH):$(EPATH)/bin \
+	LD_LIBRARY_PATH=$(EPATH)/lib \
+	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:../python-pyneo/ \
+	./build.sh
 	./setup.py bdist
 
 .PHONY: run
@@ -14,11 +19,6 @@ run:
 
 .PHONY: dbg
 dbg: clean
-	cd scripts && \
-	PATH=$(PATH):$(EPATH)/bin \
-	LD_LIBRARY_PATH=$(EPATH)/lib \
-	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:../python-pyneo/ \
-	./build.sh
 	rsync --verbose --archive --delete * root@$(HOST):/usr/share/paroli/.
 
 .PHONY: clean

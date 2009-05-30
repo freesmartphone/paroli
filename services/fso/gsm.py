@@ -23,18 +23,19 @@
 
 __docformat__ = 'reStructuredText'
 
-import logging
-logger = logging.getLogger('GSM')
-
 import dbus
+from threading import Timer
 
 import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
+from paroli.tel_number import TelNumber
+from paroli.message import SMS
+from paroli.sim import GSMService, Call
+from paroli.sim import SIMContact, PINError
 
-from call import Call
-from threading import Timer
+import logging
+logger = logging.getLogger('service.fso.gsm')
 
-# TODO: move this tasklet into service/phone
 
 class WaitFSOResource(Tasklet):
     """Wait for a FSO resource to be available"""
@@ -56,89 +57,6 @@ class WaitFSOResource(Tasklet):
             if r_name == name:
                 yield None
 
-
-
-class GSMService(tichy.Service):
-
-    """GSM Service base class
-
-    signals
-
-        provider-modified(string name)
-            emitted when the provider name has been  modified
-
-        incoming-call(call)
-            indicate an incoming call. Pass the `Call` object
-    """
-
-    def __init__(self):
-        super(GSMService, self).__init__()
-        self.logs = tichy.List()
-        self.missed_call_count = tichy.Int(0)
-        self.logs.connect('modified', self._on_logs_modified)
-        self._load_logs()
-
-    def init(self):
-        """This must return a Tasklet"""
-        raise NotImplementedError
-
-    def create_call(self, number, direction):
-        """create a new call to a given number"""
-        raise NotImplementedError
-
-    def _on_logs_modified(self, logs):
-        self._save_logs()
-        self.update_missed_call_count()
-
-    def _save_logs(self):
-        """Save the logs into a file"""
-        logger.info("Saving call logs")
-        data = [c.to_dict() for c in self.logs[:29]]
-        tichy.Persistance('calls/logs').save(data)
-
-    def _load_logs(self):
-        """Load all the logs"""
-        logger.info("Loading call logs")
-        data = tichy.Persistance('calls/logs').load()
-        if not data:
-            return
-        # TODO: add some checks for data consistency
-        logs = []
-        for kargs in data:
-            logger.debug('_load_logs %s', kargs)
-            call = Call(**kargs)
-            logs.append(call)
-        self.logs[:] = logs
-
-    @tichy.tasklet.tasklet
-    def _ask_pin(self):
-        #window = tichy.Service.get("WindowsManager").get_app_parent()
-        window = None
-        editor = tichy.Service.get('TelePIN2')
-        sim = tichy.Service.get('SIM')
-        for i in range(4):
-            pin = yield editor.edit(window, name="Enter PIN",
-                                    input_method='number')
-            try:
-                yield sim.send_pin(pin)
-                break
-            except sim.PINError, e:
-                if i == 4: # after 3 times we give up
-                    raise
-                logger.exception("pin wrong : %s", e)
-
-    def update_missed_call_count(self):
-        count = 0
-        for call in self.logs:
-            if call.missed and ( not call.checked ):
-                count = count + 1
-        self.missed_call_count.value = count
-
-    def check_all_missed_call_logs(self):
-        for call in self.logs:
-            if call.missed and ( not call.checked ):
-                call.check()
-        self.missed_call_count.value = 0 
 
 
 class FSOGSMService(GSMService):
@@ -602,174 +520,455 @@ class Provider(tichy.Object):
         self.NetworkType = obj[4]
         self.action = action
 
-class FallbackGSMService(GSMService):
-    """Fake service that can be used to test without GSM drivers
-    """
-
-    service = 'GSM'
-    name = 'Fallback'
-
-    def __init__(self):
-        super(FallbackGSMService, self).__init__()
-        #self.logs.append(Call('0478657392'))
-
-    def init(self):
-        """register on the network"""
-        logger.info("Turn on antenna power")
-        logger.info("Register on the network")
-        self.emit('provider-modified', "Charlie Telecom")
-        self.network_strength = 100
-        yield tichy.Service.get('Config').wait_initialized()
-        self.config_service = tichy.Service.get("Config")
-        logger.info("got config service")
-        self.values = self.config_service.get_items("call_forwarding")
-        if self.values != None: self.values = dict(self.values)
-        logger.info("realized values is none")
-        self.SettingReason = tichy.settings.ListSetting('Call Forwarding', 'Reason', tichy.Text, value='unconditional', setter=self.ForwardingSetReason, options=["unconditional","mobile busy","no reply","not reachable","all","all conditional"], model=tichy.List([ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy", self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel = [('title','name')])
-        self.SettingChannels = tichy.settings.Setting('Call Forwarding', 'channels', tichy.Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
-        self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Target Number', tichy.Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
-        self.SettingTargetNumber = tichy.settings.NumberSetting('Call Forwarding', 'Timeout', tichy.Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
-        
-        if len(self.logs) == 0:    
-            for i in range(3):
-                call = Call('0049110', direction='out')
-                self.logs.insert(0, call)
-        yield None
-    
-    #@tichy.tasklet.tasklet
-    #def ToggleForwarding(self):
-    
-    #def GetForwardingStatus(self, reason):
-        
-    
-    def ForwardingGetReason(self):
-        return self.SettingReason.value
-    
-    @tichy.tasklet.tasklet
-    def ForwardingSetClass(self, *args, **kargs):
-        logger.debug("here are the args %s", args)
-        value = "%s,%s,%s" % (str(args[0]), self.ForwardingGet('number'), self.ForwardingGet('timeout'))
-        self.set_param(value)
-        yield value
-    
-    @tichy.tasklet.tasklet
-    def ForwardingSetNumber(self, *args, **kargs):
-        logger.debug("here are the args %s", args)
-        value = "%s,%s,%s" % (self.ForwardingGet('class'), str(args[0]), self.ForwardingGet('timeout'))
-        self.set_param(value)
-        yield value
-    
-    @tichy.tasklet.tasklet
-    def ForwardingSetTimeout(self, *args, **kargs):
-        logger.debug("here are the args %s", args)
-        value = "%s,%s,%s" % (self.ForwardingGet('class'), self.ForwardingGet('number'), str(args[0]))
-        self.set_param(value)
-        yield value
-    
-    def set_param(self, value):
-        reason = self.ForwardingGetReason().encode('ascii')
-        try:
-            self.config_service.set_item('call_forwarding', reason.replace(' ','_'), value)
-            self.values = self.config_service.get_items("call_forwarding")
-            if self.values != None: self.values = dict(self.values)
-        except Exception, e:
-            logger.exception('set_param')
-    
-    def ForwardingGet(self, cat, reason=False):
-        if reason:
-            reason = reason
-        else:
-            reason = self.ForwardingGetReason().encode('ascii')
-        attribute = {'class':0,'number':1,'timeout':2}
-        if self.values != None:
-            if self.values.has_key(reason.replace(' ','_')):
-                logger.info("trying to get value")
-                vals_list = self.values[reason.replace(' ','_')].split(',')
-                if len(vals_list) >= attribute[cat]+1:
-                    ret = vals_list[attribute[cat]]
-                else:
-                    ret = None
-            else:
-                ret = None
-        else:
-            ret = None
-        return ret
-    
-    @tichy.tasklet.tasklet
-    def ForwardingSetReason(self, *args, **kargs):
-        #print "forwardingSetReason"
-        #print self.ForwardingGet('class')
-        #print args
-        #print kargs
-        yield 'moo'
-
-    def action(self, *args, **kargs):
-        item = args[0]
-        self.SettingReason.set(item[0].name).start()
-        args[2].emit('back')
-        self.SettingChannels.set(self.ForwardingGet('class',reason=item[0].name)).start()
-        self.SettingTargetNumber.set(self.ForwardingGet('number',reason=item[0].name)).start()
-
-    def create_call(self, number, direction='out'):
-        call = Call(number, direction=direction)
-        self.logs.insert(0, call)
-        return call
-
-    @tichy.tasklet.tasklet
-    def _initiate(self, call):
-        def on_timeout():
-            call._active()
-            if call.number == '666':
-                self._start_incoming().start()
-        tichy.mainloop.timeout_add(1000, on_timeout)
-        yield None
-
-    @tichy.tasklet.tasklet
-    def _start_incoming(self):
-        logger.info("simulate incoming call in 5 second")
-        yield Sleep(5)
-        call = self.create_call('01234567', direction='in')
-        self.emit('incoming-call', call)
-
-    @tichy.tasklet.tasklet
-    def _activate(self, call):
-        logger.info("activate call")
-        yield Sleep(1)
-        call._active()
-
-    @tichy.tasklet.tasklet
-    def _send_dtmf(self, call, code):
-        logger.info("send dtmf %s to call %s", code, call.number)
-        assert call.status == 'active'
-        yield Sleep(1)
-
-    @tichy.tasklet.tasklet
-    def _release(self, call):
-        call._released()
-        yield None
-
-    @tichy.tasklet.tasklet
-    def _ask_pin(self):
-        #window = tichy.Service.get("WindowsManager").get_app_parent()
-        window = None
-        editor = tichy.Service.get('TelePIN2')
-        sim = tichy.Service.get('SIM')
-        for i in range(4):
-            pin = yield editor.edit(window, name="Enter PIN",
-                                    input_method='number')
-            try:
-                yield sim.send_pin(pin)
-                break
-            except sim.PINError, e:
-                if i == 4: # after 3 times we give up
-                    raise
-                logger.exception("pin wrong : %s", e)
-
-    def get_provider(self):
-        return 'Charlie Telecom'
-
 class ListSettingObject():
       
       def __init__(self, name, action):
           self.name = name
           self.action = action
+
+class FSOUssdService(tichy.Service):
+    """The 'Button' service
+
+    This service can be used to listen to the input signals form hw buttons
+    """
+
+    service = 'Ussd'
+    name = 'FSO'
+
+    def __init__(self):
+        """Connect to the freesmartphone DBus object"""
+        super(FSOUssdService, self).__init__()
+        self.last = None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        logger.info('init')
+        yield self._connect_dbus()
+
+    @tichy.tasklet.tasklet
+    def _connect_dbus(self):
+        try:
+            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
+            logger.info('ussd service active')
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            input_dev = bus.get_object('org.freesmartphone.ogsmd',
+                                       '/org/freesmartphone/GSM/Device',
+                                       follow_name_owner_changes=True)
+            self.input_intf = dbus.Interface(input_dev, 'org.freesmartphone.GSM.Network')
+            self.input_intf.connect_to_signal('IncomingUssd', self._on_incoming_ussd)
+        except Exception, e:
+            logger.exception("can't use freesmartphone ussd service : %s", e)
+            self.input_intf = None
+            
+    def _on_incoming_ussd(self, *args, **kargs):
+        logger.info('incoming ussd')
+        self.emit('incoming', args)
+
+    def send_ussd(self, s):
+        if self.input_intf != None:
+            try:
+                self.input_intf.SendUssdRequest(s)
+            except Exception, e:
+                logger.exception("error in ussd: %s", e)
+        else:
+            logger.info("unable to send ussd request")
+
+class FSOSIMService(tichy.Service):
+
+    service = 'SIM'
+    name = 'FSO'
+
+    PINError = PINError         # Expose the PINError exception
+
+    def __init__(self):
+        super(FSOSIMService, self).__init__()
+        logger.info("connecting to freesmartphone.GSM dbus interface")
+        try:
+            # We create the dbus interfaces to org.freesmarphone
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            self.gsm = bus.get_object('org.freesmartphone.ogsmd',
+                                      '/org/freesmartphone/GSM/Device',
+                                      follow_name_owner_changes=True)
+            self.gsm_sim = dbus.Interface(self.gsm,
+                                          'org.freesmartphone.GSM.SIM')
+            
+        except Exception, e:
+            logger.exception("can't use freesmartphone SIM : %s", e)
+            self.gsm = None
+
+        self.indexes = {}       # map sim_index -> contact
+
+    #@tichy.tasklet.tasklet
+    def init(self):
+        yield tichy.Service.get('GSM').wait_initialized()
+        #set sim info variable to be used by various apps
+        #logger.info("Get sim info")
+        try:
+            msg_center = tichy.settings.NumberSetting('Messages', 'Service Center', tichy.Text, value=self.gsm_sim.GetServiceCenterNumber(), setter=self.SetServiceCenterNumber)
+        except Exception, e:
+            logger.exception('init')
+        
+        try:
+            ##pin setting start
+            self.PinSetting = tichy.settings.ToggleSetting('SIM', 'PIN', tichy.Text, value=self.GetAuthRequired(),setter=self.SetAuthRequired,options=["on","off"])
+
+            self.ChangePinSetting = tichy.settings.ToggleSetting('SIM', 'Change PIN', tichy.Text, value="",setter=self.ChangeAuthCode)
+            ##pin setting stop  
+        except Exception, ex:
+            logger.exception("Error : %s", ex)
+            raise
+            
+        #logger.info("message center is %s", (msg_center))
+        self.sim_info = yield WaitDBus(self.gsm_sim.GetSimInfo)
+        yield None
+
+    @tichy.tasklet.tasklet
+    def SetServiceCenterNumber(self, value):
+        self.gsm_sim.SetServiceCenterNumber(value)
+        yield None
+
+    @staticmethod
+    @tichy.tasklet.tasklet
+    def retry_on_sim_busy(method, *args):
+        """Attempt a dbus call the the framework and retry if we get a sim
+        busy error
+
+        Every time we get a SIM busy error, we wait for the ReadyStatus
+        signal, or 5 seconds, and we try again.
+
+        If it fails 5 times, we give up and raise an Exception.
+        """
+
+        def is_busy_error(ex):
+            """Check if an exception is due to a SIM busy error"""
+            # There is a little hack to handle cases when the framework
+            # fails to send the SIM.NotReady error.
+            name = ex.get_dbus_name()
+            msg = ex.get_dbus_message()
+            return name == 'org.freesmartphone.GSM.SIM.NotReady' or \
+                msg.endswith('SIM busy')
+
+        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        gsm = bus.get_object('org.freesmartphone.ogsmd',
+                             '/org/freesmartphone/GSM/Device',
+                             follow_name_owner_changes=True)
+        gsm_sim = dbus.Interface(gsm, 'org.freesmartphone.GSM.SIM')
+
+        for i in range(5):
+            try:
+                ret = yield WaitDBus(method, *args)
+                yield ret
+            except dbus.exceptions.DBusException, ex:
+                if not is_busy_error(ex): # This is an other error
+                    raise
+                logger.exception("sim busy, retry in 5 seconds")
+                yield WaitFirst(Sleep(5),
+                                WaitDBusSignal(gsm_sim, 'ReadyStatus'))
+                continue
+        else:
+            logger.error("SIM always busy")
+            raise Exception("SIM too busy")
+
+    def get_contacts(self):
+        """Return the list of all the contacts in the SIM
+
+        The framework may fail, so we try at least 5 times before we
+        give up. We need to remove this if the framework correct this
+        problem.
+        """
+        logger.info("Retrieve Phonebook")
+        entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
+                                          'contacts')
+        logger.info("Got %d contacts" % len(entries))
+        #logger.debug('get contacts : %s', entries)
+
+        ret = []
+        for entry in entries:
+            index = int(entry[0])
+            name = unicode(entry[1])
+            tel = str(entry[2])
+            contact = SIMContact(name=name, tel=tel, sim_index=index)
+            self.indexes[index] = contact
+            ret.append(contact)
+        yield ret
+
+    def get_messages(self):
+        """Return the list of all the messages in the SIM
+        """
+        logger.info("Get all the messages from the SIM")
+        entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrieveMessagebook, 'all')
+
+        ret = []
+        for entry in entries:
+            #logger.debug("Got message %s", entry)
+            index = entry[0]
+            status = str(entry[1]) # "read"|"sent"|"unread"|"unsent"
+            peer = str(entry[2])
+            text = unicode(entry[3])
+            properties = entry[4]
+            timestamp = properties.get('timestamp', None)
+            # TODO: make the direction arg a boolean
+            direction = 'out' if status in ['sent', 'unsent'] else 'in'
+
+            message = SMS(peer, text, direction, status=status,
+                          timestamp=timestamp, sim_index=index)
+            self.indexes[index] = message
+            ret.append(message)
+
+        logger.info("got %d messages", len(ret))
+        yield ret
+
+    def add_contact(self, name, number):
+        #logger.info("add %s : %s into the sim" % (name, number))
+        index = self._get_free_index()
+        contact = SIMContact(name=name, tel=number, sim_index=index)
+        self.indexes[index] = contact
+        yield WaitDBus(self.gsm_sim.StoreEntry, 'contacts', index,
+                       unicode(name), str(number))
+        yield contact
+
+    def _get_free_index(self):
+        """return the first found empty index in the sim"""
+        # XXX: Need to return an error if we don't have enough place
+        # on the sim
+        all = self.indexes.keys()
+        ret = 1
+        while True:
+            if not ret in all:
+                return ret
+            ret += 1
+
+    @tichy.tasklet.tasklet
+    def remove_contact(self, contact):
+        logger.info("remove contact %s from sim", contact.name)
+        yield WaitDBus(self.gsm_sim.DeleteEntry, 'contacts',
+                       contact.sim_index)
+
+    def remove_message(self, message):
+        logger.info("remove message %s from sim", message.sim_index)
+        yield WaitDBus(self.gsm_sim.DeleteMessage, int(message.sim_index))
+
+
+    def send_pin(self, pin):
+        logger.info("sending pin")
+        try:
+            yield WaitDBus(self.gsm_sim.SendAuthCode, pin)
+        except dbus.exceptions.DBusException, ex:
+            if ex.get_dbus_name() not in ['org.freesmartphone.GSM.SIM.AuthFailed', 'org.freesmartphone.GSM.SIM.InvalidIndex']:
+                raise
+            logger.exception("send_pin : %s", ex)
+            raise PINError(pin)
+
+    def GetAuthRequired(self):
+        val = self.gsm_sim.GetAuthCodeRequired()
+        
+        if val:
+            ret = 'on'
+        else:
+            ret = 'off'
+         
+        return ret
+
+    @tichy.tasklet.tasklet
+    def SetAuthRequired(self, val):
+        
+        editor = tichy.Service.get('TelePIN2')
+        
+        pin = yield editor.edit(None, name="Enter PIN",  input_method='number')
+        
+        current = self.gsm_sim.GetAuthCodeRequired()
+        
+        try:
+            self.gsm_sim.SetAuthCodeRequired(not(current),  pin)
+        
+        except Exception,  e:
+            logger.exception('SetAuthCodeRequired')
+            dialog = tichy.Service.get("Dialog")
+            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+        
+        ret = self.GetAuthRequired()
+        
+        yield ret
+
+    @tichy.tasklet.tasklet
+    def ChangeAuthCode(self, val):
+        
+        editor = tichy.Service.get('TelePIN2')
+        
+        old_pin = yield editor.edit(None, text="Enter old PIN",  input_method='number')
+        
+        current = self.gsm_sim.GetAuthCodeRequired()
+        
+        new_pin = yield editor.edit(None, text="Enter new PIN",  input_method='number')
+        
+        try:
+            self.gsm_sim.ChangeAuthCode(old_pin,  new_pin)
+        
+        except Exception,  e:
+            logger.exception('ChangeAuthCode')
+            dialog = tichy.Service.get("Dialog")
+            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+        
+        ret = ""
+        
+        yield ret
+
+class FSOSMSService(tichy.Service):
+
+    service = 'SMS'
+    name = 'FSO'
+
+    def __init__(self):
+        super(FSOSMSService, self).__init__()
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        logger.info("connecting to freesmartphone.GSM SMS dbus interface")
+        yield tichy.Service.get('GSM').wait_initialized()
+        try:
+            # We create the dbus interfaces to org.freesmarphone
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            gsm = bus.get_object('org.freesmartphone.ogsmd',
+                                 '/org/freesmartphone/GSM/Device')
+            self.sim_iface = dbus.Interface(gsm,
+                                            'org.freesmartphone.GSM.SIM')
+            self.sms_iface = dbus.Interface(gsm,
+                                            'org.freesmartphone.GSM.SMS')
+
+            logger.info("Listening for incoming SMS")
+            # XXX: we should use the IncomigMessage method, but there
+            #      is a bug in the framework.
+            self.sms_iface.connect_to_signal("IncomingMessage",
+                                             self.on_incoming_unstored_message)
+            self.sim_iface.connect_to_signal("IncomingStoredMessage",
+                                             self.on_incoming_message)
+            self.sim_iface.connect_to_signal("MemoryFull",
+                                             self.on_memory_full)
+            
+            self.sms_iface.connect_to_signal("IncomingMessageReceipt",
+                                             self.on_incoming_unstored_message)
+            
+            
+            ##stuff for settings
+            
+            self.config_service = tichy.Service.get("Config")
+            self.values = self.config_service.get_items("Messages")
+            if self.values != None: self.values = dict(self.values)
+            
+            self.ReportSetting = tichy.settings.Setting('Messages', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
+            
+        except Exception, e:
+            logger.exception("can't use freesmartphone SMS : %s", e)
+            self.sim_iface = None
+        yield None
+
+    def update(self):
+        logger.info("update sms inbox")
+        status = yield WaitDBus(self.sim_iface.GetSimReady)
+        status = yield WaitDBus(self.sim_iface.GetAuthStatus)
+        messages = yield WaitDBus(self.sim_iface.RetrieveMessagebook, "all")
+        logger.info("found %s messages into sim", len(messages))
+
+        messages_service = tichy.Service.get('Messages')
+        for msg in messages:
+            id, status, number, text = msg
+            sms = self.create(str(number), unicode(text), 'in')
+            messages_service.add_to_messages(sms)
+
+    def create(self, number='', text='', direction='out'):
+        """create a new sms instance"""
+        number = TelNumber.as_type(number)
+        text = tichy.Text.as_type(text)
+        return SMS(number, text, direction)
+
+    @tichy.tasklet.tasklet
+    def send(self, sms):
+        logger.info("Sending message to %s", sms.peer)
+        if self.GetDeliveryReport() == 'on':
+            properties = {'type':'sms-submit','alphabet': 'gsm_default','status-report-request':True}
+        else:
+            logger.info("no delivery report value is %s", self.GetDeliveryReport())
+            properties = dict(type='sms-submit', alphabet='gsm_default')
+        try:
+            index, timestamp = yield WaitDBus(self.sms_iface.SendMessage,
+                                          str(sms.peer), unicode(sms.text),
+                                          properties)
+        except Exception, e:
+            logger.exception ("send %s", e)
+        logger.info("Store message into messages")
+        yield tichy.Service.get('Messages').add(sms)
+
+    def on_incoming_unstored_message(self, *args, **kargs):
+        logger.info("incoming unstored message")
+        logger.debug('on_incoming_unstored_message %s', args)
+        self._on_incoming_unstored_message(args).start()
+
+    @tichy.tasklet.tasklet
+    def _on_incoming_unstored_message(self, message):
+        # XXX: It would be better to use a PhoneMessage here, and
+        #      never store messages on the SIM.
+        #logger.info("Incoming message %d", index)
+        #message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
+        #status = str(message[0])
+        peer = str(message[0])
+        if message[2]['type'] == 'sms-status-report':
+            text = unicode(message[2]['status-message']) + unicode(', message was received: ') + unicode(message[2]['timestamp'])
+        else:
+            text = unicode(message[1])
+        messages_service = tichy.Service.get('Messages')
+        store_message = messages_service.create(peer, text, 'in')
+        yield messages_service.add(store_message)
+        tichy.Service.get('Sounds').Message()
+        # We delete the message from the SIM
+        if message[2]['type'] != 'sms-status-report':
+            self.sms_iface.AckMessage(store_message)
+        #yield WaitDBus(self.sim_iface.DeleteMessage, index)
+
+    def on_incoming_message(self, index):
+        self._on_incoming_message(index).start()
+
+    @tichy.tasklet.tasklet
+    def _on_incoming_message(self, index):
+        # XXX: It would be better to use a PhoneMessage here, and
+        #      never store messages on the SIM.
+        logger.info("Incoming message %d", index)
+        message = yield WaitDBus(self.sim_iface.RetrieveMessage, index)
+        status = str(message[0])
+        peer = str(message[1])
+        text = unicode(message[2])
+        messages_service = tichy.Service.get('Messages')
+        message = messages_service.create(peer, text, 'in')
+        yield messages_service.add(message)
+        tichy.Service.get('Sounds').Message()
+        # We delete the message from the SIM
+        logger.info("deleting %d", index)
+        yield WaitDBus(self.sim_iface.DeleteMessage, index)
+        logger.info("deleted %d", index)
+
+    def on_memory_full(self, *args, **kargs):
+        logger.info("SIM full")
+        ##not yielding as this is not meant to block anything
+        tichy.Service.get('Dialog').dialog("window", 'SIM', "your SIM card is full, please delete messages").start()
+        
+
+    #settings functions begin
+    def GetDeliveryReport(self):
+        if self.values != None:
+            ret = self.values['deliveryreport']
+        else: 
+            self.SetDeliveryReport('off')
+            ret = 'off'
+        
+        return ret
+        
+    @tichy.tasklet.tasklet    
+    def SetParam(self, value):
+        self.SetDeliveryReport(value)
+        yield value
+    
+    def SetDeliveryReport(self, value):
+        try:
+            self.config_service.set_item('Messages', 'DeliveryReport', value)
+        except Exception, e:
+            logger.exception('SetDeliveryReport')
+          

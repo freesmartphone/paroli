@@ -19,14 +19,11 @@
 
 __docformat__ = 'reStructuredText'
 
-"""Message module"""
-
-import logging
-logger = logging.getLogger('Messages')
-
 import tichy
 from paroli.tel_number import TelNumber
 
+import logging
+logger = logging.getLogger('core.paroli.messages')
 
 
 class Message(tichy.Item):
@@ -160,99 +157,38 @@ class PhoneMessage(Message):
         return self.peer
     number = property(__get_number)
 
-class FallbackMessagesService(tichy.Service):
-    """The service that stores all the messages
+class SMS(Message):
 
-    This service provides access to the messages inbox and outbox
-    """
+    storage = 'SIM'
 
-    service = 'Messages'
-    name = 'Fallback'
+    def __init__(self, peer, text, direction, status=None, timestamp=None,
+                 sim_index=None, **kargs):
+        super(SMS, self).__init__(peer, text, direction,
+                                         status=status, timestamp=timestamp,
+                                         sim_index=sim_index, **kargs)
+        self.sim_index = sim_index
 
-    def __init__(self):
-        super(FallbackMessagesService, self).__init__()
-        self.messages = tichy.List()
-        self.unread = tichy.Text(0)
-        self.messages.connect('appended',self._update_unread)
-        self.ready = False
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield self._load_all()
-        self.emit('ready')
-        self.ready = True
-
-    @tichy.tasklet.tasklet
-    def add(self, msg):
-        """Add a `Message` into the message list
-
-        :Parameters:
-            msg : `Message`
-                The message we add
+    @classmethod
+    def import_(cls, contact):
+        """create a new contact from an other contact)
         """
-        logger.info("Add to messages : %s", unicode(msg).encode("utf-8"))
-        assert isinstance(msg, Message)
-        self.messages.append(msg)
-        yield msg.save()
+        assert not isinstance(message, PhoneMessage)
+        ret = PhoneMessage(peer=message.peer,text=message.text,timestamp=message.timestamp,direction=message.direction,status=message.status)
+        yield ret
 
+    def delete(self):
+        sim = tichy.Service.get('SIM')
+        yield sim.remove_message(self)
+
+    def save(self):
+        logger.warning("save SIM message not implemented yet")
+        yield None
+
+    @classmethod
     @tichy.tasklet.tasklet
-    def remove(self, msg):
-        """remove a `Message` from the message list
+    def load_all(cls):
+        sim = tichy.Service.get('SIM')
+        yield sim.wait_initialized()
+        ret = yield sim.get_messages()
+        yield ret
 
-        :Parameters:
-            msg : `Message`
-                The message we remove
-        """
-        logger.info("Remove from messages : %s", msg)
-        assert isinstance(msg, Message)
-        assert msg in self.messages
-        self.messages.remove(msg)
-        yield msg.delete()
-
-    @tichy.tasklet.tasklet
-    def _load_all(self):
-        """load all the messages from all sources"""
-        logger.info("load all messages")
-        # TODO: make this coherent with contacts service method
-        all_messages = []
-        for cls in Message.subclasses:
-            logger.info("loading messages from %s", cls.storage)
-            try:
-                messages = yield cls.load_all()
-                logger.info("Got %d messages from %s", len(messages),
-                            cls.storage)
-                all_messages += messages
-            except Exception, ex:
-                logger.exception("can't get messages : %s", ex)
-                continue
-            assert all(isinstance(x, Message) for x in messages)
-        self.messages[:] = all_messages
-        self._update_unread()
-        logger.info("Totally got %d messages", len(self.messages))
-
-
-    @tichy.tasklet.tasklet
-    def _save_all(self):
-        logger.info("save all messages")
-        for cls in Message.subclasses:
-            logger.info("save all messages of type %s", cls.storage)
-            cls._save_all()
-
-    def create(self, number, text, direction, status=None,**kargs):
-        """Create a new message
-        The arguments are the same as `Message.__init__`
-        """
-        msg = PhoneMessage(number, text, direction, status, **kargs)
-        if msg.status == 'unread':
-            msg.connect('read',self._update_unread)
-        return msg
-
-    def _update_unread(self, *args, **kargs):
-        self.unread.value = int(0)
-        for msg in self.messages:
-            if msg.status == 'unread':
-                msg.connect('read',self._update_unread)
-                self.unread.value = int(self.unread.value)+1
-                
-        self.unread.emit('updated')
-        logger.debug("unread message count now: %s in total", self.unread)
