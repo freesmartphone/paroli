@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import logging
-logger = logging.getLogger('applications.msgs2')
+logger = logging.getLogger('applications.letters')
 
 import tichy
 from tichy import gui
@@ -28,7 +28,7 @@ import dbus
 
 from tichy.tasklet import Wait, WaitFirst
 
-class MsgsApp2(tichy.Application):
+class Letters(tichy.Application):
     name = 'SMS'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher

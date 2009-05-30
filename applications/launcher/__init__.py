@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-logger = logging.getLogger('applications.paroli-launcher2')
+logger = logging.getLogger('applications.launcher')
 
 import os
 import tichy
@@ -32,8 +32,8 @@ import subprocess
 import re
 import time
 
-class Launcher_App2(tichy.Application):
-    name = 'Paroli-Launcher2'
+class Launcher(tichy.Application):
+    name = 'Launcher'
     icon = 'icon.png'
     category = 'hidden' # So that we see the app in the launcher
     

@@ -1,7 +1,3 @@
-fonts {
-//    font: "Inspiration-Bold.ttf"   "Sans";
-}
-
 images {
    image: "Edit.png" COMP;
    image: "Save.png" COMP;

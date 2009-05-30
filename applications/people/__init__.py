@@ -20,7 +20,7 @@
 
 import os
 import logging
-logger = logging.getLogger('applications.people2')
+logger = logging.getLogger('applications.people')
 
 import tichy
 from tichy import gui
@@ -32,7 +32,7 @@ import ecore.evas
 from tichy.tasklet import WaitFirst, Wait
 from paroli.sim import SIMContact
 
-class People2App(tichy.Application):
+class People(tichy.Application):
     name = 'People'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
@@ -83,7 +83,7 @@ class People2App(tichy.Application):
     
     def signal(self, emission, signal, source):
         """ Callback function. It invokes, when the "back" button clicked."""
-        logger.info("people2.py:signal() emmision: %s, signal: %s, source: %s", 
+        logger.info("signal() emmision: %s, signal: %s, source: %s", 
                     str(emission), str(signal), str(source))
         self.window.emit('back')
         

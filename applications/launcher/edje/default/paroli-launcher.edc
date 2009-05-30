@@ -1,7 +1,7 @@
 #include "paroli-launcher_macros.edc"
 
 fonts {
-   font: "Inspiration-Bold.ttf"   "Sans";
+	font: "Inspiration-Bold.ttf" "Sans";
 }
 
 images {

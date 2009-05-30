@@ -19,7 +19,7 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-logger = logging.getLogger('applications.tele2')
+logger = logging.getLogger('applications.telefony')
 
 import os
 import tichy
@@ -27,7 +27,7 @@ from tichy import gui
 import sys
 from paroli.tel_number import TelNumber
 
-class TeleApp(tichy.Application):
+class TelefonyDialer(tichy.Application):
     name = 'Dialer'
     icon = 'icon.png'
     category = 'launcher'

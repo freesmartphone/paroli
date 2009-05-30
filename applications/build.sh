@@ -43,19 +43,19 @@ fi
 # This script will build the edje files for each application
 if [ "$flag_io" ]
 then
-	cd i-o2; ./build.sh; cd ..
+	cd inout; ./build.sh; cd ..
 fi
 if [ "$flag_launcher" ]
 then
-	cd paroli-launcher2; ./build.sh; cd ..
+	cd launcher; ./build.sh; cd ..
 fi
 if [ "$flag_msgs" ]
 then
-	cd msgs2; ./build.sh; cd ..
+	cd letters; ./build.sh; cd ..
 fi
 if [ "$flag_people" ]
 then
-	cd people2; ./build.sh; cd ..
+	cd people; ./build.sh; cd ..
 fi
 if [ "$flag_settings" ]
 then
@@ -63,6 +63,6 @@ then
 fi
 if [ "$flag_tele" ]
 then
-	cd tele2; ./build.sh; cd ..
+	cd telefony; ./build.sh; cd ..
 fi
 

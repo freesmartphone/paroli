@@ -2,7 +2,7 @@
 collections
 {
   fonts {
-      font: "Inspiration-Bold.ttf"   "Sans";
+	font: "Inspiration-Bold.ttf" "Sans";
   }
   
   images {

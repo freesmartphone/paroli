@@ -1,6 +1,5 @@
 fonts {
-   // We use Bold font for nearly everything. by Will.
-   font: "Inspiration-Bold.ttf"   "Sans";
+	font: "Inspiration-Bold.ttf" "Sans";
 }
 
 images {

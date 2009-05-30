@@ -24,7 +24,7 @@ import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
 
 import logging
-logger = logging.getLogger('sounds')
+logger = logging.getLogger('services.fallback.sounds')
 
 class FallbackSoundsService(tichy.Service):
 

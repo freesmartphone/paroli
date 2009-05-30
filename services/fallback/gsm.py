@@ -27,8 +27,7 @@ import tichy
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange
 from paroli.tel_number import TelNumber, ListSettingObject
 from paroli.message import SMS
-from paroli.sim import GSMService
-from paroli.sim import SIMContact, PINError
+from paroli.sim import GSMService, Call, SIMContact, PINError
 
 import logging
 logger = logging.getLogger('service.fallback.gsm')

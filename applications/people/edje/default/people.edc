@@ -1,10 +1,5 @@
 // Main people .edc file
 
-fonts {
-//    font: "Inspiration-Regular.ttf" "Sans-Bold";
-//    font: "Inspiration-Bold.ttf"   "Sans";
-}
-
 images {
    image: "add.png" COMP;
    image: "add_pressed.png" COMP;
