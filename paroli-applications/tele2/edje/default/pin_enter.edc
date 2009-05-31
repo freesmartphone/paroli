@@ -52,51 +52,6 @@ group{
                 color: 0 0 0 255;
             }
         }
-        /*
-        part{
-            name: "top-bar";
-            type: RECT;
-            description{
-                state: "default" 0.0;
-                color:0 0 0 255;
-                rel1{
-                    relative: 0.0 0.0;
-                    offset: 0 0;
-                    to: "base";
-                }
-                rel2 {
-                    relative: 0.0 0.0;
-                    offset: 480 50;
-                    to: "base";
-                }
-            }
-          }
-           part{
-             name: "title";
-             type: TEXT;
-             mouse_events:0;
-             description { 
-                state: "default" 0.0;
-                     color: 255 255 255 255;
-                     text {
-                             align: 0.5 0.0;
-                             text: "Enter PIN";
-                             size: 18;
-                             font: "Sans";
-                     }
-                     rel1 {
-                             relative: 0.0 0.0;
-                             offset: 150 29;
-                             to: "top-bar";
-                     }
-                     rel2 {
-                             relative: 0.0 0.0;
-                             offset: 322 41;
-                             to: "top-bar";
-                     }
-                }
-           }*/
-           
         part {
             name: "num_field";
             type: RECT;
@@ -264,19 +219,6 @@ group{
                 visible: 1;
             }
         }
-
-//         _PART_IMAGE_KEYPAD("button-1", "1.png", 1, 190, 160, 279);
-//         _PART_IMAGE_KEYPAD("button-2", "2.png", 161, 190,  319, 279);
-//         _PART_IMAGE_KEYPAD("button-3", "3.png", 320, 190,  479, 279);
-//         _PART_IMAGE_KEYPAD("button-4", "4.png", 1, 280, 160, 369);
-//         _PART_IMAGE_KEYPAD("button-5", "5.png", 161, 280,  319, 369);
-//         _PART_IMAGE_KEYPAD("button-6", "6.png", 320, 280,  479, 369);
-//         _PART_IMAGE_KEYPAD("button-7", "7.png", 1, 370,  160, 459);
-//         _PART_IMAGE_KEYPAD("button-8", "8.png", 161, 370,  319, 459);
-//         _PART_IMAGE_KEYPAD("button-9", "9.png", 320, 370,  479, 459);
-//         _PART_IMAGE_KEYPAD("button-star", "asterisk.png", 1, 460,  160, 549);
-//         _PART_IMAGE_KEYPAD("button-0", "0.png", 161, 460, 319, 549);
-//         _PART_IMAGE_KEYPAD("button-hash", "sharp.png", 320, 460, 479, 549);
         
         _PART_KEYPAD("button-1-2", "1", "", 0.01, 0.3615,  0.3345, 0.5095);
         _PART_KEYPAD("button-2-2", "2", "ABC", 0.34, 0.3615,  0.6645, 0.5095);
@@ -318,16 +260,6 @@ group{
     }
     
     programs {
-        
-        /*
-        program 
-        { 
-            name: "num_field-clicked";
-            signal: "mouse,clicked,1";
-            source: "num_field";
-            action: SIGNAL_EMIT "num_field_pressed" "num_field-text";
-        }
-        */
         
         program { 
             name: "call-2-clicked";
