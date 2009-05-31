@@ -1,7 +1,6 @@
-
 group { name: "item";
-       min: 470 160;
-       max: 470 160;
+       min: 470 100;
+       max: 470 100;
        data{
           item: "attribute1" "peer";
           item: "attribute2" "get_contact()";
@@ -283,26 +282,26 @@ group { name: "item";
             }
             description{ state: "default" 0.0;
             color:0 0 0 0;
-            min: 470 160;
+            min: 470 100;
             rel1{
-                relative: 0.0 0.0;
+                relative: 0.01 0.01;
                 to:"base";
             }
             rel2 {
-                relative: 0.80 0.80;
+                relative: 0.99 0.99;
                 to:"base";
             }
         }
         description{ 
             state: "moved" 0.0;
             color:0 0 0 0;
-            min: 390 160;
+            min: 390 100;
             rel1{
                 relative: 0.2 0.2;
                 to:"base";
             }
             rel2 {
-                relative: 0.80 0.80;
+                relative: 0.99 0.99;
                 to:"base";
             }
         }
@@ -518,7 +517,7 @@ group { name: "item";
                 get_text(PART:"label-number", sub_label, 100);
                 if (strcmp(status, "unread") == 0) {
                     snprintf(pre_text, 50 , "%s", "NEW! ");
-                }else if ((strcmp(status, "read") == 0) && (strcmp(direction, "out") == 0)){
+                }else if ((strcmp(status, "read") == 0) && ( strcmp( direction, "out") == 0)){
                     snprintf(pre_text, 50 , "%s", "> ");
                 }else if (strcmp(status, "unsent") == 0){
                     snprintf(pre_text, 50 , "%s", "DRAFT ");
