@@ -91,6 +91,7 @@ class TeleApp(tichy.Application):
             emission.part_text_set('num_field-text','')
             TeleCaller2(self.window, number, None, self.edje_obj).start(err_callback=self.throw)
         elif signal[0] in ['*'] :
+            emission.part_text_set('num_field-text','')
             self.ussd_service.send_ussd(signal)
         else :
             pass
