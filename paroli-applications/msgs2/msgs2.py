@@ -71,7 +71,9 @@ class MsgsApp2(tichy.Application):
         
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
         
-        self.item_list.add_callback("details", "*", self.msg_details)
+        self.item_list.add_callback("details", "*", self.msg_details) 
+        
+        parent.emit("unblock")
 
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
         logger.info('Messages closing')

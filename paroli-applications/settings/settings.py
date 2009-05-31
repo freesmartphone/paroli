@@ -73,7 +73,9 @@ class Settings(tichy.Application):
         self.list_label = [('title', 'value')]
         self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
         
-        self.item_list.add_callback("*", "sublist", self._show_sublist)
+        self.item_list.add_callback("*", "sublist", self._show_sublist) 
+        
+        parent.emit("unblock")
         
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing

@@ -58,10 +58,8 @@ class People2App(tichy.Application):
         self.list_label = [('label','name')]
         self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
        
-        self.item_list.add_callback("contact_details", "*", self.contact_details)
-        #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
-        #self.item_list.add_callback("mouse,down,1", "*", self.self_test)
-        #self.item_list.add_callback("drag,start", "*", self.self_test)
+        self.item_list.add_callback("contact_details", "*",
+self.contact_details)
         self.item_list.add_callback("send_all", "fold-back", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
 
@@ -72,7 +70,7 @@ class People2App(tichy.Application):
         
         #self.window.scroller.elm_obj.focus()
         #self.item_list.jump_to_index('q')
-        #self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
+        parent.emit("unblock")
         
         yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
         logger.info('People closing')

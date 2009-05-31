@@ -117,17 +117,16 @@ class Launcher_App2(tichy.Application):
         self.systime = tichy.Service.get('SysTime')
         self.alarm = tichy.Service.get('Alarm')
         
-        #self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
-        #self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
-        
         self.ready = 1
+        
+        self.window.connect('block', self.block_edje)
+        self.window.connect('unblock', self.unblock_edje)
         
         yield tichy.WaitFirst(tichy.Wait(self.window, 'backs'),tichy.Wait(self.window.window,'closing'))
         
         self.dialog = tichy.Service.get("Dialog")
         keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
         print "keep_alive", keep_alive
-        #self._remove_link_signals()
         
         if keep_alive == "no":
             logger.info("keep alive set to no: %s", str(keep_alive))
@@ -138,6 +137,15 @@ class Launcher_App2(tichy.Application):
         if self.window.window.elm_obj.is_deleted() == False:
             self.window.delete()   # Don't forget to close the window
         
+  def block_edje(self, *args, **kargs):
+        logger.info("blocking edje in launcher")
+        edje = self.edje_obj.elm_obj.edje_get()
+        edje.pass_events_set(True)
+
+    def unblock_edje(self, *args, **kargs):
+        logger.info("unblocking edje in launcher")
+        edje = self.edje_obj.elm_obj.edje_get()
+        edje.pass_events_set(False)
 
     def unblock_screen(self, *args, **kargs):
         logger.info('unblocking screen')
@@ -160,16 +168,12 @@ class Launcher_App2(tichy.Application):
         app = args[1]
         edje_obj = self.app_objs[app][0]
         text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
-        if hasattr(self.storage.window, "window") and app == 'Tele' and value !='' :
-            self.storage.window.window.elm_obj.on_hide_add(self._recreate_link_signals)
-            #self.storage.window.window.elm_obj.on_show_add(self._remove_link_signals)
         edje_obj.Edje.part_text_set('testing_textblock',text)
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
         logger.info("launching %s", str(signal))
         if self.ready != 0:
-            self._remove_link_signals()
             self._launch_app(str(signal)).start()
 
     @tichy.tasklet.tasklet
@@ -179,15 +183,14 @@ class Launcher_App2(tichy.Application):
         """
         logger.info("launching %s", name)
         # XXX: The launcher shouldn't know anything about this app
-        if name == 'Tele' and self.storage.call != None:
+        if name == 'Dialer' and self.storage.call != None:
             self.storage.window.emit("dehide")
-        elif self.active_app == None or (self.active_app == "Tele" and self.storage.call != None):
+        elif self.active_app == None or (self.active_app == "Dialer" and
+self.storage.call != None):
             #self.edje_obj.Edje.signal_emit("unready","*")
             app = tichy.Application.find_by_name(name)
             self.active_app = name
             yield app(self.window, standalone=self.standalone)
-            self._recreate_link_signals()
-            #self.edje_obj.Edje.signal_emit("ready","*")
             self.active_app = None
         else:
             logger.info("blocked %s", name)
@@ -200,20 +203,6 @@ class Launcher_App2(tichy.Application):
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
         yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
-    
-    def _remove_link_signals(self, *args, **kargs):
-        if self.settings:
-            logger.info("disconnecting settings")
-            self.button.disconnect(self.aux_btn_settings_conn)
-        for i in self.app_objs:
-            self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
-            logger.debug("some callback wasn't found")
-    
-    def _recreate_link_signals(self, *args, **kargs):
-        if self.settings:
-            self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
-        for i in self.app_objs:
-            self.app_objs[i][0].Edje.signal_callback_add("*", "launch_app", self.launch_app)
     
     def quit_app(self, emission, source, name):
     
