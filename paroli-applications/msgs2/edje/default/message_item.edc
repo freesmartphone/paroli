@@ -1,7 +1,7 @@
 
 group { name: "item";
-       min: 470 100;
-       max: 470 100;
+       min: 470 160;
+       max: 470 160;
        data{
           item: "attribute1" "peer";
           item: "attribute2" "get_contact()";
@@ -283,20 +283,20 @@ group { name: "item";
             }
             description{ state: "default" 0.0;
             color:0 0 0 0;
-            min: 470 100;
+            min: 470 160;
             rel1{
-                relative: 0.01 0.01;
+                relative: 0.0 0.0;
                 to:"base";
             }
             rel2 {
-                relative: 0.99 0.99;
+                relative: 0.80 0.80;
                 to:"base";
             }
         }
         description{ 
             state: "moved" 0.0;
             color:0 0 0 0;
-            min: 390 100;
+            min: 390 160;
             rel1{
                 relative: 0.2 0.2;
                 to:"base";
