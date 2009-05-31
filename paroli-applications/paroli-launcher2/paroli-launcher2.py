@@ -186,7 +186,7 @@ class Launcher_App2(tichy.Application):
         if name == 'Dialer' and self.storage.call != None:
             self.storage.window.emit("dehide")
         elif self.active_app == None or (self.active_app == "Dialer" and
-self.storage.call != None):
+self.storage.call != None) or self.active_app != name:
             #self.edje_obj.Edje.signal_emit("unready","*")
             app = tichy.Application.find_by_name(name)
             self.active_app = name
