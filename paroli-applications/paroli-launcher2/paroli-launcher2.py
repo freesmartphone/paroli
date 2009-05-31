@@ -137,7 +137,7 @@ class Launcher_App2(tichy.Application):
         if self.window.window.elm_obj.is_deleted() == False:
             self.window.delete()   # Don't forget to close the window
         
-  def block_edje(self, *args, **kargs):
+    def block_edje(self, *args, **kargs):
         logger.info("blocking edje in launcher")
         edje = self.edje_obj.elm_obj.edje_get()
         edje.pass_events_set(True)
