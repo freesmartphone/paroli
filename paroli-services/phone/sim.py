@@ -172,6 +172,18 @@ class FreeSmartPhoneSim(tichy.Service):
         problem.
         """
         logger.info("Retrieve Phonebook")
+        ready = yield WaitDBus(self.gsm_sim.GetSimReady)
+        if ready == False:
+           logger.info("ready false")
+           while 1:
+              status = yield WaitDBusSignal(self.gsm_sim, 'ReadyStatus')
+              if status == True:
+                  logger.debug("ready now true breaking")
+                  break
+              else:
+                  logger.debug("ready still flase not breaking")
+                  continue
+            
         entries = yield retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
                                           'contacts')
         logger.info("Got %d contacts" % len(entries))
