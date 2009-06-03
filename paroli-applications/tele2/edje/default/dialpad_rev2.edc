@@ -532,7 +532,7 @@ group {
             {
               state: "active_clicked" 0.0;
               inherit:"default" 0.0;
-              image.normal: "call_activate_clicked.png";
+              image.normal: "call_activate_pressed.png";
                rel1 {
                     relative: 0.0 0.0;
                     offset: 320 19;

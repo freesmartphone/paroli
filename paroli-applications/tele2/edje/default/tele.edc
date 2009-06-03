@@ -13,7 +13,7 @@ images {
 
    image: "call_activate.png" COMP;
    image: "call_activate2.png" COMP;
-   image: "call_activate_clicked.png" COMP;
+   image: "call_activate_pressed.png" COMP;
    image: "call_end.png" COMP;
    image: "call_end_pressed.png" COMP;
    image: "call_end2.png" COMP;
