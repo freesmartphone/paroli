@@ -797,6 +797,13 @@ programs {
             name: "del-button-changer";
             signal: "mouse,down,1";
             source: "del-button";
+            action: STATE_SET "clicked" 0.0;
+            target:"del-button";
+            after:"del-button-changer-workaround";
+            
+        }
+        program {
+            name: "del-button-changer-workaround";
             script{
                 start_timer("del_all");
                 del_digit();
