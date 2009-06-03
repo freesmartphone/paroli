@@ -18,8 +18,8 @@ group {
             new Float:floaty;
             if (get_state(PART:"del-button", state[0], 30, floaty) == 0)
               {
-                if (strcmp(state, "default") == 0){
-                  emit("back","main_command")
+                if (strcmp(state, "default") == 0 ||
+                    strcmp(state, "clicked") == 0) {
                   new old[40];
                   old[39] = get_text(PART:"num_field-text",old,40);
                   new len = strlen(old);
@@ -34,7 +34,8 @@ group {
                     } else {
                         set_int(del_button_pressed,1);
                     }
-                } else if (strcmp(state, "number") == 0){
+                } else if (strcmp(state, "number") == 0 || 
+                            strcmp(state, "number-pressed") == 0) {
                     new old[40];
                     old[39] = get_text(PART:"num_field-text",old,40);
                     new len = strlen(old);
@@ -46,10 +47,8 @@ group {
                         strnprep(num, old, len-1);
                         set_text(PART:"num_field-text",num);
                         if (len == 1) {
-                             set_state(PART:"del-button", "default", 0.0);
+                             set_state(PART:"del-button", "clicked", 0.0);
                         }
-                    } else {
-                        set_int(del_button_pressed,1);
                     }
                 } else if (strcmp(state, "pin") == 0) {
                     new old[40];
@@ -643,15 +642,15 @@ group {
             mouse_events: 0;
             description {
                state: "default" 0.0;
-               color: 255 255 255 255;
+               color: 255 200 255 100;
                rel1 {
                   relative: 0.0 0.0;
-//                   offset: 320 110;
+//                  offset: 320 210;
                   to: "del-button";
                }
                rel2 {
                   relative: 1.0 1.0;
-//                   offset: 479 179;
+//                  offset: 479 279;
                   to: "del-button";
                }
                visible: 0;
@@ -801,7 +800,11 @@ programs {
             script{
                 start_timer("del_all");
                 del_digit();
-                set_state(PART:"del-button-effecter", "visible", 0.0);
+                if (get_int(del_button_pressed) == 1) {
+                    set_state(PART:"del-button", "clicked", 0.0);
+                } else {
+                    set_state(PART:"del-button", "number-pressed", 0.0);
+                }
             }
         }
         program { 
@@ -810,7 +813,17 @@ programs {
             source: "del-button";
             script{
                 stop_timer();
-                set_state(PART:"del-button-effecter", "default", 0.0);
+                new old[40];
+                old[39] = get_text(PART:"num_field-text",old,40);
+                new len = strlen(old);
+                if (len != 0) {
+                    set_state(PART:"del-button", "number", 0.0);
+                } else {
+                    set_state(PART:"del-button", "default", 0.0);
+                    if (get_int(del_button_pressed) == 1) {
+                        emit("back","main_command");
+                    }
+                }
             }
         }
         program 
