@@ -96,7 +96,7 @@ group {
                   to: "base";
                }
                image {
-                  normal: "add.png";
+                  normal: "abc.png";
                }
                visible: 1;
             }

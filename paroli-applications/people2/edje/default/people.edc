@@ -6,6 +6,7 @@ fonts {
 }
 
 images {
+   image: "abc.png" COMP;
    image: "add.png" COMP;
    image: "add_pressed.png" COMP;
    image: "minus.png" COMP;
