@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+* ASCII English text
+# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2009 Mirko Lindner (mirko@openmoko.org)
@@ -31,22 +33,23 @@ logger = logging.getLogger('bt')
 
 
 
-class GpsService(tichy.Service):
-    """The 'Gps' service
+class BtService(tichy.Service):
+    """The 'Bt' service
     """
 
     service = 'BT'
 
     def __init__(self):
         """Connect to the freesmartphone DBus object"""
-        super(GpsService, self).__init__()
-
-    @tichy.tasklet.tasklet
-    def init(self):
-        yield None
+        super(BtService, self).__init__()
 
     @tichy.tasklet.tasklet
     def init2(self):
+        yield None
+
+    @tichy.tasklet.tasklet
+    def init(self):
+        logger.info("bt loading")
         yield tichy.Service.get('ConfigService').wait_initialized()
         try:
             yield tichy.tasklet.WaitDBusName('org.bluez',time_out=120)
@@ -71,7 +74,7 @@ class GpsService(tichy.Service):
             
             self.Adapter = dbus.Interface(adapter_obj, 'org.bluez.Adapter')
                 
-            #self.config_service = tichy.Service.get("ConfigService")
+            self.config_service = tichy.Service.get("ConfigService")
             
             #setting up agent
             agent_path = "/test/agent"
@@ -93,7 +96,7 @@ class GpsService(tichy.Service):
             
             self.scan_setting = tichy.settings.ListSetting('Bluetooth', 'List', tichy.Text, value="scan", setter=self.StartScanning, options=['scan'], model=self.DeviceList, ListLabel=self.ListLabel)
             
-            #status = tichy.settings.ToggleSetting('', 'status', tichy.Text, value=self.get_status(), setter=self.set_status, options=['active','inactive'])
+            status = tichy.settings.ToggleSetting('', 'status', tichy.Text, value=self.get_status(), setter=self.set_status, options=['active','inactive'])
             
             #password = tichy.settings.StringSetting('gprs', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
             #user = tichy.settings.StringSetting('gprs', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
