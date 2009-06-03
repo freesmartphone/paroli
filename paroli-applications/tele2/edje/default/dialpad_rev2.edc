@@ -97,12 +97,12 @@ group {
             cancel_timer(get_int(mytimer));
             set_int(mytimer,0);
             del_digit();
-            emit("add plus","embryo");\
-            new state[30];\
-            new Float:floaty;\
+            emit("add plus","embryo");
+            new state[30];
+            new Float:floaty;
             if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0)
             {
-                if (strcmp(state, "default") == 0)\
+                if (strcmp(state, "default") == 0)
                 {
                   add_sign("+")
                 }
@@ -121,7 +121,14 @@ group {
             num[0] = sign[0];
             new state[30];
             new Float: floaty;
-            set_state(PART:"del-button", "number", 0.0);
+            
+            new state2[30];
+            new Float:floaty2;
+            if (get_state(PART:"del-button", state2[0], 30, floaty2) == 0) {
+                if (strcmp(state2, "default") == 0) {
+                    set_state(PART:"del-button", "number", 0.0);
+                }
+            }
             if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
                 if (strcmp(state, "pin") == 0) {
                     new pin[40];
@@ -139,7 +146,7 @@ group {
                 if (strcmp(state, "active") == 0) {
                     emit(num,"dtmf");
                 }
-        }
+            }
         }
         
         public set_flag(s){
@@ -599,7 +606,7 @@ group {
             {
               state: "incoming" 0.0;
               inherit:"default" 0.0;
-              image.normal: "speaker.png";
+              image.normal: "speaker.png"; //TODO: new icon
             }
             description
             {
@@ -610,13 +617,13 @@ group {
             {
               state: "dialing" 0.0;
               inherit:"default" 0.0;
-              image.normal: "speaker.png";
+              image.normal: "speaker.png"; //TODO: new icon
             }
             description
             {
               state: "silent" 0.0;
               inherit:"default" 0.0;
-              image.normal: "speaker.png";
+              image.normal: "speaker.png"; // TODO: new icon
             }
             description
             {
@@ -772,7 +779,8 @@ programs {
                 if (get_state(PART:"call-button", state[0], 30, floaty) == 0)
                 {
                     emit(state, "embryo")
-                    if ((strcmp(state, "default") == 0) || (strcmp(state, "incoming") == 0) || (strcmp(state, "pin") == 0) )
+                    if ((strcmp(state, "default") == 0) || 
+                        (strcmp(state, "incoming") == 0) || (strcmp(state, "pin") == 0) )
                     {
                         set_state(PART:"call-2-effecter", "active_clicked", 0.0);
                     }
@@ -797,20 +805,24 @@ programs {
             name: "del-button-changer";
             signal: "mouse,down,1";
             source: "del-button";
-            action: STATE_SET "clicked" 0.0;
-            target:"del-button";
-            after:"del-button-changer-workaround";
-            
-        }
-        program {
-            name: "del-button-changer-workaround";
             script{
                 start_timer("del_all");
                 del_digit();
-                if (get_int(del_button_pressed) == 1) {
-                    set_state(PART:"del-button", "clicked", 0.0);
-                } else {
-                    set_state(PART:"del-button", "number-pressed", 0.0);
+                new state[30];
+                new Float:floaty;
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (!((strcmp(state, "active")   == 0) ||
+                        (strcmp(state, "incoming") == 0) ||
+                        (strcmp(state, "dialing")  == 0) ||
+                        (strcmp(state, "muted")    == 0) ||
+                        (strcmp(state, "silent")   == 0))) {
+                    
+                        if (get_int(del_button_pressed) == 1) {
+                            set_state(PART:"del-button", "clicked", 0.0);
+                        } else {
+                            set_state(PART:"del-button", "number-pressed", 0.0);
+                        }
+                    }
                 }
             }
         }
@@ -820,15 +832,25 @@ programs {
             source: "del-button";
             script{
                 stop_timer();
-                new old[40];
-                old[39] = get_text(PART:"num_field-text",old,40);
-                new len = strlen(old);
-                if (len != 0) {
-                    set_state(PART:"del-button", "number", 0.0);
-                } else {
-                    set_state(PART:"del-button", "default", 0.0);
-                    if (get_int(del_button_pressed) == 1) {
-                        emit("back","main_command");
+                new state[30];
+                new Float:floaty;
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (!((strcmp(state, "active") == 0) ||
+                        (strcmp(state, "incoming") == 0) ||
+                        (strcmp(state, "dialing")  == 0) ||
+                        (strcmp(state, "muted")    == 0) ||
+                        (strcmp(state, "silent")   == 0))) {
+                        new old[40];
+                        old[39] = get_text(PART:"num_field-text",old,40);
+                        new len = strlen(old);
+                        if (len != 0) {
+                            set_state(PART:"del-button", "number", 0.0);
+                        } else {
+                            set_state(PART:"del-button", "default", 0.0);
+                            if (get_int(del_button_pressed) == 1) {
+                                emit("back","main_command");
+                            }
+                        }
                     }
                 }
             }
