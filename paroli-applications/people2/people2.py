@@ -56,15 +56,15 @@ class People2App(tichy.Application):
         self.edje_obj = self.window.main_layout
 
         self.list_label = [('label','name')]
-        self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp, True)
        
-        self.item_list.add_callback("contact_details", "*",
-self.contact_details)
+        self.item_list.add_callback("contact_details", "*", self.contact_details)
         self.item_list.add_callback("send_all", "fold-back", self.self_test)
         self.item_list.add_callback("create_message", "*", self.create_msg)
 
         self.edje_obj.add_callback("back-button", "*", self.signal)
         self.edje_obj.add_callback("add_contact", "*", self.create_contact)
+        self.edje_obj.add_callback("*", "dict", self.openDict)
 
         ##wait until main object emits back signal or delete is requested
         
@@ -78,6 +78,35 @@ self.contact_details)
         
         self.window.delete()
         #del self.item_list
+    
+    def openDict(self, emission, signal, source):
+          if signal == "opening":
+              self.dictButtons = []
+              self.dictTable = gui.elementary.Table(self.window.window.elm_obj)
+              self.dictTable.show()
+              self.dictTable.layer_set(99)
+              self.edje_obj.elm_obj.content_set("dict-window",self.dictTable)
+              counter_x = 0
+              counter_y = 0
+              for i in self.item_list.letter_index.keys():
+                  button = gui.elementary.Button(self.window.window.elm_obj)
+                  button.label_set(i)
+                  button.on_mouse_up_add(self.item_list.jump_to_index, i)
+                  self.dictButtons.append(button)
+                  button.show()
+                  self.dictTable.pack(button, counter_x*20, round((counter_y / 4) + 0.5) * 20 , 20, 20)
+                  counter_y += 1
+                  if counter_x == 3:
+                      counter_x = 0
+                  else:
+                    counter_x += 1
+              
+          elif signal == "closing":
+              logger.info("closing")
+              for i in self.dictButtons :
+                  i.hide()
+                  if i.is_deleted() == False:
+                      del i
     
     def signal(self, emission, signal, source):
         """ Callback function. It invokes, when the "back" button clicked."""

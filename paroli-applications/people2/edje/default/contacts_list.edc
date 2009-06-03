@@ -78,7 +78,30 @@ group {
               image.normal: "add_pressed.png";
             }
          }
-          part{
+         part {
+            name: "dict-button";
+            type: IMAGE;
+            description {
+               state: "default" 0.0;
+               min: 159 69;
+               max: 159 69;
+               rel1 {
+                  relative: 0.0 0.0;
+                  offset: 161 19;
+                  to: "base";
+               }
+               rel2 {
+                  relative: 0.0 0.0;
+                  offset: 320 88;
+                  to: "base";
+               }
+               image {
+                  normal: "add.png";
+               }
+               visible: 1;
+            }
+         }
+        part{
             name:"list";
             type:SWALLOW;
               description { 
@@ -98,6 +121,24 @@ group {
                 state: "list_only" 0.0;
                 inherit: "default" 0.0;
                 rel1.offset: 0 10;
+            }
+        }
+      part{
+            name: "dict-window";
+            type: SWALLOW;
+            description{ state: "default" 0.0;
+              visible:0;
+              rel1{
+                    relative: 0.2 0.2;
+                }
+                rel2 {
+                    relative: 0.8 0.8;
+                }
+            }
+            description{
+                state: "look-up" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
             }
         }
       }
@@ -146,6 +187,35 @@ group {
                 source: "back-button";
                 action: STATE_SET "clicked" 0.0;
                 target: "back-button";
+              }
+              program 
+              { 
+                name: "dict-button";
+                signal: "mouse,up,1";
+                source: "dict-button";
+                script{
+                    new state[30];
+                    new Float:floaty;
+                    if (get_state(PART:"dict-window", state[0], 30, floaty) == 0){
+                        if (strcmp(state, "default") == 0){
+                            emit("opening", "dict");
+                            set_state(PART:"dict-window", "look-up", 0.0);
+                        }else{
+                            emit("closing", "dict");
+                            set_state(PART:"dict-window", "default", 0.0);
+                        }
+                    }   
+                }
+              }
+              program 
+              { 
+                name: "close-dict";
+                signal: "close-dict";
+                source: "*";
+                script{
+                    emit("closing", "dict");
+                    set_state(PART:"dict-window", "default", 0.0);
+                }
               }
           program 
               { 
