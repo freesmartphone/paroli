@@ -317,7 +317,7 @@ class elm_list(tichy.Object):
                     if test == value:
                         edje_obj.signal_emit(signal,'*')
 
-                ly.size_hint_min_set(470,100)
+                ly.size_hint_min_set(470,96)
                 self.box.elm_obj.pack_end(ly)
                 ly.show()
                 self.items.append([item,edje_obj,ly])
