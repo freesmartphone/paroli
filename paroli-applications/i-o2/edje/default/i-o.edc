@@ -4,6 +4,7 @@ fonts {
 
 images {
    image: "edit.png" COMP;
+   image: "sweep.png" COMP;
    image: "Save.png" COMP;
    image: "save.png" COMP;
    image: "save_pressed.png" COMP;
