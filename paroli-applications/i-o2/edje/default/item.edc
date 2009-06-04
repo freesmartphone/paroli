@@ -258,7 +258,8 @@ group { name: "item";
          description { 
             state: "default" 0.0;
             color:0 0 0 255;
-            min: 470 96;
+            min: 470 96; //workaround of bug #36: 
+                         //http://trac.enlightenment.org/e/ticket/36
 //             fixed: 1 1;
             rel1 {
                relative: 0.0 0.0;
