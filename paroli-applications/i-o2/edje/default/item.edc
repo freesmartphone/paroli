@@ -154,7 +154,7 @@ group { name: "item";
          type: RECT;
          description { 
             state: "default" 0.0;
-            color:0 0 0 255;
+            color:100 0 0 255;
             rel1 {
                relative: 0.0 0.0;
                to: "item_bg";
@@ -223,20 +223,20 @@ group { name: "item";
         dragable {
            x: 1 1 0;
            y: 0 0 0;
-           confine:"label-bg";
+           confine:"item";
         }
          description { 
             state: "default" 0.0;
             color:0 0 0 255;
-            min: 470 60;
+            min: 470 96;
 //             fixed: 1 1;
             rel1 {
                relative: 0.0 0.0;
-               to: "label-bg";
+               to: "item";
             }
             rel2 {
                relative: 1.0 1.0;
-               to: "label-bg";
+               to: "item";
             } 
          }
         description{
@@ -315,45 +315,36 @@ group { name: "item";
             visible: 1;
          }
       }
-      part {
-         name: "delete_button";
-         type: IMAGE;
-         description { 
-            state: "default" 0.0;
-//             min: 88 35;
-//             max: 88 35;
-            rel1 {
-               relative: 0.0 0.0;
-               to: "item_bg";
+        part {
+           name: "delete_button";
+           type: IMAGE;
+           description { 
+              state: "default" 0.0;
+              min: 64 64;
+              max: 64 64;
+              rel1 {
+                 relative: 0.0 0.0;
+                 to: "item_bg";
+              }
+              rel2 {
+                 relative: 0.25 1.0;
+                 to: "item_bg";
+              } 
+              image {
+                 normal: "delete.png";
+              }
+              visible: 0;
+           }
+           description { 
+              state: "edit_mode" 0.0;
+              inherit: "default" 0.0;
+              visible: 1;
+           }
+           description { 
+              state: "edit_mode_deselected" 0.0;
+              inherit: "default" 0.0;
             }
-            rel2 {
-               relative: 0.0 0.0;
-               to: "item_bg";
-            } 
-            image {
-               normal: "Delete.png";
-            }
-            visible: 0;
-         }
-         description { 
-            state: "edit_mode" 0.0;
-            min: 88 35;
-            max: 88 35;
-            rel1 {
-               relative: 0.0 0.0;
-               to: "item_bg";
-            }
-            rel2 {
-               relative: 0.25 1.0;
-               to: "item_bg";
-            } 
-            visible: 1;
-         }
-         description { 
-            state: "edit_mode_deselected" 0.0;
-            inherit: "default" 0.0;
-          }
-      }
+        }
       part{
          name: "subtext";
          type: TEXT;
