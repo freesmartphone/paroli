@@ -107,13 +107,41 @@ group {
             type: RECT;
             description { 
                 state: "default" 0.0;
-                color:0 0 0 255;
+                color: 0 0 0 255;
                 rel1 {
                     relative: 0.0 0.0;
                 }
                 rel2 {
                     relative: 1.0 1.0;
                 }
+            }
+        }
+        part {
+            name: "back-button";
+            type: IMAGE;
+            description {
+                state: "default" 0.0;
+                min: 159 69;
+                max: 159 69;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 1 19;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 160 88;
+                    to: "base";
+                }
+                image {
+                    normal: "back.png";
+                }
+                visible: 1;
+            }
+            description {
+                state: "pressed" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back_pressed.png";
             }
         }
         part {
@@ -229,6 +257,25 @@ group {
         }
     }
     programs {  
+        program { 
+            name: "back-button";
+            signal: "mouse,up,1";
+            source: "back-button";
+            action: SIGNAL_EMIT "back" "edje";
+            after: "back-button-unpressed";
+        }
+        program { 
+            name: "back-button-unpressed";
+            action: STATE_SET "default" 0.0;
+            target: "back-button";
+        }      
+        program {
+            name: "back-button-pressed";
+            signal: "mouse,down,1";
+            source: "back-button";
+            action: STATE_SET "pressed" 0.0;
+            target: "back-button";
+        }
         program { 
             name: "edit_clicked";
             signal: "mouse,up,1";
