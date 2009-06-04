@@ -162,7 +162,7 @@ group {
                     to: "base";
                 }
                 image {
-                    normal: "edit.png";
+                    normal: "sweep.png";
                 }
                 visible: 1;
             }
