@@ -69,6 +69,9 @@ class MsgsApp2(tichy.Application):
         self.item_list.add_callback("*", "messaging", self.adv_msg)
         self.item_list.add_callback("save", "*", self.create_contact)
         
+        ## close the Tele app, with the back button (signal, source, method)
+        self.edje_obj.add_callback("back", "edje", self.signal) 
+        
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
         
         self.item_list.add_callback("details", "*", self.msg_details) 
@@ -82,7 +85,15 @@ class MsgsApp2(tichy.Application):
             self.contacts.disconnect(self.oid)
             self.window.delete()
             del self.item_list
-      
+
+            
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("msgs2.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+
+        
     ##DEBUG FUNCTIONS
     ## general output check
     def self_test(self, *args, **kargs):
