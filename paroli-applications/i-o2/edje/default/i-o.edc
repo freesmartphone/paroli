@@ -9,6 +9,7 @@ images {
    image: "save_pressed.png" COMP;
    image: "Done.png" COMP;
    image: "Delete.png" COMP;
+   image: "delete.png" COMP;
    image: "back.png" COMP;
    image: "back_pressed.png" COMP;
 }
