@@ -12,6 +12,7 @@ group { name: "item";
    
       public drag_value;
       public mouse_x;
+      public edit_mode=0;
    
       public check_slider_action(val) {
          new Float:dx;
@@ -148,7 +149,36 @@ group { name: "item";
             visible:0;
          }
       }
-
+        part {
+           name: "delete_button";
+           type: IMAGE;
+           description { 
+              state: "default" 0.0;
+              min: 64 64;
+              max: 64 64;
+              rel1 {
+                 relative: 0.0 0.0;
+                 to: "item_bg";
+              }
+              rel2 {
+                 relative: 0.25 1.0;
+                 to: "item_bg";
+              } 
+              image {
+                 normal: "delete.png";
+              }
+              visible: 0;
+           }
+           description { 
+              state: "edit_mode" 0.0;
+              inherit: "default" 0.0;
+              visible: 1;
+           }
+           description { 
+              state: "edit_mode_deselected" 0.0;
+              inherit: "default" 0.0;
+            }
+        }
       part {
          name: "item";
          type: RECT;
@@ -315,36 +345,6 @@ group { name: "item";
             visible: 1;
          }
       }
-        part {
-           name: "delete_button";
-           type: IMAGE;
-           description { 
-              state: "default" 0.0;
-              min: 64 64;
-              max: 64 64;
-              rel1 {
-                 relative: 0.0 0.0;
-                 to: "item_bg";
-              }
-              rel2 {
-                 relative: 0.25 1.0;
-                 to: "item_bg";
-              } 
-              image {
-                 normal: "delete.png";
-              }
-              visible: 0;
-           }
-           description { 
-              state: "edit_mode" 0.0;
-              inherit: "default" 0.0;
-              visible: 1;
-           }
-           description { 
-              state: "edit_mode_deselected" 0.0;
-              inherit: "default" 0.0;
-            }
-        }
       part{
          name: "subtext";
          type: TEXT;
@@ -490,19 +490,37 @@ group { name: "item";
                 new y;
                 get_mouse(x, y);
                 if (x - get_int(mouse_x) < -30){
-                        run_program(PROGRAM:"fold-back");
-                        emit("left swipe", "embryo");
-                        set_int(drag_value,0);
+                    run_program(PROGRAM:"fold-back");
+                    emit("left swipe", "embryo");
+                    set_int(drag_value,0);
+                    if (get_int(edit_mode) == 1) {
+                        set_text(PART:"delete-flag","0");
+                        run_program(PROGRAM:"hide-save-button");
+                    }
                 }else if (x - get_int(mouse_x) > 30){
-                        run_program(PROGRAM:"rightward-slide");
-                        emit("close_all", "embryo");
-                        set_int(drag_value,0);
+                        if (get_int(edit_mode) == 0) {
+                            run_program(PROGRAM:"rightward-slide");
+                            emit("close_all", "embryo");
+                            set_int(drag_value,0);
+                        } else {
+                            run_program(PROGRAM:"rightward-slide-single");
+                            set_int(drag_value,0);
+                            set_text(PART:"delete-flag","1");
+                        }
                 }else{
                     set_int(drag_value,0);
                 }
             }                   
         }
-        program{
+        program {
+            name: "rightward-slide-single";
+            action: STATE_SET "to-the-right" 0.0;
+            transition: LINEAR 0.32;
+            target:"subtext";
+            target: "item";
+            target:"label";
+        }        
+        program {
             name: "rightward-slide";
             action: STATE_SET "to-the-right" 0.0;
             transition: LINEAR 0.32;
@@ -562,7 +580,8 @@ group { name: "item";
          source: "delete_button";
          script{
             set_text(PART:"delete-flag","0");
-            run_program(PROGRAM:"to-edit-mode-deselect");
+            //run_program(PROGRAM:"to-edit-mode-deselect");
+            run_program(PROGRAM:"hide-save-button");
             run_program(PROGRAM:"fold-back");
          }
       }
@@ -577,7 +596,21 @@ group { name: "item";
          target: "subtext";
          target: "msg_button_label";
          target: "msg_button";
+         after: "edit-mode-set";
       }
+      program {
+          name: "edit-mode-set";
+          script {
+            set_int(edit_mode,1);
+        }
+      }
+      program {
+          name: "edit-mode-reset";
+          script {
+            set_int(edit_mode,0);
+        }
+      }
+      
       program {
          name: "to-edit-mode-deselect";
          signal: "to_edit_mode_deselected";
@@ -587,6 +620,7 @@ group { name: "item";
          target: "delete_button";
          target: "label";
          target: "subtext";
+         after: "edit-mode-reset";
       }
       program {
          name: "to-default-mode";
