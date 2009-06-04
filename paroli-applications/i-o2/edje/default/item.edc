@@ -563,6 +563,7 @@ group { name: "item";
          script{
             set_text(PART:"delete-flag","0");
             run_program(PROGRAM:"to-edit-mode-deselect");
+            run_program(PROGRAM:"fold-back");
          }
       }
       program {
