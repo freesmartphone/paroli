@@ -149,40 +149,35 @@ group {
             type: IMAGE;
             description {
                 state: "default" 0.0;
-                min: 42 18;
-                max: 42 18;
+                min: 159 69;
+                max: 159 69;
                 rel1 {
                     relative: 0.0 0.0;
-                    offset: 416 29;
+                    offset: 320 19;
                     to: "base";
                 }
                 rel2 {
                     relative: 0.0 0.0;
-                    offset: 458 47;
+                    offset: 479 88;
                     to: "base";
                 }
                 image {
-                    normal: "Edit.png";
+                    normal: "edit.png";
                 }
                 visible: 1;
             }
             description {
                 state: "edit_mode" 0.0;
                 inherit: "default" 0.0;
-                min: 56 18;
-                max: 56 18;
-                rel1 {
-                    relative: 0.0 0.0;
-                    offset: 401 28;
-                    to: "base";
-                }
-                rel2 {
-                    relative: 0.0 0.0;
-                    offset: 457 46;
-                    to: "base";
-                }
                 image {
-                    normal: "Done.png";
+                    normal: "save.png";
+                }
+            }
+            description {
+                state: "edit_mode_pressed" 0.0;
+                inherit: "default" 0.0;
+                image {
+                    normal: "save_pressed.png";
                 }
             }
             description{
@@ -275,6 +270,22 @@ group {
             source: "back-button";
             action: STATE_SET "pressed" 0.0;
             target: "back-button";
+        }
+        program { 
+            name: "edit_pressed";
+            signal: "mouse,down,1";
+            source: "edit-done-button";
+            action: STATE_SET "edit_mode_pressed" 0.0;
+            target: "edit-done-button";
+            script {
+                new state_name[30];
+                new Float:dummy;
+                get_state(PART:"edit-done-button", state_name, 30, dummy);
+                if (!strcmp(state_name, "edit_mode")) {
+                    set_state(PART:"edit-done-button", "edit_mode_pressed", 1.0);
+                }
+            }
+            
         }
         program { 
             name: "edit_clicked";
