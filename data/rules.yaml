@@ -48,7 +48,6 @@
     filters: Not(CallListContains("active"))
     actions:
              - SetDisplayBrightness("0", 90)
-             - OccupyResource(CPU)
 
 -
     while: CallStatus()
