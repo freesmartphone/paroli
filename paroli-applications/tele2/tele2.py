@@ -153,7 +153,7 @@ class TeleCaller2(tichy.Application):
         self.usage_service = tichy.Service.get('Usage')
         self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
-        #self.usage_service.occupy_cpu().start()
+        self.usage_service.occupy_cpu().start()
         
         if layout:
             self.main = parent
@@ -278,7 +278,7 @@ class TeleCaller2(tichy.Application):
                     
             
             #logger.info("releasing cpu")
-            #self.usage_service.release_cpu().start()
+            self.usage_service.release_cpu().start()
             self.SoundsService.Stop()        
             self.storage.caller.value = ""
             self.storage.call = None
