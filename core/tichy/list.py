@@ -26,7 +26,7 @@ from tichy.service import Service
 # XXX: We need to remove the removed, appended and cleared signal
 
 
-class List(list, Item):
+class List(Item, list, ):
     """Base class for list
 
     It is better to use this class instead of python list in the case
@@ -39,10 +39,12 @@ class List(list, Item):
         'appended' : emitted when an item has been appened
     """
 
-    def __init__(self, values=[]):
-        list.__init__(self, values)
-        Item.__init__(self)
-        assert hasattr(self, '_Object__listeners'), self
+    def __new__(cls, *argl, **argk):
+        obj = super(List, cls).__new__(cls, *argl, **argk)
+        return obj
+
+    def __init__(self, *argl, **argk):
+        super(List, self).__init__(*argl, **argk)
         self.sort()
 
     def clear(self):

@@ -39,8 +39,10 @@ class Object(object):
         be overkill there... still thinking about it...
     """
 
-    def __init__(self, *kargs):
-        self.__listeners = {}
+    def __new__(cls, *argl, **argk):
+        obj = super(Object, cls).__new__(cls)
+        obj._listeners = {}
+        return obj
 
     @classmethod
     def path(cls, path=None):
@@ -102,7 +104,7 @@ class Object(object):
     def connect_object(self, event, callback, obj, *args):
         """Connect an event using a given object instead of self"""
         connection = (callback, obj, args)
-        self.__listeners.setdefault(event, []).append(connection)
+        self._listeners.setdefault(event, []).append(connection)
         return id(connection)
 
     def disconnect(self, oid):
@@ -113,7 +115,7 @@ class Object(object):
             oid : int
                 The id returned by `Object.connect` method
         """
-        for listener in self.__listeners.itervalues():
+        for listener in self._listeners.itervalues():
             for connection in listener:
                 if id(connection) == oid:
                     listener.remove(connection)
@@ -134,7 +136,7 @@ class Object(object):
                    The name of the event to emit.
         """
         
-        for callback, obj, extra_args in self.__listeners.get(event, [])[:]:
+        for callback, obj, extra_args in self._listeners.get(event, [])[:]:
             eargs = args + extra_args
             call = callback(obj, *eargs)
             # Now in case the callback is a generator, we turn it into a task

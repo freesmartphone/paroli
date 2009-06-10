@@ -75,9 +75,6 @@ class Item(tichy.Object):
                 return subclass
         raise KeyError(name)
 
-    def __init__(self):
-        super(Item, self).__init__()
-
     def get_text(self):
         """Return the name of the item as a tichy.Text object
 
