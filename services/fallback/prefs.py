@@ -26,7 +26,7 @@ import logging
 logger = logging.getLogger('service.fallback.prefs')
 
 
-class FallbackPrefsSerices(tichy.Service):
+class FallbackPrefsServices(tichy.Service):
 
     service = 'Prefs'
     name = 'Fallback'
@@ -34,7 +34,7 @@ class FallbackPrefsSerices(tichy.Service):
     class Service(item.Item):
 
         def __init__(self, prefs, name):
-            super(FallbackPrefsSerices.Service, self).__init__()
+            super(FallbackPrefsServices.Service, self).__init__()
             self.prefs = prefs
             self.name = name
             self.attrs = {}
@@ -55,7 +55,7 @@ class FallbackPrefsSerices(tichy.Service):
             self.attrs[name] = value
 
     def __init__(self):
-        phone = FallbackPrefsSerices.Service(self, 'phone')
+        phone = FallbackPrefsServices.Service(self, 'phone')
         phone['ring-tone'] = {'default': 'music1'}
         phone['ring-volume'] = {'default': 10, 'silent': 0}
         self.services = {'phone': phone}
