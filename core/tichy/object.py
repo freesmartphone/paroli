@@ -39,15 +39,8 @@ class Object(object):
         be overkill there... still thinking about it...
     """
 
-    def __new__(cls, *args, **kargs):
-        ret = object.__new__(cls)
-        ret.__listeners = {}
-        return ret
-
-    def __init__(self, *kargs): # TODO: see why I hava to use __init__
-                                # even with the __new__
-        if not hasattr(self, '_Object__listeners'):
-            self.__listeners = {}
+    def __init__(self, *kargs):
+        self.__listeners = {}
 
     @classmethod
     def path(cls, path=None):
