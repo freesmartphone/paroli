@@ -21,7 +21,7 @@ __docformat__ = 'reStructuredText'
 
 import tichy
 from paroli.tel_number import TelNumber
-from paroli.message import Message
+from paroli.message import Message, PhoneMessage
 
 import logging
 logger = logging.getLogger('service.misc.messages')
