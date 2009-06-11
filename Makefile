@@ -13,6 +13,8 @@ all:
 
 .PHONY: run
 run:
+	LD_LIBRARY_PATH=$(EPATH)/lib \
+	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:applications:core:services \
 	./scripts/paroli
 
 .PHONY: dbg
@@ -23,4 +25,31 @@ dbg: clean
 clean:
 	find . -name \*.pyo -o -name \*.pyc | xargs rm -f
 	rm -rf dist build
+
+.PHONY: docs
+docs: docs/index.html
+
+docs/index.html: Makefile
+	mkdir -p docs
+	LD_LIBRARY_PATH=$(EPATH)/lib \
+	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:applications:core:services \
+	epydoc \
+		--css=data/epydoc.css \
+		--debug \
+		--docformat=restructuredtext \
+		--graph=classtree \
+		--graph-font-size=32 \
+		--graph-font='Vera' \
+		--html \
+		--include-log \
+		--name='paroli - documentation' \
+		--navlink=Home \
+		--no-imports \
+		--no-private \
+		--no-sourcecode \
+		--output=docs \
+		--quiet \
+		--simple-term \
+		--url=http://www.paroli-project.org/ \
+		core/* services/* applications/*
 
