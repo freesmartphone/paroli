@@ -179,7 +179,7 @@ def launch(name, options):
     launcher.Launch(options.launch)
 
 
-if __name__ == '__main__':
+def main(*args):
     options = parse_options()
 
     setup_logging()
@@ -236,3 +236,6 @@ if __name__ == '__main__':
     tichy.Service.end_all()
     
     logger.info("quit")
+
+if __name__ == '__main__':
+    main()
