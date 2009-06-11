@@ -288,19 +288,25 @@ group  {
             type:RECT;
             description {
                 state: "default" 0.0;
-                color: 255 255 255 0;
+                color: 0 0 0 0;
                 rel1 {
                     relative: 0.0 0.0;
                     to: "number";
                 }
                 rel2 {
-                    relative: 1.0 0.79;
+                    relative: 1.0 1.0;
                     to: "number";
                 }
             }
             description {
                 state: "edit-mode" 0.0;
-                visible:0;
+                visible: 0;
+            }
+            description {
+                state: "pressed" 0.0;
+                inherit: "default" 0.0;
+                color: 255 105 205 200;
+                visible: 1;
             }
         }
         part {
@@ -460,9 +466,23 @@ group  {
             action: SIGNAL_EMIT "close_details" "edje";
         }
         program {
+            name: "call-contact-pressed";
+            signal: "mouse,down,1";
+            source: "number-text-button";
+            action: STATE_SET "pressed" 0.0;
+            target: "number-text-button";
+        }
+        program {
             name: "call-contact";
             signal: "mouse,up,1";
             source: "number-text-button";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.5;
+            target: "number-text-button";
+            after: "call-contact-emit"; //TODO: do two things at the same time
+        }
+        program {
+            name: "call-contact-emit";
             action: SIGNAL_EMIT "call_contact" "people";
         }
         program {
