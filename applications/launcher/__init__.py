@@ -35,7 +35,7 @@ import time
 class Launcher(tichy.Application):
     name = 'Launcher'
     icon = 'icon.png'
-    category = 'hidden' # So that we see the app in the launcher
+    category = 'hidden' # So that we dont see the app in ourselfs
     
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
