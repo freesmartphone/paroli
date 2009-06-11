@@ -24,7 +24,7 @@ dbg: clean
 .PHONY: clean
 clean:
 	find . -name \*.pyo -o -name \*.pyc | xargs rm -f
-	rm -rf dist build
+	rm -rf dist build docs
 
 .PHONY: docs
 docs: docs/index.html

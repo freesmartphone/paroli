@@ -1,3 +1,4 @@
 #!/bin/sh -e
-cd /usr/share/paroli/scripts/
-exec python -OO ./paroli.py --cfgfile ./paroli.cfg
+cd /usr/share/paroli/
+PYTHONPATH=core \
+exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.cfg
