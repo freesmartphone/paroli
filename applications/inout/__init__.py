@@ -25,9 +25,6 @@ logger = logging.getLogger('applications.inout')
 import os
 import tichy
 from tichy import gui
-import sys
-import ecore
-
 from tichy.tasklet import Wait, WaitFirst
 
 class InOutCallLog(tichy.Application):
