@@ -24,7 +24,7 @@ logger = getLogger('applications.people')
 from os.path import join, dirname
 from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
 from elementary import Entry
-from paroli.gui import ElementaryListWindow, ElementaryList, elm_layout, ElementaryListSubwindow
+from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryLayout, ElementaryListSubwindow
 from tichy import Application, Service
 from tichy.tasklet import WaitFirst, Wait, tasklet
 from paroli.sim import SIMContact
@@ -98,7 +98,7 @@ class People(Application):
     def contact_details(self, emission, source, param, item):
         number = str(item[0].tel)
         name = unicode(item[0].name).encode("utf-8")
-        detail_layout =  elm_layout(self.window.window, self.edje_file, "contact_details")              
+        detail_layout =  ElementaryLayout(self.window.window, self.edje_file, "contact_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
         edje_obj.part_text_set('name-text',str(name).encode('utf8'))
         edje_obj.part_text_set('number-text',str(number).encode('utf8'))
@@ -266,7 +266,7 @@ class CreateContact(Application):
                   
                   if number_layout == 0:
                     
-                      number_layout =  elm_layout(parent.window, self.edje_file, "edit_number")
+                      number_layout =  ElementaryLayout(parent.window, self.edje_file, "edit_number")
                       
                       edje_obj = number_layout.elm_obj.edje_get()
                   
@@ -301,7 +301,7 @@ class CreateContact(Application):
                   
                 if text_layout == 0:
                     
-                    text_layout = elm_layout(parent.window, self.edje_file, "CreateContact")
+                    text_layout = ElementaryLayout(parent.window, self.edje_file, "CreateContact")
                     
                     edje_obj = text_layout.elm_obj.edje_get()
                     

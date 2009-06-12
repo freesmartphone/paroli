@@ -25,7 +25,8 @@ __docformat__ = 'reStructuredText'
 import logging
 logger = logging.getLogger('core.paroli.contact')
 
-import tichy
+from elementary import Box, Label
+from tichy import Item, Text, Service, Persistance
 from paroli.tel_number import TelNumber
 
 
@@ -75,7 +76,7 @@ class ContactField(object):
         return self.name
 
 
-class ContactAttr(tichy.Item):
+class ContactAttr(Item):
     """represent an attribute of a contact
 
     This is different from the field. The filed contains only meta
@@ -106,8 +107,8 @@ class ContactAttr(tichy.Item):
 
         :Returns: the widget that represents the item
         """
-        ret = tichy.gui.Box(parent, axis=0, border=0)
-        tichy.gui.Label(ret, "%s:" % self.field.name)
+        ret = Box(parent, axis=0, border=0)
+        Label(ret, "%s:" % self.field.name)
         if self.value:
             self.value.view(ret)
         return ret
@@ -132,7 +133,7 @@ class ContactAttr(tichy.Item):
         yield self.value.edit(view.window, name=self.field.name)
 
 
-class Contact(tichy.Item):
+class Contact(Item):
     """base class for tichy's contacts
 
     We have to redo this class better. So far a contact can only have
@@ -145,7 +146,7 @@ class Contact(tichy.Item):
 
     Field = ContactField        # Alias for the ContactField class
 
-    name = ContactField('name', tichy.Text, True)
+    name = ContactField('name', Text, True)
     tel = ContactField('tel', TelNumber)
     fields = [name, tel]
 
@@ -191,10 +192,10 @@ class Contact(tichy.Item):
     def _on_copy_to(self, action, contact, view, cls):
         try:
             contact = yield cls.import_(self)
-            tichy.Service.get('Contacts').add(contact)
+            Service.get('Contacts').add(contact)
         except Exception, ex:
             logger.exception("can't import contact : %s", ex)
-            yield tichy.Dialog(view.window, "Error",
+            yield Dialog(view.window, "Error", # TODO where does this "Dialog" come from?!?
                                "can't import the contact")
 
     def delete(self):
@@ -222,10 +223,10 @@ class PhoneContact(Contact):
 
     storage = 'Phone'
 
-    name = ContactField('name', tichy.Text, True)
+    name = ContactField('name', Text, True)
     tel = ContactField('tel', TelNumber)
-    note = ContactField('note', tichy.Text)
-    tel_type = ContactField('tel_type', tichy.Text)
+    note = ContactField('note', Text)
+    tel_type = ContactField('tel_type', Text)
     fields = [name, tel, note, tel_type]
 
     def __init__(self, **kargs):
@@ -246,9 +247,9 @@ class PhoneContact(Contact):
     def save(cls):
         """Save all the phone contacts"""
         logger.info("Saving phone contacts")
-        contacts = tichy.Service.get('Contacts').contacts
+        contacts = Service.get('Contacts').contacts
         data = [c.to_dict() for c in contacts if isinstance(c, PhoneContact)]
-        tichy.Persistance('contacts/phone').save(data)
+        Persistance('contacts/phone').save(data)
         yield None
 
     @classmethod
@@ -259,7 +260,7 @@ class PhoneContact(Contact):
         """
         logger.info("Loading phone contacts")
         ret = []
-        data = tichy.Persistance('contacts/phone').load()
+        data = Persistance('contacts/phone').load()
         if data:
             for kargs in data:
                 contact = PhoneContact(**kargs)

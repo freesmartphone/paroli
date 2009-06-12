@@ -24,7 +24,7 @@ logger = getLogger('applications.telefony')
 from os.path import join, dirname
 from tichy import Application, Service, Text, mainloop
 from tichy.tasklet import Wait, WaitFirst, tasklet
-from paroli.gui import ElementaryLayoutWindow, elm_layout
+from paroli.gui import ElementaryLayoutWindow, ElementaryLayout
 from paroli.tel_number import TelNumber
 
 class TelefonyDialer(Application):
@@ -146,7 +146,7 @@ class TeleCaller2(Application):
             self.main = parent
             self.main.topbar.onclick = 'hide'
             layout.elm_obj.hide()
-            self.layout = elm_layout(self.main.window, self.edje_file, "main")
+            self.layout = ElementaryLayout(self.main.window, self.edje_file, "main")
             self.main.bg.elm_obj.content_set("content-swallow", self.layout.elm_obj)
         
         else:

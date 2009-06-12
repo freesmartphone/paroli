@@ -25,7 +25,7 @@ from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD
 from elementary import Scroller, Entry
 from tichy import Application, Service
 from tichy.tasklet import Wait, WaitFirst, tasklet
-from paroli.gui import ElementaryListWindow, ElementaryList, elm_layout
+from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryLayout
 
 class Letters(Application):
     name = 'SMS'
@@ -99,7 +99,7 @@ class Letters(Application):
         text = item[0].text
         timestamp = item[0].timestamp.local_repr()
         
-        detail_layout =  elm_layout(self.window.window, self.edje_file, "message_details")              
+        detail_layout =  ElementaryLayout(self.window.window, self.edje_file, "message_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
         edje_obj.part_text_set('name-text',unicode(number).encode('utf8'))
         edje_obj.part_text_set('name-info',unicode(timestamp).encode('utf8'))
@@ -211,7 +211,7 @@ class MsgsWrite(Application):
                   
                   if number_layout == 0:
 
-                      number_layout =  elm_layout(parent.window, self.edje_file, "edit_number")
+                      number_layout =  ElementaryLayout(parent.window, self.edje_file, "edit_number")
                           
                       edje_obj = number_layout.elm_obj.edje_get()
                   
@@ -244,7 +244,7 @@ class MsgsWrite(Application):
                   
               if sms.text == "" or mode == "forward":
                   
-                  text_layout = elm_layout(parent.window, self.edje_file, "CreateText")
+                  text_layout = ElementaryLayout(parent.window, self.edje_file, "CreateText")
                   
                   parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
                   

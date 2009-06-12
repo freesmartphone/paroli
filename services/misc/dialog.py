@@ -25,8 +25,9 @@ __docformat__ = 'reStructuredText'
 import logging
 logger = logging.getLogger('services.misc.dialog')
 
+import elementary
 import tichy
-from paroli import gui
+from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
 
 # TODO: replace the etk code by something based on edje
 
@@ -37,20 +38,20 @@ class Dialog(tichy.Application):
     """
     def run(self, parent, title, msg, option1=None, option2=None):
         """Create an etk window and show the message"""
-        self.window = gui.ElementaryWindow(str(title))
+        self.window = ElementaryWindow(str(title))
         self.window.elm_obj.show()
         self.window.elm_obj.color_set(0, 0, 0, 255)
-        self.box = gui.elm_box(self.window.elm_obj)
+        self.box = ElementaryBox(self.window.elm_obj)
         self.window.elm_obj.resize_object_add(self.box.elm_obj)
         
-        self.label = gui.elementary.Label(self.window.elm_obj)
+        self.label = elementary.Label(self.window.elm_obj)
         self.label.label_set(str(title))
         self.box.elm_obj.pack_end(self.label)
         self.label.size_hint_min_set(440, 50)
         self.label.show()
         
-        self.scroller = gui.elm_scroller(self.window)
-        self.entry = gui.elementary.Entry(self.window.elm_obj)
+        self.scroller = ElementaryScroller(self.window)
+        self.entry = elementary.Entry(self.window.elm_obj)
         self.entry.entry_set(str(msg))
         self.entry.size_hint_weight_set(1.0, 0.6)
         self.entry.editable_set(False)
@@ -61,20 +62,20 @@ class Dialog(tichy.Application):
         
         if option2 == None:
         
-            self.button = gui.elementary.Button(self.window.elm_obj)
+            self.button = elementary.Button(self.window.elm_obj)
             label_text = option1 or "OK"
             self.button.label_set(label_text)
             self.button.on_mouse_up_add(self._on_ok_clicked)
             self.box.elm_obj.pack_end(self.button)
             self.button.show()
         else:
-            self.box2 = gui.elm_box(self.window.elm_obj)
+            self.box2 = ElementaryBox(self.window.elm_obj)
             self.box2.elm_obj.horizontal_set(True)
             self.box.elm_obj.pack_end(self.box2.elm_obj)
-            self.button1 = gui.elementary.Button(self.window.elm_obj)
+            self.button1 = elementary.Button(self.window.elm_obj)
             self.button1.label_set(option1)
             self.button1.name_set(option1)
-            self.button2 = gui.elementary.Button(self.window.elm_obj)
+            self.button2 = elementary.Button(self.window.elm_obj)
             self.button2.label_set(option2)
             self.button2.name_set(option2)
             self.box2.elm_obj.pack_end(self.button1)

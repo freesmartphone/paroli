@@ -28,7 +28,7 @@ from sys import prefix
 #from subprocess import PIPE, Popen
 from tichy import Application, config, Service, mainloop, Time
 from tichy.tasklet import tasklet, WaitFirst, Wait
-from paroli.gui import ElementaryLayoutWindow, elm_box, elm_layout, ElementaryWindow, elm_tb
+from paroli.gui import ElementaryLayoutWindow, ElementaryBox, ElementaryLayout, ElementaryWindow, ElementaryTopbar
 from paroli.tel_number import TelNumber
 
 class Launcher(Application):
@@ -66,11 +66,11 @@ class Launcher(Application):
                 if app.category == 'launcher':
                     apps.append(app)
 
-        box = elm_box(self.window.window.elm_obj)
+        box = ElementaryBox(self.window.window.elm_obj)
         self.app_objs = {}
         for app in apps:
             logger.info("register launcher %s", app.name)
-            link_obj = elm_layout(self.window.window, self.edje_file, 'link')        
+            link_obj = ElementaryLayout(self.window.window, self.edje_file, 'link')        
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
             link_obj.elm_obj.show()
@@ -449,7 +449,7 @@ class BusyWin(Service):
     def create_win(self):
         if self.win == None:
             self.win = ElementaryWindow()
-            self.layout = elm_layout(self.win, self.edje_file, "busywin")
+            self.layout = ElementaryLayout(self.win, self.edje_file, "busywin")
             self.win.elm_obj.resize_object_add(self.layout.elm_obj)
             self.win.elm_obj.show()
         yield "me"
@@ -489,7 +489,7 @@ class TopBar(Service):
     
     def create(self, parent, onclick, standalone=False):
         
-        tb = elm_tb(parent, onclick, self.edje_file, standalone)
+        tb = ElementaryTopbar(parent, onclick, self.edje_file, standalone)
         
         if hasattr(tb,"tb"):
           self.tb_list.append(tb.tb.elm_obj)

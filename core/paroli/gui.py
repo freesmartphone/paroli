@@ -19,22 +19,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
+
+from logging import getLogger
+logger = getLogger('core.paroli.gui')
+
 import elementary
-import evas
-import evas.decorators
-import edje
-import edje.decorators
-import ecore
-import ecore.x
-import ecore.evas
-#import etk
+import edje # what the hell FIXME not importing this here destroyes paroli somewhere else!
+from tichy import Object, config, Service, Item, Text
 
-import logging
-logger = logging.getLogger('core.paroli.gui')
-
-import tichy
-
-class ElementaryWindow(tichy.Object):
+class ElementaryWindow(Object):
     def __init__(self, title="Paroli"):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
@@ -63,7 +56,7 @@ class ElementaryWindow(tichy.Object):
                 self.elm_obj.resize(self.size[0],self.size[1])
         
         
-class elm_layout(tichy.Object):
+class ElementaryLayout(Object):
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
         self.elm_obj = elementary.Layout(win.elm_obj)
         self.elm_obj.file_set(edje_file, group)
@@ -86,7 +79,7 @@ class elm_layout(tichy.Object):
         self.elm_obj.hide()
         self.elm_obj.delete()
 
-class elm_scroller(tichy.Object):
+class ElementaryScroller(Object):
     def __init__(self, win):
         self.elm_obj = elementary.Scroller(win.elm_obj)
         self.elm_obj.size_hint_weight_set(1.0, 1.0)
@@ -95,42 +88,42 @@ class elm_scroller(tichy.Object):
             self.elm_obj.bounce_set(0, 0)
         self.elm_obj.show()
         
-class elm_box(tichy.Object):
+class ElementaryBox(Object):
     def __init__(self, win):
         self.elm_obj = elementary.Box(win)
         self.elm_obj.size_hint_weight_set(0.0, 0.0)
         self.elm_obj.size_hint_align_set(0.0, 0.0)
         self.elm_obj.show()
 
-class elm_tb(tichy.Object):
+class ElementaryTopbar(Object):
     def __init__(self, parent, onclick, edje_file, standalone=False):
         self.parent = parent
         self.onclick = onclick
-        self.standalone = tichy.config.getboolean('standalone','activated', False)
+        self.standalone = config.getboolean('standalone','activated', False)
         if self.standalone == True:
-            self.bg = elm_layout(parent.window, edje_file, "bg-tb-on")
-            self.tb = elm_layout(parent.window, edje_file, "tb")
+            self.bg = ElementaryLayout(parent.window, edje_file, "bg-tb-on")
+            self.tb = ElementaryLayout(parent.window, edje_file, "tb")
             self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)
             self.tb.elm_obj.edje_get().signal_callback_add("top-bar", "*", self.signal)
         else:
-            self.bg = elm_layout(parent.window, edje_file, "bg-tb-off")
+            self.bg = ElementaryLayout(parent.window, edje_file, "bg-tb-off")
 
     def signal(self, emission, signal, source):
         logger.info(" %s emitting %s", self.parent, self.onclick)
         self.parent.emit(self.onclick)
 
-class ElementaryLayoutWindow(tichy.Object):
+class ElementaryLayoutWindow(Object):
     def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False, onclick=None):
         self.window = ElementaryWindow()  
         self.window.elm_obj.show()
         
         self.tb_action = onclick or 'back'
         
-        self.topbar = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        self.topbar = Service.get("TopBar").create(self, self.tb_action, tb)
         
         self.bg = self.topbar.bg
         
-        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
@@ -150,11 +143,11 @@ class ElementaryLayoutWindow(tichy.Object):
     def empty_window(self, *args, **kargs):
         self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
 
-class elm_layout_subwindow(ElementaryLayoutWindow):
+class ElementaryLayout_subwindow(ElementaryLayoutWindow):
     def __init__(self, window, edje_file, group):
         self.window = window.window
         self.bg = window.topbar.bg
-        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         #print self.bg.edje.part_exists("content-swallow")
         #self.window.elm_obj.resize_object_add(self.bg.elm_obj)
@@ -168,8 +161,8 @@ class ElementaryListSubwindow(ElementaryLayoutWindow):
         self.window = window.window
         self.bg = window.topbar.bg
         self.topbar = window.topbar
-        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
-        self.scroller = elm_scroller(self.window)
+        self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.scroller = ElementaryScroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         if layout != None:
@@ -184,18 +177,18 @@ class ElementaryListWindow(ElementaryLayoutWindow):
         
         self.tb_action = onclick or 'back'
         
-        self.topbar = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        self.topbar = Service.get("TopBar").create(self, self.tb_action, tb)
         
         self.bg = self.topbar.bg
         
-        self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
-        self.scroller = elm_scroller(self.window)
+        self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
+        self.scroller = ElementaryScroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
       
-class ElementaryList(tichy.Object):
+class ElementaryList(Object):
       def __init__(self, model, parent, edje_file, group, label_list, comp_fct):
           
           self.model = model
@@ -209,7 +202,7 @@ class ElementaryList(tichy.Object):
           self.cb_list.append(self.model.connect('appended', self._redraw_view))
           self.cb_list.append(self.model.connect('inserted', self._redraw_view))
           self.cb_list.append(self.model.connect('removed', self._redraw_view))
-          self.box = elm_box(self.elm_window.elm_obj)
+          self.box = ElementaryBox(self.elm_window.elm_obj)
           self.callbacks = []
           self.sort()
           self.items = []
@@ -225,7 +218,7 @@ class ElementaryList(tichy.Object):
               self.sort()
               if self.box.elm_obj.is_deleted() == False:
                   self.box.elm_obj.delete()
-              self.box = elm_box(self.elm_window.elm_obj)
+              self.box = ElementaryBox(self.elm_window.elm_obj)
               self.items = []
               self.letter_index = {}
               #self.model.sort()
@@ -242,9 +235,9 @@ class ElementaryList(tichy.Object):
                             if self.letter_index.has_key(value[0]) == False:
                                 self.letter_index[value[0]] = self.model.index(item)
                         
-                        if isinstance(value, tichy.Item):
+                        if isinstance(value, Item):
                             value = unicode(value.get_text())
-                        elif isinstance(value, tichy.Text):
+                        elif isinstance(value, Text):
                             value = value.value
                         
                         txt = unicode(value).encode('utf-8')
