@@ -17,16 +17,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-__docformat__ = 'reStructuredText'
-
-import tichy
-
 import logging
 logger = logging.getLogger('services.fallback.usage')
 
+__docformat__ = 'reStructuredText'
 
-class FallbackUsageService(tichy.Service):
+from tichy.service import Service
+
+
+class FallbackUsageService(Service):
     """The 'Usage' service
 
     This service can be used to listen to the power signals and control the device power.

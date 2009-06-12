@@ -17,17 +17,17 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-import tichy
-
 import logging
 logger = logging.getLogger('services.fallback.alarm')
 
-class FallbackAlarmService(tichy.Service):
+from tichy.service import Service
+
+
+class FallbackAlarmService(Service):
 
     service = 'Alarm'
     name = 'Fallback'
-  
+
     def __init__(self):
         super(FallbackAlarmService, self).__init__()
         self.alarm = None

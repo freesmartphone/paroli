@@ -17,17 +17,18 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-import dbus
-
-import tichy
-from tichy.tasklet import WaitDBusName
-
 import logging
 logger = logging.getLogger('services.fso.audio')
 
+import dbus
+from tichy.int import Int
+from tichy.tasklet import WaitDBusName, tasklet
+from tichy.settings import Setting
+from tichy.service import Service
+from tichy import mainloop
 
-class FSOSetting(tichy.settings.Setting):
+
+class FSOSetting(Setting):
     """Special setting class that hooks into a FSO preference
 
     It relies on the 'Prefs' service.
@@ -35,19 +36,19 @@ class FSOSetting(tichy.settings.Setting):
     @property
     def value(self):
         """accessor to the actual value"""
-        prefs = tichy.Service.get('Prefs')
+        prefs = Service.get('Prefs')
         return prefs[self.group][self.name]
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
-        prefs = tichy.Service.get('Prefs')
+        prefs = Service.get('Prefs')
         # XXX: make this asynchronous
         prefs[self.group][self.name] = value
         self.options.emit('updated')
         yield None
 
-class FSOAudioService(tichy.Service):
+class FSOAudioService(Service):
 
     service = 'Audio'
     name = 'FSO'
@@ -57,29 +58,29 @@ class FSOAudioService(tichy.Service):
         self.device = None
         self.audio = None
         self.muted = 0
-        
-    @tichy.tasklet.tasklet
+
+    @tasklet
     def init(self):
-        yield tichy.Service.get('GSM').wait_initialized()
+        yield Service.get('GSM').wait_initialized()
         yield self._connect_dbus()
         if self.device != None:
             self.mic_state = self.get_mic_status()
             ##XXX: currently not working method in Framework so we assume 40
             #self.speaker_volume = self.get_speaker_volume()
-            self.speaker_volume = tichy.Int(50)
-        tichy.settings.FSOSetting('phone', 'ring-volume', tichy.Int,  options=[0,25,50,75,100])
-        tichy.settings.FSOSetting('phone', 'message-volume', tichy.Int, options=[0,25,50,75,100])
-        tichy.settings.FSOSetting('phone', 'ring-vibration', bool,  options=[False,True])
-        tichy.settings.FSOSetting('phone', 'message-vibration', bool,  options=[False,True])
+            self.speaker_volume = Int(50)
+        Setting('phone', 'ring-volume', Int,  options=[0,25,50,75,100])
+        Setting('phone', 'message-volume', Int, options=[0,25,50,75,100])
+        Setting('phone', 'ring-vibration', bool,  options=[False,True])
+        Setting('phone', 'message-vibration', bool,  options=[False,True])
         yield None
-        
-    @tichy.tasklet.tasklet
+
+    @tasklet
     def _connect_dbus(self):
         logger.info("connecting to freesmartphone.GSM dbus audio interface")
         try:
             yield WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
             # We create the dbus interfaces to org.freesmarphone
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             device = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
             self.device = dbus.Interface(device, 'org.freesmartphone.GSM.Device')
 
@@ -88,29 +89,29 @@ class FSOAudioService(tichy.Service):
 
         except Exception, e:
             logger.exception("can't use freesmartphone audio : %s", e)
-            raise tichy.ServiceUnusable
-    
+            raise ServiceUnusable # what the hell is this? FIXME has this ever worked?
+
     def _do_sth(self):
         pass
-        
+
     def get_mic_status(self):
         logger.info("retriving mic status")
         return self.device.GetMicrophoneMuted()
-        
+
     def set_mic_status(self, val):
         if self.muted != 1:
             self.device.SetMicrophoneMuted(val)
-    
+
     def get_speaker_volume(self):
         logger.info("retriving speaker status")
         return self.device.GetSpeakerVolume()
-        
+
     def set_speaker_volume(self, val):
         logger.info("set speaker vol called")
         if self.muted != 1:
             self.device.SetSpeakerVolume(int(val))
             logger.info("set volume to %d", self.get_speaker_volume())
-        
+
     def audio_toggle(self):
       if self.device != None:
           if self.muted == 0:

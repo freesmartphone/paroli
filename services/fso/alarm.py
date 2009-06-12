@@ -22,15 +22,19 @@ logger = logging.getLogger('services.fso.alarm')
 
 import dbus
 import time
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy.tasklet import WaitDBus, WaitDBusName, tasklet
 from tichy.object import Object
-import tichy
+from tichy.list import List
+from tichy.text import Text
+from tichy.service import Service
+from tichy import mainloop
+from tichy.settings import ListSetting
 
 class FSOSlot(dbus.service.Object):
-    """ Alarm notifications will be submitted as dbus method calls, hence 
-        alarm receivers need to implement the interface 
-        org.freesmartphone.Notification on the root object. Alarm 
-        receivers need to be running dbus system services or dbus 
+    """ Alarm notifications will be submitted as dbus method calls, hence
+        alarm receivers need to implement the interface
+        org.freesmartphone.Notification on the root object. Alarm
+        receivers need to be running dbus system services or dbus
         system-activatable.
     """
 
@@ -38,7 +42,7 @@ class FSOSlot(dbus.service.Object):
         super(FSOSlot, self).__init__(*args, **kargs)
         self.action = None
         self.args = None
- 
+
     def set_action(self, func, args):
         logger.info("action set to %s with %s", func, args)
         self.action = func
@@ -52,18 +56,18 @@ class FSOSlot(dbus.service.Object):
                 #self.action(self.args)
             #self.action = None
             #self.args = None
-            self.AlarmService = tichy.Service.get("Alarm")
+            self.AlarmService = Service.get("Alarm")
             self.AlarmService.ring()
-            
+
         except Exception, ex:
             logger.exception( "Alarm except %s", ex )
 
 
-class FSOAlarmService(tichy.Service):
+class FSOAlarmService(Service):
 
     service = 'Alarm'
     name = 'FSO'
-  
+
     def __init__(self):
         super(FSOAlarmService, self).__init__()
         self.alarm = None
@@ -75,41 +79,41 @@ class FSOAlarmService(tichy.Service):
         yield self._connect_dbus()
 
     def _setup_notification_cb(self):
-        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+        bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
         bus_name = dbus.service.BusName('org.tichy.notification', bus)
         self.slot = FSOSlot(bus_name, '/')
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.otimed', time_out=120)
-            yield tichy.Service.get('SysTime').wait_initialized()
-            
-            self.rtc = tichy.Service.get("SysTime").rtc
-            
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            alarm_obj = bus.get_object('org.freesmartphone.otimed', 
+            yield Service.get('SysTime').wait_initialized()
+
+            self.rtc = Service.get("SysTime").rtc
+
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
+            alarm_obj = bus.get_object('org.freesmartphone.otimed',
                           '/org/freesmartphone/Time/Alarm')
             self.alarm = dbus.Interface(alarm_obj, 'org.freesmartphone.Time.Alarm')
-            
+
             self.ListLabel = [('title','name'),('value','value')]
-            
-            self.hour = TimeSetting("hour",3,tichy.List(range(24)), "int")
-            
-            self.minute =  TimeSetting("minute",4,tichy.List(range(60)), "int")
-            
-            self.AlarmList = tichy.List()
+
+            self.hour = TimeSetting("hour",3,List(range(24)), "int")
+
+            self.minute =  TimeSetting("minute",4,List(range(60)), "int")
+
+            self.AlarmList = List()
             self.AlarmList.append(self.hour)
             self.AlarmList.append(self.minute)
-            
-            self.alarm_setting = tichy.settings.ListSetting('Time', 'set alarm', tichy.Text, value="set", setter=self.SetAlarm, options=['set'], model=self.AlarmList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
-            
+
+            self.alarm_setting = ListSetting('Time', 'set alarm', Text, value="set", setter=self.SetAlarm, options=['set'], model=self.AlarmList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+
             self.AlarmList.connect('save', self.UpdateAlarmTime)
-            
+
         except Exception, e:
             logger.exception("can't use freesmartphone Alarm service : %s", e)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def SetAlarm(self, val):
         yield val
 
@@ -125,18 +129,18 @@ class FSOAlarmService(tichy.Service):
         wday = time.localtime(self.rtc.GetCurrentTime())[6]
         yday = time.localtime(self.rtc.GetCurrentTime())[7]
         isdst = time.localtime(self.rtc.GetCurrentTime())[8]
-        
+
         new_time = time.mktime((year, month, day, hour, minute, sec, wday, yday, isdst))
-        
+
         if int(now) - int(new_time) > 0:
             alarm = time.mktime((year, month, day+1, hour, minute, sec, wday+1, yday+1, isdst))
         else:
             alarm = new_time
-         
-        yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(alarm) ) 
-        
 
-    @tichy.tasklet.tasklet
+        yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(alarm) )
+
+
+    @tasklet
     def clear_alarm(self):
         try:
             yield WaitDBus( self.alarm.ClearAlarm, 'org.tichy.notification')
@@ -144,7 +148,7 @@ class FSOAlarmService(tichy.Service):
             logger.exception("Exception : %s", ex)
             raise
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_alarm(self, ttime, func, *args):
         try:
             self.slot.set_action(func, *args)
@@ -159,7 +163,7 @@ class FSOAlarmService(tichy.Service):
 
 class TimeSetting(Object):
     def __init__(self, name, rep_part, val_range, type_arg):
-        self.service = tichy.Service.get('SysTime')
+        self.service = Service.get('SysTime')
         self.name = name
         self.value = time.localtime(self.service.rtc.GetCurrentTime())[rep_part]
         self.rep_part = rep_part
@@ -168,7 +172,7 @@ class TimeSetting(Object):
 
     def action(self, *args, **kargs):
         pass
-        
+
     def __repr__(self):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time

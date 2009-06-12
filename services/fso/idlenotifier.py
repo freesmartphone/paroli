@@ -17,22 +17,22 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-
-import dbus
-
-import tichy
-from tichy.tasklet import WaitDBusName
-
 import logging
 logger = logging.getLogger('services.fso.idlenotifier')
 
+import dbus
+from tichy.int import Int
+from tichy.tasklet import WaitDBusName, tasklet
+from tichy.settings import Setting
+from tichy.service import Service
+from tichy import mainloop
 
-class FSOIdleNotifierService(tichy.Service):
+
+class FSOIdleNotifierService(Service):
 
     service = 'IdleNotifier'
     name = 'FSO'
-  
+
     def __init__(self):
         super(FSOIdleNotifierService, self).__init__()
 
@@ -41,18 +41,18 @@ class FSOIdleNotifierService(tichy.Service):
         logger.info('IdleNotifier service init')
         yield self._connect_dbus()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            obj = bus.get_object('org.freesmartphone.odeviced', 
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
+            obj = bus.get_object('org.freesmartphone.odeviced',
                           '/org/freesmartphone/Device/IdleNotifier/0')
             self.iface = dbus.Interface(obj, 'org.freesmartphone.Device.IdleNotifier')
-            suspend_setting = tichy.settings.Setting('phone', 'suspend-time', tichy.Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[-1, 20, 30, 60])
-            
+            suspend_setting = Setting('phone', 'suspend-time', Int, value=self.get_timeout('suspend'), setter=self.set_suspend, options=[-1, 20, 30, 60])
+
             #self.iface.connect_to_signal("State", self.dim)
-            
+
         except Exception, e:
             logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
 
@@ -64,10 +64,10 @@ class FSOIdleNotifierService(tichy.Service):
         suspend = timeouts[state]
         return suspend
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_suspend(self, time):
         yield self.iface.SetTimeout('suspend', int(time))
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_idle_dim(self, time):
         yield self.iface.SetTimeout('idle_dim', int(time))

@@ -25,7 +25,9 @@ __docformat__ = 'reStructuredText'
 import logging
 logger = logging.getLogger('Contact')
 
-import tichy
+from tichy.service import Service
+from tichy.tasklet import tasklet
+from tichy.list import List
 from paroli.contact import Contact, PhoneContact
 
 # TODO: Redo the whole contact things. We should have a single contact
@@ -35,7 +37,7 @@ from paroli.contact import Contact, PhoneContact
 # define which fields are supported.
 
 
-class FallbackContactsService(tichy.Service):
+class FallbackContactsService(Service):
     """Allow to add and get the phone or sim contacts"""
 
     service = 'Contacts'
@@ -43,7 +45,7 @@ class FallbackContactsService(tichy.Service):
 
     def __init__(self):
         super(FallbackContactsService, self).__init__()
-        self.contacts = tichy.List()
+        self.contacts = List()
         # TODO: the problem here is that when we load the contacts we
         # are going to rewrite them !
         self.contacts.connect('modified', self._on_contacts_modified)
@@ -56,12 +58,12 @@ class FallbackContactsService(tichy.Service):
         self._number_to_contact = \
             dict((str(x.tel), x) for x in self.contacts)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         """init the service"""
         yield self._load_all()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _load_all(self):
         """load all the contacts from all the sources
 
@@ -82,7 +84,7 @@ class FallbackContactsService(tichy.Service):
         self.contacts[:] = all_contacts
         logger.info("Totally got %d contacts", len(self.contacts))
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def copy_all(self):
         """copy all the contacts into the phone"""
         to_add = []

@@ -17,19 +17,21 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('services.fso.display')
 
 __docformat__ = 'reStructuredText'
 
 import dbus
+from tichy.int import Int
+from tichy.tasklet import WaitDBus, WaitDBusName, tasklet
+from tichy.settings import Setting
+from tichy.service import Service
+from tichy.text import Text
+from tichy import mainloop
 
-import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
 
-import logging
-logger = logging.getLogger('services.fso.display')
-
-
-class FSODisplayService(tichy.Service):
+class FSODisplayService(Service):
     """The 'Power' service
 
     This service can be used to listen to the power signals and control the device power.
@@ -48,47 +50,47 @@ class FSODisplayService(tichy.Service):
         self.theme = False
         yield self._connect_dbus()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         logger.info("connecting to e dbus iface")
         try:
             yield WaitDBusName('org.enlightenment.wm.service', time_out=120, session=True)
-            bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SessionBus(mainloop=mainloop.dbus_loop)
             self.obj = bus.get_object('org.enlightenment.wm.service', '/org/enlightenment/wm/RemoteObject')
             self.iface = dbus.Interface(self.obj, 'org.enlightenment.wm.Profile')
 
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120, session=False)
 
-            bus2 = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus2 = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             self.bobj = bus2.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Display/gta02_bl')
             self.biface = dbus.Interface(self.bobj, 'org.freesmartphone.Device.Display')
 
-            self.Brightness = tichy.settings.Setting('display', 'Brightness', tichy.Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
+            self.Brightness = Setting('display', 'Brightness', Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
 
         except Exception, e:
             logger.exception("can't use e dbus interface service : %s", e)
         else:
             if not self.theme:
-                self.theme = tichy.settings.Setting('display', 'profile', tichy.Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profile_list())
+                self.theme = Setting('display', 'profile', get_profile(), setter=self.set_profile, options=self.get_profile_list())
 
     def getBrightness(self, *args, **kargs):
         return self.biface.GetBrightness()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def setBrightness(self, value):
         yield WaitDBus(self.biface.SetBrightness, value)
         yield value
-    
+
     def get_profile(self):
         return self.iface.Get()
-    
+
     def get_profile_list(self):
         profiles = self.iface.List()
         if profiles.count('default') != 0:
             profiles.pop(profiles.index('default'))
         return profiles
-    
-    @tichy.tasklet.tasklet
+
+    @tasklet
     def set_profile(self, profile):
         yield self._connect_dbus()
         yield WaitDBus(self.iface.Set, profile)

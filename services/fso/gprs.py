@@ -62,9 +62,9 @@ class FSOGprsService(Service):
         except Exception, e:
             logger.exception("can't use freesmartphone gprs service : %s", e)
             raise
-            
+
             self.pdp_id = None
-            
+
     def activate(self):
         if self.iface.NetworkStatus()["registration"] == 'unregistered':
             values = self.config_service.get_items("PDP")
@@ -73,38 +73,38 @@ class FSOGprsService(Service):
                     self.iface.ActivateContext(values["apn"], values["user"], values["pwd"])
                 except Exception, e:
                     logger.exception('activate')
-            
+
     def deactivate(self):
         if self.iface.NetworkStatus()["registration"] != 'unregistered':
             try:
                 self.iface.DeactivateContext()
             except Exception, e:
                 logger.exception('deactivate')
-    
+
     def context_status_change(self, index, status, properties=False):
         try:
             self.pdp_id = index
             self.status_change(status)
         except:
             pass
-    
-    
+
+
     def status_change(self, status):
          if status['registration'] in ["home","roaming"]:
             self.emit("gprs-status", "on")
          else:
             self.emit("gprs-status", "off")
-    
+
     @tasklet
     def set_password(self, val):
         self.set_param("pwd", val)
         yield None
-    
+
     @tasklet
     def set_user(self, val):
         self.set_param("user", val)
         yield None
-    
+
     @tasklet
     def set_apn(self, val):
         self.set_param("apn", val)
@@ -137,21 +137,21 @@ class FSOGprsService(Service):
             return str(self.values["apn"])
         else:
             return ""
-    
+
     def get_password(self):
         if self.values != None and "pwd" in self.values.keys():
             #logger.info("values: %s", (self.values))
             return str(self.values["pwd"])
         else:
             return ""
-    
+
     def get_user(self):
         if self.values != None and "user" in self.values.keys():
             #logger.info("values: %s", (self.values))
             return str(self.values["user"])
         else:
             return ""
-    
+
     def set_param(self, param, value):
         try:
             self.config_service.set_item('PDP', param, value)

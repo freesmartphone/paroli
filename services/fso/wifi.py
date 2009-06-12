@@ -25,10 +25,15 @@ logger = logging.getLogger('services.fso.wifi')
 
 import dbus
 from tichy.object import Object
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst
-import tichy
+from tichy.text import Text
+from tichy.list import List
+from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst, tasklet
+from tichy.service import Service
+from tichy import mainloop
+from tichy.settings import ToggleSetting, ListSetting
 
-class FSOWifiService(tichy.Service):
+
+class FSOWifiService(Service):
     """The 'Wifi' service
     """
 
@@ -42,19 +47,19 @@ class FSOWifiService(tichy.Service):
     def init(self):
         logger.info('wifi service init')
         try:
-            self.config_service = tichy.Service.get("Config")
+            self.config_service = Service.get("Config")
             yield self.config_service.wait_initialized()
-            self.usage_service = tichy.Service.get('Usage')
+            self.usage_service = Service.get('Usage')
             yield self.usage_service.wait_initialized()
             yield self.usage_service.request_resource('Wifi')
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
+
             ## power related
             power_obj = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerControl/WiFi')
             self.power_iface = dbus.Interface(power_obj, 'org.freesmartphone.Device.PowerControl')
-            
+
             try_num = 0
-            
+
             ## devicing
             for i in range(5):
                     try:
@@ -67,32 +72,32 @@ class FSOWifiService(tichy.Service):
                     else:
                         break
                         #raise Exception("moblin not starting")
-                    
+
             self.devicing_iface = dbus.Interface(obj, "org.moblin.connman.Manager")
-            
-            self.status_setting = tichy.settings.ToggleSetting('wifi', 'power', tichy.Text, value=self.get_power(), setter=self.power, options=['active','inactive'])
-            
-            self.NetworkList = tichy.List()
+
+            self.status_setting = ToggleSetting('wifi', 'power', Text, value=self.get_power(), setter=self.power, options=['active','inactive'])
+
+            self.NetworkList = List()
             self.ListLabel = [('title','name'),('subtitle','info')]
-            
-            self.scan_setting = tichy.settings.ListSetting('wifi', 'scan', tichy.Text, value="Networks", setter=self.run_scan, options=['Networks'], model=self.NetworkList, ListLabel=self.ListLabel)
-            
+
+            self.scan_setting = ListSetting('wifi', 'scan', Text, value="Networks", setter=self.run_scan, options=['Networks'], model=self.NetworkList, ListLabel=self.ListLabel)
+
             if self.get_power():
                 self.get_device()
-            
+
             self.devicing_iface.connect_to_signal('PropertyChanged', self.property_changed)
-            
+
             self.connect("closing", self.closing)
-            
+
         except Exception, e:
             logger.exception("can't use wifi service : %s", e)
             raise
-            
+
     def closing(self, *args, **kargs):
         if self.power_iface.GetPower() == True:
             self.power('moo').start()
-            
-    @tichy.tasklet.tasklet        
+
+    @tasklet
     def power(self, status):
         logger.info("setting power of wifi device")
         if self.power_iface.GetPower() == True:
@@ -111,7 +116,7 @@ class FSOWifiService(tichy.Service):
           ret = "active"
         else:
           ret = "inactive"
-        
+
         return ret
 
     def property_changed(self, *args, **kargs):
@@ -121,7 +126,7 @@ class FSOWifiService(tichy.Service):
     def get_device(self):
         ## device
         if len(self.devicing_iface.GetProperties()['Devices']) > 0:
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             addr = self.devicing_iface.GetProperties()['Devices'][0]
             dev_obj = bus.get_object("org.moblin.connman", dbus.ObjectPath(addr))
             self.device = dbus.Interface(dev_obj, 'org.moblin.connman.Device')
@@ -131,14 +136,14 @@ class FSOWifiService(tichy.Service):
     def DevPropChange(self, *args, **kargs):
         cat = args[0]
         val = args[1]
-    
+
         if cat == "Networks":
             if self.get_power() == 'active':
                 if hasattr(self, 'device'):
                     networks = self.device.GetProperties()['Networks']
                     self.NetworkList.clear()
                     for n in networks:
-                        bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+                        bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
                         dev_obj = bus.get_object("org.moblin.connman", dbus.ObjectPath(n))
                         nw = dbus.Interface(dev_obj, 'org.moblin.connman.Network')
                         nw_obj = WifiNetwork(self.NetworkList, nw, self.WiFiConnectPre)
@@ -146,47 +151,47 @@ class FSOWifiService(tichy.Service):
         elif cat == 'Powered':
             if self.get_power() == 'inactive':
                   self.NetworkList.clear()
-                  
+
         elif cat == "Scanning":
             if not val:
                 self.device.SetProperty("Scanning", True)
         else:
             logger.info(cat)
-    
+
     def WiFiConnectPre(self, *args, **kargs):
         self.WiFiConnect(*args, **kargs).start()
-    
-    @tichy.tasklet.tasklet
-    def WiFiConnect(self, *args, **kargs):        
-        
+
+    @tasklet
+    def WiFiConnect(self, *args, **kargs):
+
         network = args[0][0]
         parent = args[1]
         edje_obj = args[2]
-        
+
         if network.DBusObject.GetProperties()['Connected']:
-        
+
             network.DBusObject.Disconnect(reply_handler=self.connection_info,error_handler=self.connection_info)
-          
-        else:  
-          
+
+        else:
+
             if network.WiFiSecurity != 'none' and network.WiFiPassphrase == '':
-                fe = tichy.Service.get("FreeEdit")
+                fe = Service.get("FreeEdit")
                 passphrase = yield fe.StringEdit(None, parent, edje_obj)
                 logger.info("passphrase entered is: %s", passphrase)
                 network.DBusObject.SetProperty("WiFi.Passphrase", passphrase)
-            
+
             network.DBusObject.Connect(reply_handler=self.connection_info,error_handler=self.connection_info)
-        
+
         yield None
-    
+
     def connection_info(self, *args, **kargs):
         #if network.DBusObject.GetProperties()['Connected']:
             #logger.info("connected to wifi")
         #else:
             #logger.info("disconnected from wifi")
         pass
-    
-    @tichy.tasklet.tasklet
+
+    @tasklet
     def run_scan(self, *args, **kargs):
         if self.get_power() == 'active':
             logger.info("power active")
@@ -201,7 +206,7 @@ class FSOWifiService(tichy.Service):
         else:
             self.status_setting.rotate()
             yield "scan"
-            
+
 class WifiNetwork(Object):
     def __init__(self, NetworkList, DBusObject, action):
         self.DBusObject = DBusObject
@@ -209,7 +214,7 @@ class WifiNetwork(Object):
         self.action = action
         self.get_vals(DBusObject, action)
         self.DBusObject.connect_to_signal("PropertyChanged", self.UpdateProp)
-    
+
     def UpdateProp(self, *args):
         cat = str(args[0])
         val = args[1]
@@ -223,7 +228,7 @@ class WifiNetwork(Object):
                 logger.info("cat is %s", cat)
             setattr(self, cat, val)
         self.NetworkList.emit("appended")
-    
+
     def get_vals(self, DBusObject, action):
         ConnmanProps = DBusObject.GetProperties()
         self.name = ConnmanProps['Name']

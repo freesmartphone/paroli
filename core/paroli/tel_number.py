@@ -19,10 +19,11 @@
 
 __docformat__ = 'reStructuredText'
 
-import tichy
+from tichy.text import Text
+from tichy.service import Service
 
 
-class TelNumber(tichy.Text):
+class TelNumber(Text):
     """Telephone number class"""
 
     def __init__(self, text='', **kargs):
@@ -40,7 +41,7 @@ class TelNumber(tichy.Text):
         # TODO: we could not do like this but instead have the
         # get_text method return a basestring object and then connect
         # the actor view to the modified signal
-        self.view_text = tichy.Text(text)
+        self.view_text = Text(text)
         self.connect('modified', TelNumber.update_view_text)
 
     def is_emergency(self):
@@ -52,7 +53,7 @@ class TelNumber(tichy.Text):
 
         :Returns: `Contact` | None
         """
-        contacts_service = tichy.Service.get('Contacts')
+        contacts_service = Service.get('Contacts')
         return contacts_service.get_by_number(self.value)
 
     def get_text(self):

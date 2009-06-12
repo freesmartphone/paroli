@@ -20,13 +20,13 @@
 
 __docformat__ = 'reStructuredText'
 
-import tichy
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fallback.power')
 
 
-class FallbackPowerService(tichy.Service):
+class FallbackPowerService(Service):
     """The 'Power' service
 
     This service can be used to listen to the power signals and control the device power.

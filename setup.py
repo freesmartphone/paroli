@@ -78,7 +78,7 @@ dbus_data = [
      ['data/dbus/tichy.conf'])]
 
 sound_data = [
-    ( '../../usr/share/paroli/data/sounds', ['data/sounds/alarm.wav'] ) 
+    ( '../../usr/share/paroli/data/sounds', ['data/sounds/alarm.wav'] )
     ]
 
 setup(name='Paroli',
@@ -107,7 +107,7 @@ setup(name='Paroli',
 
       cmdclass = {'build': my_build,
                   'clean': my_clean},
-      
+
       )
 
 

@@ -17,13 +17,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-import tichy
-
 import logging
 logger = logging.getLogger('services.fallback.audio')
 
-class FallbackAudioService(tichy.Service):
+from tichy.int import Int
+from tichy.service import Service
+from tichy.tasklet import tasklet
+
+
+class FallbackAudioService(Service):
 
     service = 'Audio'
     name = 'Fallback'
@@ -32,30 +34,30 @@ class FallbackAudioService(tichy.Service):
         super(FallbackAudioService, self).__init__()
         self.device = None
         self.muted = 0
-        self.volume = tichy.Int.as_type(55)
+        self.volume = Int.as_type(55)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._do_sth()
-        
+
     def _do_sth(self):
         pass
-        
+
     def get_mic_status(self):
         return 0
-        
+
     def set_mic_status(self, val):
         if self.muted != 1:
             pass
-    
+
     def get_speaker_volume(self):
         return self.volume.value
-        
+
     def set_speaker_volume(self, val):
         if self.muted != 1:
             self.volume.value = val
             logger.info("volume set to %d", self.get_speaker_volume())
-        
+
     def audio_toggle(self):
         return 0
 

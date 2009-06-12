@@ -17,19 +17,18 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('services.fso.usage')
 
 __docformat__ = 'reStructuredText'
 
 import dbus
-
-import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
-
-import logging
-logger = logging.getLogger('services.fso.usage')
+from tichy import mainloop
+from tichy.tasklet import WaitDBus, WaitDBusName, tasklet
+from tichy.service import Service
 
 
-class FSOUsageService(tichy.Service):
+class FSOUsageService(Service):
     """The 'Usage' service
 
     This service can be used to listen to the power signals and control the device power.
@@ -48,25 +47,25 @@ class FSOUsageService(tichy.Service):
         self.flags = {}
         yield self._connect_dbus()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.ousaged', time_out=120)
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             self.obj = bus.get_object('org.freesmartphone.ousaged', '/org/freesmartphone/Usage')
             self.iface = dbus.Interface(self.obj, 'org.freesmartphone.Usage')
         except Exception, e:
             logger.exception("can't use fso usage interface service : %s", e)
-            
-    #@tichy.tasklet.tasklet
+
+    #@tasklet
     def occupy_cpu(self):
         return self.request_resource('CPU')
-    
-    #@tichy.tasklet.tasklet
+
+    #@tasklet
     def release_cpu(self):
         return self.release_resource('CPU')
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def request_resource(self, resource):
         if hasattr(self, "iface"):
             if resource in self.iface.ListResources():
@@ -83,8 +82,8 @@ class FSOUsageService(tichy.Service):
                 else:
                     logger.debug("not requesting resource %s as it has been already requested", resource)
         yield None
-    
-    @tichy.tasklet.tasklet          
+
+    @tasklet
     def release_resource(self, resource):
         if hasattr(self, "iface"):
             if resource in self.iface.ListResources():

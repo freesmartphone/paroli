@@ -22,14 +22,15 @@ __docformat__ = 'reStructuredText'
 
 import dbus
 
-import tichy
+from tichy import mainloop
 from tichy.tasklet import WaitDBusName
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fso.vibrator')
 
 
-class FSOVibratorService(tichy.Service):
+class FSOVibratorService(Service):
     """The 'Vibrator' service
 
     This service can be used to start or stop the device vibrator if
@@ -47,7 +48,7 @@ class FSOVibratorService(tichy.Service):
         """Connect to the freesmartphone DBus object"""
         try:
             yield WaitDBusName('org.freesmartphone.odeviced')
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             vibrator = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/LED/neo1973_vibrator')
             self.vibrator = dbus.Interface(vibrator, 'org.freesmartphone.Device.LED')
 

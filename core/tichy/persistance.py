@@ -78,7 +78,7 @@ class Persistance(object):
 
         :Returns: The structure previously saved into the file
         """
-        
+
         try:
             file = self._open()
         except IOError, e:
@@ -95,18 +95,18 @@ class Persistance(object):
         import ConfigParser
         parser = ConfigParser.ConfigParser()
         parser.readfp(file)
-        
+
         #return yaml.load(file, Loader=Loader)
         result = []
-        
+
         for s in parser.sections():
             sub_result = {}
             for k, v in parser.items(s):
                 #d = [k, v]<<<d
                 sub_result[k]=v.decode('utf-8')
-            
+
             result.append(sub_result)
-        
+
         #print result
         return result
         return None

@@ -59,8 +59,8 @@ class EventsLoop(Object):
 
         This method only return after we call `quit`.
         """
-        
-        
+
+
         ecore.main_loop_begin()
         ecore.x.on_window_delete_request_add(self.test)
         #elementary.run()
@@ -81,7 +81,7 @@ class EventsLoop(Object):
         logger.info("emitted closing")
         ecore.main_loop_quit()
         elementary.shutdown()
-        
+
     def iterate(self):
         pass #ecore.main_loop_iterate()
 
@@ -228,21 +228,21 @@ def main(*args):
     setup_logging()
     tichy.mainloop = EventsLoop()
     config.parse(cfg_file=options.cfg_file)
-    
+
     if config.getboolean('dbus','activated', False):
         logger.info("connect to dbus")
         if options.bus == 'system':
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
         else:
             bus = dbus.SessionBus(mainloop=tichy.mainloop.dbus_loop)
-        
+
         if bus.list_activatable_names().count('org.tichy.launcher') != 0:
             logger.info("paroli already running")
             if options.launch:
                 logger.info("running launch")
                 launch(options.launch, options)
                 sys.exit(0)
-        
+
         bus_name = dbus.service.BusName('org.tichy.launcher', bus)
 
 
@@ -277,7 +277,7 @@ def main(*args):
     logger.info("starting mainloop")
     tichy.mainloop.run()
     Service.end_all()
-    
+
     logger.info("quit")
 
 if __name__ == '__main__':

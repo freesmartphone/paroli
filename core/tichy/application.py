@@ -22,7 +22,6 @@ __docformat__ = 'reStructuredText'
 from tichy.tasklet import Tasklet
 from tichy.item import Item
 from tichy.service import Service
-import tichy
 
 # TODO: shouldn't we rename this to Applet ???
 

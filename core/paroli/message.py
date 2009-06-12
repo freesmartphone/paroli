@@ -21,13 +21,16 @@ logger = logging.getLogger('core.paroli.messages')
 
 __docformat__ = 'reStructuredText'
 
-import tichy
 from tichy.persistance import Persistance
+from tichy.service import Service
+from tichy.tasklet import tasklet
+from tichy.item import Item
+from tichy.text import Text
+from tichy.ttime import Time
 from paroli.tel_number import TelNumber
 
 
-
-class Message(tichy.Item):
+class Message(Item):
     """Base class for all messages
     """
 
@@ -58,10 +61,10 @@ class Message(tichy.Item):
         """
         super(Message, self).__init__()
         storage = None
-        
+
         self.peer = TelNumber.as_type(peer)
-        self.text = tichy.Text.as_type(text)
-        self.timestamp = tichy.Time.as_type(timestamp)
+        self.text = Text.as_type(text)
+        self.timestamp = Time.as_type(timestamp)
         # TODO: use a boolean here
         assert direction in ['in', 'out'], direction
         self.direction = direction
@@ -86,15 +89,15 @@ class Message(tichy.Item):
     def save(self):
         raise NotImplementedError('save not implemeted for %s' % type(self))
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def send(self):
         """Tasklet that will send the message"""
-        ret = yield tichy.Service.get('SMS').send(self)
+        ret = yield Service.get('SMS').send(self)
         yield ret
 
     def to_dict(self):
         """return the message attributes in a python dict"""
-        service = tichy.Service.get('SIM')
+        service = Service.get('SIM')
         return {'peer': str(self.peer),
                 'text': unicode(self.text),
                 'timestamp': str(self.timestamp),
@@ -124,7 +127,7 @@ class PhoneMessage(Message):
     def save(cls):
         """Save all the phone messages"""
         logger.info("Saving phone messages")
-        messages = tichy.Service.get('Messages').messages
+        messages = Service.get('Messages').messages
         data = [c.to_dict() for c in messages if isinstance(c, PhoneMessage)]
         Persistance('messages/phone').save(data)
         yield None
@@ -153,7 +156,7 @@ class PhoneMessage(Message):
                 except Exception, ex:
                     logger.exception("can't create message : %s", ex)
         yield ret
-        
+
     def __get_number(self):
         return self.peer
     number = property(__get_number)
@@ -178,7 +181,7 @@ class SMS(Message):
         yield ret
 
     def delete(self):
-        sim = tichy.Service.get('SIM')
+        sim = Service.get('SIM')
         yield sim.remove_message(self)
 
     def save(self):
@@ -186,9 +189,9 @@ class SMS(Message):
         yield None
 
     @classmethod
-    @tichy.tasklet.tasklet
+    @tasklet
     def load_all(cls):
-        sim = tichy.Service.get('SIM')
+        sim = Service.get('SIM')
         yield sim.wait_initialized()
         ret = yield sim.get_messages()
         yield ret

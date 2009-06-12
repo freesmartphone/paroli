@@ -26,7 +26,9 @@ from time import asctime, mktime, strptime #, localtime
 from sys import prefix
 #from re import search
 #from subprocess import PIPE, Popen
-from tichy import config, Service, mainloop, Time
+from tichy import config, mainloop
+from tichy.service import Service
+from tichy.ttime import Time
 from tichy.application import Application
 from tichy.tasklet import tasklet, WaitFirst, Wait
 from paroli.gui import ElementaryLayoutWindow, ElementaryBox, ElementaryLayout, ElementaryWindow, ElementaryTopbar
@@ -36,7 +38,7 @@ class Launcher(Application):
     name = 'Launcher'
     icon = 'icon.png'
     category = 'hidden' # So that we dont see the app in ourselfs
-    
+
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
         self.ready = 0
@@ -50,14 +52,14 @@ class Launcher(Application):
         self.edje_file = join(dirname(__file__),'paroli-launcher.edj')
 
         self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
-        
+
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.topbar, "tb"):
 
             self.window.topbar.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
 
         self.active_app = None
-        
+
         if self.advanced == False:
             ##create list of apps from list of registered apps
             apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Paroli-Contacts"]
@@ -71,7 +73,7 @@ class Launcher(Application):
         self.app_objs = {}
         for app in apps:
             logger.info("register launcher %s", app.name)
-            link_obj = ElementaryLayout(self.window.window, self.edje_file, 'link')        
+            link_obj = ElementaryLayout(self.window.window, self.edje_file, 'link')
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
             link_obj.elm_obj.show()
@@ -93,50 +95,50 @@ class Launcher(Application):
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         ##current hack
         #self.standalone = True
-        
+
         self.msg = Service.get('Messages')
         if self.msg.ready == False :
             self.msg.connect('ready',self.unblock_screen)
         else:
             self.unblock_screen()
-        
+
         self.busywin = Service.get('BusyWin')
-        
+
         self.button = Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
-        
+
         if self.settings:
             self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
-          
+
         self.prefs = Service.get('Prefs')
         self.audio_service = Service.get('Audio')
-        
+
         self.ussd = Service.get('Ussd')
         self.ussd.connect('incoming', self.incoming_ussd)
         self.systime = Service.get('SysTime')
         self.alarm = Service.get('Alarm')
-        
+
         #self.edje_obj.edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
         #self.edje_obj.edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
-        
+
         self.ready = 1
-        
+
         yield WaitFirst(Wait(self.window, 'backs'),Wait(self.window.window,'closing'))
-        
+
         self.dialog = Service.get("Dialog")
         keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
         logger.debug("keep_alive %s", keep_alive)
         #self._remove_link_signals()
-        
+
         if keep_alive == "no":
             logger.info("keep alive set to no: %s", keep_alive)
             mainloop.quit()
         else:
             logger.info("keep alive set to %s", keep_alive)
-        
+
         if self.window.window.elm_obj.is_deleted() == False:
             self.window.delete()   # Don't forget to close the window
-        
+
 
     def unblock_screen(self, *args, **kargs):
         logger.info('unblocking screen')
@@ -148,7 +150,7 @@ class Launcher(Application):
                     connector = getattr(service,attr)
                     connector.connect('modified', self._set_subtext, app)
                     self._set_subtext(connector.value, app)
-                
+
         self.edje_obj.edje.signal_emit("ready","*")
 
     def _set_subtext(self, *args, **kargs):
@@ -190,16 +192,16 @@ class Launcher(Application):
             self.active_app = None
         else:
             logger.info("blocked %s", name)
-    
+
     def incoming_ussd(self, stuff, msg):
         """connected to the 'incoming_message' edje signal"""
         self._incoming_ussd(str(msg[1])).start()
-    
+
     @tasklet
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
         yield Service.get('Dialog').dialog("window", 'Ussd', msg)
-    
+
     def _remove_link_signals(self, *args, **kargs):
         if self.settings:
             logger.info("disconnecting settings")
@@ -207,22 +209,22 @@ class Launcher(Application):
         for i in self.app_objs:
             self.app_objs[i][0].edje.signal_callback_del("*", "launch_app", self.launch_app)
             logger.debug("some callback wasn't found")
-    
+
     def _recreate_link_signals(self, *args, **kargs):
         if self.settings:
             self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
         for i in self.app_objs:
             self.app_objs[i][0].edje.signal_callback_add("*", "launch_app", self.launch_app)
-    
+
     def quit_app(self, emission, source, name):
-    
-        emitted = 'back_'+str(self.active_app)    
+
+        emitted = 'back_'+str(self.active_app)
         logger.debug('closing' + self.active_app)
         self.main.emit(emitted)
-                
+
         self.edje_obj.signal("switch_clock_off","*")
         self.active_app = None
-        
+
     def _status_modified(self,*args,**kargs):
         status = self.storage.status
         if status == 'active':
@@ -230,7 +232,7 @@ class Launcher(Application):
             self.storage.call.connect('released',self._on_call_released())
         else:
             self._on_call_released()
-    
+
     def set_caller(self, sender):
         logger.info('call logged')
         self.storage.call.connect('released', self._on_call_released)
@@ -238,28 +240,28 @@ class Launcher(Application):
         logger.info("active app: %s", self.active_app)
         if self.active_app == 'Tele':
             self.edje_obj.signal('switch_clock_off',"*")
-        self._on_call_activated() 
-        
+        self._on_call_activated()
+
     ##MAIN FUNCTIONS
-    
+
     def _on_call_activated(self, *args, **kargs):
-        
+
         number = TelNumber(self.storage.call.number)
         text = '<normal>Tele</normal> <small>' + str(number.get_text()) +'</small>'
         self.app_objs['Tele'][1].edje.part_text_set('testing_textblock',text)
-    
+
     def _on_call_released(self, *args, **kargs):
         self.main.emit('show_Tele')
         if self.active_app == 'Tele':
             self.edje_obj.signal('app_active',"*")
-            
+
         text = '<normal>Tele</normal> <small></small>'
         self.app_objs['Tele'][1].edje.part_text_set('testing_textblock',text)
 
     def network_strength(self, *args, **kargs):
         if self.window.topbar.tb:
             self.window.topbar.tb.edje.signal_emit(str(args[1]), "gsm_change")
-        
+
     def battery_capacity(self, *args, **kargs):
         if self.window.topbar.tb:
             logger.info("capacity change in launcher to %s", args[1])
@@ -271,7 +273,7 @@ class Launcher(Application):
             if args[1] == "charging":
                 self.window.topbar.tb.edje.signal_emit(args[1], "battery_status_charging")
             elif args[1] == "discharging":
-                bat_value = self.power.get_battery_capacity() 
+                bat_value = self.power.get_battery_capacity()
                 self.window.topbar.tb.edje.signal_emit(str(bat_value), "battery_change")
             elif args[1] == "full":
                 #TODO: We may do something here.
@@ -288,14 +290,14 @@ class Launcher(Application):
         edje = emission
         #time = time.localtime()
         #time_text = edje.part_text_get('clock')
-        
+
         time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
-        
+
         self.button.disconnect(self.aux_btn_time_set_conn)
         self.button.disconnect(self.aux_btn_held_conn)
-        numbers = str(time_text).split(':') 
+        numbers = str(time_text).split(':')
         timepart = asctime().split()
-        hour_min_sec = timepart[3].split(':') 
+        hour_min_sec = timepart[3].split(':')
         hour_min_sec[0] = str(numbers[0])
         hour_min_sec[1] = numbers[1]
         timepart[3] = hour_min_sec[0] + ":" + hour_min_sec[1] + ":" + hour_min_sec[2]
@@ -304,28 +306,28 @@ class Launcher(Application):
         # Transfer from localtime to GMT time
         new_time = Time.as_type(mktime(strptime(time_string)))
         if source == "alarm":
-            self.set_alarm(new_time).start() 
+            self.set_alarm(new_time).start()
             logger.info("Set alarm at %s", new_time)
         elif source == "time":
             logger.info("Set time to %s", new_time)
-            self.set_time(new_time).start() 
-            
+            self.set_time(new_time).start()
+
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         self.edje_obj.edje.signal_emit("start_clock_update", "*")
 
     @tasklet
     def set_time(self, new_time):
-        yield self.systime.set_current_time(new_time) 
+        yield self.systime.set_current_time(new_time)
 
     @tasklet
     def set_alarm(self, alarm_time):
-        sound_dir = join(prefix, "share/paroli/data/sounds") 
-        alarm_path = join(sound_dir, "alarm.wav") 
-        yield self.alarm.set_alarm(alarm_time, self.alarm_reaction, alarm_path) 
+        sound_dir = join(prefix, "share/paroli/data/sounds")
+        alarm_path = join(sound_dir, "alarm.wav")
+        yield self.alarm.set_alarm(alarm_time, self.alarm_reaction, alarm_path)
 
     def alarm_reaction(self, *args, **kargs):
-        # Get Alarm file through settings ? 
-        # TODO?: Turn on backlight  
+        # Get Alarm file through settings ?
+        # TODO?: Turn on backlight
         try:
             alarm_file = args[0]
             self.audio_service.play(alarm_file)
@@ -337,7 +339,7 @@ class Launcher(Application):
         nmin = args[3]
         time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
         #time_text = edje.part_text_get('clock')
-        numbers = time_text.split(':') 
+        numbers = time_text.split(':')
         hour = int(numbers[0])
         min = int(numbers[1])
         if (min + nmin) < 60:
@@ -352,29 +354,29 @@ class Launcher(Application):
             hour_digit_1 = "0"
         else:
             hour_digit_1 = str( hour/10 )
-        hour_digit_0 = str( hour%10 ) 
+        hour_digit_0 = str( hour%10 )
 
         if min < 10:
             min_digit_1 = "0"
         else:
-            min_digit_1 = str( min/10 ) 
-        min_digit_0 = str( min%10 ) 
+            min_digit_1 = str( min/10 )
+        min_digit_0 = str( min%10 )
 
         if hour < 10:
             hour = "0" + str(hour)
         if min < 10:
             min = "0" + str(min)
-        time_text = str(hour) + ":" + str(min) 
+        time_text = str(hour) + ":" + str(min)
         edje.part_text_set('home-clock-hour-digit-1', hour_digit_1)
         edje.part_text_set('home-clock-hour-digit-0', hour_digit_0)
         edje.part_text_set('home-clock-minute-digit-1', min_digit_1)
         edje.part_text_set('home-clock-minute-digit-0', min_digit_0)
         edje.part_text_set('clock', time_text)
-    
+
     def open_settings(self, *args, **kargs):
         if self.settings == True:
             self.launch_app(None, 'Settings', None)
-    
+
     def switch_profile(self, *args, **kargs):
         logger.debug("switch_profile called with args: %s and kargs: %s", args, kargs)
         if self.storage.call == None:
@@ -386,24 +388,24 @@ class Launcher(Application):
             else:
                 new = available[current_index+1]
             yield self.prefs.set_profile(new)
-            
+
             logger.info("current: %s new: %s", current, new)
-    
+
     def audio_rotate(self, *args, **kargs):
         current = self.audio_service.get_speaker_volume()
         all_values = [20, 40, 60, 80, 100]
         if all_values.count(current) == 0:
           current = 40
-        
+
         current_index = all_values.index(current)
-        
+
         if len(all_values)-1 == current_index:
             new = all_values[0]
         else:
             new = all_values[current_index + 1]
         self.audio_service.set_speaker_volume(new)
         logger.info("current: %s new: %s", current, self.audio_service.get_speaker_volume())
-    
+
     ###DEBUG FUNCTIONS
     #def test(self, emission, source, param):
         #logger.info('test called')
@@ -411,14 +413,14 @@ class Launcher(Application):
             #self.connector.emit('call_active')
         #except Exception, e:
             #print e
-    
-            
+
+
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + signal)
-    
+
     def general_test(self, *args, **kargs):
         logger.info("general test called with args: %s and kargs: %s", args, kargs)
-    
+
     ##write version number on home-screen
     #def _get_paroli_version(self):
         #try:
@@ -429,7 +431,7 @@ class Launcher(Application):
         #except Exception, ex:
             #logger.warning("Can't get paroli version : %s", ex)
             #self.edje_obj.edje.part_text_set('version', '????')
- 
+
 ##Service to generate and store the loading window
 class BusyWin(Service):
     service = 'BusyWin'
@@ -442,7 +444,7 @@ class BusyWin(Service):
     @tasklet
     def init(self):
         yield self._do_sth()
-    
+
     def _do_sth(self):
         pass
 
@@ -467,8 +469,8 @@ class TopBar(Service):
     def __init__(self):
         super(TopBar, self).__init__()
         self.edje_file = join(dirname(__file__), 'paroli-launcher.edj')
-        self.tb_list = []    
-    
+        self.tb_list = []
+
     @tasklet
     def init(self):
         yield Service.get('Prefs').wait_initialized()
@@ -484,14 +486,14 @@ class TopBar(Service):
         self.power.connect('battery_status', self.battery_status)
         self.prefs.connect('profile_changed', self.profile_change)
         yield self._do_sth()
-    
+
     def _do_sth(self):
         pass
-    
+
     def create(self, parent, onclick, standalone=False):
-        
+
         tb = ElementaryTopbar(parent, onclick, self.edje_file, standalone)
-        
+
         if hasattr(tb,"tb"):
           self.tb_list.append(tb.tb.elm_obj)
           tb.tb.elm_obj.on_del_add(self.tb_deleted)
@@ -524,12 +526,12 @@ class TopBar(Service):
         logger.info("network strength %s", args[1])
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gsm_change")
-        
+
     def gprs_status(self, *args, **kargs):
         logger.debug("gprs status change in launcher to %s", args[1])
         for i in self.tb_list:
             i.edje_get().signal_emit(str(args[1]), "gprs_status")
-        
+
     def battery_capacity(self, *args, **kargs):
         for i in self.tb_list:
             logger.debug("capacity change in launcher to %s", args[1])
@@ -554,7 +556,7 @@ class TopBar(Service):
             if args[1] == "charging":
                 i.edje_get().signal_emit(args[1], "battery_status_charging")
             elif args[1] == "discharging":
-                bat_value = self.power.get_battery_capacity() 
+                bat_value = self.power.get_battery_capacity()
                 i.edje_get().signal_emit(str(bat_value), "battery_change")
             elif args[1] == "full":
                 #TODO: We may do something here.

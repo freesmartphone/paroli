@@ -17,21 +17,19 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
-
-import tichy
-import tichy.item as item
-from tichy.service import Service
-
 import logging
 logger = logging.getLogger('service.fallback.prefs')
 
+from tichy.item import Item
+from tichy.service import Service
 
-class FallbackPrefsServices(tichy.Service):
+
+class FallbackPrefsServices(Service):
 
     service = 'Prefs'
     name = 'Fallback'
 
-    class Service(item.Item):
+    class Service(Item):
 
         def __init__(self, prefs, name):
             super(FallbackPrefsServices.Service, self).__init__()

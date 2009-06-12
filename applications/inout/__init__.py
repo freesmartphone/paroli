@@ -23,7 +23,7 @@ from logging import getLogger
 logger = getLogger('applications.inout')
 
 from os.path import join, dirname
-from tichy import Service
+from tichy.service import Service
 from tichy.application import Application
 from tichy.tasklet import Wait, WaitFirst
 from paroli.gui import ElementaryListWindow, ElementaryList
@@ -33,7 +33,7 @@ class InOutCallLog(Application):
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     launcher_info = ['GSM',"missed_call_count"]
-    
+
     def run(self, parent=None, standalone=False):
         ##to be standardized
         self.edje_file = join(dirname(__file__), 'i-o.edj')
@@ -47,20 +47,20 @@ class InOutCallLog(Application):
         ##sort contact by date
         def comp2(m1, m2):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
-         
-        self.contacts.sort(comp2) 
+
+        self.contacts.sort(comp2)
 
         ##generate app-window
         self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
-        
+
         def comp(m1, m2):
             return cmp(m2.timestamp, m1.timestamp)
 
-        #  We use the Call object to as items in the call log 
+        #  We use the Call object to as items in the call log
         self.list_label = [('label', 'number'), ('subtext', 'description')]
         self.item_list = ElementaryList(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
-        
+
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
 
@@ -77,55 +77,55 @@ class InOutCallLog(Application):
         self.item_list.elm_window = self.window.window
 
         i, args = yield WaitFirst(Wait(self.window, 'back'),Wait(self.window, 'delete_request'), Wait(self.window.window,'closing'))
-        
+
         for i in self.callLogs:
             i.missed = False
             i.check()
-        
+
         self.callLogs.emit("modified")
-        
+
         if i != 2:
             self.contacts.disconnect(self.oid)
             self.window.delete()
             del self.item_list
-    
+
     def restore_edit(self, *args, **kargs):
         self.edje_obj.edje.signal_emit("ListFilled", "python")
-    
+
     def to_edit_mode(self, emission, source, param):
         for item in self.item_list.items:
             item[1].signal_emit("to_edit_mode", "*")
-        
+
     def to_default_mode(self, emission, source, param):
-    
+
         deleting = []
-    
+
         for i in range(len(self.item_list.items)):
             if self.item_list.items[i][1].part_text_get("delete-flag") == "1":
                 deleting.append(self.item_list.items[i][0])
             else:
                 logger.debug('to_default_mode %s', self.item_list.items[i][1].part_text_get("delete-flag"))
-        
+
         deleting.reverse()
-        
+
         self.item_list.model.remove_group(deleting)
-                
+
         for item in self.item_list.items:
                 item[1].signal_emit("to_default_mode", "*")
-    
+
         if len(self.callLogs) == 0:
             self.edje_obj.edje.signal_emit("ListEmpty", "python")
-    
+
     def create_call(self, emission, source, param, callLog):
         number = callLog[0].number.value
         name = unicode(callLog[0])
         caller_service = Service.get('TeleCaller2')
         caller_service.call("window", number, name).start()
-    
+
     def create_msg(self, emission, source, param, callLog):
         service = Service.get('MessageCreate')
         service.write(self.window, 'reply', callLog[0].number).start()
-    
+
     def create_contact(self, emission, source, param, callLog):
         service = Service.get('ContactCreate')
         service.create(self.window, callLog[0].number).start()

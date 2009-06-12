@@ -26,11 +26,11 @@ import logging
 logger = logging.getLogger('services.misc.dialog')
 
 import elementary
-import tichy
 from tichy import config
-from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
 from tichy.application import Application
-from tichy.tasklet import Wait
+from tichy.tasklet import Wait, tasklet
+from tichy.service import Service
+from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
 
 # TODO: replace the etk code by something based on edje
 
@@ -46,13 +46,13 @@ class Dialog(Application):
         self.window.elm_obj.color_set(0, 0, 0, 255)
         self.box = ElementaryBox(self.window.elm_obj)
         self.window.elm_obj.resize_object_add(self.box.elm_obj)
-        
+
         self.label = elementary.Label(self.window.elm_obj)
         self.label.label_set(str(title))
         self.box.elm_obj.pack_end(self.label)
         self.label.size_hint_min_set(440, 50)
         self.label.show()
-        
+
         self.scroller = ElementaryScroller(self.window)
         self.entry = elementary.Entry(self.window.elm_obj)
         self.entry.entry_set(str(msg))
@@ -60,11 +60,11 @@ class Dialog(Application):
         self.entry.editable_set(False)
         self.entry.show()
         self.scroller.elm_obj.content_set(self.entry)
-        
+
         self.box.elm_obj.pack_end(self.scroller.elm_obj)
-        
+
         if option2 == None:
-        
+
             self.button = elementary.Button(self.window.elm_obj)
             label_text = option1 or "OK"
             self.button.label_set(label_text)
@@ -83,18 +83,18 @@ class Dialog(Application):
             self.button2.name_set(option2)
             self.box2.elm_obj.pack_end(self.button1)
             self.box2.elm_obj.pack_end(self.button2)
-            
+
             self.button1.show()
             self.button1.on_mouse_up_add(self._on_clicked)
             self.button2.on_mouse_up_add(self._on_clicked)
             self.button2.show()
-        
+
         self.window.elm_obj.layer_set(99)
-        
+
         self.val = None
-        
+
         yield Wait(self, 'done')
-        logger.info("self.val = %s", self.val)   
+        logger.info("self.val = %s", self.val)
         self.window.elm_obj.delete()
         yield self.val
 
@@ -108,12 +108,12 @@ class Dialog(Application):
         self.emit('done')
 
 
-class DialogService(tichy.Service):
+class DialogService(Service):
     """Service that can be used to show dialog to the user"""
 
     service = 'Dialog'
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def dialog(self, parent, title, msg, *args):
         """Show a dialog and wait for the user to close it
 
@@ -134,22 +134,22 @@ class DialogService(tichy.Service):
         else:
             msg = msg
         logger.debug("show %s dialog : %s", title, msg)
-        
+
         self.error_msgs = config.getboolean('error_messages','activated', False)
-        
+
         if self.error_msgs or title == "Ussd":
             yield Dialog(parent, title, msg)
         else:
             yield None
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def option_dialog(self, title, msg, option1, option2, *args):
         logger.info("trying to get option dialog")
         result = yield Dialog(None, title, msg, option1, option2)
-        
+
         yield result
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def error(self, parent, msg, *args):
         """Show an error message and wait for the user to close it
 

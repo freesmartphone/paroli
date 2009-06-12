@@ -17,16 +17,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-__docformat__ = 'reStructuredText'
-
-import tichy
-
 import logging
 logger = logging.getLogger('services.fallback.wifi')
 
+__docformat__ = 'reStructuredText'
 
-class FallbackWifiService(tichy.Service):
+from tichy.service import Service
+
+
+class FallbackWifiService(Service):
     """The 'Wifi' service
     """
 

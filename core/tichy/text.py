@@ -20,7 +20,6 @@
 __docformat__ = 'reStructuredText'
 
 from tichy.item import Item
-from tichy.service import Service
 
 
 class Text(Item):

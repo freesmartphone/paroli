@@ -22,14 +22,15 @@ __docformat__ = 'reStructuredText'
 
 import dbus
 
-import tichy
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy import mainloop
+from tichy.tasklet import WaitDBus, WaitDBusName, tasklet
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fso.power')
 
 
-class FSOPowerService(tichy.Service):
+class FSOPowerService(Service):
     """The 'Power' service
 
     This service can be used to listen to the power signals and control the device power.
@@ -49,21 +50,21 @@ class FSOPowerService(tichy.Service):
         logger.info('power service init')
         yield self._connect_dbus()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             battery = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerSupply/battery')
             self.battery = dbus.Interface(battery, 'org.freesmartphone.Device.PowerSupply')
             self.battery.connect_to_signal('Capacity', self._on_capacity_change)
-            self.battery.connect_to_signal('PowerStatus', self._on_status_change) 
+            self.battery.connect_to_signal('PowerStatus', self._on_status_change)
         except Exception, e:
             logger.exception("can't use freesmartphone power service : %s", e)
         else:
             self._on_capacity_change(self.battery.GetCapacity())
             self.battery_capacity = self.battery.GetCapacity()
-            
+
     def _on_capacity_change(self, percent):
         logger.info("capacity changed to %i", percent)
         self.battery_capacity = percent
@@ -77,6 +78,6 @@ class FSOPowerService(tichy.Service):
         if hasattr(self.battery, "GetCapacity"):
             bat_value = self.battery.GetCapacity()
             return bat_value
-        else: 
+        else:
             return 50
 

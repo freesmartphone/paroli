@@ -16,19 +16,20 @@
 #    General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-
-__docformat__ = 'reStructuredText'
-
-import tichy
-from paroli.tel_number import TelNumber
-from paroli.message import Message, PhoneMessage
-
 import logging
 logger = logging.getLogger('service.misc.messages')
 
+__docformat__ = 'reStructuredText'
+
+from tichy.service import Service
+from tichy.list import List
+from tichy.text import Text
+from tichy.tasklet import tasklet
+from paroli.tel_number import TelNumber
+from paroli.message import Message, PhoneMessage
 
 
-class MessagesService(tichy.Service):
+class MessagesService(Service):
     """The service that stores all the messages
 
     This service provides access to the messages inbox and outbox
@@ -38,18 +39,18 @@ class MessagesService(tichy.Service):
 
     def __init__(self):
         super(MessagesService, self).__init__()
-        self.messages = tichy.List()
-        self.unread = tichy.Text(0)
+        self.messages = List()
+        self.unread = Text(0)
         self.messages.connect('appended',self._update_unread)
         self.ready = False
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._load_all()
         self.emit('ready')
         self.ready = True
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def add(self, msg):
         """Add a `Message` into the message list
 
@@ -62,7 +63,7 @@ class MessagesService(tichy.Service):
         self.messages.append(msg)
         yield msg.save()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def remove(self, msg):
         """remove a `Message` from the message list
 
@@ -76,7 +77,7 @@ class MessagesService(tichy.Service):
         self.messages.remove(msg)
         yield msg.delete()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _load_all(self):
         """load all the messages from all sources"""
         logger.info("load all messages")
@@ -98,7 +99,7 @@ class MessagesService(tichy.Service):
         logger.info("Totally got %d messages", len(self.messages))
 
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _save_all(self):
         logger.info("save all messages")
         for cls in Message.subclasses:
@@ -120,7 +121,7 @@ class MessagesService(tichy.Service):
             if msg.status == 'unread':
                 msg.connect('read',self._update_unread)
                 self.unread.value = int(self.unread.value)+1
-                
+
         self.unread.emit('updated')
         logger.debug("unread message count now: %s in total", self.unread)
 

@@ -20,7 +20,6 @@
 __docformat__ = 'reStructuredText'
 
 from tichy.item import Item
-from tichy.service import Service
 
 
 # XXX: We need to remove the removed, appended and cleared signal
@@ -94,7 +93,7 @@ class List(Item, list, ):
             list.remove(self, value)
         self.emit('removed', value_list[0])
         self.emit('modified')
-  
+
     def sort(self, *args, **kargs):
         """Sort the list inplace"""
         list.sort(self, *args, **kargs)

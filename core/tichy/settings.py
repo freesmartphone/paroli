@@ -18,20 +18,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 import logging
-logger = logging.getLogger('core.tichy.settings')     
+logger = logging.getLogger('core.tichy.settings')
 
-from tichy.object import Object
-from tichy.item import Item
-from tichy import tasklet
-from tichy.object import Object
-import tichy
+from object import Object
+from item import Item
+from list import List
+from int import Int
+from tasklet import tasklet
+from service import Service
+from object import Object
 
 class Setting(Object):
     """Represents a setting value
 
     Setting values are similar to Item, but allow to give more
     information about there type and the values they can contain.
-    
+
     Setting can also be linked to external state, so setting a Setting
     value is an asynchronise operation.
 
@@ -74,8 +76,8 @@ class Setting(Object):
         self.type = type
         self.Value = type.as_type(value) if value is not None else type()
         self.Setter = setter or self.setter
-        self.options = tichy.List(options)
-        
+        self.options = List(options)
+
         if listenObject:
             listenObject.connect_to_signal(signal, self.change_val)
 
@@ -86,8 +88,8 @@ class Setting(Object):
     def value(self):
         """accessor to the actual value"""
         return self.Value.value
-        
-    @tasklet.tasklet
+
+    @tasklet
     def setter(self, value):
         """tasklet that is called when we try to set the value This
         should perform the action needed to actually set the value.
@@ -98,7 +100,7 @@ class Setting(Object):
         """
         yield None
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
         if value == None:
@@ -119,8 +121,8 @@ class Setting(Object):
                     new = self.options[current_index + 1]
             else:
                 new = self.options[0]
-            
-            logger.info("new value: %s", new)    
+
+            logger.info("new value: %s", new)
             self.set(new).start()
 
     def change_val(self, val):
@@ -139,23 +141,23 @@ class Setting(Object):
 class StringSetting(Setting):
     """ Setting for string values, on click it will produce a text-edit dialog and show a kbd
     """
-    
+
     def rotate(self, parent, layout):
-        fe = tichy.Service.get("FreeEdit")
+        fe = Service.get("FreeEdit")
         fe.StringEdit(self, parent, layout).start()
 
 class NumberSetting(Setting):
     """ Setting for string values, on click it will produce a text-edit dialog and show a kbd
     """
-    
+
     def rotate(self, parent, layout):
-        fe = tichy.Service.get("FreeEdit")
+        fe = Service.get("FreeEdit")
         fe.NumberEdit(self, parent, layout).start()
 
 class ListSetting(Setting):
     """ Setting for List values, on click it will produce a list-window
     """
-    
+
     def __init__(self, group, name, type, value=None, setter=None, options="", model=None, ListLabel=None, edje_group=None, save_button=False, **kargs):
 
         assert issubclass(type, Item), type
@@ -166,44 +168,43 @@ class ListSetting(Setting):
         self.type = type
         self.Value = type.as_type(value) if value is not None else type()
         self.Setter = setter or self.setter
-        self.options = tichy.List(options)
+        self.options = List(options)
 
         self.model = model
         self.ListLabel = ListLabel
 
         # register the setting into the list of all settings
         Setting.groups.setdefault(group, {})[name] = self
-    
+
     def rotate(self, parent, layout):
         self.Setter("scan").start()
-        fe = tichy.Service.get("FreeEdit")
+        fe = Service.get("FreeEdit")
         fe.ListEdit(self, parent, self.model, self.ListLabel, layout, self.edje_group, self.save_button).start()
 
 class ToggleSetting(Setting):
     """ Setting for toggle values, on click it will only start an action, nothing else, it sends the value along, so that it can be changed by the setter
     """
-    
+
     def sub_init(self):
         self.listenObject.connect_to_signal(signal, self.change_val)
-    
+
     def change_val(self, val):
         self.Value.value = val
-    
+
     def rotate(self, *args):
         self.set(self.value).start()
-    
-    @tichy.tasklet.tasklet
+
+    @tasklet
     def set(self, value):
         """Try to set the Setting value and block until it is done"""
         val = yield self.Setter(value)
         self.Value.value = val
         self.options.emit('updated')
         logger.info("%s set to %s", self.name, self.value)
-    
+
 if __name__ == '__main__':
     # Simple usage example
 
-    import tichy
     import logging
     logging.basicConfig()
 
@@ -214,9 +215,9 @@ if __name__ == '__main__':
     def on_volume_modified(value):
         logger.debug( "volume changed to %d", value)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def my_task():
-        volume = Setting('phone', 'volume', tichy.Int, setter=set_volume)
+        volume = Setting('phone', 'volume', Int, setter=set_volume)
         Setting.groups['phone']['volume'].connect('modified', on_volume_modified)
         # Here we could also write :
         # volume.connect('modified', on_volume_modified)

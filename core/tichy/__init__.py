@@ -18,15 +18,9 @@
 
 __docformat__ = 'reStructuredText'
 
-"""tichy package"""
-
-# TODO: remove the imports here
-from service import Service
-from list import List
-from text import Text
-from int import Int
-from item import Item
-from ttime import Time
-from settings import Setting
+"""
+tichy package - just used as a singleton to store the mainloop
+provided py paroli init.
+"""
 
 mainloop = None # set from outside in this singleton

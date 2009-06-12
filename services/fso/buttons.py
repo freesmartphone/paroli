@@ -22,14 +22,16 @@ __docformat__ = 'reStructuredText'
 
 import dbus
 
-import tichy
-from tichy.tasklet import WaitDBusName
+from tichy.service import Service
+from tichy.tasklet import WaitDBusName, tasklet
+from tichy.text import Text
+from tichy import mainloop
 
 import logging
 logger = logging.getLogger('services.fso.buttons')
 
 
-class FSOButtonService(tichy.Service):
+class FSOButtonService(Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons
@@ -42,25 +44,25 @@ class FSOButtonService(tichy.Service):
         """Connect to the freesmartphone DBus object"""
         super(FSOButtonService, self).__init__()
         logger.info('button service init')
-        self._connect_dbus().start() 
+        self._connect_dbus().start()
         self.last = None
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
             logger.info('button service active')
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             input_dev = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Input')
             self.input_intf = dbus.Interface(input_dev, 'org.freesmartphone.Device.Input')
             self.input_intf.connect_to_signal('Event', self._on_button_press)
         except Exception, e:
             logger.exception("can't use freesmartphone button service : %s", e)
             self.input_intf = None
-            
+
     def _on_button_press(self, name, action, seconds):
         logger.debug("button pressed name: %s action: %s seconds %i", name, action, seconds)
-        text = tichy.Text()
+        text = Text()
         if action.lower() == 'pressed':
             self.last = 'pressed'
         elif action.lower() == 'released':
@@ -70,5 +72,5 @@ class FSOButtonService(tichy.Service):
         if action.lower() == 'held':
             self.last = 'held'
             text = "%s_button_%s" % (name.lower(), self.last)
-            
+
         self.emit(text, seconds)

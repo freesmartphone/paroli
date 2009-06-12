@@ -16,18 +16,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
-
-__docformat__ = 'reStructuredText'
-
-import tichy
-from object import Object
-
-from item import Item, ItemMetaClass
-
 import logging
 logger = logging.getLogger('core.tichy.service')
 
-from tichy.tasklet import WaitFirst, Wait, Sleep
+__docformat__ = 'reStructuredText'
+
+from object import Object
+from item import Item, ItemMetaClass
+from tasklet import WaitFirst, Wait, Sleep, tasklet
+
 
 class Service(Item):
     """Service base class
@@ -71,7 +68,7 @@ class Service(Item):
         cls.__defaults[service] = name
 
     @classmethod
-    @tichy.tasklet.tasklet
+    @tasklet
     def init_all(cls):
         """initialize all the services
 
@@ -116,7 +113,7 @@ class Service(Item):
         # set to the exception that occurred.
         self.initialized = False
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _init(self):
         logger.debug("init service %s", self.service)
         try:
@@ -126,12 +123,12 @@ class Service(Item):
             self.emit('initialized')
         except Exception, ex:
             logger.exception("Can't init service %s : %s", self.service, ex)
-            dialog = tichy.Service.get('Dialog')
+            dialog = Service.get('Dialog')
             msg = "can't init service %s : %s"
             yield dialog.error(None, msg, self.service, ex)
             self.emit('_fail_initialize') # internal signal
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def wait_initialized(self, timeout=None):
         """Block until the service is initialized
 
@@ -157,7 +154,7 @@ class Service(Item):
             raise self.initialized
         logger.debug("Done waiting for %s", self.service)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         """init the service"""
         yield None
@@ -191,6 +188,6 @@ class Service(Item):
     def end_all(cls):
         for i in Service.__all_services.keys():
             Service.__all_services[i].emit("closing")
-    
+
 def get(service):
     return Service.get(service)

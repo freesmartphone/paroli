@@ -23,16 +23,21 @@ logger = logging.getLogger('services.fso.systime')
 import dbus
 import time
 import os
-from tichy.tasklet import WaitDBus, WaitDBusName
+from tichy.tasklet import WaitDBus, WaitDBusName, tasklet
+from tichy.service import Service
 from tichy.object import Object
-import tichy
+from tichy.list import List
+from tichy.text import Text
+from tichy.ttime import Time
+from tichy import mainloop
+from tichy.settings import ListSetting
 
 
-class FSOSysTimeService(tichy.Service):
+class FSOSysTimeService(Service):
 
     service = 'SysTime'
     name = 'FSO'
-  
+
     def __init__(self):
         super(FSOSysTimeService, self).__init__()
         self.rtc = None
@@ -42,36 +47,36 @@ class FSOSysTimeService(tichy.Service):
         logger.info('systime service init')
         yield self._connect_dbus()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
-            rtc_obj = bus.get_object('org.freesmartphone.odeviced', 
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
+            rtc_obj = bus.get_object('org.freesmartphone.odeviced',
                           '/org/freesmartphone/Device/RealTimeClock/rtc0')
             self.rtc = dbus.Interface(rtc_obj, 'org.freesmartphone.Device.RealTimeClock')
-            
+
             self.ListLabel = [('title','name'),('value','value')]
-            
-            self.hour = TimeSetting("hour",3,tichy.List(range(24)), "int")
-            
-            self.minute =  TimeSetting("minute",4,tichy.List(range(60)), "int")
-            
-            self.ValueList = tichy.List()
+
+            self.hour = TimeSetting("hour",3,List(range(24)), "int")
+
+            self.minute =  TimeSetting("minute",4,List(range(60)), "int")
+
+            self.ValueList = List()
             self.ValueList.append(self.hour)
             self.ValueList.append(self.minute)
-            
-            self.time_setting = tichy.settings.ListSetting('Time', 'set time', tichy.Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
-            
+
+            self.time_setting = ListSetting('Time', 'set time', Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+
             self.ValueList.connect('save', self.UpdateSystemTime)
-            
+
         except Exception, e:
             logger.exception("can't use freesmartphone RealTimeClock service : %s", e)
 
     def test(self, *args, **kargs):
         logger.info("test called")
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_time(self, val):
         yield val
 
@@ -95,16 +100,16 @@ class FSOSysTimeService(tichy.Service):
 
     def get_current_time(self):
         seconds = self.rtc.GetCurrentTime()
-        return tichy.Time.as_type(float(seconds))
+        return Time.as_type(float(seconds))
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_current_time(self, ttime):
         """  Set time, but not date here. ttime argument is GMT time """
-        if not isinstance(ttime, tichy.ttime.Time):
+        if not isinstance(ttime, Time):
             raise TypeError
         try:
             localtime = ttime.local_repr().split()
-            timeSetCmd = 'date -s ' + localtime[3] 
+            timeSetCmd = 'date -s ' + localtime[3]
             #XXX: here seems a dirty quick way (os.system).
             os.system(timeSetCmd)
             yield WaitDBus(self.rtc.SetCurrentTime, int(ttime.value) )
@@ -114,7 +119,7 @@ class FSOSysTimeService(tichy.Service):
 
 class TimeSetting(Object):
     def __init__(self, name, rep_part, val_range, type_arg):
-        self.service = tichy.Service.get('SysTime')
+        self.service = Service.get('SysTime')
         self.name = name
         self.value = time.localtime(self.service.rtc.GetCurrentTime())[rep_part]
         self.rep_part = rep_part
@@ -123,7 +128,7 @@ class TimeSetting(Object):
 
     def action(self, *args, **kargs):
         pass
-        
+
     def __repr__(self):
         time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
         return time

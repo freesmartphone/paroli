@@ -16,18 +16,17 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
-
-__docformat__ = 'reStructuredText'
-
 """Notifications module"""
-
 import logging
 logger = logging.getLogger('core.tichy.notifications')
 
-import tichy
+__docformat__ = 'reStructuredText'
+
+from service import Service
+from item import Item
 
 
-class Notification(tichy.Item):
+class Notification(Item):
     """Notification class
 
     Notifications can be used by plugin to notify the user of an event
@@ -73,7 +72,7 @@ class Notification(tichy.Item):
         self.emit('released')
 
 
-class Notifications(tichy.Service):
+class Notifications(Service):
     """Notification service
 
     This service can be used by any plugin that wants to notify the

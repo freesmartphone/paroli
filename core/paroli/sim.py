@@ -20,8 +20,14 @@
 import logging
 logger = logging.getLogger('core.paroli.sim')
 
-import tichy
 from tichy.persistance import Persistance
+from tichy.int import Int
+from tichy.item import Item
+from tichy.list import List
+from tichy.tasklet import tasklet
+from tichy.service import Service
+from tichy.ttime import Time
+from tichy.text import Text
 from paroli.tel_number import TelNumber
 from contact import Contact
 
@@ -31,7 +37,7 @@ class PINError(Exception):
         super(PINError, self).__init__("wrong PIN : %s" % pin)
 
 
-class Call(tichy.Item):
+class Call(Item):
     """Class that represents a voice call"""
 
     def __init__(self, number, direction='out', timestamp=None,
@@ -83,7 +89,7 @@ class Call(tichy.Item):
         """
         self.number = TelNumber.as_type(number)
         self.direction = direction
-        self.timestamp = tichy.Time.as_type(timestamp)
+        self.timestamp = Time.as_type(timestamp)
         self.status = status
         self.missed = False
         self.checked = True
@@ -96,12 +102,12 @@ class Call(tichy.Item):
         if (self.missed):
             return "Missed" + " at " + unicode(self.timestamp.simple_repr())
         else:
-            if (self.direction == "out"):  
+            if (self.direction == "out"):
                 return "Outgoing" + " at " + unicode(self.timestamp.simple_repr())
             elif (self.direction == "in"):
                 return "Incoming" + " at " + unicode(self.timestamp.simple_repr())
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def initiate(self):
         """Initiate the call
 
@@ -109,22 +115,22 @@ class Call(tichy.Item):
         method.
         """
         logger.info("initiate call")
-        gsm_service = tichy.Service.get('GSM')
+        gsm_service = Service.get('GSM')
         yield gsm_service._initiate(self)
         self.status = 'initiating'
         self.emit(self.status)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def release(self):
         logger.info("release call")
         if self.status in ['releasing', 'released']:
             return
-        gsm_service = tichy.Service.get('GSM')
+        gsm_service = Service.get('GSM')
         try:
             yield gsm_service._release(self)
         except Exception, e:
             logger.exception('released')
-            #XXX should the call get a 
+            #XXX should the call get a
             #logger.debug('call error')
             self.emit("error", e)
             self.status = 'released'
@@ -132,11 +138,11 @@ class Call(tichy.Item):
             self.status = 'releasing'
         self.emit(self.status)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def activate(self):
         """Activate the call"""
         logger.info("activate call")
-        gsm_service = tichy.Service.get('GSM')
+        gsm_service = Service.get('GSM')
         yield gsm_service._activate(self)
         self.status = 'activating'
         self.emit(self.status)
@@ -146,31 +152,31 @@ class Call(tichy.Item):
     def mute_ringtone(self):
         """mute the call ringtone if it is ringing"""
         logger.info("mute ring tone")
-        tichy.Service.get('Audio').stop_all_sounds()
-        tichy.Service.get('Vibrator').stop()
+        Service.get('Audio').stop_all_sounds()
+        Service.get('Vibrator').stop()
 
     def mute(self):
         """Mute an active call"""
         logger.info("mute call")
-        tichy.Service.get('Audio').set_mic_status(False)
+        Service.get('Audio').set_mic_status(False)
 
     def unmute(self):
         """Un Mute an active call"""
         logger.info("mute call")
-        tichy.Service.get('Audio').set_mic_status(True)
+        Service.get('Audio').set_mic_status(True)
 
     def mute_toggle(self):
         logger.info("mute call toggle")
-        if tichy.Service.get('Audio').get_mic_status() == 1:
-            tichy.Service.get('Audio').set_mic_status(0)
+        if Service.get('Audio').get_mic_status() == 1:
+            Service.get('Audio').set_mic_status(0)
         else:
-            tichy.Service.get('Audio').set_mic_status(1)
+            Service.get('Audio').set_mic_status(1)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def send_dtmf(self, code):
         """Send one or more Dual Tone Multiple Frequency (DTMF)
         signals during an active call"""
-        gsm_service = tichy.Service.get('GSM')
+        gsm_service = Service.get('GSM')
         if self.status != 'active':
             raise Exception("Can't send DMTF to a call that is not active")
         yield gsm_service._send_dtmf(self, code)
@@ -229,7 +235,7 @@ class Call(tichy.Item):
 class SIMContact(Contact):
     storage = 'SIM'
 
-    name = Contact.Field('name', tichy.Text, True)
+    name = Contact.Field('name', Text, True)
     tel = Contact.Field('tel', TelNumber)
     fields = [name, tel]
 
@@ -243,23 +249,23 @@ class SIMContact(Contact):
         """create a new contact from an other contact)
         """
         assert not isinstance(contact, SIMContact)
-        sim = tichy.Service.get('SIM')
+        sim = Service.get('SIM')
         ret = yield sim.add_contact(contact.name, contact.tel)
         yield ret
 
     def delete(self):
-        sim = tichy.Service.get('SIM')
+        sim = Service.get('SIM')
         yield sim.remove_contact(self)
 
     @classmethod
-    @tichy.tasklet.tasklet
+    @tasklet
     def load(cls):
-        sim = tichy.Service.get('SIM')
+        sim = Service.get('SIM')
         yield sim.wait_initialized()
         ret = yield sim.get_contacts()
         yield ret
 
-class GSMService(tichy.Service):
+class GSMService(Service):
 
     """GSM Service base class
 
@@ -274,8 +280,8 @@ class GSMService(tichy.Service):
 
     def __init__(self):
         super(GSMService, self).__init__()
-        self.logs = tichy.List()
-        self.missed_call_count = tichy.Int(0)
+        self.logs = List()
+        self.missed_call_count = Int(0)
         self.logs.connect('modified', self._on_logs_modified)
         self._load_logs()
 
@@ -311,12 +317,12 @@ class GSMService(tichy.Service):
             logs.append(call)
         self.logs[:] = logs
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _ask_pin(self):
         #window = tichy.Service.get("WindowsManager").get_app_parent()
         window = None
-        editor = tichy.Service.get('TelePIN2')
-        sim = tichy.Service.get('SIM')
+        editor = Service.get('TelePIN2')
+        sim = Service.get('SIM')
         for i in range(4):
             pin = yield editor.edit(window, name="Enter PIN",
                                     input_method='number')
@@ -339,6 +345,6 @@ class GSMService(tichy.Service):
         for call in self.logs:
             if call.missed and ( not call.checked ):
                 call.check()
-        self.missed_call_count.value = 0 
+        self.missed_call_count.value = 0
 
 

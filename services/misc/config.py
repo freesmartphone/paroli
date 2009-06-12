@@ -17,25 +17,26 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-
-import os
-import ConfigParser
-import tichy
-
 import logging
 logger = logging.getLogger('services.misc.config')
 
-class ConfigService(tichy.Service):
+import os
+from ConfigParser import SafeConfigParser
+from tichy.service import Service
+from tichy.tasklet import tasklet
+
+
+class ConfigService(Service):
 
     service = 'Config'
-  
+
     def __init__(self):
         super(ConfigService, self).__init__()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         logger.info('Config service init')
-        self.main_cfg = ConfigParser.SafeConfigParser()
+        self.main_cfg = SafeConfigParser()
         self.base_path = os.path.expanduser('~/.paroli/')
         self.path = "settings/settings"
         compl_path = os.path.join(self.base_path, self.path)
@@ -44,8 +45,8 @@ class ConfigService(tichy.Service):
             os.makedirs(dir)
         self.main_cfg.read(compl_path)
         logger.info("settings service %s", compl_path)
-        yield "none"    
-    
+        yield "none"
+
     def _open(self, path, mod='r'):
         compl_path = os.path.join(self.base_path, path)
         dir = os.path.dirname(compl_path)
@@ -66,7 +67,7 @@ class ConfigService(tichy.Service):
             logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
             return None
             raise
-    
+
     def get_items(self, section, path=False):
         try:
             contents = self.main_cfg
@@ -82,10 +83,10 @@ class ConfigService(tichy.Service):
                 logger.info("valid sections are %s", contents.sections())
                 ret = None
             return ret
-            
+
         except Exception, e:
             logger.exception("can't get item : %s", e)
-        
+
     def set_item(self, section, option, value, path=False):
         #if path:
             #file = self._open(path,'w')
@@ -93,12 +94,12 @@ class ConfigService(tichy.Service):
         try:
             path = self.base_path + self.path
             file = open(path, 'w+')
-            
-            
+
+
             logger.info("parsing done")
             if not self.main_cfg.has_section(section):
                 self.main_cfg.add_section(section)
-                
+
             self.main_cfg.set(section, option, value)
             self.main_cfg.write(file)
             file.close()

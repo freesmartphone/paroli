@@ -22,9 +22,11 @@ from logging import getLogger
 logger = getLogger('applications.telefony')
 
 from os.path import join, dirname
-from tichy import Service, Text, mainloop
 from tichy.application import Application
 from tichy.tasklet import Wait, WaitFirst, tasklet
+from tichy.service import Service
+from tichy.text import Text
+from tichy import mainloop
 from paroli.gui import ElementaryLayoutWindow, ElementaryLayout
 from paroli.tel_number import TelNumber
 
@@ -41,10 +43,10 @@ class TelefonyDialer(Application):
 
         self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
-        
+
         ##connect to tichy's contacts service
         self.contact_service = Service.get('Contacts')
-        
+
         ##connect to tichy's ussd service
         self.ussd_service = Service.get('Ussd')
         self.edje_obj.add_callback("num_field_pressed", "*", self.num_field_action)
@@ -55,11 +57,11 @@ class TelefonyDialer(Application):
         ##wait until main object emits back signal or delete is requested
         i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'),Wait(self.window.window,'closing'))
         logger.info('Tele closing')
-        
+
         if i != 2:
             self.window.delete()
 
-    ##DEBUG FUNCTIONS 
+    ##DEBUG FUNCTIONS
     ## msgs from embryo
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + signal)
@@ -98,7 +100,7 @@ class TelefonyDialer(Application):
     ## switch to either open contacts or save number
     def num_field_action(self, emission, signal, source):
         self.num_field(emission, signal, source).start()
-    
+
     @tasklet
     def num_field(self, emission, signal, source):
         logger.info("num field pressed")
@@ -133,7 +135,7 @@ class TeleCaller2(Application):
                 object that is already active.
         """
         logger.debug("caller run, names : %s", name)
-        
+
         self.storage = Service.get('TeleCom2')
         self.gsm_service = Service.get('GSM')
         self.dialog = Service.get('Dialog')
@@ -142,33 +144,33 @@ class TeleCaller2(Application):
         self.edje_file = join(dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
         #self.usage_service.occupy_cpu().start()
-        
+
         if layout:
             self.main = parent
             self.main.topbar.onclick = 'hide'
             layout.elm_obj.hide()
             self.layout = ElementaryLayout(self.main.window, self.edje_file, "main")
             self.main.bg.elm_obj.content_set("content-swallow", self.layout.elm_obj)
-        
+
         else:
             self.main = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
             self.main.topbar.onclick = 'hide'
             self.layout = self.main.main_layout
-        
+
         self.storage.window = self.main
-        
+
         if self.audio_service.muted == 1:
             self.audio_service.audio_toggle()
-            
+
         self.button = Service.get('Buttons')
         self.button_oid = self.button.connect('aux_button_pressed', self.audio_rotate)
-        
+
         self.TopBarService = Service.get("TopBar")
         self.TopBarService.volume_change(self.audio_service.get_speaker_volume())
-        
+
         self.main.connect("dehide", self.dehide_call)
         self.main.connect("hide", self.hide_call)
-        
+
         self.edje_obj = self.layout.elm_obj.edje_get()
         self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
         self.edje_obj.signal_callback_add("add_digit", "*", self.add_digit)
@@ -176,7 +178,7 @@ class TeleCaller2(Application):
         self.edje_obj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
         self.edje_obj.signal_callback_add("audio-toggle", "del-button", self.speaker_toggle)
         self.SoundsService = Service.get("Sounds")
-    
+
 
         try:
             # The case when we have an incoming call
@@ -220,13 +222,13 @@ class TeleCaller2(Application):
 
                 def call_release_pre(emission, source, param):
                     # XXX: we should connect to the error callback
-                    
+
                     logger.info('call_release_pre')
                     self.edje_obj.signal_callback_del("release", "call", call_release_pre)
                     call.release().start()
                     self.storage.call = None
                     logger.info('call_release_pre done')
-                        
+
                 self.edje_obj.signal_callback_add("release", "call", call_release_pre)
 
             i, args = yield WaitFirst(Wait(call, 'activated'),Wait(call, 'released'),Wait(self.main, 'call_error'))
@@ -235,7 +237,7 @@ class TeleCaller2(Application):
 
                 if self.audio_service.muted == 1:
                     self.audio_service.audio_toggle()
-                
+
                 self.edje_obj.signal_emit('to_active_state',"*")
 
                 def call_release(emission, source, param):
@@ -249,7 +251,7 @@ class TeleCaller2(Application):
                         self.main.emit('call_error')
 
                 self.edje_obj.signal_callback_add("release", "call", call_release)
-                
+
                 yield WaitFirst(Wait(call, 'released'),Wait(self.main, 'call_error'))
 
             if call.status not in ['released', 'releasing']:
@@ -264,14 +266,14 @@ class TeleCaller2(Application):
                 except Exception, e:
                     logger.exception("Got error in caller : %s", e)
                     self.SoundsService.Stop()
-                    
-            
+
+
             #logger.info("releasing cpu")
             #self.usage_service.release_cpu().start()
-            self.SoundsService.Stop()        
+            self.SoundsService.Stop()
             self.storage.caller.value = ""
             self.storage.call = None
-            
+
             if self.main.window.elm_obj.is_deleted() == False:
                 if layout:
                     layout.elm_obj.show()
@@ -292,22 +294,22 @@ class TeleCaller2(Application):
                 else:
                     self.main.delete()
             self.storage.window = None
-            raise    
+            raise
         try:
             self.TopBarService.profile_change()
         except:
             pass
         self.button.disconnect(self.button_oid)
-    
+
     def hide_call(self, *args, **kargs):
         logger.info("hiding caller")
         self.main.window.elm_obj.hide()
         self.main.topbar.onclick = 'back'
-    
+
     def dehide_call(self, *args, **kargs):
         self.main.window.elm_obj.show()
         self.main.topbar.onclick = 'hide'
-    
+
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + signal)
 
@@ -317,9 +319,9 @@ class TeleCaller2(Application):
             all_values = [20, 40, 60, 80, 100]
             if all_values.count(current) == 0:
               current = 40
-            
+
             current_index = all_values.index(current)
-            
+
             if len(all_values)-1 == current_index:
                 new = all_values[0]
             else:
@@ -410,14 +412,14 @@ class TeleCaller2(Application):
 ##Service called when incoming call detected
 class TeleCallerService(Service):
     service = 'TeleCaller2'
-    
+
     def __init__(self):
         super(TeleCallerService, self).__init__()
-    
+
     @tasklet
     def init(self):
         yield self._do_sth()
-    
+
     def call(self, parent, number, name=None):
         self.storage = Service.get('TeleCom2')
         if self.storage.call == None:
@@ -436,7 +438,7 @@ class TeleComService(Service):
     def __init__(self):
         #dir(self)
         super(TeleComService, self).__init__()
-    
+
     @tasklet
     def init(self):
         self.window = None
@@ -445,16 +447,16 @@ class TeleComService(Service):
         self.caller = Text(" ")
         self.main_window = None
         yield self._do_sth()
-    
+
     def _do_sth(self):
         dir(self)
-    
+
     def add_launcher(self, launcher):
         self.main_window = launcher
 
     def get_active(self):
         return self.window
-        
+
     def set_active(self,call):
         self.call = call
 
@@ -468,20 +470,20 @@ class PINApp2(Application):
         logger.info("PIN2 called")
         ##set edje_file
         self.edje_file = join(dirname(__file__),'tele.edj')
-        
+
         self.main = ElementaryLayoutWindow(self.edje_file, "pin_enter")
         #logger.info("PIN2 main generated")
-        
+
         if hasattr(self.main.topbar, "tb"):
             tb = self.main.topbar.tb.edje
             tb.signal_emit("hide_clock", "*")
             tb.signal_emit("show_pin_title", "*")
-        
+
         self.edje_obj = self.main.main_layout.edje
-        
+
         if text != "":
             tb.part_text_set("title",  text)
-        
+
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 

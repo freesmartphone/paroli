@@ -19,13 +19,13 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import tichy
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fallback.idlenotifier')
 
 
-class FallbackIdleNotifier(tichy.Service):
+class FallbackIdleNotifier(Service):
 
     service = 'IdleNotifier'
     name = 'Fallback'

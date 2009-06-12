@@ -20,13 +20,13 @@
 
 __docformat__ = 'reStructuredText'
 
-import tichy
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fallback.buttons')
 
 
-class FallbackButtonService(tichy.Service):
+class FallbackButtonService(Service):
     """The 'Button' service
 
     This service can be used to listen to the input signals form hw buttons

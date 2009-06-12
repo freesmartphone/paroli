@@ -20,12 +20,12 @@
 
 __docformat__ = 'reStructuredText'
 
-import tichy
+from tichy.service import Service
 
 import logging
 logger = logging.getLogger('services.fallback.gprs')
 
-class FallbackGprsService(tichy.Service):
+class FallbackGprsService(Service):
     """The 'Gprs' service
     """
 

@@ -16,18 +16,17 @@
 #
 #    You should have received a copy of the GNU General Public License
 
-from __future__ import absolute_import
-
 import time
 import calendar
 import logging
 
-import tichy
+from text import Text
+from item import Item
 
 
 logger = logging.getLogger('core.tichy.ttime')
 
-class Time(tichy.Item):
+class Time(Item):
     """Item that represent a time
 
     Internally the value is stored as a floating point number
@@ -88,10 +87,10 @@ class Time(tichy.Item):
         t = time.localtime(self.__value)
         repr = str(t[1]) + "/" + str(t[2])
         return repr
-        
+
 
     def get_text(self):
-        return tichy.Text(self.local_repr())
+        return Text(self.local_repr())
 
     def __cmp__(self, other):
         if isinstance(other, Time):
