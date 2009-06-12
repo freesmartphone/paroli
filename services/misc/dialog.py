@@ -27,8 +27,10 @@ logger = logging.getLogger('services.misc.dialog')
 
 import elementary
 import tichy
+from tichy import config
 from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
 from tichy.application import Application
+from tichy.tasklet import Wait
 
 # TODO: replace the etk code by something based on edje
 
@@ -91,7 +93,7 @@ class Dialog(Application):
         
         self.val = None
         
-        yield tichy.Wait(self, 'done')
+        yield Wait(self, 'done')
         logger.info("self.val = %s", self.val)   
         self.window.elm_obj.delete()
         yield self.val
@@ -133,7 +135,7 @@ class DialogService(tichy.Service):
             msg = msg
         logger.debug("show %s dialog : %s", title, msg)
         
-        self.error_msgs = tichy.config.getboolean('error_messages','activated', False)
+        self.error_msgs = config.getboolean('error_messages','activated', False)
         
         if self.error_msgs or title == "Ussd":
             yield Dialog(parent, title, msg)

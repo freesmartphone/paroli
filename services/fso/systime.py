@@ -17,16 +17,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('services.fso.systime')
 
 import dbus
 import time
 import os
-
-import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
-
-import logging
-logger = logging.getLogger('services.fso.systime')
+from tichy.object import Object
+import tichy
 
 
 class FSOSysTimeService(tichy.Service):
@@ -113,7 +112,7 @@ class FSOSysTimeService(tichy.Service):
             logger.exception("Exception : %s", ex)
             raise
 
-class TimeSetting(tichy.Object):
+class TimeSetting(Object):
     def __init__(self, name, rep_part, val_range, type_arg):
         self.service = tichy.Service.get('SysTime')
         self.name = name

@@ -17,17 +17,19 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('services.fso.gprs')
 
 __docformat__ = 'reStructuredText'
 
 import dbus
+from tichy.tasklet import WaitDBusName, WaitDBus, Wait, tasklet
+from tichy.service import Service
+from tichy.settings import StringSetting
+from tichy.text import Text
+from tichy import mainloop
 
-import tichy
-
-import logging
-logger = logging.getLogger('services.fso.gprs')
-
-class FSOGprsService(tichy.Service):
+class FSOGprsService(Service):
     """The 'Gprs' service
     """
 
@@ -39,22 +41,22 @@ class FSOGprsService(tichy.Service):
         super(FSOGprsService, self).__init__()
 
     def init(self):
-        yield tichy.Service.get('Config').wait_initialized()
+        yield Service.get('Config').wait_initialized()
         logger.info('gprs service init')
         try:
-            yield tichy.tasklet.WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
-            yield tichy.Service.get('GSM').wait_initialized()
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            yield WaitDBusName('org.freesmartphone.ogsmd', time_out=120)
+            yield Service.get('GSM').wait_initialized()
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             battery = bus.get_object('org.freesmartphone.ogsmd', '/org/freesmartphone/GSM/Device')
             self.iface = dbus.Interface(battery, 'org.freesmartphone.GSM.PDP')
-            self.config_service = tichy.Service.get("Config")
+            self.config_service = Service.get("Config")
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
             #logger.info("values: %s", (self.values))
-            password = tichy.settings.StringSetting('gprs', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
-            user = tichy.settings.StringSetting('gprs', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
-            apn = tichy.settings.StringSetting('gprs', 'apn', tichy.Text, value=self.get_apn(), setter=self.set_apn)
-            status = tichy.settings.ToggleSetting('gprs', 'status', tichy.Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus")
+            password = StringSetting('gprs', 'password', Text, value=self.get_password(), setter=self.set_password)
+            user = StringSetting('gprs', 'user', Text, value=self.get_user(), setter=self.set_user)
+            apn = StringSetting('gprs', 'apn', Text, value=self.get_apn(), setter=self.set_apn)
+            status = ToggleSetting('gprs', 'status', Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus")
             self.iface.connect_to_signal("NetworkStatus", self.status_change)
             self.iface.connect_to_signal("ContextStatus", self.context_status_change)
         except Exception, e:
@@ -93,17 +95,17 @@ class FSOGprsService(tichy.Service):
          else:
             self.emit("gprs-status", "off")
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_password(self, val):
         self.set_param("pwd", val)
         yield None
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_user(self, val):
         self.set_param("user", val)
         yield None
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_apn(self, val):
         self.set_param("apn", val)
         yield None
@@ -113,20 +115,20 @@ class FSOGprsService(tichy.Service):
             status = self.iface.GetNetworkStatus()['registration']
             return status
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_status(self, val):
         status = self.get_status()
         if status == "unregistered":
-            self.pdp_id = yield tichy.tasklet.WaitDBus(self.iface.ActivateContext, self.get_apn(), self.get_user(), self.get_password())
+            self.pdp_id = yield WaitDBus(self.iface.ActivateContext, self.get_apn(), self.get_user(), self.get_password())
             ret = "active"
         elif status in ["home","roaming","busy"]:
             if self.pdp_id != None:
-                yield tichy.tasklet.WaitDBus(self.iface.DeactivateContext)
+                yield WaitDBus(self.iface.DeactivateContext)
                 self.pdp_id = None
                 ret = "unregistered"
         else:
             ret = "unregistering"
-        yield tichy.tasklet.Wait(self,"gprs-status")
+        yield Wait(self,"gprs-status")
         yield ret
 
     def get_apn(self):

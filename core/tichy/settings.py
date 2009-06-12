@@ -17,15 +17,16 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('core.tichy.settings')     
 
 from tichy.object import Object
 from tichy.item import Item
 from tichy import tasklet
+from tichy.object import Object
 import tichy
-import logging
-logger = logging.getLogger('core.tichy.settings')     
 
-class Setting(tichy.Object):
+class Setting(Object):
     """Represents a setting value
 
     Setting values are similar to Item, but allow to give more

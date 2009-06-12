@@ -25,7 +25,8 @@ logger = getLogger('core.paroli.gui')
 
 import elementary
 import edje # what the hell FIXME not importing this here destroyes paroli somewhere else!
-from tichy import Object, config, Service, Item, Text
+from tichy import config, Service, Item, Text
+from tichy.object import Object
 
 class ElementaryWindow(Object):
     def __init__(self, title="Paroli"):

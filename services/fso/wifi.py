@@ -20,14 +20,13 @@
 
 __docformat__ = 'reStructuredText'
 
-import dbus
-
-import tichy
-
 import logging
 logger = logging.getLogger('services.fso.wifi')
 
+import dbus
+from tichy.object import Object
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst
+import tichy
 
 class FSOWifiService(tichy.Service):
     """The 'Wifi' service
@@ -203,7 +202,7 @@ class FSOWifiService(tichy.Service):
             self.status_setting.rotate()
             yield "scan"
             
-class WifiNetwork(tichy.Object):
+class WifiNetwork(Object):
     def __init__(self, NetworkList, DBusObject, action):
         self.DBusObject = DBusObject
         self.NetworkList  = NetworkList

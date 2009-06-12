@@ -17,13 +17,14 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('core.paroli.sim')
 
 import tichy
+from tichy.persistance import Persistance
 from paroli.tel_number import TelNumber
 from contact import Contact
 
-import logging
-logger = logging.getLogger('core.paroli.sim')
 
 class PINError(Exception):
     def __init__(self, pin):
@@ -294,12 +295,12 @@ class GSMService(tichy.Service):
         """Save the logs into a file"""
         logger.info("Saving call logs")
         data = [c.to_dict() for c in self.logs[:29]]
-        tichy.Persistance('calls/logs').save(data)
+        Persistance('calls/logs').save(data)
 
     def _load_logs(self):
         """Load all the logs"""
         logger.info("Loading call logs")
-        data = tichy.Persistance('calls/logs').load()
+        data = Persistance('calls/logs').load()
         if not data:
             return
         # TODO: add some checks for data consistency

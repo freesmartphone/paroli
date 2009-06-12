@@ -20,24 +20,13 @@ __docformat__ = 'reStructuredText'
 
 """tichy package"""
 
-import sys
-
-from tichy.object import Object
-from tasklet import Tasklet, Wait, WaitFirst
-
-from application import Gadget
+# TODO: remove the imports here
 from service import Service
-import plugins
-
 from list import List
 from text import Text
 from int import Int
 from item import Item
 from ttime import Time
-from persistance import Persistance
-import notifications
-import config
 from settings import Setting
 
 mainloop = None # set from outside in this singleton
-

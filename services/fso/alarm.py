@@ -17,15 +17,14 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+logger = logging.getLogger('services.fso.alarm')
 
 import dbus
 import time
-
-import tichy
 from tichy.tasklet import WaitDBus, WaitDBusName
-
-import logging
-logger = logging.getLogger('services.fso.alarm')
+from tichy.object import Object
+import tichy
 
 class FSOSlot(dbus.service.Object):
     """ Alarm notifications will be submitted as dbus method calls, hence 
@@ -158,7 +157,7 @@ class FSOAlarmService(tichy.Service):
     def ring(self, *args):
         logger.info("ring ring")
 
-class TimeSetting(tichy.Object):
+class TimeSetting(Object):
     def __init__(self, name, rep_part, val_range, type_arg):
         self.service = tichy.Service.get('SysTime')
         self.name = name

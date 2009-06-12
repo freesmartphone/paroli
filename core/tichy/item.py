@@ -24,7 +24,7 @@ __docformat__ = "restructuredtext en"
 import sys
 
 import tichy
-
+from tichy.object import Object
 
 class ItemMetaClass(type):
     """The Meta class for Item class
@@ -37,14 +37,14 @@ class ItemMetaClass(type):
         cls.subclasses = []
         super(ItemMetaClass, cls).__init__(name, bases, dict)
         for base in bases:
-            if base is tichy.Object:
+            if base is Object:
                 continue
             while issubclass(base, tichy.item.Item):
                 base.subclasses.append(cls)
                 base = base.__base__
 
 
-class Item(tichy.Object):
+class Item(Object):
     """Base class for all items.
 
        The subclasses class attribute of an Item class is a list of

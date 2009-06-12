@@ -16,14 +16,15 @@
 #    General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
+import logging
+logger = logging.getLogger('core.paroli.messages')
 
 __docformat__ = 'reStructuredText'
 
 import tichy
+from tichy.persistance import Persistance
 from paroli.tel_number import TelNumber
 
-import logging
-logger = logging.getLogger('core.paroli.messages')
 
 
 class Message(tichy.Item):
@@ -125,7 +126,7 @@ class PhoneMessage(Message):
         logger.info("Saving phone messages")
         messages = tichy.Service.get('Messages').messages
         data = [c.to_dict() for c in messages if isinstance(c, PhoneMessage)]
-        tichy.Persistance('messages/phone').save(data)
+        Persistance('messages/phone').save(data)
         yield None
 
     @classmethod
@@ -143,7 +144,7 @@ class PhoneMessage(Message):
         """
         logger.info("Loading phone messages")
         ret = []
-        data = tichy.Persistance('messages/phone').load()
+        data = Persistance('messages/phone').load()
         if data:
             for kargs in data:
                 try:

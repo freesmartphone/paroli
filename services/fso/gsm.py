@@ -31,6 +31,7 @@ from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep
 from paroli.tel_number import TelNumber, ListSettingObject
 from paroli.message import SMS
 from paroli.sim import GSMService, Call, SIMContact, PINError
+from tichy.object import Object
 
 import logging
 logger = logging.getLogger('service.fso.gsm')
@@ -152,7 +153,7 @@ class FSOGSMService(GSMService):
             logger.info("register on the network")
             register = yield self._register()
             #if register:
-                #provider = yield tichy.Wait(self, 'provider-modified')
+                #provider = yield Wait(self, 'provider-modified')
                 
             self._keep_alive().start()
             
@@ -509,7 +510,7 @@ class FSOGSMService(GSMService):
         self.SettingChannels.set(self.ForwardingGet('class',reason=item[0].name)).start()
         self.SettingTargetNumber.set(self.ForwardingGet('number',reason=item[0].name)).start()
 
-class Provider(tichy.Object):
+class Provider(Object):
     def __init__(self, obj, action):
         self.Pid = obj[0]
         self.status = obj[1]

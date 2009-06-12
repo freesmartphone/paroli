@@ -26,7 +26,8 @@ import logging
 logger = logging.getLogger('core.paroli.contact')
 
 from elementary import Box, Label
-from tichy import Item, Text, Service, Persistance
+from tichy import Item, Text, Service
+from tichy.persistance import Persistance
 from paroli.tel_number import TelNumber
 
 

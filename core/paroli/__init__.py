@@ -36,10 +36,15 @@ import e_dbus
 import elementary
 import ecore
 from optparse import OptionParser
-import tichy
 from tichy.application import Application
+from tichy.plugins import import_all
+from tichy.object import Object
+from tichy.tasklet import Wait, Tasklet, tasklet
+from tichy.service import Service
+from tichy import config
+import tichy
 
-class EventsLoop(tichy.Object):
+class EventsLoop(Object):
 
     def __init__(self):
         self.dbus_loop = e_dbus.DBusEcoreMainLoop()
@@ -116,31 +121,31 @@ def setup_logging():
         )
 
 
-class InitAll(tichy.Tasklet):
+class InitAll(Tasklet):
     """Perform all basic initialization of services"""
 
     def run(self):
-        yield tichy.Service.init_all()
+        yield Service.init_all()
         logger.info("start AutoAnswerCall")
         yield AutoAnswerCall()
 
 
-class AutoAnswerCall(tichy.Tasklet):
+class AutoAnswerCall(Tasklet):
 
     def run(self):
         # We don't create any window, just run in the background...
         # warning; that would only work with gtk or etk backend...
-        gsm_service = tichy.Service.get('GSM')
+        gsm_service = Service.get('GSM')
         while True:
-            call = yield tichy.Wait(gsm_service, 'incoming-call')
+            call = yield Wait(gsm_service, 'incoming-call')
             logger.info("got incoming call")
-            caller_service = tichy.Service.get('TeleCaller2')
+            caller_service = Service.get('TeleCaller2')
             yield caller_service.call("None", call)
 
 
 def set_default_services():
     """Set default services"""
-    defaults = tichy.config.get('services', 'defaults', None)
+    defaults = config.get('services', 'defaults', None)
     if not defaults:
         return {}
     defaults = defaults.split(',')
@@ -149,7 +154,7 @@ def set_default_services():
         if not default:
             continue
         service, name = default.strip().split(':')
-        tichy.Service.set_default(service, name)
+        Service.set_default(service, name)
 
 
 class Launcher(dbus.service.Object):
@@ -178,7 +183,7 @@ class Launcher(dbus.service.Object):
         except KeyError:
             logger.error("no application named  %s", name)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def launch(self, app):
         """Actually launch the application"""
         kill_on_close = False
@@ -222,9 +227,9 @@ def main(*args):
 
     setup_logging()
     tichy.mainloop = EventsLoop()
-    tichy.config.parse(cfg_file=options.cfg_file)
+    config.parse(cfg_file=options.cfg_file)
     
-    if tichy.config.getboolean('dbus','activated', False):
+    if config.getboolean('dbus','activated', False):
         logger.info("connect to dbus")
         if options.bus == 'system':
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
@@ -249,21 +254,21 @@ def main(*args):
 
     # We import all the modules into the plugin directory
     default_plugins_path = '/usr/share/tichy/plugins'
-    plugins_dirs = tichy.config.get('plugins', 'path', default_plugins_path)
+    plugins_dirs = config.get('plugins', 'path', default_plugins_path)
     for plugins_dir in [d.strip() for d in plugins_dirs.split(',')]:
         logger.debug('plugins_dir: %s', plugins_dir)
         try:
             logger.info("try to load plugins in %s", plugins_dir)
-            tichy.plugins.import_all(plugins_dir)
+            import_all(plugins_dir)
         except IOError:
             logger.info("failed to load plugins in %s", plugins_dir)
 
     logger.info("start InitAll")
     InitAll().start()
 
-    app_name = tichy.config.get('autolaunch', 'application', None)
+    app_name = config.get('autolaunch', 'application', None)
     if app_name:
-        standalone = tichy.config.getboolean('standalone', 'activated', False)
+        standalone = config.getboolean('standalone', 'activated', False)
         for app in Application.subclasses:
             if app.name == app_name:
                 app("None", standalone=standalone).start()
@@ -271,7 +276,7 @@ def main(*args):
 
     logger.info("starting mainloop")
     tichy.mainloop.run()
-    tichy.Service.end_all()
+    Service.end_all()
     
     logger.info("quit")
 
