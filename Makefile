@@ -17,6 +17,14 @@ run:
 	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:applications:core:services \
 	./scripts/paroli
 
+.PHONY: edj
+edj:
+	cd scripts && \
+	PATH=$(PATH):$(EPATH)/bin \
+	LD_LIBRARY_PATH=$(EPATH)/lib \
+	PYTHONPATH=$(EPATH)/lib/python2.5/site-packages:../python-pyneo/ \
+	./build.sh
+
 .PHONY: dbg
 dbg: clean
 	rsync --verbose --archive --delete * root@$(HOST):/usr/share/paroli/.

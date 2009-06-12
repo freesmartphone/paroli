@@ -1,0 +1,43 @@
+// http://wiki.enlightenment.org/index.php/Edje
+collections {
+	group {
+		name: "dummy";
+		styles {
+			style {
+				name: "style";
+				base: " wrap=word align=left font=sans font_size=28 valign=top color=#ffffff";
+				tag: "h1" "+ font_size=38 font=sans.bold";
+				tag: "/h1" "- \n";
+				tag: "p" "+";
+				tag: "/p" "- \n";
+				tag: "small" "+ font_size=20";
+				tag: "/small" "-";
+				tag: "strong" "+ font=sans.bold";
+				tag: "/strong" "-";
+				tag: "em" "+ font=sans.italic";
+				tag: "/em" "-";
+				tag: "red" "+ color=#ff0000";
+				tag: "/red" "-";
+				tag: "br" "\n";
+			}
+		}
+		parts {
+			part {
+				name: "dummy.textview";
+				type: TEXTBLOCK;
+				description {
+					rel1 {
+						relative: 0.04 0.06;
+						}
+					rel2 {
+						relative: 0.94 0.96;
+						}
+					text {
+						style: "style";
+						min: 0 1;
+					}
+				}
+			}
+		}           
+	}  
+}
