@@ -26,7 +26,8 @@ from time import asctime, mktime, strptime #, localtime
 from sys import prefix
 #from re import search
 #from subprocess import PIPE, Popen
-from tichy import Application, config, Service, mainloop, Time
+from tichy import config, Service, mainloop, Time
+from tichy.application import Application
 from tichy.tasklet import tasklet, WaitFirst, Wait
 from paroli.gui import ElementaryLayoutWindow, ElementaryBox, ElementaryLayout, ElementaryWindow, ElementaryTopbar
 from paroli.tel_number import TelNumber

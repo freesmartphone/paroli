@@ -22,7 +22,8 @@ from logging import getLogger
 logger = getLogger('applications.telefony')
 
 from os.path import join, dirname
-from tichy import Application, Service, Text, mainloop
+from tichy import Service, Text, mainloop
+from tichy.application import Application
 from tichy.tasklet import Wait, WaitFirst, tasklet
 from paroli.gui import ElementaryLayoutWindow, ElementaryLayout
 from paroli.tel_number import TelNumber

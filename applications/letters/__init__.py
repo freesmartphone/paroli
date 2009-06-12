@@ -23,7 +23,8 @@ logger = getLogger('applications.letters')
 from os.path import join, dirname
 from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
 from elementary import Scroller, Entry
-from tichy import Application, Service
+from tichy import Service
+from tichy.application import Application
 from tichy.tasklet import Wait, WaitFirst, tasklet
 from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryLayout
 

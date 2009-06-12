@@ -37,6 +37,7 @@ import elementary
 import ecore
 from optparse import OptionParser
 import tichy
+from tichy.application import Application
 
 class EventsLoop(tichy.Object):
 
@@ -163,7 +164,7 @@ class Launcher(dbus.service.Object):
         super(Launcher, self).__init__(*args, **kargs)
         self.screen = None
         logger.info("registered applications :")
-        for app in tichy.Application.subclasses:
+        for app in Application.subclasses:
             if app.name:
                 logger.info("- %s", app.name)
 
@@ -172,7 +173,7 @@ class Launcher(dbus.service.Object):
         """Launch a registered tichy application by name"""
         logger.info("launch %s", name)
         try:
-            app = tichy.Application.find_by_name(name)
+            app = Application.find_by_name(name)
             self.launch(app).start()
         except KeyError:
             logger.error("no application named  %s", name)
@@ -263,7 +264,7 @@ def main(*args):
     app_name = tichy.config.get('autolaunch', 'application', None)
     if app_name:
         standalone = tichy.config.getboolean('standalone', 'activated', False)
-        for app in tichy.Application.subclasses:
+        for app in Application.subclasses:
             if app.name == app_name:
                 app("None", standalone=standalone).start()
 

@@ -25,7 +25,7 @@ import sys
 from tichy.object import Object
 from tasklet import Tasklet, Wait, WaitFirst
 
-from application import Application, Gadget
+from application import Gadget
 from service import Service
 import plugins
 

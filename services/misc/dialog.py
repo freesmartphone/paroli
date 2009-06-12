@@ -28,10 +28,11 @@ logger = logging.getLogger('services.misc.dialog')
 import elementary
 import tichy
 from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
+from tichy.application import Application
 
 # TODO: replace the etk code by something based on edje
 
-class Dialog(tichy.Application):
+class Dialog(Application):
     """Dialog application
 
     This application does nothing but show a message on the screen

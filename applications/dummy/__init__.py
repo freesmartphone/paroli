@@ -4,7 +4,7 @@ from logging import getLogger
 logger = getLogger('applications.dummy')
 
 from os.path import join as pjoin, dirname
-from tichy import Application
+from tichy.application import Application
 from tichy.tasklet import Sleep
 from gui import ElementaryLayoutWindow
 

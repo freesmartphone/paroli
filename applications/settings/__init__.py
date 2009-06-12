@@ -22,7 +22,8 @@ from logging import getLogger
 logger = getLogger('applications.settings')
 
 from os.path import join, dirname
-from tichy import Service, Application, config, List, Text
+from tichy import Service, config, List, Text
+from tichy.application import Application
 from tichy.tasklet import WaitFirst, Wait, tasklet
 from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryListSubwindow
 

@@ -23,7 +23,8 @@ from logging import getLogger
 logger = getLogger('applications.inout')
 
 from os.path import join, dirname
-from tichy import Application, Service
+from tichy import Service
+from tichy.application import Application
 from tichy.tasklet import Wait, WaitFirst
 from paroli.gui import ElementaryListWindow, ElementaryList
 
