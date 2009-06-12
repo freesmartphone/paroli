@@ -66,7 +66,7 @@ class InOutCallLog(Application):
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
         if len(self.callLogs) == 0:
-            self.edje_obj.Edje.signal_emit("ListEmpty", "python")
+            self.edje_obj.edje.signal_emit("ListEmpty", "python")
             self.oid2 = self.callLogs.connect('inserted', self.restore_edit)
 
         self.item_list.add_callback("new_call", "*", self.create_call)
@@ -89,7 +89,7 @@ class InOutCallLog(Application):
             del self.item_list
     
     def restore_edit(self, *args, **kargs):
-        self.edje_obj.Edje.signal_emit("ListFilled", "python")
+        self.edje_obj.edje.signal_emit("ListFilled", "python")
     
     def to_edit_mode(self, emission, source, param):
         for item in self.item_list.items:
@@ -113,7 +113,7 @@ class InOutCallLog(Application):
                 item[1].signal_emit("to_default_mode", "*")
     
         if len(self.callLogs) == 0:
-            self.edje_obj.Edje.signal_emit("ListEmpty", "python")
+            self.edje_obj.edje.signal_emit("ListEmpty", "python")
     
     def create_call(self, emission, source, param, callLog):
         number = callLog[0].number.value

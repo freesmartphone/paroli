@@ -38,7 +38,7 @@ class TelefonyDialer(Application):
         ##set edje_file
         self.edje_file = join(dirname(__file__),'tele.edj')
 
-        self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
+        self.window = elm_layout_window(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
         
         ##connect to tichy's contacts service
@@ -144,14 +144,14 @@ class TeleCaller2(Application):
         
         if layout:
             self.main = parent
-            self.main.bg_m.onclick = 'hide'
+            self.main.topbar.onclick = 'hide'
             layout.elm_obj.hide()
-            self.layout = gui.elm_layout(self.main.window, self.edje_file, "main")
+            self.layout = elm_layout(self.main.window, self.edje_file, "main")
             self.main.bg.elm_obj.content_set("content-swallow", self.layout.elm_obj)
         
         else:
-            self.main = gui.elm_layout_window(self.edje_file, "main", None, None, True)
-            self.main.bg_m.onclick = 'hide'
+            self.main = elm_layout_window(self.edje_file, "main", None, None, True)
+            self.main.topbar.onclick = 'hide'
             self.layout = self.main.main_layout
         
         self.storage.window = self.main
@@ -276,7 +276,7 @@ class TeleCaller2(Application):
                     layout.elm_obj.show()
                     self.layout.elm_obj.delete()
                     self.main.restore_orig()
-                    self.main.bg_m.onclick = 'back'
+                    self.main.topbar.onclick = 'back'
                 else:
                     self.main.delete()
             self.storage.window = None
@@ -287,7 +287,7 @@ class TeleCaller2(Application):
                 if layout:
                     layout.elm_obj.show()
                     self.main.restore_orig()
-                    self.main.bg_m.onclick = 'back'
+                    self.main.topbar.onclick = 'back'
                 else:
                     self.main.delete()
             self.storage.window = None
@@ -301,11 +301,11 @@ class TeleCaller2(Application):
     def hide_call(self, *args, **kargs):
         logger.info("hiding caller")
         self.main.window.elm_obj.hide()
-        self.main.bg_m.onclick = 'back'
+        self.main.topbar.onclick = 'back'
     
     def dehide_call(self, *args, **kargs):
         self.main.window.elm_obj.show()
-        self.main.bg_m.onclick = 'hide'
+        self.main.topbar.onclick = 'hide'
     
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + signal)
@@ -468,15 +468,15 @@ class PINApp2(Application):
         ##set edje_file
         self.edje_file = join(dirname(__file__),'tele.edj')
         
-        self.main = gui.elm_layout_window(self.edje_file, "pin_enter")
+        self.main = elm_layout_window(self.edje_file, "pin_enter")
         #logger.info("PIN2 main generated")
         
-        if hasattr(self.main.bg_m, "tb"):
-            tb = self.main.bg_m.tb.Edje
+        if hasattr(self.main.topbar, "tb"):
+            tb = self.main.topbar.tb.edje
             tb.signal_emit("hide_clock", "*")
             tb.signal_emit("show_pin_title", "*")
         
-        self.edje_obj = self.main.main_layout.Edje
+        self.edje_obj = self.main.main_layout.edje
         
         if text != "":
             tb.part_text_set("title",  text)

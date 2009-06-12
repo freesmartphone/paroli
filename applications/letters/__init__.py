@@ -21,6 +21,8 @@ from logging import getLogger
 logger = getLogger('applications.letters')
 
 from os.path import join, dirname
+from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
+from elementary import Scroller, Entry
 from tichy import Application, Service
 from tichy.tasklet import Wait, WaitFirst, tasklet
 from paroli.gui import elm_list_window, elm_list, elm_layout
@@ -103,7 +105,7 @@ class Letters(Application):
         edje_obj.part_text_set('name-info',unicode(timestamp).encode('utf8'))
         detail_layout.elm_obj.show()
 
-        textbox = gui.elementary.Entry(self.window.window.elm_obj)
+        textbox = Entry(self.window.window.elm_obj)
         textbox.entry_set(text.value)
         
         textbox.size_hint_weight_set(1.0, 1.0)
@@ -111,7 +113,7 @@ class Letters(Application):
         textbox.line_wrap_set(True)
         textbox.show()
         
-        sc = gui.elementary.Scroller(self.window.window.elm_obj)
+        sc = Scroller(self.window.window.elm_obj)
         sc.content_set(textbox)
         
         detail_layout.elm_obj.content_set('message', sc)
@@ -205,11 +207,11 @@ class MsgsWrite(Application):
           
               if full:
                   
-                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                   
                   if number_layout == 0:
 
-                      number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
+                      number_layout =  elm_layout(parent.window, self.edje_file, "edit_number")
                           
                       edje_obj = number_layout.elm_obj.edje_get()
                   
@@ -242,9 +244,9 @@ class MsgsWrite(Application):
                   
               if sms.text == "" or mode == "forward":
                   
-                  text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateText")
+                  text_layout = elm_layout(parent.window, self.edje_file, "CreateText")
                   
-                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
+                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
                   
                   text_layout.elm_obj.layer_set(99)
                   
@@ -256,7 +258,7 @@ class MsgsWrite(Application):
                   
                   parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
                   
-                  textbox = gui.elementary.Entry(parent.window.elm_obj)
+                  textbox = Entry(parent.window.elm_obj)
           
                   textbox.color_set(255, 255, 255, 255)
           
@@ -269,7 +271,7 @@ class MsgsWrite(Application):
                   
                   textbox.size_hint_weight_set(1.0, 1.0)
         
-                  sc = gui.elementary.Scroller(parent.window.elm_obj)
+                  sc = Scroller(parent.window.elm_obj)
                   sc.content_set(textbox)
                   
                   textbox.line_wrap_set(True)
@@ -290,7 +292,7 @@ class MsgsWrite(Application):
                   if full:
                       text_layout.elm_obj.hide()
                       logger.info("win set False")
-                      parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                      parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                       pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
                       pre_text = pre_text.strip()
                       textbox.on_key_down_del(self.counter)
@@ -301,7 +303,7 @@ class MsgsWrite(Application):
               if i == 1: #send
                   send = 1
                   logger.info("win set False")
-                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                   break
           
           logger.info("broke loop")
@@ -317,7 +319,7 @@ class MsgsWrite(Application):
           if text_layout:
               logger.info("deleting text layout")
               text_layout.delete()
-              parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+              parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
           
           if layout != None:
               layout.elm_obj.show()
@@ -334,7 +336,7 @@ class MsgsWrite(Application):
     #counter
     def counter(self, entry, event, layout, **kargs):
         counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","")
-        layout.Edje.part_text_set( "counter-text", str(len(counter)))
+        layout.edje.part_text_set( "counter-text", str(len(counter)))
     
     #send_request
     def send_request(self, layout, entry, **kargs):

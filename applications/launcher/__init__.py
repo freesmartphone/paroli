@@ -74,8 +74,8 @@ class Launcher(Application):
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
             link_obj.elm_obj.show()
-            link_obj.Edje.part_text_set("texter",app.name)
-            link_obj.Edje.part_text_set("testing_textblock","<normal>" + app.name + "</normal><small></small>")
+            link_obj.edje.part_text_set("texter",app.name)
+            link_obj.edje.part_text_set("testing_textblock","<normal>" + app.name + "</normal><small></small>")
             if hasattr(app,'launcher_info'):
                 attr = app.launcher_info
             else:
@@ -115,8 +115,8 @@ class Launcher(Application):
         self.systime = Service.get('SysTime')
         self.alarm = Service.get('Alarm')
         
-        #self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
-        #self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
+        #self.edje_obj.edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
+        #self.edje_obj.edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         self.ready = 1
         
@@ -148,7 +148,7 @@ class Launcher(Application):
                     connector.connect('modified', self._set_subtext, app)
                     self._set_subtext(connector.value, app)
                 
-        self.edje_obj.Edje.signal_emit("ready","*")
+        self.edje_obj.edje.signal_emit("ready","*")
 
     def _set_subtext(self, *args, **kargs):
         if args[0] != "0" and args[0] != 0:
@@ -161,7 +161,7 @@ class Launcher(Application):
         if hasattr(self.storage.window, "window") and app == 'Tele' and value !='' :
             self.storage.window.window.elm_obj.on_hide_add(self._recreate_link_signals)
             #self.storage.window.window.elm_obj.on_show_add(self._remove_link_signals)
-        edje_obj.Edje.part_text_set('testing_textblock',text)
+        edje_obj.edje.part_text_set('testing_textblock',text)
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
@@ -180,12 +180,12 @@ class Launcher(Application):
         if name == 'Tele' and self.storage.call != None:
             self.storage.window.emit("dehide")
         elif self.active_app == None or (self.active_app == "Tele" and self.storage.call != None):
-            #self.edje_obj.Edje.signal_emit("unready","*")
+            #self.edje_obj.edje.signal_emit("unready","*")
             app = Application.find_by_name(name)
             self.active_app = name
             yield app(self.window, standalone=self.standalone)
             self._recreate_link_signals()
-            #self.edje_obj.Edje.signal_emit("ready","*")
+            #self.edje_obj.edje.signal_emit("ready","*")
             self.active_app = None
         else:
             logger.info("blocked %s", name)
@@ -204,14 +204,14 @@ class Launcher(Application):
             logger.info("disconnecting settings")
             self.button.disconnect(self.aux_btn_settings_conn)
         for i in self.app_objs:
-            self.app_objs[i][0].Edje.signal_callback_del("*", "launch_app", self.launch_app)
+            self.app_objs[i][0].edje.signal_callback_del("*", "launch_app", self.launch_app)
             logger.debug("some callback wasn't found")
     
     def _recreate_link_signals(self, *args, **kargs):
         if self.settings:
             self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
         for i in self.app_objs:
-            self.app_objs[i][0].Edje.signal_callback_add("*", "launch_app", self.launch_app)
+            self.app_objs[i][0].edje.signal_callback_add("*", "launch_app", self.launch_app)
     
     def quit_app(self, emission, source, name):
     
@@ -245,7 +245,7 @@ class Launcher(Application):
         
         number = TelNumber(self.storage.call.number)
         text = '<normal>Tele</normal> <small>' + str(number.get_text()) +'</small>'
-        self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
+        self.app_objs['Tele'][1].edje.part_text_set('testing_textblock',text)
     
     def _on_call_released(self, *args, **kargs):
         self.main.emit('show_Tele')
@@ -253,25 +253,25 @@ class Launcher(Application):
             self.edje_obj.signal('app_active',"*")
             
         text = '<normal>Tele</normal> <small></small>'
-        self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
+        self.app_objs['Tele'][1].edje.part_text_set('testing_textblock',text)
 
     def network_strength(self, *args, **kargs):
         if self.window.topbar.tb:
-            self.window.topbar.tb.Edje.signal_emit(str(args[1]), "gsm_change")
+            self.window.topbar.tb.edje.signal_emit(str(args[1]), "gsm_change")
         
     def battery_capacity(self, *args, **kargs):
         if self.window.topbar.tb:
             logger.info("capacity change in launcher to %s", args[1])
-            self.window.topbar.tb.Edje.signal_emit(str(args[1]), "battery_change")
+            self.window.topbar.tb.edje.signal_emit(str(args[1]), "battery_change")
 
     def battery_status(self, *args, **kargs):
         if self.window.topbar.tb:
             logger.info("battery status change in launcher")
             if args[1] == "charging":
-                self.window.topbar.tb.Edje.signal_emit(args[1], "battery_status_charging")
+                self.window.topbar.tb.edje.signal_emit(args[1], "battery_status_charging")
             elif args[1] == "discharging":
                 bat_value = self.power.get_battery_capacity() 
-                self.window.topbar.tb.Edje.signal_emit(str(bat_value), "battery_change")
+                self.window.topbar.tb.edje.signal_emit(str(bat_value), "battery_change")
             elif args[1] == "full":
                 #TODO: We may do something here.
                 pass
@@ -279,7 +279,7 @@ class Launcher(Application):
     def time_setting_start(self, emission, signal, source):
         logger.info("time setting called")
         self.button.disconnect(self.aux_btn_profile_conn)
-        self.edje_obj.Edje.signal_emit("stop_clock_update", "*")
+        self.edje_obj.edje.signal_emit("stop_clock_update", "*")
         self.aux_btn_time_set_conn = self.button.connect('aux_button_pressed', self.adjust_time, emission, 1)
         self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
 
@@ -310,7 +310,7 @@ class Launcher(Application):
             self.set_time(new_time).start() 
             
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
-        self.edje_obj.Edje.signal_emit("start_clock_update", "*")
+        self.edje_obj.edje.signal_emit("start_clock_update", "*")
 
     @tasklet
     def set_time(self, new_time):
@@ -424,10 +424,10 @@ class Launcher(Application):
             #wo = Popen(["opkg", "info", "paroli"], stdout=PIPE, stderr=PIPE)
             #output, error= wo.communicate()
             #m = search('Version:\s.*[+].*[+](.*)-[r5]',output)
-            #self.edje_obj.Edje.part_text_set('version',m.group(1))
+            #self.edje_obj.edje.part_text_set('version',m.group(1))
         #except Exception, ex:
             #logger.warning("Can't get paroli version : %s", ex)
-            #self.edje_obj.Edje.part_text_set('version', '????')
+            #self.edje_obj.edje.part_text_set('version', '????')
  
 ##Service to generate and store the loading window
 class BusyWin(Service):

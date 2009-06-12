@@ -28,7 +28,7 @@ logger = logging.getLogger('services.misc.dialog')
 import tichy
 from paroli import gui
 
-# TODO: replace the etk code by something based on Edje
+# TODO: replace the etk code by something based on edje
 
 class Dialog(tichy.Application):
     """Dialog application

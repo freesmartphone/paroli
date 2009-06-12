@@ -90,7 +90,7 @@ class SettingsSublist(Application):
         self.window = elm_list_subwindow(parent, edje_file, "main", "list")
         self.edje_obj = self.window.main_layout
         
-        self.edje_obj.Edje.signal_emit("sublist_mode","*")
+        self.edje_obj.edje.signal_emit("sublist_mode","*")
         
         self.settings = List()
         self.cb_list = List()
@@ -160,18 +160,18 @@ class NumberSettingApp(Application):
         
         self.edje_obj = self.window.main_layout
         
-        self.edje_obj.Edje.signal_emit(str(setting.value),"set_text")
+        self.edje_obj.edje.signal_emit(str(setting.value),"set_text")
         
         i, args = yield WaitFirst(Wait(self.window.main_layout, 'save'), Wait(self.window.main_layout, 'back'),Wait(parent, 'back'))
         
         if i == 0: ##save clicked
-            self.edje_obj.Edje.signal_emit("save-notice","*")
-            text = str(self.edje_obj.Edje.part_text_get("num_field-text"))
+            self.edje_obj.edje.signal_emit("save-notice","*")
+            text = str(self.edje_obj.edje.part_text_get("num_field-text"))
             text = text.strip()
             setting.set(text).start()
         
-        self.edje_obj.Edje.visible_set(False)
-        self.edje_obj.Edje.delete()
+        self.edje_obj.edje.visible_set(False)
+        self.edje_obj.edje.delete()
         layout.elm_obj.show()
 
 class ListSettingApp(Application):
@@ -191,10 +191,10 @@ class ListSettingApp(Application):
         
         self.edje_obj = self.window.main_layout
         
-        self.edje_obj.Edje.signal_emit("sublist_mode","*")
+        self.edje_obj.edje.signal_emit("sublist_mode","*")
         
         if save_button:
-            self.edje_obj.Edje.signal_emit("save_button","*")
+            self.edje_obj.edje.signal_emit("save_button","*")
         
         self.ItemList = model
         self.cb_list = List()
@@ -222,7 +222,7 @@ class ListSettingApp(Application):
         self.item_list.add_callback("*", "sublist", self.action)
         self.item_list.add_callback("pressed", "decrease", self.decrease)
         self.item_list.add_callback("pressed", "increase", self.increase)
-        self.edje_obj.Edje.signal_callback_add("pressed", "save", self.save)
+        self.edje_obj.edje.signal_callback_add("pressed", "save", self.save)
         
         yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.edje_obj, 'back'),Wait(self.ItemList, 'save'))
     
@@ -239,7 +239,7 @@ class ListSettingApp(Application):
         logger.info("action called")
 
     def EnableSaveButton(self, *args, **kargs):
-        self.edje_obj.Edje.signal_emit("EnableSave","*")
+        self.edje_obj.edje.signal_emit("EnableSave","*")
 
     def save(self, *args, **kargs):
         logger.info("save triggered")
@@ -285,7 +285,7 @@ class StringSettingApp(Application):
         self.edje_obj = self.window.main_layout
         
         if setting != None:
-            self.edje_obj.Edje.signal_emit(str(setting.name),"set_text")
+            self.edje_obj.edje.signal_emit(str(setting.name),"set_text")
         
         textbox = elementary.Entry(parent.window.elm_obj)
 
@@ -307,7 +307,7 @@ class StringSettingApp(Application):
             text = str(textbox.entry_get()).replace("<br>","")
             text = text.strip()
             if setting != None:
-                self.edje_obj.Edje.signal_emit("save-notice","*")
+                self.edje_obj.edje.signal_emit("save-notice","*")
                 self.edje_obj.elm_obj.visible_set(False)
                 self.edje_obj.delete()
                 layout.elm_obj.show()
