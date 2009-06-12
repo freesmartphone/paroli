@@ -28,7 +28,7 @@ from sys import prefix
 #from subprocess import PIPE, Popen
 from tichy import Application, config, Service, mainloop, Time
 from tichy.tasklet import tasklet, WaitFirst, Wait
-from paroli.gui import elm_layout_window, elm_box, elm_layout, elm_window, elm_tb
+from paroli.gui import ElementaryLayoutWindow, elm_box, elm_layout, ElementaryWindow, elm_tb
 from paroli.tel_number import TelNumber
 
 class Launcher(Application):
@@ -48,7 +48,7 @@ class Launcher(Application):
 
         self.edje_file = join(dirname(__file__),'paroli-launcher.edj')
 
-        self.window = elm_layout_window(self.edje_file, "main", None, None, True)
+        self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
         
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.topbar, "tb"):
@@ -448,7 +448,7 @@ class BusyWin(Service):
     @tasklet
     def create_win(self):
         if self.win == None:
-            self.win = elm_window()
+            self.win = ElementaryWindow()
             self.layout = elm_layout(self.win, self.edje_file, "busywin")
             self.win.elm_obj.resize_object_add(self.layout.elm_obj)
             self.win.elm_obj.show()

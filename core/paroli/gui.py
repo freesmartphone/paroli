@@ -34,7 +34,7 @@ logger = logging.getLogger('core.paroli.gui')
 
 import tichy
 
-class elm_window(tichy.Object):
+class ElementaryWindow(tichy.Object):
     def __init__(self, title="Paroli"):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
@@ -119,9 +119,9 @@ class elm_tb(tichy.Object):
         logger.info(" %s emitting %s", self.parent, self.onclick)
         self.parent.emit(self.onclick)
 
-class elm_layout_window(tichy.Object):
+class ElementaryLayoutWindow(tichy.Object):
     def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False, onclick=None):
-        self.window = elm_window()  
+        self.window = ElementaryWindow()  
         self.window.elm_obj.show()
         
         self.tb_action = onclick or 'back'
@@ -150,7 +150,7 @@ class elm_layout_window(tichy.Object):
     def empty_window(self, *args, **kargs):
         self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
 
-class elm_layout_subwindow(elm_layout_window):
+class elm_layout_subwindow(ElementaryLayoutWindow):
     def __init__(self, window, edje_file, group):
         self.window = window.window
         self.bg = window.topbar.bg
@@ -163,7 +163,7 @@ class elm_layout_subwindow(elm_layout_window):
     def restore_orig(self):
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
 
-class elm_list_subwindow(elm_layout_window):
+class ElementaryListSubwindow(ElementaryLayoutWindow):
     def __init__(self, window, edje_file, group, swallow, layout=None):
         self.window = window.window
         self.bg = window.topbar.bg
@@ -177,9 +177,9 @@ class elm_list_subwindow(elm_layout_window):
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
     
-class elm_list_window(elm_layout_window):
+class ElementaryListWindow(ElementaryLayoutWindow):
     def __init__(self, edje_file, group, swallow , sx=None, sy=None, tb=False, onclick=None):
-        self.window = elm_window()  
+        self.window = ElementaryWindow()  
         self.window.elm_obj.show()
         
         self.tb_action = onclick or 'back'
@@ -195,45 +195,45 @@ class elm_list_window(elm_layout_window):
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
         self.bg.elm_obj.show()
       
-class elm_list(tichy.Object):
-      def __init__(self, model, Parent, edjeFile, edjeGroup, label_list, comp_fct):
+class ElementaryList(tichy.Object):
+      def __init__(self, model, parent, edje_file, group, label_list, comp_fct):
           
           self.model = model
-          self.parent = Parent
-          self.edjeFile = edjeFile
-          self.edjeGroup = edjeGroup
-          self.Elm_win = Parent.window
+          self.parent = parent
+          self.edje_file = edje_file
+          self.group = group
+          self.elm_window = parent.window
           self.label_list = label_list    
           self._comp_fct = comp_fct
           self.cb_list = []
           self.cb_list.append(self.model.connect('appended', self._redraw_view))
           self.cb_list.append(self.model.connect('inserted', self._redraw_view))
           self.cb_list.append(self.model.connect('removed', self._redraw_view))
-          self.box = elm_box(self.Elm_win.elm_obj)
+          self.box = elm_box(self.elm_window.elm_obj)
           self.callbacks = []
           self.sort()
           self.items = []
           self.letter_index = {}
           self._redraw_view()
-          self.Elm_win.elm_obj.on_del_add(self._remove_cb)
+          self.elm_window.elm_obj.on_del_add(self._remove_cb)
     
       def _redraw_view(self, *args, **kargs):
           #logger.info("list redrawing")
-          if self.Elm_win.elm_obj.is_deleted() == True:
+          if self.elm_window.elm_obj.is_deleted() == True:
                 self._remove_cb()
           else:
               self.sort()
               if self.box.elm_obj.is_deleted() == False:
                   self.box.elm_obj.delete()
-              self.box = elm_box(self.Elm_win.elm_obj)
+              self.box = elm_box(self.elm_window.elm_obj)
               self.items = []
               self.letter_index = {}
               #self.model.sort()
               for item in self.model:
-                  if self.Elm_win.elm_obj.is_deleted() == True:
+                  if self.elm_window.elm_obj.is_deleted() == True:
                       logger.info('window deleted %s', self.model)
-                  ly = elementary.Layout(self.Elm_win.elm_obj)
-                  ly.file_set(self.edjeFile, self.edjeGroup)              
+                  ly = elementary.Layout(self.elm_window.elm_obj)
+                  ly.file_set(self.edje_file, self.group)              
                   edje_obj = ly.edje_get()
                   for part, attribute in self.label_list:
                     if hasattr(item, attribute):
@@ -341,503 +341,3 @@ class elm_list(tichy.Object):
               else:
                   logger.info("scroller doesn't have method bounce_set please update your bindings")
       
-###XXX: everything below is deprecated and will be removed
-#class Widget(tichy.Object):
-    #def __init__(self, parent, etk_obj = None, item = None, expand = False, **kargs):
-        #self.etk_obj = etk_obj or etk.VBox()
-        #self.item = item
-        #self.parent = parent
-        #self.children = []
-        #self.expand = expand
-        #if self.parent:
-            #self.parent.get_contents_child().add(self)
-        ##self.show()
-    #def add(self, child):
-        #self.etk_obj.add(child.etk_obj)
-        #self.children.append(child)
-    #def get_evas(self):
-        #return self.parent.get_evas()
-    #def show(self):
-        #try:
-            #self.etk_obj.show_all()
-        #except Exception, e:
-            #pass
-
-    #def get_contents_child(self):
-        #return self
-
-    #def parent_as(self, cls):
-        #if isinstance(self.parent, cls):
-            #return self.parent
-        #return self.parent.parent_as(cls)
-
-    #def __get_window(self):
-        #return self.parent_as(Window)
-    #window = property(__get_window)
-
-    #def destroy(self):
-        #self.etk_obj.destroy()
-
-    ## No tags for this implementation
-    #def add_tag(self, tag):
-        #pass
-    #def remove_tag(self, tag):
-        #pass
-
-#class Window(Widget):
-    #def __init__(self, parent, w=480, h=580, **kargs):
-        #etk_obj = ecore.evas.SoftwareX11(w=w, h=h)
-        #etk_obj.callback_delete_request_set(self.delete_request)
-        #Widget.__init__(self, None, etk_obj=etk_obj)
-
-    #def delete_request(self,*args,**kargs):
-        #logger.info('%s', (args))
-        #self.emit('delete_request')
-
-    #def show(self):
-        #self.etk_obj.show()
-
-    #def destroy(self):
-        #self.etk_obj.hide()
-
-#class Screen(Window):
-    #"""We don't use screen at all
-
-    #It doesn't make sense with etk backend.
-    #"""
-
-    #def __init__(self, loop, painter, **kargs):
-        #pass
-
-    #def add(self, child):
-        #pass
-
-
-#class Box(Widget):
-    #def __init__(self, parent, axis=0, **kargs):
-        #if axis == 0:
-            #etk_obj = etk.HBox()
-        #else:
-            #etk_obj = etk.VBox()
-        #super(Box, self).__init__(parent, etk_obj=etk_obj, **kargs)
-
-    #def add(self, child):
-        #policy = etk.VBox.FILL
-        #if child.expand:
-            #policy = etk.VBox.EXPAND_FILL
-        #self.etk_obj.append(child.etk_obj, etk.VBox.START, policy, 0)
-
-#class Frame(Box):
-    #def __init__(self, parent, **kargs):
-        #super(Frame, self).__init__(parent, **kargs)
-
-#class Fixed(Widget):
-    #pass
-
-#class Table(Widget):
-    #pass
-
-#class Table(Widget):
-    #def __init__(self, parent, nb = 3, **kargs):
-        #self.nb = nb
-        #self.current = 0
-        #etk_obj = etk.Table(nb, 5, etk.Table.HOMOGENEOUS)
-        #super(Table, self).__init__(parent, etk_obj=etk_obj, **kargs)
-    #def add(self, child):
-        #x = self.current % self.nb
-        #y = self.current / self.nb
-        #self.etk_obj.attach_default(child.etk_obj, x, x, y, y)
-        #self.current += 1
-
-#class Scrollable(Widget):
-    #def __init__(self, parent, **kargs):
-        #etk_obj = etk.ScrolledView()
-        #super(Scrollable, self).__init__(parent, etk_obj=etk_obj, **kargs)
-    #def add(self, child):
-        #self.etk_obj.add_with_viewport(child.etk_obj)
-
-#class Button(Widget):
-    #def __init__(self, parent, **kargs):
-        #etk_obj = etk.Button()
-        #super(Button, self).__init__(parent, etk_obj=etk_obj, **kargs)
-        #self.etk_obj.connect('clicked', self.on_clicked)
-    #def on_clicked(self, *args):
-        #self.emit('clicked')
-
-#class Label(Widget):
-    #def __init__(self, parent, text, **kargs):
-        #etk_obj = etk.Label(text)
-        #super(Label, self).__init__(parent, etk_obj=etk_obj, **kargs)
-
-    #def __get_text(self):
-        #return self.etk_obj.get()
-    #def __set_text(self, value):
-        #self.etk_obj.set(value)
-    #text = property(__get_text, __set_text)
-
-#class Edit(Widget):
-    #def __init__(self, parent, item = None, **kargs):
-        #etk_obj = etk.Entry()
-        #super(Edit, self).__init__(parent, etk_obj=etk_obj, **kargs)
-    
-    #def set_text(self,txt):
-        #self.etk_obj.text = txt
-
-    #def set_pw_mode(self,mode):
-        #self.etk_obj.password_mode_set(mode)
-
-#class Spring(Widget):
-    #def __init__(self, parent, expandable = True, **kargs):
-        #super(Spring, self).__init__(parent, expandable=expandable, **kargs)
-
-
-#class SurfWidget(Widget):
-    #pass
-
-#class ImageWidget(Widget):
-    #def __init__(self, parent, image, **kargs):
-        #self.image = image
-        #etk_obj = etk.Image()
-        #etk_obj.set_from_file(image.path)
-        #super(ImageWidget, self).__init__(parent, etk_obj=etk_obj, **kargs)
-
-#class ScrollableSlide(Widget):
-    #pass
-
-#class Painter(object):
-    #"""We don't use Painter at all
-
-    #It doesn't make sense with etk backend.
-    #"""
-    #def __init__(self, size, fullscreen = None):
-        #pass
-
-#####ADDED by mirko
-
-#class Scrolleredje(tichy.Object):
-    
-    #def __init__(self, edjeObject):
-        #self.box = etk.VBox()
-        #self.scrollbox = etk.c_etk.ScrolledView()
-        #self.scrollbox.add_with_viewport(self.box)
-        ### hide scrollbars with (2, 2)
-        #self.scrollbox.policy_set(2, 0)
-        ### make it dragable
-        #self.scrollbox.dragable_set(True)
-        ### make it non-bouncing with (False)
-        #self.scrollbox.drag_bouncy_set(True)
-        
-        #self.canvas = etk.Canvas()
-        #self.canvas.show_all()
-        ##logger.info(self.canvas.geometry_get())
-        #self.canvas.object_add(edjeObject)
-        #self.box.append(self.canvas, etk.VBox.START, etk.VBox.EXPAND_FILL, 0)        
-
-#class edjeObject(tichy.Object):
-    #"""Base class for edje Elements used to generate application windows """
-    #def __init__(self, Parent, edjeFile, edjeGroup, edjeWindows=None, Keyboard=None ):
-        ##super(edjeObject, self).__init__()
-        #self.Parent = Parent
-        #self.edjeFile = edjeFile
-        #self.edjeGroup = edjeGroup
-        #self.Evas = Parent.etk_obj.evas
-        #self.edje = edje.edje(self.Evas, file=self.edjeFile, group=self.edjeGroup)
-        #self.edje.data['windows'] = tichy.List()
-        #self.edje.data['edjeObject'] = self
-        #self.Windows = self.edje.data['windows']
-        #self.edjeWindows = edjeWindows
-        
-        ##self.edje.on_del_add(self.delete)
-        
-        #if edjeWindows != None:
-            #edjeWindows.append(self)
-
-        #if Keyboard != None:
-            #self.edje.on_show_add(self.open_keyboard)
-            #self.edje.on_hide_add(self.close_keyboard)
-            #self.edje.on_del_add(self.close_keyboard)
-
-    #def show(self,layer=2,*args,**kargs):
-        #self.edje.layer_set(layer)
-        #self.edje.show()
-
-    #def dehide(self,*args,**kargs):
-        #self.edje.show()
-
-    #def add_callback(self, signal, source, callback, *args, **kargs):
-        #self.edje.signal_callback_add(signal, source, callback, *args, **kargs)
-
-    #def data_add(self, key, data):
-        #if not self.edje.data[key]:
-            #self.edje.data[key] = data
-        #else:
-            #self.edje.data[key].append(data)
-
-    #def signal(self, signal, source):
-        #self.edje.signal_emit(signal, source)
-
-    #def close_keyboard(self, *args, **kargs):
-        #logger.info("close keyboard called")
-        #self.Parent.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-    
-    #def open_keyboard(self, *args, **kargs):
-        #logger.info("open keyboard called")
-        #self.Parent.etk_obj.x_window_virtual_keyboard_state_set(ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
-
-    #def hide(self,*args,**kargs):
-        #self.edje.hide()
-
-    #def back(self, *args, **kargs):
-        #if self.edjeWindows != None:
-            #self.edjeWindows.remove(self)
-            
-        #self.edje.delete()
-
-    #def delete(self, *args, **kargs):
-        #try:
-            #if self.Windows != None:
-                #aux_list = self.Windows
-                
-                #for i in range(len(aux_list)):  
-                    #if isinstance(self.Windows[i-1], edje.edje):
-                        #self.Windows[i-1]['edjeObject'].delete()
-                    #else:    
-                        #self.Windows[i-1].delete()
-                    
-        #except Exception, e:
-            #dialog = tichy.Service.get('Dialog')
-            #logger.error(Exception, " ", e)
-            #dialog.error(self.Parent, e)
-        
-        #if self.edjeWindows != None:
-            #if self.edjeWindows.count(self) != 0:
-                #self.edjeWindows.remove(self)
-            
-        #self.edje.delete()
-
-#class edjeWSwallow(edjeObject):
-      #"""Use this if your edjeObject has a swallow part, the delete method will take care of deleting it on close"""
-      #def __init__(self, Parent, edjeFile, edjeGroup, edjeSwallow, edjeWindows=None, Keyboard= None):
-          #self.Swallow = edjeSwallow
-          #super(edjeWSwallow, self).__init__(Parent, edjeFile, edjeGroup, edjeWindows, Keyboard)
-      
-      #def embed(self, child, box, part):
-          #embed = etk.Embed(self.Evas)
-          #embed.add(child)
-          #embed.show_all()
-          #self.edje.part_swallow(part, embed.object)
-
-      #def back(self, *args, **kargs):
-          #if self.edjeWindows != None:
-              #self.edjeWindows.remove(self)
-              
-          #self.edje.part_swallow_get(self.Swallow).visible_set(0)
-          #self.edje.part_swallow_get(self.Swallow).delete()
-          
-          #self.edje.delete()
-
-      #def delete(self, *args, **kargs):
-          ##print "delete called on: ", self
-          
-          #try:
-              #if self.Windows != None:
-                #aux_list = self.Windows
-                
-                #for i in range(len(aux_list)):  
-                    #if isinstance(self.Windows[i-1], edje.edje):
-                        #self.Windows[i-1]['edjeObject'].delete()
-                    #else:    
-                        #self.Windows[i-1].delete()
-                  
-          #except Exception, e:
-              #dialog = tichy.Service.get('Dialog')
-              #logger.error(Exception, " ", e)
-              #dialog.error(self.Parent, e)
-          
-          #if self.edjeWindows != None:
-              #if self.edjeWindows.count(self) != 0:
-                  #self.edjeWindows.remove(self)
-          
-          #if self.edje.part_swallow_get(self.Swallow) != None:
-          
-              #self.edje.part_swallow_get(self.Swallow).visible_set(0)
-              #self.edje.part_swallow_get(self.Swallow).delete()
-          
-          #if self.edje.is_deleted() != True:
-              #self.edje.delete()
-
-#class EvasList(tichy.Object):
-      #def __init__(self, model, Parent, edjeFile, edjeGroup, label_list, comp_fct, edjeFrame=None ):
-          #self.model = model
-          #self.parent = Parent
-          #self.edjeFrame = edjeFrame
-          #self.edjeFile = edjeFile
-          #self.edjeGroup = edjeGroup
-          #self.Evas = Parent.etk_obj.evas
-          #self.label_list = label_list    
-          #self._comp_fct = comp_fct
-          #self.monitor(self.model, 'appended', self._append_new)
-          #self.monitor(self.model, 'removed', self._remove_item)
-          #self.box = etk.VBox()
-          #self.callbacks = []
-          #self.sort()
-          #self.items = []
-          #self.page_size = 1.0
-          #if self.edjeFrame != None:
-              #self.edjeFrame.edje.signal_emit(str(len(self.model)),"python")
-    
-      #def _modified(self, *args, **kargs):
-          #logger.info('scrolled')
-          #logger.info(args)
-          #logger.info(kargs)
-    
-      #def get_swallow_object(self):
-          #self.items = []
-  
-          #for item in self.model:
-              #single = self.generate_single_item(item)
-              #self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-              #self.items.append(single)
-              #item.connect('modified',self._redraw_view)
-              
-          #self.scrollbox = etk.c_etk.ScrolledView()
-          #self.scrollbox.add_with_viewport(self.box)
-          ### hide scrollbars
-          #self.scrollbox.policy_set(2, 2)
-          ### make it dragable
-          #self.scrollbox.dragable_set(False)
-          ### make it non-bouncing
-          #self.scrollbox.drag_bouncy_set(False)
-          ##scrollbox.add_with_viewport(self.box)
-          #self.scrollbox.drag_damping_set(0)
-          ##get scrollbar value
-          #self.calc_value()
-          
-          #self.vscrollbar = self.scrollbox.vscrollbar_get()
-          ##scrollbox.vscrollbar_get().connect(scrollbox.vscrollbar_get().VALUE_CHANGED_SIGNAL,self._modified)
-          ##logger.info(scrollbox.drag_damping_get())
-          #return self.scrollbox
-   
-      #def generate_single_item(self, item):
-          
-          #canvas_obj = etk.Canvas()
-          #edje_obj = edjeObject(self.parent, self.edjeFile, self.edjeGroup)
-          #canvas_obj.object_add(edje_obj.edje)
-          #edje_obj.edje.signal_callback_add("send_all", "*" , self.send_signal)
-          ### set text in text parts
-          #for part, attribute in self.label_list:
-              #if hasattr(item, attribute):
-                  #value = getattr(item, attribute)
-                  #if isinstance(value, tichy.Item):
-                      #value = unicode(value.get_text())
-                  #txt = unicode(value).encode('utf-8')
-                  #edje_obj.edje.part_text_set(part,txt)
-      
-          ###check for optional display elements
-          #if edje_obj.edje.data_get('attribute1') != None:
-              #attribute = edje_obj.edje.data_get('attribute1')
-              #if edje_obj.edje.data_get('attribute2') != None:
-                  #item_cp = getattr(item,attribute)
-                  #attribute = edje_obj.edje.data_get('attribute2')
-              #else:  
-                  #item_cp = item
-              #if edje_obj.edje.data_get('value') == 'None':
-                  #value = None
-              #else:
-                  #value = edje_obj.edje.data_get('value')
-              #signal = edje_obj.edje.data_get('signal')
-              #if attribute[-2] == "(":
-                  #test = getattr(item_cp,attribute[:-2])()
-              #else:
-                  #test = getattr(item_cp,attribute)
-              #if test == value:
-                  #edje_obj.edje.signal_emit(signal,'*')
-
-          #return [item,edje_obj,canvas_obj]
-      
-      #def add_callback(self, signal, source, func):
-          #self.callbacks.append([signal, source, func])
-          #for i in self.items:
-              #i[1].edje.signal_callback_add(signal, source , func, i)
-
-      #def send_signal(self, emission, signal, source):
-          #for i in self.items:
-              #if emission != i[1].edje:
-                  #i[1].edje.signal_emit(source, signal)
-
-      #def _renew_callbacks(self, *args, **kargs):
-          #for cb in self.callbacks:
-                #for i in self.items:
-                    #i[1].edje.signal_callback_add(cb[0], cb[1] , cb[2], i)
-
-      #def _append_new(self, list, item, **kargs):
-          #logger.info('append called')
-          #item.connect('modified',self._redraw_view)
-          #new_item = self.generate_single_item(item)
-          #for cb in self.callbacks:
-              #new_item[1].edje.signal_callback_add(cb[0], cb[1] , cb[2], new_item)
-          #self.box.prepend(new_item[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-          #self.items.insert(0,new_item)
-          #self._redraw_view()
-          ##self.sort()
-          ##self._redraw_box()
-          
-      #def _remove_item(self, list, removed_item):
-          #logger.info('remove called')
-          #for item in self.items:
-              #if item[0] is removed_item:
-                  #index = item
-                  #item[2].remove_all()
-          
-          #self.items.remove(index)
-          #self._redraw_box()
-
-      #def _redraw_view(self,*args,**kargs):
-          #logger.info("list redrawing")
-          
-          #self.sort()
-          #self.box.remove_all()
-          
-          #self.calc_value()
-          
-          #del self.items
-          #self.items = []
-          #for item in self.model:
-              #single = self.generate_single_item(item)
-              #self.box.append(single[2], etk.VBox.START, etk.VBox.EXPAND_FILL, 0)
-              #self.items.append(single)
-              ##item.connect('modified',self._redraw_view)
-
-          #self._redraw_box()
-          #self._renew_callbacks()
-
-      #def _redraw_box(self,*args,**kargs):
-          #logger.info('redrawing called')
-          #self.sort()
-          #self.box.redraw_queue()
-          #if self.edjeFrame != None:
-              #self.edjeFrame.edje.signal_emit(str(len(self.model)),"python")
-          #self.box.show_all()
-
-      #def sort(self,*args,**kargs):
-          #logger.info("list sorting")
-          #self.model.sort(self._comp_fct)
-
-      #def calc_value(self, *args, **kargs):
-          #item_count = len(self.model)
-          #pages = max( ( len( self.model ) - 1 ) / 6 + 1, 1 )
-          #self.page_size = 1.0 / pages
-
-      #def paging(self, delta):
-          #new_value = delta * 360.0
-          #length = len(self.model) * 60
-          #old_value = self.vscrollbar.value_get()
-          #if ((old_value + new_value) > length):
-              #new_value = length
-          #elif ((old_value + new_value) < 0.0):
-              #new_value = 0.0
-          #else:
-              #new_value = old_value + new_value
-          #logger.info("old: %f ,new: %f ,length: %d", old_value, new_value, length)
-          #self.vscrollbar.value_set( new_value )
-          #self.vscrollbar.redraw_queue()

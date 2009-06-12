@@ -25,7 +25,7 @@ from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD
 from elementary import Scroller, Entry
 from tichy import Application, Service
 from tichy.tasklet import Wait, WaitFirst, tasklet
-from paroli.gui import elm_list_window, elm_list, elm_layout
+from paroli.gui import ElementaryListWindow, ElementaryList, elm_layout
 
 class Letters(Application):
     name = 'SMS'
@@ -53,7 +53,7 @@ class Letters(Application):
 
         self.messages = self.msgs_service.messages
 
-        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
 
         ##sort messages by date
@@ -62,7 +62,7 @@ class Letters(Application):
 
         self.list_label = [('label','peer'),('label-number','text'),('status','status'),('direction','direction')]
         
-        self.item_list = elm_list(self.messages, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = ElementaryList(self.messages, self.window, self.edje_file, "item", self.list_label, comp)
 
         self.edje_obj.add_callback("*", "messaging", self.create_msg)
         self.item_list.add_callback("*", "messaging", self.adv_msg)

@@ -24,7 +24,7 @@ logger = getLogger('applications.telefony')
 from os.path import join, dirname
 from tichy import Application, Service, Text, mainloop
 from tichy.tasklet import Wait, WaitFirst, tasklet
-from paroli.gui import elm_layout_window, elm_layout
+from paroli.gui import ElementaryLayoutWindow, elm_layout
 from paroli.tel_number import TelNumber
 
 class TelefonyDialer(Application):
@@ -38,7 +38,7 @@ class TelefonyDialer(Application):
         ##set edje_file
         self.edje_file = join(dirname(__file__),'tele.edj')
 
-        self.window = elm_layout_window(self.edje_file, "main", None, None, True)
+        self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
         
         ##connect to tichy's contacts service
@@ -150,7 +150,7 @@ class TeleCaller2(Application):
             self.main.bg.elm_obj.content_set("content-swallow", self.layout.elm_obj)
         
         else:
-            self.main = elm_layout_window(self.edje_file, "main", None, None, True)
+            self.main = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
             self.main.topbar.onclick = 'hide'
             self.layout = self.main.main_layout
         
@@ -468,7 +468,7 @@ class PINApp2(Application):
         ##set edje_file
         self.edje_file = join(dirname(__file__),'tele.edj')
         
-        self.main = elm_layout_window(self.edje_file, "pin_enter")
+        self.main = ElementaryLayoutWindow(self.edje_file, "pin_enter")
         #logger.info("PIN2 main generated")
         
         if hasattr(self.main.topbar, "tb"):

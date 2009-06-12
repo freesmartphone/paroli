@@ -6,7 +6,7 @@ logger = getLogger('applications.dummy')
 from os.path import join as pjoin, dirname
 from tichy import Application
 from tichy.tasklet import Sleep
-from gui import elm_layout_window
+from gui import ElementaryLayoutWindow
 
 class Dummy(Application):
 	name = 'Dummy'
@@ -16,7 +16,7 @@ class Dummy(Application):
 	def run(self, parent=None, standalone=False):
 		logger.info('run starts')
 		edje_file = pjoin(dirname(__file__), 'dummy.edj')
-		window = elm_layout_window(edje_file, "dummy", None, None, True)
+		window = ElementaryLayoutWindow(edje_file, "dummy", None, None, True)
 		window.main_layout.elm_obj.edje_get().part_text_set('dummy.textview', '''
 <h1>I`m a dummy</h1>
 <p><strong>Hihi bla fasel</strong></p>

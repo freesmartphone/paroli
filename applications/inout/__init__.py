@@ -25,7 +25,7 @@ logger = getLogger('applications.inout')
 from os.path import join, dirname
 from tichy import Application, Service
 from tichy.tasklet import Wait, WaitFirst
-from paroli.gui import elm_list_window, elm_list
+from paroli.gui import ElementaryListWindow, ElementaryList
 
 class InOutCallLog(Application):
     name = 'InOutCallLog'
@@ -50,7 +50,7 @@ class InOutCallLog(Application):
         self.contacts.sort(comp2) 
 
         ##generate app-window
-        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
         
         def comp(m1, m2):
@@ -58,7 +58,7 @@ class InOutCallLog(Application):
 
         #  We use the Call object to as items in the call log 
         self.list_label = [('label', 'number'), ('subtext', 'description')]
-        self.item_list = elm_list(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = ElementaryList(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
         
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
@@ -73,7 +73,7 @@ class InOutCallLog(Application):
         self.item_list.add_callback("new_msg", "*", self.create_msg)
         self.item_list.add_callback("save_number", "*", self.create_contact)
 
-        self.item_list.Elm_win = self.window.window
+        self.item_list.elm_window = self.window.window
 
         i, args = yield WaitFirst(Wait(self.window, 'back'),Wait(self.window, 'delete_request'), Wait(self.window.window,'closing'))
         

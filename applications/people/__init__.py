@@ -24,7 +24,7 @@ logger = getLogger('applications.people')
 from os.path import join, dirname
 from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
 from elementary import Entry
-from paroli.gui import elm_list_window, elm_list, elm_layout, elm_list_subwindow
+from paroli.gui import ElementaryListWindow, ElementaryList, elm_layout, ElementaryListSubwindow
 from tichy import Application, Service
 from tichy.tasklet import WaitFirst, Wait, tasklet
 from paroli.sim import SIMContact
@@ -49,11 +49,11 @@ class People(Application):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
 
         ##generate app-window
-        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
 
         self.list_label = [('label','name')]
-        self.item_list = elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = ElementaryList(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
        
         self.item_list.add_callback("contact_details", "*", self.contact_details)
         #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
@@ -197,7 +197,7 @@ class ListContacts(Application):
     def run(self, parent, layout, *args, **kargs):
 
         self.edje_file = join(dirname(__file__), 'people.edj')
-        self.list_layout =  elm_list_subwindow(parent, self.edje_file, "main", "list")
+        self.list_layout =  ElementaryListSubwindow(parent, self.edje_file, "main", "list")
         
         edje_obj = self.list_layout.main_layout.elm_obj.edje_get()
     
@@ -214,7 +214,7 @@ class ListContacts(Application):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
         
         self.list_label = [('label','name')]
-        self.item_list = elm_list(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
+        self.item_list = ElementaryList(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
         
         self.item_list.signal_send('list_only_mode', "*")
         

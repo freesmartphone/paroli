@@ -37,7 +37,7 @@ class Dialog(tichy.Application):
     """
     def run(self, parent, title, msg, option1=None, option2=None):
         """Create an etk window and show the message"""
-        self.window = gui.elm_window(str(title))
+        self.window = gui.ElementaryWindow(str(title))
         self.window.elm_obj.show()
         self.window.elm_obj.color_set(0, 0, 0, 255)
         self.box = gui.elm_box(self.window.elm_obj)

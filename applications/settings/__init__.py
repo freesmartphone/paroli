@@ -24,7 +24,7 @@ logger = getLogger('applications.settings')
 from os.path import join, dirname
 from tichy import Service, Application, config, List, Text
 from tichy.tasklet import WaitFirst, Wait, tasklet
-from paroli.gui import elm_list_window, elm_list, elm_list_subwindow
+from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryListSubwindow
 
 ##create your applications class
 class Settings(Application):
@@ -47,7 +47,7 @@ class Settings(Application):
         self.standalone = config.getboolean('standalone','activated', False)
         
         ##generate app-window
-        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
         
         self.groups = List()
@@ -60,7 +60,7 @@ class Settings(Application):
             return cmp(m2, m1)
         
         self.list_label = [('title', 'value')]
-        self.item_list = elm_list(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
+        self.item_list = ElementaryList(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
         
         self.item_list.add_callback("*", "sublist", self._show_sublist)
         
@@ -87,7 +87,7 @@ class SettingsSublist(Application):
       
         self.parent = parent
       
-        self.window = elm_list_subwindow(parent, edje_file, "main", "list")
+        self.window = ElementaryListSubwindow(parent, edje_file, "main", "list")
         self.edje_obj = self.window.main_layout
         
         self.edje_obj.edje.signal_emit("sublist_mode","*")
@@ -103,7 +103,7 @@ class SettingsSublist(Application):
             return cmp(m2.name, m1.name)
         
         self.list_label = [('title', 'name'),('subtitle', 'value')]
-        self.item_list = elm_list(self.settings, self.window, edje_file, "group", self.list_label, comp)
+        self.item_list = ElementaryList(self.settings, self.window, edje_file, "group", self.list_label, comp)
         
         for i in self.settings:
             if hasattr(i, 'options'):
@@ -156,7 +156,7 @@ class NumberSettingApp(Application):
         self.edje_file = join(dirname(__file__), 'settings.edj')
         
         layout.elm_obj.hide()
-        self.window = elm_list_subwindow(parent, self.edje_file, "numbersetting","entry", layout.elm_obj)
+        self.window = ElementaryListSubwindow(parent, self.edje_file, "numbersetting","entry", layout.elm_obj)
         
         self.edje_obj = self.window.main_layout
         
@@ -187,7 +187,7 @@ class ListSettingApp(Application):
         
         self.edje_file = join(dirname(__file__), 'settings.edj')
       
-        self.window = elm_list_subwindow(parent, self.edje_file, "main", "list")
+        self.window = ElementaryListSubwindow(parent, self.edje_file, "main", "list")
         
         self.edje_obj = self.window.main_layout
         
@@ -212,7 +212,7 @@ class ListSettingApp(Application):
         item_group = group or "group"
         
         self.list_label = list_label
-        self.item_list = elm_list(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
+        self.item_list = ElementaryList(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
         
         for i in self.ItemList:
             if hasattr(i, 'connect'):
@@ -281,7 +281,7 @@ class StringSettingApp(Application):
         self.edje_file = join(dirname(__file__), 'settings.edj')
         
         layout.elm_obj.hide()
-        self.window = elm_list_subwindow(parent, self.edje_file, "stringsetting","entry", layout.elm_obj)
+        self.window = ElementaryListSubwindow(parent, self.edje_file, "stringsetting","entry", layout.elm_obj)
         self.edje_obj = self.window.main_layout
         
         if setting != None:
