@@ -382,7 +382,9 @@ class MsgsWrite(Application):
     def send_sms(self, sms):
         """tasklet that performs the sending process
 
-        connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
+		connects to SIM service and tries sending the sms, if it fails
+		it opens an error dialog, if it succeeds it deletes the edje
+		window it it given
         """
         logger.info("send message called")
         message_service = Service.get('Messages')

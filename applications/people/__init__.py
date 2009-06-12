@@ -107,9 +107,7 @@ class People(Application):
         self.window.main_layout.elm_obj.hide()
         self.window.bg.elm_obj.content_set("content-swallow", detail_layout.elm_obj)
 
-        def _update_values(*args, **kargs):
-            contact = args[0]
-            edje = args[1]
+        def _update_values(contact, edje, *args, **kargs):
             edje.part_text_set('name-text',unicode(contact.name).encode('utf8'))
             edje.part_text_set('number-text',str(contact.tel).encode('utf8'))
             self.contacts.emit("inserted")

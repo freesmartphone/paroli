@@ -32,7 +32,6 @@ from tichy.tasklet import Wait, tasklet
 from tichy.service import Service
 from paroli.gui import ElementaryWindow, ElementaryBox, ElementaryScroller
 
-# TODO: replace the etk code by something based on edje
 
 class Dialog(Application):
     """Dialog application
@@ -40,7 +39,7 @@ class Dialog(Application):
     This application does nothing but show a message on the screen
     """
     def run(self, parent, title, msg, option1=None, option2=None):
-        """Create an etk window and show the message"""
+        """Create an show the message"""
         self.window = ElementaryWindow(str(title))
         self.window.elm_obj.show()
         self.window.elm_obj.color_set(0, 0, 0, 255)

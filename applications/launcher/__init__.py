@@ -287,11 +287,10 @@ class Launcher(Application):
         self.aux_btn_held_conn = self.button.connect('aux_button_held', self.adjust_time, emission, 10)
 
     def time_setting_stop(self, emission, signal, source):
-        edje = emission
         #time = time.localtime()
-        #time_text = edje.part_text_get('clock')
+        #time_text = emission.part_text_get('clock')
 
-        time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
+        time_text = emission.part_text_get('home-clock-hour-digit-1') + emission.part_text_get('home-clock-hour-digit-0') + ":" + emission.part_text_get('home-clock-minute-digit-1') + emission.part_text_get('home-clock-minute-digit-0')
 
         self.button.disconnect(self.aux_btn_time_set_conn)
         self.button.disconnect(self.aux_btn_held_conn)
@@ -334,9 +333,7 @@ class Launcher(Application):
         except Exception, ex:
             logger.exception( "Play alarm audio %s exception: %s", alarm_file, ex )
 
-    def adjust_time(self, *args, **kargs):
-        edje = args[2]
-        nmin = args[3]
+    def adjust_time(self, x1, x2, edje, nmin, *args, **kargs):
         time_text = edje.part_text_get('home-clock-hour-digit-1') + edje.part_text_get('home-clock-hour-digit-0') + ":" + edje.part_text_get('home-clock-minute-digit-1') + edje.part_text_get('home-clock-minute-digit-0')
         #time_text = edje.part_text_get('clock')
         numbers = time_text.split(':')
