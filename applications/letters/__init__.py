@@ -17,18 +17,15 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
-import os
-import logging
-logger = logging.getLogger('applications.letters')
+from logging import getLogger
+logger = getLogger('applications.letters')
 
-import tichy
-from tichy import gui
-import sys
-import dbus
+from os.path import join, dirname
+from tichy import Application, Service
+from tichy.tasklet import Wait, WaitFirst, tasklet
+from paroli.gui import elm_list_window, elm_list, elm_layout
 
-from tichy.tasklet import Wait, WaitFirst
-
-class Letters(tichy.Application):
+class Letters(Application):
     name = 'SMS'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
@@ -38,10 +35,10 @@ class Letters(tichy.Application):
 
         ##set edje file to be used
         ##TODO: make one edje file per plugin
-        self.edje_file = os.path.join(os.path.dirname(__file__),'msgs.edj')
+        self.edje_file = join(dirname(__file__),'msgs.edj')
 
         ##get message service and list of all messages
-        self.contact_service = tichy.Service.get('Contacts')
+        self.contact_service = Service.get('Contacts')
         self.contacts = self.contact_service.contacts
         ##sort contact by date
         def comp2(m1, m2):
@@ -50,11 +47,11 @@ class Letters(tichy.Application):
         self.contacts.sort(comp2)
 
         ##get message service and list of all messages
-        self.msgs_service = tichy.Service.get('Messages')
+        self.msgs_service = Service.get('Messages')
 
         self.messages = self.msgs_service.messages
 
-        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
 
         ##sort messages by date
@@ -63,7 +60,7 @@ class Letters(tichy.Application):
 
         self.list_label = [('label','peer'),('label-number','text'),('status','status'),('direction','direction')]
         
-        self.item_list = gui.elm_list(self.messages, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = elm_list(self.messages, self.window, self.edje_file, "item", self.list_label, comp)
 
         self.edje_obj.add_callback("*", "messaging", self.create_msg)
         self.item_list.add_callback("*", "messaging", self.adv_msg)
@@ -73,7 +70,7 @@ class Letters(tichy.Application):
         
         self.item_list.add_callback("details", "*", self.msg_details)
 
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'), Wait(self.window.window,'closing'))
         logger.info('Messages closing')
         
         if i != 2:
@@ -88,11 +85,11 @@ class Letters(tichy.Application):
         logger.info(txt)  
       
     def create_contact(self, emission, source, param, item):
-        service = tichy.Service.get('ContactCreate')
+        service = Service.get('ContactCreate')
         service.create(self.window, item[0].peer).start()  
       
     def create_msg(self, emission, signal, source, item=None):
-        service = tichy.Service.get('MessageCreate')
+        service = Service.get('MessageCreate')
         service.write(self.window, signal).start()
     
     def msg_details(self, emission, signal, source, item):
@@ -100,7 +97,7 @@ class Letters(tichy.Application):
         text = item[0].text
         timestamp = item[0].timestamp.local_repr()
         
-        detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "message_details")              
+        detail_layout =  elm_layout(self.window.window, self.edje_file, "message_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
         edje_obj.part_text_set('name-text',unicode(number).encode('utf8'))
         edje_obj.part_text_set('name-info',unicode(timestamp).encode('utf8'))
@@ -139,14 +136,14 @@ class Letters(tichy.Application):
             
         
     def adv_msg(self, emission, signal, source, item=None, layout=None):
-        service = tichy.Service.get('MessageCreate')
+        service = Service.get('MessageCreate')
         service.write(self.window, signal, item[0].peer, item[0].text, layout).start()
         
     def delete_msg(self, emission, signal, source, item, layout):
         logger.info("delete message called")
         message = item
         try:
-            messages_service = tichy.Service.get('Messages')
+            messages_service = Service.get('Messages')
             messages_service.remove(message).start()
         except Exception, ex:
             logger.exception("Got error %s", ex)
@@ -155,13 +152,13 @@ class Letters(tichy.Application):
             self.window.restore_orig()
 
 ##Service to store some info
-class MessageCreate(tichy.Service):
+class MessageCreate(Service):
     service = 'MessageCreate'
 
     def __init__(self):
         super(MessageCreate, self).__init__()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._do_sth()
         
@@ -169,11 +166,11 @@ class MessageCreate(tichy.Service):
         pass    
         
     def write(self, window, mode, number="", txt="", layout=None):
-        sms_service = tichy.Service.get('SMS')
+        sms_service = Service.get('SMS')
         sms = sms_service.create(number, txt)
         return MsgsWrite(window, sms, mode, layout)
 
-class MsgsWrite(tichy.Application):
+class MsgsWrite(Application):
 
     ###modes:
     # reply - get number, only allow editing of text
@@ -183,9 +180,9 @@ class MsgsWrite(tichy.Application):
     name = 'MsgsWriteApp'
     
     def run(self, parent, sms, mode, layout=None, *args, **kargs):
-        self.dialog = tichy.Service.get("Dialog")
+        self.dialog = Service.get("Dialog")
         try:
-          self.edje_file = os.path.join(os.path.dirname(__file__), 'msgs.edj')
+          self.edje_file = join(dirname(__file__), 'msgs.edj')
           number_layout = 0
           text_layout = 0
           send = 0
@@ -233,7 +230,7 @@ class MsgsWrite(tichy.Application):
                   
                   number_layout.connect("too_short", self.error_win, "number too short")
                   
-                  i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
+                  i, args = yield WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
                   
                   if i == 0: #back
                       break
@@ -288,7 +285,7 @@ class MsgsWrite(tichy.Application):
                   
                   text_layout.connect("send_request", self.send_request, textbox)
               
-              i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'send'))
+              i, args = yield WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'send'))
               if i == 0: #back
                   if full:
                       text_layout.elm_obj.hide()
@@ -350,7 +347,7 @@ class MsgsWrite(tichy.Application):
         else:
             layout.emit("send")
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def send_empty(self, layout, **kargs):
         send = yield self.dialog.option_dialog("SMS empty", "The SMS contians no text, send it anyway?", "YES", "no")
     
@@ -367,27 +364,27 @@ class MsgsWrite(tichy.Application):
     def num_field_action(self, emission, signal, source):
         self.num_field(emission, signal, source).start()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def num_field(self, emission, signal, source):
         logger.info("num field pressed")
         number = emission.part_text_get('num_field-text')
         
         if number == None or len(number) == 0:
             logger.info("no number found")
-            createService = tichy.Service.get('ContactCreate')
+            createService = Service.get('ContactCreate')
             num = yield createService.contactList(self.window, self.number_layout)
             emission.part_text_set('num_field-text', str(num.tel))
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def send_sms(self, sms):
         """tasklet that performs the sending process
 
         connects to SIM service and tries sending the sms, if it fails it opens an error dialog, if it succeeds it deletes the edje window it it given
         """
         logger.info("send message called")
-        message_service = tichy.Service.get('Messages')
+        message_service = Service.get('Messages')
         message = message_service.create(number=sms.peer, text=sms.text, direction='out')
-        dialog = tichy.Service.get("Dialog")
+        dialog = Service.get("Dialog")
         try:
             #logger.info("sending message: %s to : %s", sms.text, sms.peer)
             yield message.send()

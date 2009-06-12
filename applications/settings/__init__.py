@@ -18,27 +18,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-##import logging facilities to produce logging messages from within you app
-import logging
+from logging import getLogger
+logger = getLogger('applications.settings')
 
-##name the logger
-logger = logging.getLogger('applications.settings')
-
-##import os module to load edj files
-import os
-
-##import main core module
-import tichy
-
-##import gui module to access paroli's gui classes
-from tichy import gui
-from tichy import Service
-
-##import services module to retrieve data from services throughout tichy
-from tichy.service import Service
+from os.path import join, dirname
+from tichy import Service, Application, config, List, Text
+from tichy.tasklet import WaitFirst, Wait, tasklet
+from paroli.gui import elm_list_window, elm_list, elm_list_subwindow
 
 ##create your applications class
-class Settings(tichy.Application):
+class Settings(Application):
 
     ##this name is used by paroli to find your application
     name = 'Settings'
@@ -52,30 +41,30 @@ class Settings(tichy.Application):
     ##the run method of the app is called when the app is started
     def run(self, parent=None,  standalone=False):
         ##the edje file
-        self.edje_file = os.path.join(os.path.dirname(__file__),'settings.edj')
+        self.edje_file = join(dirname(__file__),'settings.edj')
     
         ##import a parameter which tells the app about paroli's window's size
-        self.standalone = tichy.config.getboolean('standalone','activated', False)
+        self.standalone = config.getboolean('standalone','activated', False)
         
         ##generate app-window
-        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
         
-        self.groups = tichy.List()
+        self.groups = List()
         
-        for i in tichy.Setting.groups:
-            t = tichy.Text(i)
-            self.groups.append(tichy.Text(i))
+        for i in Setting.groups:
+            t = Text(i)
+            self.groups.append(Text(i))
 
         def comp(m1, m2):
             return cmp(m2, m1)
         
         self.list_label = [('title', 'value')]
-        self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
+        self.item_list = elm_list(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
         
         self.item_list.add_callback("*", "sublist", self._show_sublist)
         
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'), Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing
         logger.info('Settings closing')
         
@@ -88,7 +77,7 @@ class Settings(tichy.Application):
         logger.info("showing sublist from group %s", group[0])
         SettingsSublist(self.window, self.edje_file, str(group[0]), self.edje_obj).start()
 
-class SettingsSublist(tichy.Application):
+class SettingsSublist(Application):
     
     name = 'SettingsSublist'
 
@@ -98,23 +87,23 @@ class SettingsSublist(tichy.Application):
       
         self.parent = parent
       
-        self.window = gui.elm_list_subwindow(parent, edje_file, "main", "list")
+        self.window = elm_list_subwindow(parent, edje_file, "main", "list")
         self.edje_obj = self.window.main_layout
         
         self.edje_obj.Edje.signal_emit("sublist_mode","*")
         
-        self.settings = tichy.List()
-        self.cb_list = tichy.List()
+        self.settings = List()
+        self.cb_list = List()
         
-        for i in tichy.Setting.groups[group]:
-            o = tichy.Setting.groups[group][i]
+        for i in Setting.groups[group]:
+            o = Setting.groups[group][i]
             self.settings.append(o)
             
         def comp(m1, m2):
             return cmp(m2.name, m1.name)
         
         self.list_label = [('title', 'name'),('subtitle', 'value')]
-        self.item_list = gui.elm_list(self.settings, self.window, edje_file, "group", self.list_label, comp)
+        self.item_list = elm_list(self.settings, self.window, edje_file, "group", self.list_label, comp)
         
         for i in self.settings:
             if hasattr(i, 'options'):
@@ -123,7 +112,7 @@ class SettingsSublist(tichy.Application):
         
         self.item_list.add_callback("*", "sublist", self.action)
     
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'))
+        yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.edje_obj, 'back'))
     
         for i in self.cb_list:
             i[0].disconnect(i[1])
@@ -137,13 +126,13 @@ class SettingsSublist(tichy.Application):
         item[0].rotate(self.parent, self.edje_obj)
         
 
-class FreeEditService(tichy.Service):
+class FreeEditService(Service):
     service = "FreeEdit"
     
     def __init__(self):
         super(FreeEditService, self).__init__()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         logger.info("FreeEdit service initializing")
         yield self._do_sth()
@@ -160,20 +149,20 @@ class FreeEditService(tichy.Service):
     def ListEdit(self, setting, parent, model, ListLabel, layout, edje_group, save_button):
         return ListSettingApp(setting, parent, model, ListLabel, layout, edje_group, save_button)
 
-class NumberSettingApp(tichy.Application):
+class NumberSettingApp(Application):
     name = "NumberSetting"
     
     def run(self, setting, parent, layout):
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'settings.edj')
+        self.edje_file = join(dirname(__file__), 'settings.edj')
         
         layout.elm_obj.hide()
-        self.window = gui.elm_list_subwindow(parent, self.edje_file, "numbersetting","entry", layout.elm_obj)
+        self.window = elm_list_subwindow(parent, self.edje_file, "numbersetting","entry", layout.elm_obj)
         
         self.edje_obj = self.window.main_layout
         
         self.edje_obj.Edje.signal_emit(str(setting.value),"set_text")
         
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window.main_layout, 'save'), tichy.Wait(self.window.main_layout, 'back'),tichy.Wait(parent, 'back'))
+        i, args = yield WaitFirst(Wait(self.window.main_layout, 'save'), Wait(self.window.main_layout, 'back'),Wait(parent, 'back'))
         
         if i == 0: ##save clicked
             self.edje_obj.Edje.signal_emit("save-notice","*")
@@ -185,7 +174,7 @@ class NumberSettingApp(tichy.Application):
         self.edje_obj.Edje.delete()
         layout.elm_obj.show()
 
-class ListSettingApp(tichy.Application):
+class ListSettingApp(Application):
     
     name = 'ListSetting'
 
@@ -196,9 +185,9 @@ class ListSettingApp(tichy.Application):
         self.parent = parent
         self.setting = setting
         
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'settings.edj')
+        self.edje_file = join(dirname(__file__), 'settings.edj')
       
-        self.window = gui.elm_list_subwindow(parent, self.edje_file, "main", "list")
+        self.window = elm_list_subwindow(parent, self.edje_file, "main", "list")
         
         self.edje_obj = self.window.main_layout
         
@@ -208,10 +197,10 @@ class ListSettingApp(tichy.Application):
             self.edje_obj.Edje.signal_emit("save_button","*")
         
         self.ItemList = model
-        self.cb_list = tichy.List()
+        self.cb_list = List()
         
-        #for i in tichy.Setting.groups[group]:
-            #o = tichy.Setting.groups[group][i]
+        #for i in Setting.groups[group]:
+            #o = Setting.groups[group][i]
             #self.settings.append(o)
             
         def comp(m1, m2):
@@ -223,7 +212,7 @@ class ListSettingApp(tichy.Application):
         item_group = group or "group"
         
         self.list_label = list_label
-        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
+        self.item_list = elm_list(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
         
         for i in self.ItemList:
             if hasattr(i, 'connect'):
@@ -235,7 +224,7 @@ class ListSettingApp(tichy.Application):
         self.item_list.add_callback("pressed", "increase", self.increase)
         self.edje_obj.Edje.signal_callback_add("pressed", "save", self.save)
         
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.edje_obj, 'back'),tichy.Wait(self.ItemList, 'save'))
+        yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.edje_obj, 'back'),Wait(self.ItemList, 'save'))
     
         for i in self.cb_list:
             i[0].disconnect(i[1])
@@ -285,20 +274,20 @@ class ListSettingApp(tichy.Application):
         
         emission.part_text_set('value', str(new))
 
-class StringSettingApp(tichy.Application):
+class StringSettingApp(Application):
     name = "StringSetting"
     
     def run(self, setting, parent, layout):
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'settings.edj')
+        self.edje_file = join(dirname(__file__), 'settings.edj')
         
         layout.elm_obj.hide()
-        self.window = gui.elm_list_subwindow(parent, self.edje_file, "stringsetting","entry", layout.elm_obj)
+        self.window = elm_list_subwindow(parent, self.edje_file, "stringsetting","entry", layout.elm_obj)
         self.edje_obj = self.window.main_layout
         
         if setting != None:
             self.edje_obj.Edje.signal_emit(str(setting.name),"set_text")
         
-        textbox = gui.elementary.Entry(parent.window.elm_obj)
+        textbox = elementary.Entry(parent.window.elm_obj)
 
         textbox.entry_set("")
         
@@ -312,7 +301,7 @@ class StringSettingApp(tichy.Application):
         
         textbox.show()
         
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.edje_obj,'save'), tichy.Wait(self.edje_obj,'back'),tichy.Wait(parent,'back'))
+        i, args = yield WaitFirst(Wait(self.edje_obj,'save'), Wait(self.edje_obj,'back'),Wait(parent,'back'))
         
         if i == 0: ##save clicked
             text = str(textbox.entry_get()).replace("<br>","")

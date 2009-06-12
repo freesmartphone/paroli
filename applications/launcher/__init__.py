@@ -18,21 +18,20 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-logger = logging.getLogger('applications.launcher')
+from logging import getLogger
+logger = getLogger('applications.launcher')
 
-import os
-import tichy
-from tichy import gui
-import sys
-import ecore
-import dbus
+from os.path import join, dirname
+from time import asctime, mktime, strptime #, localtime
+from sys import prefix
+#from re import search
+#from subprocess import PIPE, Popen
+from tichy import Application, config, Service, mainloop, Time
+from tichy.tasklet import tasklet, WaitFirst, Wait
+from paroli.gui import elm_layout_window, elm_box, elm_layout, elm_window, elm_tb
 from paroli.tel_number import TelNumber
-import subprocess
-import re
-import time
 
-class Launcher(tichy.Application):
+class Launcher(Application):
     name = 'Launcher'
     icon = 'icon.png'
     category = 'hidden' # So that we dont see the app in ourselfs
@@ -40,21 +39,21 @@ class Launcher(tichy.Application):
     def run(self, parent=None, standalone=False):
         #logger.info('launcher launching')
         self.ready = 0
-        self.standalone = tichy.config.getboolean('standalone',
+        self.standalone = config.getboolean('standalone',
                                                 'activated', False)
-        self.advanced = tichy.config.getboolean('advanced-mode',
+        self.advanced = config.getboolean('advanced-mode',
                                                 'activated', False)
 
-        self.settings = tichy.config.getboolean('settings','activated', False)
+        self.settings = config.getboolean('settings','activated', False)
 
-        self.edje_file = os.path.join(os.path.dirname(__file__),'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__),'paroli-launcher.edj')
 
-        self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
+        self.window = elm_layout_window(self.edje_file, "main", None, None, True)
         
         self.edje_obj = self.window.main_layout
-        if hasattr(self.window.bg_m, "tb"):
+        if hasattr(self.window.topbar, "tb"):
 
-            self.window.bg_m.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
+            self.window.topbar.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
 
         self.active_app = None
         
@@ -63,15 +62,15 @@ class Launcher(tichy.Application):
             apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Paroli-Contacts"]
         else:
             apps = []
-            for app in tichy.Application.subclasses:
+            for app in Application.subclasses:
                 if app.category == 'launcher':
                     apps.append(app)
 
-        box = gui.elm_box(self.window.window.elm_obj)
+        box = elm_box(self.window.window.elm_obj)
         self.app_objs = {}
         for app in apps:
             logger.info("register launcher %s", app.name)
-            link_obj = gui.elm_layout(self.window.window, self.edje_file, 'link')        
+            link_obj = elm_layout(self.window.window, self.edje_file, 'link')        
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
             link_obj.elm_obj.show()
@@ -87,50 +86,50 @@ class Launcher(tichy.Application):
 
         box.elm_obj.show()
         self.edje_obj.elm_obj.content_set("link-box",box.elm_obj)
-        self.storage = tichy.Service.get('TeleCom2')
+        self.storage = Service.get('TeleCom2')
         self.edje_obj.add_callback("*", "launch_app", self.launch_app)
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("quit_app", "*", self.quit_app)
         ##current hack
         #self.standalone = True
         
-        self.msg = tichy.Service.get('Messages')
+        self.msg = Service.get('Messages')
         if self.msg.ready == False :
             self.msg.connect('ready',self.unblock_screen)
         else:
             self.unblock_screen()
         
-        self.busywin = tichy.Service.get('BusyWin')
+        self.busywin = Service.get('BusyWin')
         
-        self.button = tichy.Service.get('Buttons')
+        self.button = Service.get('Buttons')
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         
         if self.settings:
             self.aux_btn_settings_conn = self.button.connect('aux_button_held', self.open_settings)
           
-        self.prefs = tichy.Service.get('Prefs')
-        self.audio_service = tichy.Service.get('Audio')
+        self.prefs = Service.get('Prefs')
+        self.audio_service = Service.get('Audio')
         
-        self.ussd = tichy.Service.get('Ussd')
+        self.ussd = Service.get('Ussd')
         self.ussd.connect('incoming', self.incoming_ussd)
-        self.systime = tichy.Service.get('SysTime')
-        self.alarm = tichy.Service.get('Alarm')
+        self.systime = Service.get('SysTime')
+        self.alarm = Service.get('Alarm')
         
         #self.edje_obj.Edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
         #self.edje_obj.Edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
         
         self.ready = 1
         
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'backs'),tichy.Wait(self.window.window,'closing'))
+        yield WaitFirst(Wait(self.window, 'backs'),Wait(self.window.window,'closing'))
         
-        self.dialog = tichy.Service.get("Dialog")
+        self.dialog = Service.get("Dialog")
         keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
         logger.debug("keep_alive %s", keep_alive)
         #self._remove_link_signals()
         
         if keep_alive == "no":
             logger.info("keep alive set to no: %s", keep_alive)
-            tichy.mainloop.quit()
+            mainloop.quit()
         else:
             logger.info("keep alive set to %s", keep_alive)
         
@@ -142,7 +141,7 @@ class Launcher(tichy.Application):
         logger.info('unblocking screen')
         for app in self.app_objs:
             if self.app_objs[app][1] != 0:
-                service = tichy.Service.get(self.app_objs[app][1][0])
+                service = Service.get(self.app_objs[app][1][0])
                 attr = self.app_objs[app][1][1]
                 if hasattr(service,attr):
                     connector = getattr(service,attr)
@@ -171,7 +170,7 @@ class Launcher(tichy.Application):
             self._remove_link_signals()
             self._launch_app(str(signal)).start()
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def _launch_app(self, name):
         """launch an application, and wait for it to either quit,
         either raise an exception.
@@ -182,7 +181,7 @@ class Launcher(tichy.Application):
             self.storage.window.emit("dehide")
         elif self.active_app == None or (self.active_app == "Tele" and self.storage.call != None):
             #self.edje_obj.Edje.signal_emit("unready","*")
-            app = tichy.Application.find_by_name(name)
+            app = Application.find_by_name(name)
             self.active_app = name
             yield app(self.window, standalone=self.standalone)
             self._recreate_link_signals()
@@ -195,10 +194,10 @@ class Launcher(tichy.Application):
         """connected to the 'incoming_message' edje signal"""
         self._incoming_ussd(str(msg[1])).start()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
-        yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
+        yield Service.get('Dialog').dialog("window", 'Ussd', msg)
     
     def _remove_link_signals(self, *args, **kargs):
         if self.settings:
@@ -257,22 +256,22 @@ class Launcher(tichy.Application):
         self.app_objs['Tele'][1].Edje.part_text_set('testing_textblock',text)
 
     def network_strength(self, *args, **kargs):
-        if self.window.bg_m.tb:
-            self.window.bg_m.tb.Edje.signal_emit(str(args[1]), "gsm_change")
+        if self.window.topbar.tb:
+            self.window.topbar.tb.Edje.signal_emit(str(args[1]), "gsm_change")
         
     def battery_capacity(self, *args, **kargs):
-        if self.window.bg_m.tb:
+        if self.window.topbar.tb:
             logger.info("capacity change in launcher to %s", args[1])
-            self.window.bg_m.tb.Edje.signal_emit(str(args[1]), "battery_change")
+            self.window.topbar.tb.Edje.signal_emit(str(args[1]), "battery_change")
 
     def battery_status(self, *args, **kargs):
-        if self.window.bg_m.tb:
+        if self.window.topbar.tb:
             logger.info("battery status change in launcher")
             if args[1] == "charging":
-                self.window.bg_m.tb.Edje.signal_emit(args[1], "battery_status_charging")
+                self.window.topbar.tb.Edje.signal_emit(args[1], "battery_status_charging")
             elif args[1] == "discharging":
                 bat_value = self.power.get_battery_capacity() 
-                self.window.bg_m.tb.Edje.signal_emit(str(bat_value), "battery_change")
+                self.window.topbar.tb.Edje.signal_emit(str(bat_value), "battery_change")
             elif args[1] == "full":
                 #TODO: We may do something here.
                 pass
@@ -294,7 +293,7 @@ class Launcher(tichy.Application):
         self.button.disconnect(self.aux_btn_time_set_conn)
         self.button.disconnect(self.aux_btn_held_conn)
         numbers = str(time_text).split(':') 
-        timepart = time.asctime().split()
+        timepart = asctime().split()
         hour_min_sec = timepart[3].split(':') 
         hour_min_sec[0] = str(numbers[0])
         hour_min_sec[1] = numbers[1]
@@ -302,7 +301,7 @@ class Launcher(tichy.Application):
         time_string = timepart[0] + " " + timepart[1] + " " + timepart[2] \
                       + " " + timepart[3] + " " + timepart[4]
         # Transfer from localtime to GMT time
-        new_time = tichy.Time.as_type(time.mktime(time.strptime(time_string)))
+        new_time = Time.as_type(mktime(strptime(time_string)))
         if source == "alarm":
             self.set_alarm(new_time).start() 
             logger.info("Set alarm at %s", new_time)
@@ -313,14 +312,14 @@ class Launcher(tichy.Application):
         self.aux_btn_profile_conn = self.button.connect('aux_button_pressed', self.switch_profile)
         self.edje_obj.Edje.signal_emit("start_clock_update", "*")
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_time(self, new_time):
         yield self.systime.set_current_time(new_time) 
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def set_alarm(self, alarm_time):
-        sound_dir = os.path.join(sys.prefix, "share/paroli/data/sounds") 
-        alarm_path = os.path.join(sound_dir, "alarm.wav") 
+        sound_dir = join(prefix, "share/paroli/data/sounds") 
+        alarm_path = join(sound_dir, "alarm.wav") 
         yield self.alarm.set_alarm(alarm_time, self.alarm_reaction, alarm_path) 
 
     def alarm_reaction(self, *args, **kargs):
@@ -422,35 +421,35 @@ class Launcher(tichy.Application):
     ##write version number on home-screen
     #def _get_paroli_version(self):
         #try:
-            #wo = subprocess.Popen(["opkg", "info", "paroli"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #wo = Popen(["opkg", "info", "paroli"], stdout=PIPE, stderr=PIPE)
             #output, error= wo.communicate()
-            #m = re.search('Version:\s.*[+].*[+](.*)-[r5]',output)
+            #m = search('Version:\s.*[+].*[+](.*)-[r5]',output)
             #self.edje_obj.Edje.part_text_set('version',m.group(1))
         #except Exception, ex:
             #logger.warning("Can't get paroli version : %s", ex)
             #self.edje_obj.Edje.part_text_set('version', '????')
  
 ##Service to generate and store the loading window
-class BusyWin(tichy.Service):
+class BusyWin(Service):
     service = 'BusyWin'
 
     def __init__(self):
         super(BusyWin, self).__init__()
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__), 'paroli-launcher.edj')
         self.win = None
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._do_sth()
     
     def _do_sth(self):
         pass
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def create_win(self):
         if self.win == None:
-            self.win = gui.elm_window()
-            self.layout = gui.elm_layout(self.win, self.edje_file, "busywin")
+            self.win = elm_window()
+            self.layout = elm_layout(self.win, self.edje_file, "busywin")
             self.win.elm_obj.resize_object_add(self.layout.elm_obj)
             self.win.elm_obj.show()
         yield "me"
@@ -461,23 +460,23 @@ class BusyWin(tichy.Service):
             self.win = None
 
 ##Service to generate and store the topbar
-class TopBar(tichy.Service):
+class TopBar(Service):
     service = 'TopBar'
 
     def __init__(self):
         super(TopBar, self).__init__()
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__), 'paroli-launcher.edj')
         self.tb_list = []    
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
-        yield tichy.Service.get('Prefs').wait_initialized()
-        yield tichy.Service.get('Power').wait_initialized()
-        yield tichy.Service.get('Gprs').wait_initialized()
-        self.gsm = tichy.Service.get('GSM')
-        self.power = tichy.Service.get('Power')
-        self.prefs = tichy.Service.get('Prefs')
-        self.gprs = tichy.Service.get('Gprs')
+        yield Service.get('Prefs').wait_initialized()
+        yield Service.get('Power').wait_initialized()
+        yield Service.get('Gprs').wait_initialized()
+        self.gsm = Service.get('GSM')
+        self.power = Service.get('Power')
+        self.prefs = Service.get('Prefs')
+        self.gprs = Service.get('Gprs')
         self.gprs.connect('gprs-status', self.gprs_status)
         self.gsm.connect('network-strength', self.network_strength)
         self.power.connect('battery_capacity', self.battery_capacity)
@@ -490,7 +489,7 @@ class TopBar(tichy.Service):
     
     def create(self, parent, onclick, standalone=False):
         
-        tb = gui.elm_tb(parent, onclick, self.edje_file, standalone)
+        tb = elm_tb(parent, onclick, self.edje_file, standalone)
         
         if hasattr(tb,"tb"):
           self.tb_list.append(tb.tb.elm_obj)

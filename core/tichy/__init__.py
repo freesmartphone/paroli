@@ -39,7 +39,5 @@ import notifications
 import config
 from settings import Setting
 
-mainloop = None
+mainloop = None # set from outside in this singleton
 
-from paroli import gui
-mainloop = gui.EventsLoop()

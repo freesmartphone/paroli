@@ -18,16 +18,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-logger = logging.getLogger('applications.telefony')
+from logging import getLogger
+logger = getLogger('applications.telefony')
 
-import os
-import tichy
-from tichy import gui
-import sys
+from os.path import join, dirname
+from tichy import Application, Service, Text, mainloop
+from tichy.tasklet import Wait, WaitFirst, tasklet
+from paroli.gui import elm_layout_window, elm_layout
 from paroli.tel_number import TelNumber
 
-class TelefonyDialer(tichy.Application):
+class TelefonyDialer(Application):
     name = 'Dialer'
     icon = 'icon.png'
     category = 'launcher'
@@ -36,23 +36,23 @@ class TelefonyDialer(tichy.Application):
     def run(self, parent=None, standalone=False):
 
         ##set edje_file
-        self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
+        self.edje_file = join(dirname(__file__),'tele.edj')
 
         self.window = gui.elm_layout_window(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
         
         ##connect to tichy's contacts service
-        self.contact_service = tichy.Service.get('Contacts')
+        self.contact_service = Service.get('Contacts')
         
         ##connect to tichy's ussd service
-        self.ussd_service = tichy.Service.get('Ussd')
+        self.ussd_service = Service.get('Ussd')
         self.edje_obj.add_callback("num_field_pressed", "*", self.num_field_action)
 
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
 
         ##wait until main object emits back signal or delete is requested
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'),tichy.Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'),Wait(self.window.window,'closing'))
         logger.info('Tele closing')
         
         if i != 2:
@@ -98,22 +98,22 @@ class TelefonyDialer(tichy.Application):
     def num_field_action(self, emission, signal, source):
         self.num_field(emission, signal, source).start()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def num_field(self, emission, signal, source):
         logger.info("num field pressed")
         number = emission.part_text_get(source)
         if number == None or len(number) == 0:
             logger.info("no number found")
-            createService = tichy.Service.get('ContactCreate')
+            createService = Service.get('ContactCreate')
             num = yield  createService.contactList(self.window,self.window.main_layout)
             emission.part_text_set('num_field-text', str(num.tel))
         else :
             logger.info("number found")
-            service = tichy.Service.get('ContactCreate')
+            service = Service.get('ContactCreate')
             service.create(self.window, str(number)).start()
             emission.part_text_set('num_field-text', "")
 
-class TeleCaller2(tichy.Application):
+class TeleCaller2(Application):
     """This is the application that deal with the calling sequence
     """
 
@@ -122,7 +122,7 @@ class TeleCaller2(tichy.Application):
 
         :Parameters:
 
-            parent : `tichy.gui.Widget`
+            parent : `paroli.gui.Widget`
                 The parent window
 
             number : str | `tichy.Text` | Call object
@@ -133,12 +133,12 @@ class TeleCaller2(tichy.Application):
         """
         logger.debug("caller run, names : %s", name)
         
-        self.storage = tichy.Service.get('TeleCom2')
-        self.gsm_service = tichy.Service.get('GSM')
-        self.dialog = tichy.Service.get('Dialog')
-        self.audio_service = tichy.Service.get('Audio')
-        self.usage_service = tichy.Service.get('Usage')
-        self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
+        self.storage = Service.get('TeleCom2')
+        self.gsm_service = Service.get('GSM')
+        self.dialog = Service.get('Dialog')
+        self.audio_service = Service.get('Audio')
+        self.usage_service = Service.get('Usage')
+        self.edje_file = join(dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
         #self.usage_service.occupy_cpu().start()
         
@@ -159,10 +159,10 @@ class TeleCaller2(tichy.Application):
         if self.audio_service.muted == 1:
             self.audio_service.audio_toggle()
             
-        self.button = tichy.Service.get('Buttons')
+        self.button = Service.get('Buttons')
         self.button_oid = self.button.connect('aux_button_pressed', self.audio_rotate)
         
-        self.TopBarService = tichy.Service.get("TopBar")
+        self.TopBarService = Service.get("TopBar")
         self.TopBarService.volume_change(self.audio_service.get_speaker_volume())
         
         self.main.connect("dehide", self.dehide_call)
@@ -174,13 +174,13 @@ class TeleCaller2(tichy.Application):
         self.edje_obj.signal_callback_add("*", "dtmf", self.send_dtmf)
         self.edje_obj.signal_callback_add("mute-toggle", "del-button", self.mute_toggle)
         self.edje_obj.signal_callback_add("audio-toggle", "del-button", self.speaker_toggle)
-        self.SoundsService = tichy.Service.get("Sounds")
+        self.SoundsService = Service.get("Sounds")
     
 
         try:
             # The case when we have an incoming call
             # XXX: we should use an other way to check for a call object !
-            if not isinstance(number, (basestring, tichy.Text)):
+            if not isinstance(number, (basestring, Text)):
                 call = number
                 try:
                     self.SoundsService.call()
@@ -228,7 +228,7 @@ class TeleCaller2(tichy.Application):
                         
                 self.edje_obj.signal_callback_add("release", "call", call_release_pre)
 
-            i, args = yield tichy.WaitFirst(tichy.Wait(call, 'activated'),tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
+            i, args = yield WaitFirst(Wait(call, 'activated'),Wait(call, 'released'),Wait(self.main, 'call_error'))
             if i == 0: #activated
                 logger.debug("call activated")
 
@@ -249,14 +249,14 @@ class TeleCaller2(tichy.Application):
 
                 self.edje_obj.signal_callback_add("release", "call", call_release)
                 
-                yield tichy.WaitFirst(tichy.Wait(call, 'released'),tichy.Wait(self.main, 'call_error'))
+                yield WaitFirst(Wait(call, 'released'),Wait(self.main, 'call_error'))
 
             if call.status not in ['released', 'releasing']:
                 try:
                     try:
                         logger.info("call not in released or releasing")
                         call.release().start()
-                        yield tichy.Wait(call, 'released')
+                        yield Wait(call, 'released')
                     except Exception, e:
                         logger.exception('TeleCaller2')
                         self.main.emit('call_error')
@@ -407,41 +407,41 @@ class TeleCaller2(tichy.Application):
         emission.signal_emit("activate_call", "*")
 
 ##Service called when incoming call detected
-class TeleCallerService(tichy.Service):
+class TeleCallerService(Service):
     service = 'TeleCaller2'
     
     def __init__(self):
         super(TeleCallerService, self).__init__()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._do_sth()
     
     def call(self, parent, number, name=None):
-        self.storage = tichy.Service.get('TeleCom2')
+        self.storage = Service.get('TeleCom2')
         if self.storage.call == None:
             return TeleCaller2('nothing', number, name)
         else:
-            self.dialog = tichy.Service.get('Dialog')
+            self.dialog = Service.get('Dialog')
             return self.dialog.dialog(None, "Error", "there is already an active call")
 
     def _do_sth(self):
         pass
 
 ##Service to store some info
-class TeleComService(tichy.Service):
+class TeleComService(Service):
     service = 'TeleCom2'
 
     def __init__(self):
         #dir(self)
         super(TeleComService, self).__init__()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         self.window = None
-        self.status = tichy.Text('None')
+        self.status = Text('None')
         self.call = None
-        self.caller = tichy.Text(" ")
+        self.caller = Text(" ")
         self.main_window = None
         yield self._do_sth()
     
@@ -457,7 +457,7 @@ class TeleComService(tichy.Service):
     def set_active(self,call):
         self.call = call
 
-class PINApp2(tichy.Application):
+class PINApp2(Application):
 
     name = 'PINApp2'
     icon = 'icon.png'
@@ -466,7 +466,7 @@ class PINApp2(tichy.Application):
 
         logger.info("PIN2 called")
         ##set edje_file
-        self.edje_file = os.path.join(os.path.dirname(__file__),'tele.edj')
+        self.edje_file = join(dirname(__file__),'tele.edj')
         
         self.main = gui.elm_layout_window(self.edje_file, "pin_enter")
         #logger.info("PIN2 main generated")
@@ -484,7 +484,7 @@ class PINApp2(tichy.Application):
         self.edje_obj.signal_callback_add("*", "sending_pin", self.call_btn_pressed)
         #self.edje_obj.signal_callback_add("*", "embryo", self.embryo)
 
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.main, 'value_received'),tichy.Wait(self.main.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.main, 'value_received'),Wait(self.main.window,'closing'))
 
         if i == 0: #value_received
             number = self.edje_obj.part_text_get("pin-text")
@@ -493,7 +493,7 @@ class PINApp2(tichy.Application):
             self.main.delete()
             yield number
         elif i == 1:
-            tichy.mainloop.quit()
+            mainloop.quit()
 
     def embryo(self, emission, signal, source):
         logger.info('embryo says: XXXX')
@@ -502,7 +502,7 @@ class PINApp2(tichy.Application):
         self.main.emit('value_received')
 
 
-class MyTextEditService(tichy.Service):
+class MyTextEditService(Service):
     """Service to edit text
 
     By creating this service class, we allow any application in need

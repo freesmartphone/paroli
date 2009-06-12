@@ -20,7 +20,6 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 import elementary
-import e_dbus
 import evas
 import evas.decorators
 import edje
@@ -34,47 +33,6 @@ import logging
 logger = logging.getLogger('core.paroli.gui')
 
 import tichy
-
-class EventsLoop(tichy.Object):
-
-    def __init__(self):
-        self.dbus_loop = e_dbus.DBusEcoreMainLoop()
-        try:
-            elementary.c_elementary.theme_overlay_add("/usr/share/elementary/themes/paroli.edj")
-        except:
-            logger.info("can't add elementary theme overlay, please update your bindings")
-        elementary.init()
-
-    def run(self):
-        """start the main loop
-
-        This method only return after we call `quit`.
-        """
-        
-        
-        ecore.main_loop_begin()
-        ecore.x.on_window_delete_request_add(self.test)
-        #elementary.run()
-        # XXX: elementary also has a run method : elementary.run(),
-        #      how does it work with ecore.main_loop ?
-
-    def test(self, *args, **kargs):
-        logger.info("delete request with %s %s", args, kargs)
-
-    def timeout_add(self, time, callback, *args):
-        return ecore.timer_add(time / 1000., callback, *args)
-
-    def source_remove(self, timer):
-        timer.delete()
-
-    def quit(self):
-        self.emit("closing")
-        logger.info("emitted closing")
-        ecore.main_loop_quit()
-        elementary.shutdown()
-        
-    def iterate(self):
-        pass #ecore.main_loop_iterate()
 
 class elm_window(tichy.Object):
     def __init__(self, title="Paroli"):
@@ -168,9 +126,9 @@ class elm_layout_window(tichy.Object):
         
         self.tb_action = onclick or 'back'
         
-        self.bg_m = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        self.topbar = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
         
-        self.bg = self.bg_m.bg
+        self.bg = self.topbar.bg
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
@@ -195,7 +153,7 @@ class elm_layout_window(tichy.Object):
 class elm_layout_subwindow(elm_layout_window):
     def __init__(self, window, edje_file, group):
         self.window = window.window
-        self.bg = window.bg_m.bg
+        self.bg = window.topbar.bg
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         #print self.bg.Edje.part_exists("content-swallow")
@@ -208,8 +166,8 @@ class elm_layout_subwindow(elm_layout_window):
 class elm_list_subwindow(elm_layout_window):
     def __init__(self, window, edje_file, group, swallow, layout=None):
         self.window = window.window
-        self.bg = window.bg_m.bg
-        self.bg_m = window.bg_m
+        self.bg = window.topbar.bg
+        self.topbar = window.topbar
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = elm_scroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
@@ -226,9 +184,9 @@ class elm_list_window(elm_layout_window):
         
         self.tb_action = onclick or 'back'
         
-        self.bg_m = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
+        self.topbar = tichy.Service.get("TopBar").create(self, self.tb_action, tb)
         
-        self.bg = self.bg_m.bg
+        self.bg = self.topbar.bg
         
         self.main_layout = elm_layout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = elm_scroller(self.window)

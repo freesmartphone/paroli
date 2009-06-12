@@ -18,21 +18,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import logging
-logger = logging.getLogger('applications.people')
+from logging import getLogger
+logger = getLogger('applications.people')
 
-import tichy
-from tichy import gui
-import sys
-import dbus
-import ecore
-import ecore.evas
-
-from tichy.tasklet import WaitFirst, Wait
+from os.path import join, dirname
+from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
+from elementary import Entry
+from paroli.gui import elm_list_window, elm_list, elm_layout, elm_list_subwindow
+from tichy import Application, Service
+from tichy.tasklet import WaitFirst, Wait, tasklet
 from paroli.sim import SIMContact
 
-class People(tichy.Application):
+class People(Application):
     name = 'People'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
@@ -41,10 +38,10 @@ class People(tichy.Application):
 
         ##set edje file to be used
         ##TODO: make one edje file per plugin
-        self.edje_file = os.path.join(os.path.dirname(__file__),'people.edj')
+        self.edje_file = join(dirname(__file__),'people.edj')
 
         ##get contact service and list of all contacts
-        self.contact_service = tichy.Service.get('Contacts')
+        self.contact_service = Service.get('Contacts')
         self.contacts = self.contact_service.contacts
 
         ##sort contact by name
@@ -52,11 +49,11 @@ class People(tichy.Application):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
 
         ##generate app-window
-        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
 
         self.list_label = [('label','name')]
-        self.item_list = gui.elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = elm_list(self.contacts, self.window, self.edje_file, "item", self.list_label, comp)
        
         self.item_list.add_callback("contact_details", "*", self.contact_details)
         #self.item_list.add_callback("mouse,clicked,1", "*", self.self_test)
@@ -74,7 +71,7 @@ class People(tichy.Application):
         #self.item_list.jump_to_index('q')
         #self.window.scroller.elm_obj.region_show(240, 60, 480, 60)
         
-        yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'))
+        yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'))
         logger.info('People closing')
         #self.main.emit('closed')
         
@@ -95,13 +92,13 @@ class People(tichy.Application):
         logger.info(txt)
 
     def create_contact(self, emission, source, param):
-        service = tichy.Service.get('ContactCreate')
+        service = Service.get('ContactCreate')
         service.create(self.window).start()
     
     def contact_details(self, emission, source, param, item):
         number = str(item[0].tel)
         name = unicode(item[0].name).encode("utf-8")
-        detail_layout =  gui.elm_layout(self.window.window, self.edje_file, "contact_details")              
+        detail_layout =  elm_layout(self.window.window, self.edje_file, "contact_details")              
         edje_obj = detail_layout.elm_obj.edje_get()
         edje_obj.part_text_set('name-text',str(name).encode('utf8'))
         edje_obj.part_text_set('number-text',str(number).encode('utf8'))
@@ -133,13 +130,13 @@ class People(tichy.Application):
     
     #editing
     def edit_contact(self, emission, signal, source, contact, layout):
-        service = tichy.Service.get('ContactCreate')
+        service = Service.get('ContactCreate')
         service.create(self.window, "", "", contact, signal, layout).start()
     
     def call_contact(self, emission, source, param, contact):
         number = contact.tel.value
         name = unicode(contact)
-        caller_service = tichy.Service.get('TeleCaller2')
+        caller_service = Service.get('TeleCaller2')
         caller_service.call("window", number, name).start()
     
     #deleting
@@ -147,7 +144,7 @@ class People(tichy.Application):
     def delete_contact(self, emission, signal, source, item, layout):
         self.delete_contact_taskl(emission, signal, source, item, layout).start()
         
-    @tichy.tasklet.tasklet
+    @tasklet
     def delete_contact_taskl(self, emission, signal, source, item, layout):
         logger.info("delete contact called")
         try:
@@ -155,7 +152,7 @@ class People(tichy.Application):
             if isinstance(item, SIMContact):
                 logger.info("is SIMContact")
                 yield item.delete()
-                #self.sim_service = tichy.Service.get('SIM')
+                #self.sim_service = Service.get('SIM')
                 #logger.info("remove contact %s from sim", item.name)
                 #yield WaitDBus(self.sim_service.gsm_sim.DeleteEntry, 'contacts',item.sim_index)
             
@@ -168,17 +165,17 @@ class People(tichy.Application):
         yield None
     
     def create_msg(self, emission, source, param, item):
-        service = tichy.Service.get('MessageCreate')
+        service = Service.get('MessageCreate')
         service.write(self.window, 'reply', item[0].tel).start()
 
 ##Service to store some info
-class ContactCreate(tichy.Service):
+class ContactCreate(Service):
     service = 'ContactCreate'
 
     def __init__(self):
         super(ContactCreate, self).__init__()
     
-    @tichy.tasklet.tasklet
+    @tasklet
     def init(self):
         yield self._do_sth()
         
@@ -193,14 +190,14 @@ class ContactCreate(tichy.Service):
         #print ret
         return ret
 
-class ListContacts(tichy.Application):
+class ListContacts(Application):
     
     name = 'ListContactsApp'
     
     def run(self, parent, layout, *args, **kargs):
 
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
-        self.list_layout =  gui.elm_list_subwindow(parent, self.edje_file, "main", "list")
+        self.edje_file = join(dirname(__file__), 'people.edj')
+        self.list_layout =  elm_list_subwindow(parent, self.edje_file, "main", "list")
         
         edje_obj = self.list_layout.main_layout.elm_obj.edje_get()
     
@@ -209,7 +206,7 @@ class ListContacts(tichy.Application):
         self.list_layout.main_layout.elm_obj.show()
         
         ##get contact service and list of all contacts
-        self.contact_service = tichy.Service.get('Contacts')
+        self.contact_service = Service.get('Contacts')
         self.contacts = self.contact_service.contacts
 
         ##sort contact by name
@@ -217,7 +214,7 @@ class ListContacts(tichy.Application):
             return cmp(str(m1.name).lower(), str(m2.name).lower())
         
         self.list_label = [('label','name')]
-        self.item_list = gui.elm_list(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
+        self.item_list = elm_list(self.contacts, self.list_layout, self.edje_file, "item", self.list_label, comp)
         
         self.item_list.signal_send('list_only_mode', "*")
         
@@ -228,7 +225,7 @@ class ListContacts(tichy.Application):
 
         self.item_list.add_callback("contact_details", "*", self.contact_clicked)
 
-        yield tichy.Wait(self.list_layout, 'picked')
+        yield Wait(self.list_layout, 'picked')
         
         self.list_layout.main_layout.delete()
         parent.restore_orig()
@@ -240,13 +237,13 @@ class ListContacts(tichy.Application):
         self.contact = item[0]
         self.list_layout.emit('picked')
 
-class CreateContact(tichy.Application):
+class CreateContact(Application):
     
     name = 'CreateContactApp'
     
     def run(self, parent, number, name, contact, mode, layout, *args, **kargs):
         try:
-          self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
+          self.edje_file = join(dirname(__file__), 'people.edj')
           number_layout = 0
           text_layout = 0
           send = 0
@@ -265,11 +262,11 @@ class CreateContact(tichy.Application):
           
               if full or mode == "number":
                   
-                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                   
                   if number_layout == 0:
                     
-                      number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
+                      number_layout =  elm_layout(parent.window, self.edje_file, "edit_number")
                       
                       edje_obj = number_layout.elm_obj.edje_get()
                   
@@ -285,7 +282,7 @@ class CreateContact(tichy.Application):
                   
                   parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
                   
-                  i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
+                  i, args = yield WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
               
                   if i == 0: #back
                       logger.debug( "breaking")
@@ -300,11 +297,11 @@ class CreateContact(tichy.Application):
               
               if mode != "number":
                   
-                parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
+                parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
                   
                 if text_layout == 0:
                     
-                    text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
+                    text_layout = elm_layout(parent.window, self.edje_file, "CreateContact")
                     
                     edje_obj = text_layout.elm_obj.edje_get()
                     
@@ -312,7 +309,7 @@ class CreateContact(tichy.Application):
                     
                     parent.main_layout.elm_obj.hide()
                     
-                    textbox = gui.elementary.Entry(parent.window.elm_obj)
+                    textbox = Entry(parent.window.elm_obj)
                     textbox.single_line_set(True)
             
                     textbox.color_set(255, 255, 255, 255)
@@ -332,12 +329,12 @@ class CreateContact(tichy.Application):
                 textbox.focus()
                 textbox.show()
                 
-                i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
+                i, args = yield WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
                 
                 if i == 0: #back
                     if full:
                         text_layout.elm_obj.hide()
-                        parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                        parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                         continue
                     else:
                         break
@@ -348,7 +345,7 @@ class CreateContact(tichy.Application):
           if send == 1:
               if text_layout:
                   text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-              contacts_service = tichy.Service.get('Contacts')
+              contacts_service = Service.get('Contacts')
               if contact not in contacts_service.contacts:
                   name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
                   new_contact = contacts_service.create(name.strip(),tel=str(number))
@@ -365,7 +362,7 @@ class CreateContact(tichy.Application):
                       
                   layout.elm_obj.show()
           
-          parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+          parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
           
           if number_layout:
               number_layout.delete()

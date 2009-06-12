@@ -25,17 +25,59 @@
 
 Main script to start paroli.
 """
+import logging
+logger = logging.getLogger('core.paroli')
 
 import os
 import sys
 import dbus
 import dbus.service
+import e_dbus
+import elementary
+import ecore
 from optparse import OptionParser
-import logging
 import tichy
 
-logger = logging.getLogger('core.paroli')
+class EventsLoop(tichy.Object):
 
+    def __init__(self):
+        self.dbus_loop = e_dbus.DBusEcoreMainLoop()
+        try:
+            elementary.c_elementary.theme_overlay_add("/usr/share/elementary/themes/paroli.edj")
+        except:
+            logger.info("can't add elementary theme overlay, please update your bindings")
+        elementary.init()
+
+    def run(self):
+        """start the main loop
+
+        This method only return after we call `quit`.
+        """
+        
+        
+        ecore.main_loop_begin()
+        ecore.x.on_window_delete_request_add(self.test)
+        #elementary.run()
+        # XXX: elementary also has a run method : elementary.run(),
+        #      how does it work with ecore.main_loop ?
+
+    def test(self, *args, **kargs):
+        logger.info("delete request with %s %s", args, kargs)
+
+    def timeout_add(self, time, callback, *args):
+        return ecore.timer_add(time / 1000., callback, *args)
+
+    def source_remove(self, timer):
+        timer.delete()
+
+    def quit(self):
+        self.emit("closing")
+        logger.info("emitted closing")
+        ecore.main_loop_quit()
+        elementary.shutdown()
+        
+    def iterate(self):
+        pass #ecore.main_loop_iterate()
 
 def parse_options():
     """Parse the command line options
@@ -178,6 +220,7 @@ def main(*args):
     options = parse_options()
 
     setup_logging()
+    tichy.mainloop = EventsLoop()
     tichy.config.parse(cfg_file=options.cfg_file)
     
     if tichy.config.getboolean('dbus','activated', False):

@@ -19,15 +19,15 @@
 #    along with Paroli.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import logging
-logger = logging.getLogger('applications.inout')
+from logging import getLogger
+logger = getLogger('applications.inout')
 
-import os
-import tichy
-from tichy import gui
+from os.path import join, dirname
+from tichy import Application, Service
 from tichy.tasklet import Wait, WaitFirst
+from paroli.gui import elm_list_window, elm_list
 
-class InOutCallLog(tichy.Application):
+class InOutCallLog(Application):
     name = 'InOutCallLog'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
@@ -35,13 +35,13 @@ class InOutCallLog(tichy.Application):
     
     def run(self, parent=None, standalone=False):
         ##to be standardized
-        self.edje_file = os.path.join(os.path.dirname(__file__), 'i-o.edj')
+        self.edje_file = join(dirname(__file__), 'i-o.edj')
 
-        self.gsm_service = tichy.Service.get('GSM')
+        self.gsm_service = Service.get('GSM')
         self.callLogs = self.gsm_service.logs
 
         ##get message service and list of all messages
-        self.contact_service = tichy.Service.get('Contacts')
+        self.contact_service = Service.get('Contacts')
         self.contacts = self.contact_service.contacts
         ##sort contact by date
         def comp2(m1, m2):
@@ -50,7 +50,7 @@ class InOutCallLog(tichy.Application):
         self.contacts.sort(comp2) 
 
         ##generate app-window
-        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = elm_list_window(self.edje_file, "main", "list", None, None, True)
         self.edje_obj = self.window.main_layout
         
         def comp(m1, m2):
@@ -58,7 +58,7 @@ class InOutCallLog(tichy.Application):
 
         #  We use the Call object to as items in the call log 
         self.list_label = [('label', 'number'), ('subtext', 'description')]
-        self.item_list = gui.elm_list(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
+        self.item_list = elm_list(self.callLogs, self.window, self.edje_file, "item", self.list_label, comp)
         
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
@@ -75,7 +75,7 @@ class InOutCallLog(tichy.Application):
 
         self.item_list.Elm_win = self.window.window
 
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'back'),tichy.Wait(self.window, 'delete_request'), tichy.Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'back'),Wait(self.window, 'delete_request'), Wait(self.window.window,'closing'))
         
         for i in self.callLogs:
             i.missed = False
@@ -118,15 +118,15 @@ class InOutCallLog(tichy.Application):
     def create_call(self, emission, source, param, callLog):
         number = callLog[0].number.value
         name = unicode(callLog[0])
-        caller_service = tichy.Service.get('TeleCaller2')
+        caller_service = Service.get('TeleCaller2')
         caller_service.call("window", number, name).start()
     
     def create_msg(self, emission, source, param, callLog):
-        service = tichy.Service.get('MessageCreate')
+        service = Service.get('MessageCreate')
         service.write(self.window, 'reply', callLog[0].number).start()
     
     def create_contact(self, emission, source, param, callLog):
-        service = tichy.Service.get('ContactCreate')
+        service = Service.get('ContactCreate')
         service.create(self.window, callLog[0].number).start()
 
     def printer(self, *args, **kargs):
