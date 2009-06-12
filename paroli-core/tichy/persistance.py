@@ -29,9 +29,9 @@ import os
 
 import logging
 try:
-	import cPickle as pickle
+    import cPickle as pickle
 except:
-	import pickle
+    import pickle
 
 logger = logging.getLogger('persistance')
 
@@ -68,8 +68,8 @@ class Persistance(object):
                 serialized. Usually dictionary or list.
         """
 
-	# Save the object to a python pickle:
-	# http://docs.python.org/library/pickle.html
+        # Save the object to a python pickle:
+        # http://docs.python.org/library/pickle.html
         file = self._open('w')
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
 
@@ -78,7 +78,7 @@ class Persistance(object):
 
         :Returns: The structure previously saved into the file
         """
-        
+
         try:
             file = self._open()
         except IOError, ex:
@@ -94,18 +94,18 @@ class Persistance(object):
         import ConfigParser
         parser = ConfigParser.ConfigParser()
         parser.readfp(file)
-        
+
         #return yaml.load(file, Loader=Loader)
         result = []
-        
+
         for s in parser.sections():
             sub_result = {}
             for k, v in parser.items(s):
                 #d = [k, v]<<<d
                 sub_result[k]=v.decode('utf-8')
-            
+
             result.append(sub_result)
-        
+
         #print result
         return result
         return None
