@@ -80,33 +80,33 @@ class People2App(tichy.Application):
         #del self.item_list
     
     def openDict(self, emission, signal, source):
-          if signal == "opening":
-              self.dictButtons = []
-              self.dictTable = gui.elementary.Table(self.window.window.elm_obj)
-              self.dictTable.show()
-              self.dictTable.layer_set(99)
-              self.edje_obj.elm_obj.content_set("dict-window",self.dictTable)
-              counter_x = 0
-              counter_y = 0
-              for i in self.item_list.letter_index.keys():
-                  button = gui.elementary.Button(self.window.window.elm_obj)
-                  button.label_set(i)
-                  button.on_mouse_up_add(self.item_list.jump_to_index, i)
-                  self.dictButtons.append(button)
-                  button.show()
-                  self.dictTable.pack(button, counter_x*20, round((counter_y / 4) + 0.5) * 20 , 20, 20)
-                  counter_y += 1
-                  if counter_x == 3:
-                      counter_x = 0
-                  else:
+        if signal == "opening":
+            self.dictButtons = []
+            self.dictTable = gui.elementary.Table(self.window.window.elm_obj)
+            self.dictTable.show()
+            self.dictTable.layer_set(99)
+            self.edje_obj.elm_obj.content_set("dict-window",self.dictTable)
+            counter_x = 0
+            counter_y = 0
+            for i in self.item_list.letter_index.keys():
+                button = gui.elementary.Button(self.window.window.elm_obj)
+                button.label_set(i)
+                button.on_mouse_up_add(self.item_list.jump_to_index, i)
+                self.dictButtons.append(button)
+                button.show()
+                self.dictTable.pack(button, counter_x*20, round((counter_y / 4) + 0.5) * 20 , 20, 20)
+                counter_y += 1
+                if counter_x == 3:
+                    counter_x = 0
+                else:
                     counter_x += 1
-              
-          elif signal == "closing":
-              logger.info("closing")
-              for i in self.dictButtons :
-                  i.hide()
-                  if i.is_deleted() == False:
-                      del i
+            
+        elif signal == "closing":
+            logger.info("closing")
+            for i in self.dictButtons :
+                i.hide()
+                if i.is_deleted() == False:
+                    del i
     
     def signal(self, emission, signal, source):
         """ Callback function. It invokes, when the "back" button clicked."""
@@ -273,87 +273,61 @@ class CreateContact(tichy.Application):
     
     def run(self, parent, number, name, contact, mode, layout, *args, **kargs):
         try:
-          self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
-          number_layout = 0
-          text_layout = 0
-          send = 0
-          
-          if contact != None:
-              name = unicode(contact.name).encode("utf-8")
-              number = str(contact.tel)
-              layout.elm_obj.hide()
-          
-          if number == "":
-              full = True
-          else:
-              full = False
-          
-          while True:
-          
-              if full or mode == "number":
-                  
-                  parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-                  
-                  if number_layout == 0:
-                    
-                      number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
-                      
-                      edje_obj = number_layout.elm_obj.edje_get()
-                  
-                      edje_obj.part_text_set('num_field-text', number)
-                  
-                      number_layout.elm_obj.show()
-                      
-                      parent.main_layout.elm_obj.hide()
-                  
-                  else:
-                      
-                      number_layout.elm_obj.show()
-                  
-                  parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
-                  
-                  i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
-              
-                  if i == 0: #back
-                      print "breaking"
-                      break
-                      
-                  if i == 1: #next
-                      number_layout.elm_obj.hide()
-                      number = edje_obj.part_text_get('num_field-text') 
-                      if mode == "number":
-                          send = 1
-                          break
-              
-              if mode != "number":
-                  
+            self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
+            number_layout = 0
+            text_layout = 0
+            send = 0
+            
+            if contact != None:
+                name = unicode(contact.name).encode("utf-8")
+                number = str(contact.tel)
+                layout.elm_obj.hide()
+            
+            if number == "":
+                full = True
+            else:
+                full = False
+            
+            while True:
+                if full or mode == "number":
+                    parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                    if number_layout == 0:
+                        number_layout =  gui.elm_layout(parent.window, self.edje_file, "edit_number")
+                        edje_obj = number_layout.elm_obj.edje_get()
+                        edje_obj.part_text_set('num_field-text', number)
+                        number_layout.elm_obj.show()
+                        parent.main_layout.elm_obj.hide()
+                    else:
+                        number_layout.elm_obj.show()
+                    parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
+                    i, args = yield tichy.WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
+                    if i == 0: #back
+                        print "breaking"
+                        break
+                    if i == 1: #next
+                        number_layout.elm_obj.hide()
+                        number = edje_obj.part_text_get('num_field-text') 
+                        if mode == "number":
+                            send = 1
+                            break
+                
+            if mode != "number":
                 parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
-                  
                 if text_layout == 0:
-                    
                     text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
-                    
                     edje_obj = text_layout.elm_obj.edje_get()
-                    
                     text_layout.elm_obj.show()
-                    
                     parent.main_layout.elm_obj.hide()
-                    
                     textbox = gui.elementary.Entry(parent.window.elm_obj)
                     textbox.single_line_set(True)
-            
                     textbox.color_set(255, 255, 255, 255)
-                    
                     textbox.entry_set(name)
-                    
                     textbox.size_hint_weight_set(1.0, 1.0)
                     text_layout.elm_obj.content_set('entry', textbox)
                     textbox.editable_set(True)        
                 
                 else:
                     text_layout.elm_obj.show()
-                
-                
                 parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
                 
                 textbox.focus()
@@ -372,40 +346,32 @@ class CreateContact(tichy.Application):
                     send = 1
                     break
           
-          if send == 1:
-              if text_layout:
-                  text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-              contacts_service = tichy.Service.get('Contacts')
-              if contact not in contacts_service.contacts:
-                  name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                  new_contact = contacts_service.create(name.strip(),tel=str(number))
-                  contacts_service.add(new_contact)
-                  contacts_service.contacts.emit('inserted')
-              else:
-                  if mode == "name":
-                      name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                      logger.info("updating name")
-                      contact.name = name.strip()
-                  elif mode == "number":
-                      logger.info("updating number")
-                      contact.tel = number
-                      
-                  layout.elm_obj.show()
-          
-          parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-          
-          if number_layout:
-              number_layout.delete()
-              
-          if text_layout:
-              text_layout.delete()
-          
-          parent.restore_orig()    
-          
-          ret = "done"
-          
-          yield ret
-          
+            if send == 1:
+                if text_layout:
+                    text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+                contacts_service = tichy.Service.get('Contacts')
+                if contact not in contacts_service.contacts:
+                    name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
+                    new_contact = contacts_service.create(name.strip(),tel=str(number))
+                    contacts_service.add(new_contact)
+                    contacts_service.contacts.emit('inserted')
+                else:
+                    if mode == "name":
+                        name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
+                        logger.info("updating name")
+                        contact.name = name.strip()
+                    elif mode == "number":
+                        logger.info("updating number")
+                        contact.tel = number
+                    layout.elm_obj.show()
+            parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+            if number_layout:
+                number_layout.delete()
+            if text_layout:
+                text_layout.delete()
+            parent.restore_orig()    
+            ret = "done"
+            yield ret
         except Exception, e:
             print e
             print Exception
