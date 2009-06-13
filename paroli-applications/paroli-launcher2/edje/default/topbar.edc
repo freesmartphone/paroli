@@ -106,7 +106,7 @@ group{
                 fixed: 1 1;
                 rel1 
                 {
-                    relative: 0.0 0.078;
+                    relative: 0.0 0.0;
                     to:"base";
                 }
                 rel2 
