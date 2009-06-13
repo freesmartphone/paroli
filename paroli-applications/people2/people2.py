@@ -311,59 +311,59 @@ class CreateContact(tichy.Application):
                             send = 1
                             break
                 
-            if mode != "number":
-                parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
-                if text_layout == 0:
-                    text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
-                    edje_obj = text_layout.elm_obj.edje_get()
-                    text_layout.elm_obj.show()
-                    parent.main_layout.elm_obj.hide()
-                    textbox = gui.elementary.Entry(parent.window.elm_obj)
-                    textbox.single_line_set(True)
-                    textbox.color_set(255, 255, 255, 255)
-                    textbox.entry_set(name)
-                    textbox.size_hint_weight_set(1.0, 1.0)
-                    text_layout.elm_obj.content_set('entry', textbox)
-                    textbox.editable_set(True)        
-                
-                else:
-                    text_layout.elm_obj.show()
-                parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
-                
-                textbox.focus()
-                textbox.show()
-                
-                i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
-                
-                if i == 0: #back
-                    if full:
-                        text_layout.elm_obj.hide()
-                        parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-                        continue
+                if mode != "number":
+                    parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)  
+                    if text_layout == 0:
+                        text_layout = gui.elm_layout(parent.window, self.edje_file, "CreateContact")
+                        edje_obj = text_layout.elm_obj.edje_get()
+                        text_layout.elm_obj.show()
+                        parent.main_layout.elm_obj.hide()
+                        textbox = gui.elementary.Entry(parent.window.elm_obj)
+                        textbox.single_line_set(True)
+                        textbox.color_set(255, 255, 255, 255)
+                        textbox.entry_set(name)
+                        textbox.size_hint_weight_set(1.0, 1.0)
+                        text_layout.elm_obj.content_set('entry', textbox)
+                        textbox.editable_set(True)        
+                    
                     else:
+                        text_layout.elm_obj.show()
+                    parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
+                    
+                    textbox.focus()
+                    textbox.show()
+                    
+                    i, args = yield tichy.WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'save'))
+                    
+                    if i == 0: #back
+                        if full:
+                            text_layout.elm_obj.hide()
+                            parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                            continue
+                        else:
+                            break
+                    if i == 1: #save
+                        send = 1
                         break
-                if i == 1: #save
-                    send = 1
-                    break
-          
-            if send == 1:
-                if text_layout:
-                    text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-                contacts_service = tichy.Service.get('Contacts')
-                if contact not in contacts_service.contacts:
-                    name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                    new_contact = contacts_service.create(name.strip(),tel=str(number))
-                    contacts_service.add(new_contact)
-                    contacts_service.contacts.emit('inserted')
-                else:
-                    if mode == "name":
+              
+                if send == 1:
+                    if text_layout:
+                        text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+                    contacts_service = tichy.Service.get('Contacts')
+                    if contact not in contacts_service.contacts:
                         name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                        logger.info("updating name")
-                        contact.name = name.strip()
-                    elif mode == "number":
-                        logger.info("updating number")
-                        contact.tel = number
-                    layout.elm_obj.show()
+                        new_contact = contacts_service.create(name.strip(),tel=str(number))
+                        contacts_service.add(new_contact)
+                        contacts_service.contacts.emit('inserted')
+                    else:
+                        if mode == "name":
+                            name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
+                            logger.info("updating name")
+                            contact.name = name.strip()
+                        elif mode == "number":
+                            logger.info("updating number")
+                            contact.tel = number
+                        layout.elm_obj.show()
             parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
             if number_layout:
                 number_layout.delete()
