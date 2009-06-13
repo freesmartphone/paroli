@@ -81,7 +81,7 @@ def setup_logging():
         '%(filename)s %(lineno)d %(name)-8s %(levelname)-8s %(message)s')
     stream_log = logging.StreamHandler()
     stream_log.setFormatter(formatter)
-    stream_log.setLevel(logging.INFO)
+    stream_log.setLevel(logging.INFO) #TODO: set logging from .cfg file
     logger.addHandler(stream_log)
 
 
