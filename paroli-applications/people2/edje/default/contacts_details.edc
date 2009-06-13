@@ -476,11 +476,18 @@ group  {
             name: "call-contact";
             signal: "mouse,up,1";
             source: "number-text-button";
+            after: "call-contact-anim";
+            after: "call-contact-emit"; //TODO: do two things at the same time
+        }
+        program {
+            name: "call-contact-anim";
+            //signal: "callContactAnim";
+            //source: "*";
             action: STATE_SET "default" 0.0;
             transition: LINEAR 0.5;
             target: "number-text-button";
-            after: "call-contact-emit"; //TODO: do two things at the same time
         }
+                
         program {
             name: "call-contact-emit";
             action: SIGNAL_EMIT "call_contact" "people";
@@ -576,4 +583,5 @@ group  {
         }
     }
 }
+
 
