@@ -24,12 +24,11 @@ This module gives access to a global config instance that can be used
 to store configuration values that can be accessed at any point in the
 code.
 """
-
-import ConfigParser
-import os
-
 import logging
 logger = logging.getLogger('core.tichy.config')
+
+from ConfigParser import SafeConfigParser
+from os.path import expanduser
 
 # The global config instance
 config = None
@@ -52,11 +51,11 @@ def parse(cfg_file=None):
     if config:
         logger.warning("parsing config twice")
 
-    config = ConfigParser.SafeConfigParser()
+    config = SafeConfigParser()
     if not cfg_file:
         local_path = "./paroli.cfg"
         system_path = "/etc/paroli/paroli.cfg"
-        home_path = os.path.expanduser("~/.paroli/paroli.cfg")
+        home_path = expanduser("~/.paroli/paroli.cfg")
         files = [local_path, system_path, home_path]
     else:
         files = cfg_file.split(':')

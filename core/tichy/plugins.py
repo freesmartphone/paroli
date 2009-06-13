@@ -15,19 +15,17 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
-
-
-import os
-import os.path
-import sys
-
 import logging
 logger = logging.getLogger('core.tichy.plugins')
 
+from os import listdir
+from os.path import exists, join
+import sys
+
 
 def _get_all_modules(path):
-    for directory in os.listdir(path):
-        if os.path.exists(os.path.join(path, directory, '__init__.py')): # TODO: check if there is a py std way for this
+    for directory in listdir(path):
+        if exists(join(path, directory, '__init__.py')): # TODO: check if there is a py std way for this
             yield directory
         else:
             logger.debug('ignored directory "%s"', directory)
@@ -35,7 +33,7 @@ def _get_all_modules(path):
 
 def import_all(directory):
     logger.debug("import_all %s", directory)
-    if not os.path.exists(directory):
+    if not exists(directory):
         logger.error("path '%s' does not exist", directory)
         raise IOError
     sys_path = sys.path[:]

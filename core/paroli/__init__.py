@@ -32,9 +32,10 @@ import os
 import sys
 import dbus
 import dbus.service
-import e_dbus
-import elementary
 import ecore
+import e_dbus
+import edje # what the hell FIXME not importing this here destroyes paroli somewhere else!
+import elementary
 from optparse import OptionParser
 from tichy.application import Application
 from tichy.plugins import import_all

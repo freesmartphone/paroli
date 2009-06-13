@@ -26,8 +26,7 @@ a way similar to gobject.
 
 __docformat__ = 'reStructuredText'
 
-import os
-
+from os.path import dirname, join, exists
 from types import GeneratorType
 from tichy.tasklet import Tasklet
 
@@ -58,15 +57,15 @@ class Object(object):
         # XXX: this path method sucks
         module_str = cls.__module__
         module = __import__(module_str)
-        ret = os.path.dirname(module.__file__)
+        ret = dirname(module.__file__)
         if path:
-            ret = os.path.join(ret, path)
-        if os.path.exists(ret):
+            ret = join(ret, path)
+        if exists(ret):
             return ret
         # If we didn't find the file then we check in the system dir
         for base in ['/usr/tichy', '/usr/share/tichy']:
-            ret = os.path.join(base, path)
-            if os.path.exists(ret):
+            ret = join(base, path)
+            if exists(ret):
                 return ret
 
     @classmethod

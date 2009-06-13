@@ -19,9 +19,9 @@
 
 __docformat__ = 'reStructuredText'
 
-from tichy.tasklet import Tasklet
-from tichy.item import Item
-from tichy.service import Service
+from tasklet import Tasklet
+from item import Item
+from text import Text
 
 # TODO: shouldn't we rename this to Applet ???
 
@@ -54,7 +54,6 @@ class Application(Tasklet, Item):
 
         default to the class 'name' attribute
         """
-        from .text import Text
         return Text(cls.name)
 
     @classmethod

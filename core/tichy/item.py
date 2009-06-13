@@ -23,8 +23,7 @@ __docformat__ = "restructuredtext en"
 
 import sys
 
-import tichy
-from tichy.object import Object
+from object import Object
 
 class ItemMetaClass(type):
     """The Meta class for Item class
@@ -39,7 +38,7 @@ class ItemMetaClass(type):
         for base in bases:
             if base is Object:
                 continue
-            while issubclass(base, tichy.item.Item):
+            while issubclass(base, Item):
                 base.subclasses.append(cls)
                 base = base.__base__
 
@@ -83,7 +82,8 @@ class Item(Object):
 
         :Returns: `tichy.Text` object
         """
-        return tichy.Text(self.name)
+        from text import Text
+        return Text(self.name)
 
     def get_sub_text(self):
         """Return an optional sub text for the item

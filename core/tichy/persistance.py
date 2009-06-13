@@ -24,16 +24,15 @@
 
 # TODO: turn the save and load methods into a `Tasklet`. Saving into a
 #       file can take a lot of time.
-
-import os
-
 import logging
+logger = logging.getLogger('core.tichy.persistance')
+
+from os import makedirs
+from os.path import expanduser, join, dirname, exists
 try:
     import cPickle as pickle
 except:
     import pickle
-
-logger = logging.getLogger('core.tichy.persistance')
 
 
 class Persistance(object):
@@ -41,17 +40,17 @@ class Persistance(object):
 
     All the data will be placed into ~/.paroli directory."""
 
-    base_path = os.path.expanduser('~/.paroli/')
+    base_path = expanduser('~/.paroli/')
 
     def __init__(self, path):
         self.path = path
         logger.info("path = %s", path)
 
     def _open(self, mod='r'):
-        path = os.path.join(self.base_path, self.path)
-        dir = os.path.dirname(path)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        path = join(self.base_path, self.path)
+        dir = dirname(path)
+        if not exists(dir):
+            makedirs(dir)
         try:
             return open(path, mod)
         except IOError, ex:
@@ -109,4 +108,3 @@ class Persistance(object):
 
         #print result
         return result
-        return None

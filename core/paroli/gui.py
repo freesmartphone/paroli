@@ -24,7 +24,6 @@ from logging import getLogger
 logger = getLogger('core.paroli.gui')
 
 import elementary
-import edje # what the hell FIXME not importing this here destroyes paroli somewhere else!
 from tichy import config
 from tichy.service import Service
 from tichy.item import Item

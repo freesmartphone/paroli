@@ -17,20 +17,18 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Tichy.  If not, see <http://www.gnu.org/licenses/>.
-
 """
 The tasklet module is a very powerfull tool that allow us to write
 functions that look like thread (with blocking call), but are in fact
 using callback.
 """
+import logging
+logger = logging.getLogger('core.tichy.tasklet')
 
 __docformat__ = "restructuredtext en"
 
 import sys
 from types import GeneratorType
-
-import logging
-logger = logging.getLogger('core.tichy.tasklet')
 
 
 def tasklet(func):

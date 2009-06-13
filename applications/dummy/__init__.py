@@ -6,7 +6,7 @@ logger = getLogger('applications.dummy')
 from os.path import join as pjoin, dirname
 from tichy.application import Application
 from tichy.tasklet import Sleep
-from gui import ElementaryLayoutWindow
+from paroli.gui import ElementaryLayoutWindow
 
 class Dummy(Application):
 	name = 'Dummy'
