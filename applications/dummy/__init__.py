@@ -16,7 +16,6 @@ class Dummy(Application):
 		logger.info('run starts')
 		edje_file = pjoin(dirname(__file__), 'dummy.edj')
 		window = ElementaryLayoutWindow(edje_file, "dummy", None, None, True)
-		window.main_layout.elm_obj.edje_get().show()
 		window.main_layout.elm_obj.edje_get().part_text_set('dummy.textview', '''<h1>I`m a dummy</h1><p><strong>Hihi bla fasel</strong></p><p><red>Hihi bla fasel</red></p>''')
 		yield Sleep(5)
 		window.delete()

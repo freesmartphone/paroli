@@ -34,14 +34,9 @@ class ElementaryWindow(Object):
     def __init__(self, title="Paroli"):
         self.elm_obj = elementary.Window(title, elementary.ELM_WIN_BASIC)
         self.elm_obj.title_set(title)
-        self.elm_obj.show()
         self.elm_obj.autodel_set(True)
         self.elm_obj.on_del_add(self.closing)
-        #self.elm_obj.on_resize_add(self.info)
-
-        #self.size = self.elm_obj.size_get()
-        #print dir(self.size)
-        #print self.size[0]
+        self.elm_obj.show()
 
     def closing(self, *args, **kargs):
         self.emit("closing")
@@ -58,14 +53,18 @@ class ElementaryWindow(Object):
                 logger.debug('%s', self.elm_obj.layer_get())
                 self.elm_obj.resize(self.size[0],self.size[1])
 
+    def delete(self, *args, **kargs):
+        self.elm_obj.delete()
+
 
 class ElementaryLayout(Object):
     def __init__(self, win, edje_file, group, x=1.0, y=1.0):
         self.elm_obj = elementary.Layout(win.elm_obj)
         self.elm_obj.file_set(edje_file, group)
-        self.elm_obj.show()
         self.add_callback("*", "main_command", self.relay)
         self.edje = self.elm_obj.edje_get()
+        self.edje.show()
+        self.elm_obj.show()
 
     def relay(self, emission, signal, source):
         logger.info("%s relaying %s", self, signal)
@@ -79,7 +78,6 @@ class ElementaryLayout(Object):
         self.elm_obj.edje_get().signal_callback_add(signal, source, func)
 
     def delete(self, *args, **kargs):
-        self.elm_obj.hide()
         self.elm_obj.delete()
 
 class ElementaryScroller(Object):
@@ -119,13 +117,9 @@ class ElementaryLayoutWindow(Object):
     def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False, onclick=None):
         self.window = ElementaryWindow()
         self.window.elm_obj.show()
-
         self.tb_action = onclick or 'back'
-
         self.topbar = Service.get("TopBar").create(self, self.tb_action, tb)
-
         self.bg = self.topbar.bg
-
         self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
@@ -177,13 +171,9 @@ class ElementaryListWindow(ElementaryLayoutWindow):
     def __init__(self, edje_file, group, swallow , sx=None, sy=None, tb=False, onclick=None):
         self.window = ElementaryWindow()
         self.window.elm_obj.show()
-
         self.tb_action = onclick or 'back'
-
         self.topbar = Service.get("TopBar").create(self, self.tb_action, tb)
-
         self.bg = self.topbar.bg
-
         self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
         self.scroller = ElementaryScroller(self.window)
         self.main_layout.elm_obj.content_set(swallow, self.scroller.elm_obj)
@@ -193,7 +183,6 @@ class ElementaryListWindow(ElementaryLayoutWindow):
 
 class ElementaryList(Object):
       def __init__(self, model, parent, edje_file, group, label_list, comp_fct):
-
           self.model = model
           self.parent = parent
           self.edje_file = edje_file
@@ -276,9 +265,7 @@ class ElementaryList(Object):
 
               self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
               self.box.elm_obj.show()
-
               self.parent.scroller.elm_obj.show()
-
               self._renew_callbacks()
 
       def _renew_callbacks(self, *args, **kargs):
