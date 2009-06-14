@@ -75,6 +75,9 @@ class Settings(tichy.Application):
         
         self.item_list.add_callback("*", "sublist", self._show_sublist) 
         
+        ## close the Tele app, with the back button (signal, source, method)
+        self.edje_obj.add_callback("back", "edje", self.signal) 
+        
         parent.emit("unblock")
         
         i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
@@ -85,9 +88,17 @@ class Settings(tichy.Application):
         if i != 2:
             self.item_list._remove_cb()
             self.window.delete()
-        
+
+
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("settings.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+
     def _show_sublist(self, emission, signal, source, group):
-        logger.info("showing sublist from group %s", str(group[0]))
+        logger.info("showing sublist from group %s; source: %s, signal: %s", 
+                     str(group[0]), str(source), str(signal))
         SettingsSublist(self.window, self.edje_file, str(group[0]), self.edje_obj).start()
 
 class SettingsSublist(tichy.Application):

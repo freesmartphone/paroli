@@ -24,6 +24,9 @@ collections
         // // if you do not specifiy them your object will not be visible
         min: 480 590;
         // // every group can contain any number of parts, all of which are generated when the group is called
+        script {
+            public sublist=0;
+        }
         parts
         {            
             part
@@ -219,6 +222,13 @@ collections
                 action: STATE_SET "sublist" 0.0;
                 target: "list";
                 target: "back-button";
+                after: "set-sublist";
+            }
+            program {
+                name: "set-sublist";
+                script {
+                    set_int(sublist,1);
+                }
             }
             program{
                 name: "enable_savebutton";
@@ -232,7 +242,15 @@ collections
                 name: "back_clicked";
                 signal: "mouse,clicked,1";
                 source: "back-button";
-                action: SIGNAL_EMIT "back" "main_command";
+                script {
+                    if (get_int(sublist) == 1) {
+                        emit("back","main_command");
+                        set_int(sublist,0);
+                    } else {
+                        emit("back","edje");
+                        set_int(sublist,0);
+                    }
+                }
             }
             program {
                 name: "back-button-pressed";
