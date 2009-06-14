@@ -146,7 +146,7 @@ class ElementaryLayoutWindow(Object):
     def empty_window(self, *args, **kargs):
         self.bg.elm_obj.resize_object_del(self.main_layout.elm_obj)
 
-class ElementaryLayout_subwindow(ElementaryLayoutWindow):
+class ElementaryLayoutSubwindow(ElementaryLayoutWindow):
     def __init__(self, window, edje_file, group):
         self.window = window.window
         self.bg = window.topbar.bg

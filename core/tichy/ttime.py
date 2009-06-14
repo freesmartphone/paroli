@@ -15,16 +15,14 @@
 #    General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
+import logging
+logger = logging.getLogger('core.tichy.ttime')
 
 import time
 import calendar
-import logging
-
 from text import Text
 from item import Item
 
-
-logger = logging.getLogger('core.tichy.ttime')
 
 class Time(Item):
     """Item that represent a time
