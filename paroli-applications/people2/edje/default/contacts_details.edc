@@ -38,14 +38,14 @@ group  {
                     to: "base";
                 }
                 image {
-                    normal: "backspace.png";
+                    normal: "back.png";
                 }
                 visible: 1;
             }
             description {
                 state: "clicked" 0.0;
                 inherit:"default" 0.0;
-                image.normal: "backspace_pressed.png";
+                image.normal: "back_pressed.png";
             }
         }
         part {

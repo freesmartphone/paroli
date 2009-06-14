@@ -210,7 +210,7 @@ group {
                     to: "base";
                 }
                 image {
-                    normal: "back.png";
+                    normal: "backspace.png";
                 }
                 visible: 0;
             }
@@ -379,24 +379,24 @@ group {
                     to: "base";
                 }
                 image {
-                    normal: "backspace.png";
+                    normal: "back.png";
                 }
                 visible: 1;
             }
             description {
                 state: "clicked" 0.0;
                 inherit:"default" 0.0;
-                image.normal: "backspace_pressed.png";
+                image.normal: "back_pressed.png";
             }
             description {
                 state: "number" 0.0;
                 inherit:"default" 0.0;
-                image.normal: "back.png";
+                image.normal: "backspace.png";
             }
             description {
                 state: "number-pressed" 0.0;
                 inherit:"default" 0.0;
-                image.normal: "back_pressed.png";
+                image.normal: "backspace_pressed.png";
             }
         }
 
