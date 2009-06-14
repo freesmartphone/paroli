@@ -13,10 +13,13 @@ styles {
 images {
    image: "add.png" COMP;
    image: "add_pressed.png" COMP;
+   image: "next.png" COMP;
+   image: "next_pressed.png" COMP;
    image: "minus.png" COMP;
    image: "plus.png" COMP;
    image: "Back_button.png" COMP;
    image: "backspace.png" COMP;
+   image: "backspace_pressed.png" COMP;
    image: "Done_button.png" COMP;
    image: "Edit_button.png" COMP;
    image: "Next_button.png" COMP;
