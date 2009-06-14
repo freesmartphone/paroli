@@ -1,4 +1,4 @@
-#include "contacts_macros.edc"
+#include "macros.edc"
 
 group { 
     name: "edit_number";
