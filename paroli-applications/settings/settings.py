@@ -46,8 +46,10 @@ class Settings(tichy.Application):
     ##the icon attribute is currently unused
     icon = 'icon.png'
     
-    ##the category is used by paroli when applications are to be grouped.Set it to 'launcher' if you want your application to appear on the launcher screen
-    category = 'settings'
+    ## the category is used by paroli when applications are to be grouped.
+    ## Set it to 'launcher' if you want your application to appear 
+    ## on the launcher screen
+    category = 'launcher' # was 'settings'
     
     ##the run method of the app is called when the app is started
     def run(self, parent=None,  standalone=False):
