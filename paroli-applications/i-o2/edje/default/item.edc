@@ -523,7 +523,7 @@ group { name: "item";
             signal: "mouse,clicked,1";
             source: "invisible-slider";
             script{
-                if (get_int(drag_value) != 1){
+                if (get_int(drag_value) != 1 && get_int(edit_mode) != 1){
                     if (get_int(left_slided) == 1) {
                         run_program(PROGRAM:"clickable-pressed-part-two")
                     } else {
@@ -583,18 +583,22 @@ group { name: "item";
                 new y;
                 get_mouse(x, y);
                 if (x - get_int(mouse_x) < -30){
-                    if (get_int(right_slided) == 1) {
-                        run_program(PROGRAM:"fold-back");
-                        emit("from right to left", "embryo");
-                    } else {
-                        run_program(PROGRAM:"leftward-slide");
-                        emit("from left to right", "embryo");
-                    }
                     set_int(drag_value,0);
                     if (get_int(edit_mode) == 1) {
                         set_text(PART:"delete-flag","0");
                         run_program(PROGRAM:"hide-save-button");
+                        run_program(PROGRAM:"fold-back");
+                        emit("left sweep in edit mode", "embryo");
+                    } else {
+                        if (get_int(right_slided) == 1) {
+                            run_program(PROGRAM:"fold-back");
+                            emit("from right to left", "embryo");
+                        } else {
+                            run_program(PROGRAM:"leftward-slide");
+                            emit("from left to right", "embryo");
+                        }
                     }
+                    
                 }else if (x - get_int(mouse_x) > 30){
                         if (get_int(edit_mode) == 0) {
                             if(get_int(left_slided) == 1) {
