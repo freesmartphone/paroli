@@ -44,26 +44,23 @@ group {
                 num[0] = sign[0];
                 new state[30];
                 new Float:floaty;
-                if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0)\
-                {\
-                    if (strcmp(state, "pin") == 0)\
-                    {\
-                      new pin[40];\
-                      pin[39] = get_text(PART:"pin-text",pin,39);\
-                      emit(pin,"embryo");\
-                      new txt2[60];\
-                      emit(num,"embryo");\
-                      snprintf(txt2, 60, "%s%s", pin, num);\
-                      set_text(PART:"pin-text", txt2);\
-                      emit(txt2,"embryo");\
-                      num = "*";\
-                    }\
-                    snprintf(txt, 60, "%s%s", old, num);\
-                    set_text(PART:"num_field-text", txt);\
-                    if (strcmp(state, "active") == 0)\
-                    {\
-                        emit(num,"dtmf");\
-                    }\
+                if (get_state(PART:"num_field-text", state[0], 30, floaty) == 0) {
+                    if (strcmp(state, "pin") == 0) {
+                      new pin[40];
+                      pin[39] = get_text(PART:"pin-text",pin,39);
+                      emit(pin,"embryo");
+                      new txt2[60];
+                      emit(num,"embryo");
+                      snprintf(txt2, 60, "%s%s", pin, num);
+                      set_text(PART:"pin-text", txt2);
+                      emit(txt2,"embryo");
+                      num = "*";
+                    }
+                    snprintf(txt, 60, "%s%s", old, num);
+                    set_text(PART:"num_field-text", txt);
+                    if (strcmp(state, "active") == 0) {
+                        emit(num,"dtmf");
+                    }
                 }
         }
         
@@ -133,21 +130,17 @@ group {
                         new num[39];
                         strnprep(num, old, len-1);
                         set_text(PART:"num_field-text",num);
-                        
-                        
-                      }
-                }
-                else if (strcmp(state, "pin") == 0) {
-                  new old[40];
-                  old[39] = get_text(PART:"num_field-text",old,40);
-                  new old2[40];
-                  old2[39] = get_text(PART:"pin-text",old2,40);
-                  new len = strlen(old);
-                  new txt[61];
-                  snprintf(txt, 60, "%i%s", len, old);
-                  emit(txt, "embryo");
-                  if (len != 0)
-                      {
+                    }
+                } else if (strcmp(state, "pin") == 0) {
+                    new old[40];
+                    old[39] = get_text(PART:"num_field-text",old,40);
+                    new old2[40];
+                    old2[39] = get_text(PART:"pin-text",old2,40);
+                    new len = strlen(old);
+                    new txt[61];
+                    snprintf(txt, 60, "%i%s", len, old);
+                    emit(txt, "embryo");
+                    if (len != 0) {
                         new num[39];
                         strnprep(num, old, len-1);
                         set_text(PART:"num_field-text",num);
@@ -170,45 +163,6 @@ group {
                 }
             }
         }
-        
-//         public call_btn() {
-//             new state[30];
-//             new txt[60];
-//             new Float:floaty;
-//             if (get_state(PART:"call-2-text", state[0], 30, floaty) == 0)
-//               {
-//                 if (strcmp(state, "default") == 0){
-//                   snprintf(txt, 60, "state is %s", state);
-//                   emit(txt, "embryo");
-//                   
-//                   new num[40];
-//                   num[39] = get_text(PART:"num_field-text",num,40);
-//                   if (strlen(num) > 0 ) {
-//                       emit(num, "call");
-//                   }
-//                   else {
-//                       emit("ooops too little data", "embryo");
-//                   }
-//                 }
-//                 else if (strcmp(state, "incoming") == 0){
-//                   emit("activate", "call");
-//                 }
-//                 else if ((strcmp(state, "active") == 0) || 
-//                   (strcmp(state, "dialing") == 0)){
-//                   emit("releasing", "embryo");  
-//                   emit("release", "call");  
-//                 }
-//                 else if (strcmp(state, "pin") == 0){
-//                   new num[40];
-//                   num[39] = get_text(PART:"pin-text",num,40);
-//                   emit(num, "sending_pin");
-//                 }
-//               }
-//             else 
-//               {
-//                 emit("blew up", "embryo");
-//               }
-//         }
     }
 
     parts {
@@ -336,9 +290,8 @@ group {
 //                    offset: 51 48;
                     to: "base";
                 }
-                rel2 
-                {
-                   relative:0.8959 0.22175;
+                rel2 {
+                    relative:0.8959 0.22175;
 //                    offset: 430 92;
                     to: "base";
                 }
@@ -435,184 +388,13 @@ group {
                     to: "base";
                 }
             }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit: "active" 0.0;
-              text.text: "incoming...";
-            }
-        }/*
-         part {
-            name: "call-button";
-            type: IMAGE;
-            mouse_events: 1;
             description {
-               state: "default" 0.0;
-               rel1 {
-                  relative: 0.0 0.241875;
-                  offset: 1 0;
-                  to: "base";
-               }
-               rel2 {
-                  relative: 0.6646 0.3499;
-//                   offset: 319 179;
-                  to: "base";
-               }
-               image {
-                  normal: "call.png";
-               }
-               visible: 1;
-            }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "answer.png";
-            }
-            description
-            {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "enter.png";
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "end_call.png";
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-              image.normal: "end_call.png";
-            }
-            description
-            {
-              state: "releasing" 0.0;
-              inherit:"default" 0.0;
-            }
-         }*/
-        /* 
-        part
-        {
-            name: "call-2";
-            type: RECT;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.01 0.206;
-                }
-                rel2 
-                {
-                    relative: 0.6645 0.354;
-                }
-            }
-            description 
-            { 
-                state: "clicked" 0.0;
-                inherit: "default" 0.0;
-                color: 255 255 255 255;
-            }
-            description 
-            { 
-                state: "active" 0.0;
-                inherit: "default" 0.0;
-                color: 77 17 17 255;
+                state: "incoming" 0.0;
+                inherit: "active" 0.0;
+                text.text: "incoming...";
             }
         }
-        part
-        {
-            name: "call-2-text";
-            type: TEXT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                text 
-                {
-                    align: 0.50 0.45;
-                    size: 41;
-                    text: "";
-                    font: "Sans";
-                }
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "call-2";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "call-2";
-                }
-            }
-            description 
-            { 
-                state: "clicked" 0.0;
-                color: 0 0 0 255;
-            }
-            
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
-              text.text: "answer";
-            }
-            description
-            {
-              state: "pin" 0.0;
-              inherit:"default" 0.0;
-              text.text: "Enter";
-            }
-            description
-            {
-              state: "dialing" 0.0;
-              inherit:"default" 0.0;
-              text.text: "End Call";
-            }
-            description
-            {
-              state: "active" 0.0;
-              inherit:"default" 0.0;
-              text.text: "End Call";
-            }
-        }
-        part
-        {
-            name: "call-2-effecter";
-            type: RECT;
-            mouse_events: 0;
-            description 
-            { 
-                state: "default" 0.0;
-                color: 255 255 255 255;
-                visible:0;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                    to: "call-2";
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                    to: "call-2";
-                }
-            }
-            description 
-            { 
-                state: "clicked" 0.0;
-                inherit: "default" 0.0;
-                visible: 1;
-            }
-        }*/
-//           _PART_KEYPAD("call-2", "Call", "", 0.01, 0.206,  0.6645, 0.354);
-
-         part {
+        part {
             name: "del-button";
             type: IMAGE;
             mouse_events: 1;
@@ -1016,3 +798,4 @@ group {
         }
     }
 }
+
