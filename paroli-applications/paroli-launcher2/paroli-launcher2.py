@@ -70,7 +70,9 @@ class Launcher_App2(tichy.Application):
             
         box = gui.elm_box(self.window.window.elm_obj)
         self.app_objs = {}
+        apps.sort(key=lambda x: x.name) # sort apps alphabetically.
         for app in apps:
+            logger.info("app: %s %s", str(app), type(app))
             link_obj = gui.elm_layout(self.window.window, self.edje_file, 'link')        
             link_obj.elm_obj.size_hint_min_set(400, 60)
             box.elm_obj.pack_end(link_obj.elm_obj)
