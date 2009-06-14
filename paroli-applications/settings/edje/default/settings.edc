@@ -7,6 +7,7 @@ collections
   
   images {
    image: "back.png" COMP;
+   image: "back_pressed.png" COMP;
    image: "Save_button.png" COMP;
    image: "backspace.png" COMP;
   }
@@ -133,35 +134,40 @@ collections
                   }
               }
             }
+            
             part {
-                name: "back-button";
-                type: IMAGE;
-                mouse_events: 1;
-                description {
-                    state: "default" 0.0;
+            name: "back-button";
+            type: IMAGE;
+            description {
+                state: "default" 0.0;
+                min: 159 69;
+                max: 159 69;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 1 19;
+                    to: "base";
                 }
-                description {
-                      state: "sublist" 0.0;
-                      min: 114 33;
-                      max: 114 33;
-                      rel1 
-                      {
-                        relative: 0.02 0.03;
-        //                  offset: 9 20;
-                        to: "base";
-                      }
-                      rel2 
-                      {
-                          relative: 0.26625 0.0828;
-        //                   offset: 123 53;
-                          to: "base";
-                      }
-                      image {
-                          normal: "back.png";
-                      }
-                      visible: 1;
-                  }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 160 88;
+                    to: "base";
+                }
+                image {
+                    normal: "back.png";
+                }
+                visible: 1;
             }
+            description {
+                      state: "sublist" 0.0;
+                      inherit: "default" 0.0;
+            }
+            description {
+                state: "pressed" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back_pressed.png";
+            }
+        }
+            
             part
             {
                 // // the actual Hello World text part
@@ -176,7 +182,8 @@ collections
                     // // define the font color in rgba
                     color: 0 0 0 255;
                     rel1 {
-                        relative: 0.01 0.01;
+                        relative: 0.0 0.0;
+                        offset: 1 87;
                         to: "base";
                     }
                     rel2 {
@@ -191,7 +198,8 @@ collections
                     // // define the font color in rgba
                     color: 0 0 0 255;
                     rel1 {
-                        relative: 0.01 0.1;
+                        relative: 0.0 0.0;
+                        offset: 1 87;
                         to: "base";
                     }
                     rel2 {
@@ -225,6 +233,13 @@ collections
                 signal: "mouse,clicked,1";
                 source: "back-button";
                 action: SIGNAL_EMIT "back" "main_command";
+            }
+            program {
+                name: "back-button-pressed";
+                signal: "mouse,down,1";
+                source: "back-button";
+                action: STATE_SET "pressed" 0.0;
+                target: "back-button";
             }
             program{
                 name: "send_down";
