@@ -96,9 +96,9 @@ class People2App(tichy.Application):
                 button.on_mouse_up_add(self.item_list.jump_to_index, i)
                 self.dictButtons.append(button)
                 button.show()
-                self.dictTable.pack(button, counter_x*20, round((counter_y / 4) + 0.5) * 20 , 20, 20)
+                self.dictTable.pack(button, counter_x*20, round((counter_y / 5) + 0.5) * 20 , 20, 20)
                 counter_y += 1
-                if counter_x == 3:
+                if counter_x == 4:
                     counter_x = 0
                 else:
                     counter_x += 1
