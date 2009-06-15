@@ -178,7 +178,7 @@ collections{
                 description { 
 					state: "default" 0.0;
 					rel1 {
-                        relative: 0.0 0.0;
+                        relative: 0.0 0.08; //launcher TODO: dont hide the topbar..
                     }
                     rel2 {
                         relative: 1.0 1.0;
@@ -567,7 +567,7 @@ collections{
                       fixed: 1 1;
                       color:0 0 0 255;
                       rel1 {
-                         relative: 0.0458 0.4559;
+                         relative: 0.0458 0.35; //TODO: make it double column
 //                          offset: 22 247;
                          to: "base";
                       }
