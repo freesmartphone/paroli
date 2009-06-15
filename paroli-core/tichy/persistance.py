@@ -72,6 +72,7 @@ class Persistance(object):
         # http://docs.python.org/library/pickle.html
         file = self._open('w')
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
+        file.close()
 
     def load(self):
         """Load data from the file
@@ -106,6 +107,7 @@ class Persistance(object):
 
             result.append(sub_result)
 
+        file.close()
         #print result
         return result
         return None
