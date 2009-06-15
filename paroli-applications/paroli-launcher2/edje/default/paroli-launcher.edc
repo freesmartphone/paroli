@@ -19,7 +19,7 @@ images {
    image: "battery_2.png" COMP;
    image: "battery_3.png" COMP;
    image: "battery_charging.png" COMP;
-   image: "bg.jpg" LOSSY 80;
+   image: "bg.png" COMP;
 }
 
 styles
@@ -184,7 +184,7 @@ collections{
                         relative: 1.0 1.0;
                     }
 					image {
-						normal: "bg.jpg";
+						normal: "bg.png";
 					}
                 }
               }
