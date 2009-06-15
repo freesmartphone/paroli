@@ -88,7 +88,9 @@ class People2App(tichy.Application):
             self.edje_obj.elm_obj.content_set("dict-window",self.dictTable)
             counter_x = 0
             counter_y = 0
-            for i in self.item_list.letter_index.keys():
+            keys = self.item_list.letter_index.keys()
+            keys.sort()
+            for i in keys:
                 button = gui.elementary.Button(self.window.window.elm_obj)
                 button.label_set(i)
                 button.on_mouse_up_add(self.item_list.jump_to_index, i)
