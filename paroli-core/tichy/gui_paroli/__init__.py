@@ -285,8 +285,10 @@ class elm_list(tichy.Object):
                             value = " " #bugfix for empty name
                         if self.LetterDict:
                             if self.label_list.index((part, attribute)) == 0:
-                                if self.letter_index.has_key(value[0]) == False:
-                                    self.letter_index[value[0]] = self.model.index(item)
+                                letter = value[0]
+                                letter = letter.lower()
+                                if self.letter_index.has_key(letter) == False:
+                                    self.letter_index[letter] = self.model.index(item)
 
                         if isinstance(value, tichy.Item):
                             value = unicode(value.get_text())
