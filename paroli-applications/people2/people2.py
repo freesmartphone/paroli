@@ -162,6 +162,7 @@ class People2App(tichy.Application):
     
     #editing
     def edit_contact(self, emission, signal, source, contact, layout):
+        logger.info("people2.py->edit_contact")
         service = tichy.Service.get('ContactCreate')
         service.create(self.window, "", "", contact, signal, layout).start()
     
@@ -347,25 +348,24 @@ class CreateContact(tichy.Application):
                     if i == 1: #save
                         send = 1
                         break
-              
-                if send == 1:
-                    if text_layout:
-                        text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-                    contacts_service = tichy.Service.get('Contacts')
-                    if contact not in contacts_service.contacts:
+            if send == 1:
+                if text_layout:
+                    text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+                contacts_service = tichy.Service.get('Contacts')
+                if contact not in contacts_service.contacts:
+                    name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
+                    new_contact = contacts_service.create(name.strip(),tel=str(number))
+                    contacts_service.add(new_contact)
+                    contacts_service.contacts.emit('inserted')
+                else:
+                    if mode == "name":
                         name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                        new_contact = contacts_service.create(name.strip(),tel=str(number))
-                        contacts_service.add(new_contact)
-                        contacts_service.contacts.emit('inserted')
-                    else:
-                        if mode == "name":
-                            name = unicode(textbox.entry_get()).replace("<br>","").encode("utf-8")
-                            logger.info("updating name")
-                            contact.name = name.strip()
-                        elif mode == "number":
-                            logger.info("updating number")
-                            contact.tel = number
-                        layout.elm_obj.show()
+                        logger.info("updating name")
+                        contact.name = name.strip()
+                    elif mode == "number":
+                        logger.info("updating number")
+                        contact.tel = number
+                    layout.elm_obj.show()
             parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
             if number_layout:
                 number_layout.delete()
