@@ -794,4 +794,31 @@ group "E_Config" struct {
   value "scale.use_custom" uchar: 0;
   value "show_cursor" uchar: 0;
   value "idle_cursor" uchar: 0;
+  value "default_system_menu" string: "";
+  value "cfgdlg_normal_wins" uchar: 1;
+  value "syscon.main.icon_size" int: 64;
+  value "syscon.secondary.icon_size" int: 48;
+  value "syscon.extra.icon_size" int: 48;
+  value "syscon.timeout" double: 5.0000000000000000000000000;
+  value "syscon.do_input" uchar: 0;
+  group "syscon.actions" list {
+    group "E_Config_Syscon_Action" struct {
+      value "action" string: "suspend";
+      value "params" string: "now";
+      value "button" string: "button";
+      value "icon" string: "system-suspend";
+      value "is_main" int: 1;
+    }
+  }
+  group "syscon.actions" list {
+    group "E_Config_Syscon_Action" struct {
+      value "action" string: "halt";
+      value "params" string: "now";
+      value "button" string: "button";
+      value "icon" string: "system-shutdown";
+      value "is_main" int: 0;
+    }
+  }
+  value "mode.presentation" uchar: 0;
+  value "mode.offline" uchar: 0;
 }
