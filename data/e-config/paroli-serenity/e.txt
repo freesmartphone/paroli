@@ -1,7 +1,7 @@
 group "E_Config" struct {
   value "config_version" int: 65832;
   value "show_splash" int: 1;
-  value "init_default_theme" string: "illume_init.edj";
+  value "init_default_theme" string: "default.edj";
   value "desktop_default_name" string: "Desktop %i, %i";
   value "menus_scroll_speed" double: 1000.0000000000000000000000000;
   value "menus_fast_mouse_move_threshhold" double: 300.0000000000000000000000000;
@@ -34,6 +34,14 @@ group "E_Config" struct {
   value "use_composite" int: 0;
   group "modules" list {
     group "E_Config_Module" struct {
+      value "name" string: "gadman";
+      value "enabled" uchar: 1;
+      value "delayed" uchar: 1;
+      value "priority" int: -100;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
       value "name" string: "illume";
       value "enabled" uchar: 1;
       value "delayed" uchar: 0;
@@ -45,6 +53,14 @@ group "E_Config" struct {
       value "name" string: "start";
       value "enabled" uchar: 1;
       value "delayed" uchar: 0;
+      value "priority" int: 0;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
+      value "name" string: "conf";
+      value "enabled" uchar: 1;
+      value "delayed" uchar: 1;
       value "priority" int: 0;
     }
   }
@@ -100,54 +116,6 @@ group "E_Config" struct {
     group "E_Config_Module" struct {
       value "name" string: "conf_transitions";
       value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "battery";
-      value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "mixer";
-      value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "clock";
-      value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "configure";
-      value "enabled" uchar: 1;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "pager";
-      value "enabled" uchar: 0;
-      value "delayed" uchar: 1;
-      value "priority" int: 0;
-    }
-  }
-  group "modules" list {
-    group "E_Config_Module" struct {
-      value "name" string: "connman";
-      value "enabled" uchar: 0;
       value "delayed" uchar: 1;
       value "priority" int: 0;
     }
@@ -242,10 +210,42 @@ group "E_Config" struct {
   }
   group "modules" list {
     group "E_Config_Module" struct {
-      value "name" string: "gadman";
+      value "name" string: "battery";
       value "enabled" uchar: 1;
       value "delayed" uchar: 1;
-      value "priority" int: -100;
+      value "priority" int: 0;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
+      value "name" string: "mixer";
+      value "enabled" uchar: 1;
+      value "delayed" uchar: 1;
+      value "priority" int: 0;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
+      value "name" string: "clock";
+      value "enabled" uchar: 1;
+      value "delayed" uchar: 1;
+      value "priority" int: 0;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
+      value "name" string: "pager";
+      value "enabled" uchar: 0;
+      value "delayed" uchar: 1;
+      value "priority" int: 0;
+    }
+  }
+  group "modules" list {
+    group "E_Config_Module" struct {
+      value "name" string: "connman";
+      value "enabled" uchar: 0;
+      value "delayed" uchar: 1;
+      value "priority" int: 0;
     }
   }
   group "font_defaults" list {
@@ -621,8 +621,8 @@ group "E_Config" struct {
       }
       group "clients" list {
         group "E_Config_Gadcon_Client" struct {
-          value "name" string: "illume-cfg";
-          value "id" string: "illume-cfg";
+          value "name" string: "configuration";
+          value "id" string: "configuration";
           value "geom.pos" int: 0;
           value "geom.size" int: 32;
           value "geom.res" int: 472;
