@@ -1,5 +1,5 @@
 group "E_Config" struct {
-  value "config_version" int: 65832;
+  value "config_version" int: 65843;
   value "show_splash" int: 1;
   value "init_default_theme" string: "default.edj";
   value "desktop_default_name" string: "Desktop %i, %i";
@@ -10,18 +10,17 @@ group "E_Config" struct {
   value "border_shade_transition" int: 3;
   value "border_shade_speed" double: 3000.0000000000000000000000000;
   value "framerate" double: 30.0000000000000000000000000;
+  value "priority" int: 1;
   value "image_cache" int: 2048;
   value "font_cache" int: 512;
   value "edje_cache" int: 8;
   value "edje_collection_cache" int: 24;
-  value "zone_desks_x_count" int: 4;
+  value "zone_desks_x_count" int: 1;
   value "zone_desks_y_count" int: 1;
   value "use_virtual_roots" int: 0;
   value "show_desktop_icons" int: 0;
   value "edge_flip_dragging" int: 0;
-  value "edge_flip_moving" int: 0;
-  value "edge_flip_timeout" double: 0.2500000000000000000000000;
-  value "evas_engine_default" int: 4;
+  value "evas_engine_default" int: 1;
   value "evas_engine_container" int: 0;
   value "evas_engine_init" int: 0;
   value "evas_engine_menus" int: 0;
@@ -37,7 +36,7 @@ group "E_Config" struct {
       value "name" string: "gadman";
       value "enabled" uchar: 1;
       value "delayed" uchar: 1;
-      value "priority" int: -100;
+      value "priority" int: 100;
     }
   }
   group "modules" list {
@@ -236,7 +235,7 @@ group "E_Config" struct {
     group "E_Config_Module" struct {
       value "name" string: "pager";
       value "enabled" uchar: 0;
-      value "delayed" uchar: 1;
+      value "delayed" uchar: 0;
       value "priority" int: 0;
     }
   }
@@ -248,27 +247,10 @@ group "E_Config" struct {
       value "priority" int: 0;
     }
   }
-  group "font_defaults" list {
-    group "E_Font_Default" struct {
-      value "text_class" string: "default";
-      value "font" string: "Vera";
-      value "size" int: 10;
-    }
-  }
   group "themes" list {
     group "E_Config_Theme" struct {
       value "category" string: "theme";
-      value "file" string: "serenity.edj";
-    }
-  }
-  group "key_bindings" list {
-    group "E_Config_Binding_Key" struct {
-      value "context" int: 9;
-      value "modifiers" int: 0;
-      value "key" string: "Keycode-177";
-      value "action" string: "simple_lock";
-      value "params" string: "";
-      value "any_mod" uchar: 1;
+      value "file" string: "illume.edj";
     }
   }
   group "key_bindings" list {
@@ -537,6 +519,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 1;
           value "state_info.flags" int: 1;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -555,6 +538,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 4;
           value "state_info.flags" int: 1;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -573,6 +557,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 3;
           value "state_info.flags" int: 1;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -591,6 +576,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 2;
           value "state_info.flags" int: 1;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -615,6 +601,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 3;
           value "state_info.flags" int: 3;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -633,6 +620,7 @@ group "E_Config" struct {
           value "state_info.seq" int: 1;
           value "state_info.flags" int: 1;
           value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -651,6 +639,26 @@ group "E_Config" struct {
           value "state_info.seq" int: 4;
           value "state_info.flags" int: 0;
           value "style" string: "inset";
+          value "orient" int: 0;
+          value "autoscroll" uchar: 0;
+          value "resizable" uchar: 0;
+        }
+      }
+      group "clients" list {
+        group "E_Config_Gadcon_Client" struct {
+          value "name" string: "illume-wifi";
+          value "id" string: "illume-wifi";
+          value "geom.pos" int: 720;
+          value "geom.size" int: 80;
+          value "geom.res" int: 800;
+          value "geom.pos_x" double: 0.0000000000000000000000000;
+          value "geom.pos_y" double: 0.0000000000000000000000000;
+          value "geom.size_w" double: 0.0000000000000000000000000;
+          value "geom.size_h" double: 0.0000000000000000000000000;
+          value "state_info.seq" int: 5;
+          value "state_info.flags" int: 0;
+          value "style" string: "plain";
+          value "orient" int: 0;
           value "autoscroll" uchar: 0;
           value "resizable" uchar: 0;
         }
@@ -672,20 +680,26 @@ group "E_Config" struct {
   value "font_hinting" int: 0;
   value "desklock_auth_method" int: 0;
   value "desklock_login_box_zone" int: -1;
+  value "desklock_start_locked" int: 0;
   value "desklock_autolock_screensaver" int: 0;
+  value "desklock_post_screensaver_time" double: 0.0000000000000000000000000;
   value "desklock_autolock_idle" int: 0;
   value "desklock_autolock_idle_timeout" double: 300.0000000000000000000000000;
   value "desklock_use_custom_desklock" int: 0;
+  value "desklock_ask_presentation" uchar: 1;
+  value "desklock_ask_presentation_timeout" double: 30.0000000000000000000000000;
   value "display_res_restore" int: 0;
   value "display_res_width" int: 1;
   value "display_res_height" int: 1;
   value "display_res_hz" int: 0;
   value "display_res_rotation" int: 0;
-  value "screensaver_enable" int: 1;
+  value "screensaver_enable" int: 0;
   value "screensaver_timeout" int: 30;
   value "screensaver_interval" int: 5;
   value "screensaver_blanking" int: 2;
   value "screensaver_expose" int: 2;
+  value "screensaver_ask_presentation" uchar: 1;
+  value "screensaver_ask_presentation_timeout" double: 30.0000000000000000000000000;
   value "dpms_enable" int: 0;
   value "dpms_standby_enable" int: 0;
   value "dpms_suspend_enable" int: 0;
@@ -708,10 +722,15 @@ group "E_Config" struct {
   value "border_raise_on_mouse_action" int: 1;
   value "border_raise_on_focus" int: 1;
   value "desk_flip_wrap" int: 0;
+  value "fullscreen_flip" int: 1;
   value "icon_theme" string: "openmoko-standard";
+  value "icon_theme_overrides" uchar: 0;
   value "desk_flip_animate_mode" int: 0;
   value "desk_flip_animate_interpolation" int: 0;
   value "desk_flip_animate_time" double: 0.2000000000000000111022302;
+  value "desk_flip_pan_bg" uchar: 0;
+  value "desk_flip_pan_x_axis_factor" double: 0.0000000000000000000000000;
+  value "desk_flip_pan_y_axis_factor" double: 0.0000000000000000000000000;
   value "wallpaper_import_last_dev" string: "~/";
   value "wallpaper_import_last_path" string: "/";
   value "wallpaper_grad_c1_r" int: 0;
@@ -765,6 +784,12 @@ group "E_Config" struct {
   }
   group "mime_icons" list {
     group "E_Config_Mime_Icon" struct {
+      value "mime" string: "application/x-edje";
+      value "icon" string: "THUMB";
+    }
+  }
+  group "mime_icons" list {
+    group "E_Config_Mime_Icon" struct {
       value "mime" string: "application/x-desktop";
       value "icon" string: "DESKTOP";
     }
@@ -807,6 +832,14 @@ group "E_Config" struct {
       value "params" string: "now";
       value "button" string: "button";
       value "icon" string: "system-suspend";
+      value "is_main" int: 1;
+    }
+  }
+  group "syscon.actions" list {
+    group "E_Config_Syscon_Action" struct {
+      value "action" string: "desk_lock";
+      value "button" string: "button";
+      value "icon" string: "system-lock-screen";
       value "is_main" int: 1;
     }
   }
