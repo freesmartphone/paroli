@@ -120,7 +120,7 @@ class MsgsApp2(tichy.Application):
         detail_layout.elm_obj.show()
 
         textbox = gui.elementary.Entry(self.window.window.elm_obj)
-        textbox.entry_set(text.value)
+        textbox.entry_set(unicode(text.value).replace('&','&amp;'))
         
         textbox.size_hint_weight_set(1.0, 1.0)
         textbox.scale_set(1.5)
