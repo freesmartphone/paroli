@@ -60,7 +60,8 @@ class Settings(tichy.Application):
         self.standalone = tichy.config.getboolean('standalone','activated', False)
         
         ##generate app-window
-        self.window = gui.elm_list_window(self.edje_file, "main", "list", None, None, True)
+        self.window = gui.elm_list_window(self.edje_file, "main", "list", 
+                                          None, None, True)
         self.edje_obj = self.window.main_layout
         
         self.groups = tichy.List()
@@ -73,7 +74,8 @@ class Settings(tichy.Application):
             return cmp(m2, m1)
         
         self.list_label = [('title', 'value')]
-        self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
+        self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, 
+                                      "group", self.list_label, comp)
         
         self.item_list.add_callback("*", "sublist", self._show_sublist) 
         
@@ -82,7 +84,9 @@ class Settings(tichy.Application):
         
         parent.emit("unblock")
         
-        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),tichy.Wait(self.window, 'back'), tichy.Wait(self.window.window,'closing'))
+        i, args = yield tichy.WaitFirst(tichy.Wait(self.window, 'delete_request'),
+                                        tichy.Wait(self.window, 'back'), 
+                                        tichy.Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing
         logger.info('Settings closing')
         
