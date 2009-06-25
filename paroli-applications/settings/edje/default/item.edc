@@ -1,5 +1,5 @@
 group{
-    name: "group";
+    name: "item";
     min: 400 60;
     max: 400 60;
     parts{

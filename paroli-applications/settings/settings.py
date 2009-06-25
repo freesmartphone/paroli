@@ -75,7 +75,7 @@ class Settings(tichy.Application):
         
         self.list_label = [('title', 'value')]
         self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, 
-                                      "group", self.list_label, comp)
+                                      "item", self.list_label, comp)
         
         self.item_list.add_callback("*", "sublist", self._show_sublist) 
         
