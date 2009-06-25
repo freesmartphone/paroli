@@ -1,0 +1,104 @@
+group{
+    name: "group";
+    min: 400 60;
+    max: 400 60;
+    parts{
+        part{
+            name: "base";
+            type:RECT;
+            description{
+                state:   "default"  0.0;
+                color: 0 0 0 255;
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 255 255 255 255;
+            }
+        }
+        part{
+            name: "title";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 0.0 0.0;
+                    font: "Sans";
+                    size: 36;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.0;
+                }
+                rel2{
+                    relative: 1.0 0.6;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+        part{
+            name: "subtitle";
+            type:TEXT;
+            mouse_events:0;
+            description{
+                state: "default"  0.0;
+                color: 255 255 255 255;
+                text{
+                    align: 1.0 0.0;
+                    font: "Sans";
+                    size: 20;
+                    text: "";
+                }
+                rel1{
+                    relative: 0.0 0.6;
+                }
+                rel2{
+                    relative: 1.0 1.0;
+                }
+            }
+            description{
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+    }
+    programs{
+        program{
+            name: "clicked";
+            signal: "mouse,up,1";
+            source: "base";
+            action: STATE_SET "selected" 0.0;
+            transition: LINEAR 0.1;
+            target: "base";
+            target: "title";
+            target: "subtitle";
+            after: "to_normal";
+        }
+        program{
+            name: "to_normal";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.1;
+            target: "base";
+            target: "title";
+            target: "subtitle";
+            after: "send_click";
+        }
+        program{
+            name: "send_click";
+            action: SIGNAL_EMIT "click" "sublist";
+        }
+    }
+}
