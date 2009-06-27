@@ -133,7 +133,8 @@ class SettingsSublist(tichy.Application):
             return cmp(m2.name, m1.name)
         
         self.list_label = [('title', 'name'),('subtitle', 'value')]
-        self.item_list = gui.elm_list(self.settings, self.window, edje_file, "group", self.list_label, comp)
+        self.item_list = gui.elm_list(self.settings, self.window, edje_file, 
+                                      "item", self.list_label, comp)
         
         for i in self.settings:
             if hasattr(i, 'options'):
@@ -208,7 +209,8 @@ class ListSettingApp(tichy.Application):
     
     name = 'ListSetting'
 
-    def run(self, setting, parent, model, list_label, layout, group="group",save_button=False, *args, **kargs):
+    def run(self, setting, parent, model, list_label, layout, group="item", 
+             save_button=False, *args, **kargs):
     
         layout.elm_obj.hide()
       
@@ -239,10 +241,11 @@ class ListSettingApp(tichy.Application):
             else:  
                 return cmp(m2.name, m1.name)
         
-        item_group = group or "group"
+        item_group = group or "item"
         
         self.list_label = list_label
-        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
+        self.item_list = gui.elm_list(self.ItemList, self.window, self.edje_file, 
+                                      item_group, list_label, comp)
         
         for i in self.ItemList:
             if hasattr(i, 'connect'):
