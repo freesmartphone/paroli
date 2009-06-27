@@ -78,7 +78,7 @@ group{
     programs{
         program{
             name: "clicked";
-            signal: "mouse,up,1";
+            signal: "mouse,clicked,1";
             source: "base";
             action: STATE_SET "selected" 0.0;
             transition: LINEAR 0.1;
