@@ -58,7 +58,7 @@ class Persistance(object):
             f = open(path, mod)
             return f
         except IOError, ex:
-            logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, f, mod)
+            logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, mod)
             raise
             
 
