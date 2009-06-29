@@ -52,12 +52,39 @@ class Persistance(object):
         dir = os.path.dirname(path)
         if not os.path.exists(dir):
             os.makedirs(dir)
-        try:
-            return open(path, mod)
-        except IOError, ex:
-            logger.warning("can't open file : %s", ex)
-            raise
 
+        try:
+            self._backup(path)
+            f = open(path, mod)
+            return f
+        except IOError, ex:
+            logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, f, mod)
+            raise
+            
+
+    def _backup(self, path):
+        """Make automatic backups of everything (contacts, sms, etc)"""
+        import time
+        
+        # We need to open the file ourselve, because the mode can be 'w', 
+        # as in the case of 'calls/logs'
+        f = open(path, 'r')
+        file_content = f.read()
+        f.close()
+            
+        # create backup dir
+        (dir, filename) = os.path.split(path)
+        dir_backup = os.path.join(dir, 'backup')
+        if not os.path.exists(dir_backup):
+            os.makedirs(dir_backup)
+        # save to filename-currenttime format
+        curtime = str(int(time.time()))
+        out_filename = os.path.join(dir_backup, filename+"-"+curtime)
+        out_file = open(out_filename, 'w')
+        out_file.write(file_content)
+        out_file.close()
+        
+        
     def save(self, data):
         """Save a data into the file
 
