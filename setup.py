@@ -101,7 +101,13 @@ setup(name='Paroli',
                      ['data/tichy']),
                     ('../../etc/paroli/', ['data/paroli.cfg'])] \
           + plugins_files('paroli-services', '../../usr/share/paroli/services') \
-          + plugins_files('paroli-applications', '../../usr/share/paroli/applications') \
+          + plugins_files('paroli-applications/common-for-edje', '../../usr/share/paroli/applications/common-for-edje') \
+          + plugins_files('paroli-applications/i-o2', '../../usr/share/paroli/applications/i-o2') \
+          + plugins_files('paroli-applications/msgs2', '../../usr/share/paroli/applications/msgs2') \
+          + plugins_files('paroli-applications/paroli-launcher2', '../../usr/share/paroli/applications/paroli-launcher2') \
+          + plugins_files('paroli-applications/people2', '../../usr/share/paroli/applications/people2') \
+          + plugins_files('paroli-applications/settings', '../../usr/share/paroli/applications/settings') \
+          + plugins_files('paroli-applications/tele2', '../../usr/share/paroli/applications/tele2') \
           + dbus_data \
           + sound_data,
 
