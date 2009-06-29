@@ -52,14 +52,15 @@ class Persistance(object):
         dir = os.path.dirname(path)
         if not os.path.exists(dir):
             os.makedirs(dir)
-
-        try:
-            self._backup(path)
-            f = open(path, mod)
-            return f
-        except IOError, ex:
-            logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, mod)
-            raise
+        if os.path.isfile(path):
+            try:
+                self._backup(path)
+                f = open(path, mod)
+                return f
+            except IOError, ex:
+                logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, mod)
+                raise
+        return
             
 
     def _backup(self, path):
