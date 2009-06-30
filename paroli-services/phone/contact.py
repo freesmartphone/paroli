@@ -286,6 +286,7 @@ class ContactsService(tichy.Service):
         self._number_to_contact = {}
 
     def _on_contacts_modified(self, contacts):
+        logger.info("ContactsService:_on_contacts_modified, %s", contacts)
         yield PhoneContact.save()
         # update the map of number to contact
         self._number_to_contact = \
