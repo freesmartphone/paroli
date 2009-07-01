@@ -281,7 +281,8 @@ class elm_list(tichy.Object):
                 for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
-                        if isinstance(value, str) and not len(value): 
+                        if (isinstance(value, str) and not len(value)) or\
+                           value == None: 
                             value = " " #bugfix for empty name
                         if self.LetterDict:
                             if self.label_list.index((part, attribute)) == 0:
