@@ -47,20 +47,32 @@ class Persistance(object):
         self.path = path
         logger.info("path = %s", str(path))
 
-    def _open(self, mod='r'):
+    def _open_readonly(self):
         path = os.path.join(self.base_path, self.path)
         dir = os.path.dirname(path)
         if not os.path.exists(dir):
             os.makedirs(dir)
         if os.path.isfile(path):
             try:
-                self._backup(path)
-                f = open(path, mod)
+                f = open(path, 'r')
                 return f
             except IOError, ex:
-                logger.warning("can't open file : %s, path: %s, mod: %s", ex, path, mod)
-                raise
-        return
+                logger.warning("can't open file : %s, path: %s", ex, path)
+                return None
+        return None
+        
+    def _open_write(self):
+        path = os.path.join(self.base_path, self.path)
+        dir = os.path.dirname(path)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        try:
+            if os.path.isfile(path): self._backup(path)
+            f = open(path, 'w')
+            return f
+        except IOError, ex:
+            logger.warning("can't open file : %s, path: %s", ex, path)
+            raise
             
 
     def _backup(self, path):
@@ -83,6 +95,7 @@ class Persistance(object):
         out_filename = os.path.join(dir_backup, filename+"-"+curtime)
         out_file = open(out_filename, 'w')
         out_file.write(file_content)
+        out_file.flush()
         out_file.close()
         
         
@@ -90,43 +103,42 @@ class Persistance(object):
         """Save a data into the file
 
         :Parameters:
-
             data
                 Any kind of python structure that can be
                 serialized. Usually dictionary or list.
         """
-
+        self._save_pickle(data)
+        
+    def _save_pickle(self, data):
         # Save the object to a python pickle:
         # http://docs.python.org/library/pickle.html
-        file = self._open('w')
-        pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
-        file.close()
-
-    def load(self):
-        """Load data from the file
-
-        :Returns: The structure previously saved into the file
-        """
-
         try:
-            file = self._open()
-        except IOError, ex:
-            return None
-
-        # Try to load it as a pickle first
-        try:
-            return pickle.load(file)
+            file = self._open_write()
+            pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
+            file.flush()
+            file.close()
         except:
-            pass
+            print "beszoptuk: file:", file, "data: ", data, type(data), type(file)
 
-        # Try to load the legacy format
+    def _load_pickle(self, file):
+        """Load data from a pickle file"""
+        content = None
+        try:
+            content = pickle.load(file)
+        except IOError, ex:
+            pass
+        return content
+
+    def _load_ini(self, file):
+        """Load data from a .ini (configuration) file """
         import ConfigParser
         parser = ConfigParser.ConfigParser()
-        parser.readfp(file)
-
-        #return yaml.load(file, Loader=Loader)
+        try:
+            parser.readfp(file)
+        except:
+            return None
+        
         result = []
-
         for s in parser.sections():
             sub_result = {}
             for k, v in parser.items(s):
@@ -134,8 +146,24 @@ class Persistance(object):
                 sub_result[k]=v.decode('utf-8')
 
             result.append(sub_result)
-
-        file.close()
-        #print result
         return result
-        return None
+    
+    def load(self):
+        """Load data from the file
+
+        :Returns: The structure previously saved into the file
+        """
+        
+        file = self._open_readonly()
+        if not file: return None
+
+        # Try to load it as a pickle first
+        content = self._load_pickle(file)
+        if not content:
+            # Try to load it as .ini config file next
+            # if file.tell(): file.seek(0) # after successful pickle reading 
+            # the current file position is set at the end. (but we should never 
+            # get here in that case)
+            content = self._load_ini(file)
+        file.close()
+        return content
