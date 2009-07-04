@@ -26,10 +26,11 @@ import tichy
 import logging
 logger = logging.getLogger('wifi')
 
-from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst
+from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, \
+                           Sleep, WaitDBusNameChange, WaitFirst
 
 class WifiService(tichy.Service):
-    """The 'Wifi' service
+    """ The 'Wifi' service
     """
 
     service = 'Wifi'
@@ -49,11 +50,12 @@ class WifiService(tichy.Service):
             bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
             
             ## power related
-            power_obj = bus.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/PowerControl/WiFi')
-            self.power_iface = dbus.Interface(power_obj, 'org.freesmartphone.Device.PowerControl')
-            
+            power_obj = bus.get_object('org.freesmartphone.odeviced', 
+                                       '/org/freesmartphone/Device/PowerControl/WiFi')
+            self.power_iface = dbus.Interface(power_obj, 
+                                              'org.freesmartphone.Device.PowerControl')
             try_num = 0
-            
+            obj = None
             ## devicing
             for i in range(5):
                     try:
@@ -66,27 +68,37 @@ class WifiService(tichy.Service):
                     else:
                         break
                         #raise Exception("moblin not starting")
-                    
-            self.devicing_iface = dbus.Interface(obj, "org.moblin.connman.Manager")
-            
-            self.status_setting = tichy.settings.ToggleSetting('wifi', 'power', tichy.Text, value=self.get_power(), setter=self.power, options=['active','inactive'])
-            
-            self.NetworkList = tichy.List()
-            self.ListLabel = [('title','name'),('subtitle','info')]
-            
-            self.scan_setting = tichy.settings.ListSetting('wifi', 'scan', tichy.Text, value="Networks", setter=self.run_scan, options=['Networks'], model=self.NetworkList, ListLabel=self.ListLabel)
-            
-            if self.get_power():
-                self.get_device()
-            
-            self.devicing_iface.connect_to_signal('PropertyChanged', self.property_changed)
-            
-            self.connect("closing", self.closing)
-            
+            if obj:
+                self.devicing_iface = dbus.Interface(
+                                           obj, 
+                                           "org.moblin.connman.Manager")
+                self.status_setting = tichy.settings.ToggleSetting(
+                                            'wifi', 'power', 
+                                            tichy.Text, value=self.get_power(), 
+                                            setter=self.power, 
+                                            options=['active','inactive'])
+                self.NetworkList = tichy.List()
+                self.ListLabel = [('title','name'),('subtitle','info')]
+                self.scan_setting = tichy.settings.ListSetting('wifi', 
+                                                               'scan', 
+                                                               tichy.Text, 
+                                                               value="Networks", 
+                                                               setter=self.run_scan, 
+                                                               options=['Networks'], 
+                                                               model=self.NetworkList, 
+                                                               ListLabel=self.ListLabel)
+                if self.get_power():
+                    self.get_device()
+                self.devicing_iface.connect_to_signal('PropertyChanged', 
+                                                      self.property_changed)
+                self.connect("closing", self.closing)
+            else: 
+                logger.error("Moblin failed. Is Connman/moblin installed?")
         except Exception, e:
             logger.warning("can't use wifi service : %s", e)
             raise
-            
+
+
     def closing(self, *args, **kargs):
         if self.power_iface.GetPower() == True:
             self.power('moo').start()
@@ -107,15 +119,16 @@ class WifiService(tichy.Service):
     def get_power(self):
         val = self.power_iface.GetPower()
         if val:
-          ret = "active"
+            ret = "active"
         else:
-          ret = "inactive"
-        
+            ret = "inactive"
         return ret
+
 
     def property_changed(self, *args, **kargs):
         if args[0] == 'Devices':
             self.get_device()
+
 
     def get_device(self):
         ## device
@@ -144,8 +157,7 @@ class WifiService(tichy.Service):
                         self.NetworkList.append(nw_obj)
         elif cat == 'Powered':
             if self.get_power() == 'inactive':
-                  self.NetworkList.clear()
-                  
+                self.NetworkList.clear()
         elif cat == "Scanning":
             if not val:
                 self.device.SetProperty("Scanning", True)
@@ -161,21 +173,18 @@ class WifiService(tichy.Service):
         network = args[0][0]
         parent = args[1]
         edje_obj = args[2]
-        
         if network.DBusObject.GetProperties()['Connected']:
-        
-            network.DBusObject.Disconnect(reply_handler=self.connection_info,error_handler=self.connection_info)
-          
+            network.DBusObject.Disconnect(reply_handler=self.connection_info,
+                                          error_handler=self.connection_info)
         else:  
-          
-            if network.WiFiSecurity != 'none' and network.WiFiPassphrase == '':
+            if network.WiFiSecurity   != 'none' and \
+               network.WiFiPassphrase == '':
                 fe = tichy.Service.get("FreeEdit")
                 passphrase = yield fe.StringEdit(None, parent, edje_obj)
                 logger.info("passphrase entered is: %s", passphrase)
                 network.DBusObject.SetProperty("WiFi.Passphrase", passphrase)
-            
-            network.DBusObject.Connect(reply_handler=self.connection_info,error_handler=self.connection_info)
-        
+            network.DBusObject.Connect(reply_handler=self.connection_info,
+                                       error_handler=self.connection_info)
         yield None
     
     def connection_info(self, *args, **kargs):
