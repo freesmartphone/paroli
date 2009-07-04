@@ -118,7 +118,7 @@ class Persistance(object):
             file.flush()
             file.close()
         except:
-            print "beszoptuk: file:", file, "data: ", data, type(data), type(file)
+            logger.exception("The pickle save was unsuccessful")
 
     def _load_pickle(self, file):
         """Load data from a pickle file"""
