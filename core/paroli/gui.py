@@ -125,13 +125,10 @@ class ElementaryLayoutWindow(Object):
         self.window.elm_obj.show()
         self.bg.elm_obj.show()
 
-<<<<<<< HEAD:core/paroli/gui.py
-=======
     def delete(self, *args, **kargs):
         self.main_layout.delete()
         self.window.delete()
 
->>>>>>> 9d7c559... added decompiled edj:core/paroli/gui.py
     def tb_action_set(self, func):
         self.tb_action = func
 
