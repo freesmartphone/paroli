@@ -1,7 +1,7 @@
 #!/usr/bin/env make -f
 #HOST=murphy
-#HOST=om-gta01
-HOST=om-gta02
+#HOST=gta01
+HOST=gta02
 EPATH=/opt/e17
 
 .PHONY: all
