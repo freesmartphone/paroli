@@ -16,8 +16,11 @@ class Dummy(Application):
 		logger.info('run starts')
 		edje_file = pjoin(dirname(__file__), 'dummy.edj')
 		window = ElementaryLayoutWindow(edje_file, "dummy", None, None, True)
-		window.main_layout.elm_obj.edje_get().part_text_set('dummy.textview', '''<h1>I`m a dummy</h1><p><strong>Hihi bla fasel</strong></p><p><red>Hihi bla fasel</red></p>''')
-		yield Sleep(5)
+		message = '<h1>I`m a dummy</h1><p><strong>Hihi bla fasel</strong></p>'
+		for n in range(5):
+			message += '<p><red>We are at step %d</red></p>'% n
+			window.main_layout.elm_obj.edje_get().part_text_set('dummy.textview', message)
+			yield Sleep(1)
 		window.delete()
 		logger.info('run stops')
 # vim:tw=0:nowrap

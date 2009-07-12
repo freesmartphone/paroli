@@ -116,15 +116,22 @@ class ElementaryTopbar(Object):
 class ElementaryLayoutWindow(Object):
     def __init__(self, edje_file, group, x=1.0, y=1.0, tb=False, onclick=None):
         self.window = ElementaryWindow()
-        self.window.elm_obj.show()
         self.tb_action = onclick or 'back'
         self.topbar = Service.get("TopBar").create(self, self.tb_action, tb)
         self.bg = self.topbar.bg
         self.main_layout = ElementaryLayout(self.window, edje_file, group, x=1.0, y=1.0)
         self.bg.elm_obj.content_set("content-swallow", self.main_layout.elm_obj)
         self.window.elm_obj.resize_object_add(self.bg.elm_obj)
+        self.window.elm_obj.show()
         self.bg.elm_obj.show()
 
+<<<<<<< HEAD:core/paroli/gui.py
+=======
+    def delete(self, *args, **kargs):
+        self.main_layout.delete()
+        self.window.delete()
+
+>>>>>>> 9d7c559... added decompiled edj:core/paroli/gui.py
     def tb_action_set(self, func):
         self.tb_action = func
 
