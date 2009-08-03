@@ -396,3 +396,32 @@ class elm_list(tichy.Object):
             edje.signal_emit( "close-dict", "dict-button")
         else:
             logger.info("this list does not carry a dict, this call does not work here")
+
+class EvasCanvas(object):
+	def __init__(self, fullscreen=1, engine_name="x11"):
+		if engine_name == "x11":
+			engine = ecore.evas.SoftwareX11
+		else:
+			print "warning: x11-16 is not supported, falling back to x11"
+			engine = ecore.evas.SoftwareX11
+
+		self.evas_obj = engine(w=480, h=640)
+		self.evas_obj.callback_delete_request = self.on_delete_request
+		self.evas_obj.callback_resize = self.on_resize
+
+		self.evas_obj.title = "test"
+		#self.evas_obj.name_class = "epydial"
+		self.evas_obj.fullscreen = fullscreen
+#		self.evas_obj.size = str(WIDTH) + 'x' + str(HEIGHT)
+		self.evas_obj.evas.image_cache_set(6*1024*1024)
+		self.evas_obj.evas.font_cache_set(2*1024*1024)
+		self.evas_obj.show()
+
+	def on_resize(self, evas_obj):
+		x, y, w, h = evas_obj.evas.viewport
+		size = (w, h)
+		for key in evas_obj.data.keys():
+			evas_obj.data[key].size = size
+
+	def on_delete_request(self, evas_obj):
+		ecore.main_loop_quit()
