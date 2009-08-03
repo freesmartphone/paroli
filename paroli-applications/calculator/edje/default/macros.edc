@@ -1,0 +1,489 @@
+#define _PART_BIG_BTN(partname, label, r1x, r1y); \
+    part {\
+        name: partname;\
+        type: RECT;\
+        description { \
+            state: "default" 0.0;\
+            color: 0 0 0 205;\
+            rel1 {\
+                relative: 0.0 0.0;\
+                offset: r1x r1y;\
+                to: "base";\
+            }\
+            rel2 {\
+                relative: 0.0 0.0;\
+                offset: (r1x+95) (r1y+95);\
+                to: "base";\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 255 255 255 255;\
+        }\
+    }\
+    part {\
+        name: partname"-text";\
+        type: TEXT;\
+        mouse_events: 0;\
+        description { \
+            state: "default" 0.0;\
+            color: 255 255 255 255;\
+            text {\
+                align: 0.5 0.5;\
+                size: 80;\
+                text: label;\
+                font: "Sans";\
+            }\
+            rel1 {\
+                relative: 0.0 0.0;\
+                to: partname;\
+            }\
+            rel2 {\
+                relative: 1.0 1.0;\
+                to: partname;\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 0 0 0 255;\
+        }\
+    }
+
+#define _PART_BIG_BTN_TEXT(partname, label, r1x, r1y); \
+    part {\
+        name: partname;\
+        type: RECT;\
+        description { \
+            state: "default" 0.0;\
+            color: 251 181 107 255;\
+            rel1 {\
+                relative: 0.0 0.0;\
+                offset: r1x r1y;\
+                to: "base";\
+            }\
+            rel2 {\
+                relative: 0.0 0.0;\
+                offset: (r1x+95) (r1y+95);\
+                to: "base";\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 255 255 255 255;\
+        }\
+    }\
+    part {\
+        name: partname"-text";\
+        type: TEXT;\
+        mouse_events: 0;\
+        description { \
+            state: "default" 0.0;\
+            color: 255 255 255 255;\
+            text {\
+                align: 0.5 0.5;\
+                size: 40;\
+                text: label;\
+                font: "Sans";\
+            }\
+            rel1 {\
+                relative: 0.0 0.0;\
+                to: partname;\
+            }\
+            rel2 {\
+                relative: 1.0 1.0;\
+                to: partname;\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 0 0 0 255;\
+        }\
+    }
+
+#define _PART_SMALL_BTN_TEXT(partname, label, r1x, r1y); \
+    part {\
+        name: partname;\
+        type: RECT;\
+        description { \
+            state: "default" 0.0;\
+            color: 201 131 57 255;\
+            rel1 {\
+                relative: 0.0 0.0;\
+                offset: r1x r1y;\
+                to: "base";\
+            }\
+            rel2 {\
+                relative: 0.0 0.0;\
+                offset: (r1x+95) (r1y+47);\
+                to: "base";\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 255 255 255 255;\
+        }\
+    }\
+    part {\
+        name: partname"-text";\
+        type: TEXT;\
+        mouse_events: 0;\
+        description { \
+            state: "default" 0.0;\
+            color: 255 255 255 255;\
+            text {\
+                align: 0.5 0.5;\
+                size: 32;\
+                text: label;\
+                font: "Sans";\
+            }\
+            rel1 {\
+                relative: 0.0 0.0;\
+                to: partname;\
+            }\
+            rel2 {\
+                relative: 1.0 1.0;\
+                to: partname;\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 0 0 0 255;\
+        }\
+    } 
+    
+#define _PART_SMALL_BTN_TEXT_SUPER(partname, label, super, r1x, r1y); \
+    part {\
+        name: partname;\
+        type: RECT;\
+        description { \
+            state: "default" 0.0;\
+            color: 201 131 57 255;\
+            rel1 {\
+                relative: 0.0 0.0;\
+                offset: r1x r1y;\
+                to: "base";\
+            }\
+            rel2 {\
+                relative: 0.0 0.0;\
+                offset: (r1x+95) (r1y+47);\
+                to: "base";\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 255 255 255 255;\
+        }\
+    }\
+    part {\
+        name: partname"-text";\
+        type: TEXT;\
+        mouse_events: 0;\
+        description { \
+            state: "default" 0.0;\
+            color: 255 255 255 255;\
+            text {\
+                align: 0.5 0.5;\
+                size: 32;\
+                text: label;\
+                font: "Sans";\
+            }\
+            rel1 {\
+                relative: 0.0 0.0;\
+                to: partname;\
+            }\
+            rel2 {\
+                relative: 1.0 1.0;\
+                to: partname;\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 0 0 0 255;\
+        }\
+    }\
+    part {\
+        name: partname"-text-super";\
+        type: TEXT;\
+        mouse_events: 0;\
+        description { \
+            state: "default" 0.0;\
+            color: 255 255 255 255;\
+            text {\
+                align: 0.7 0.01;\
+                size: 18;\
+                text: super;\
+                font: "Sans";\
+            }\
+            rel1 {\
+                relative: 0.0 0.0;\
+                to: partname;\
+            }\
+            rel2 {\
+                relative: 1.0 1.0;\
+                to: partname;\
+            }\
+        }\
+        description { \
+            state: "pressed" 0.0;\
+            inherit: "default" 0.0;\
+            color: 0 0 0 255;\
+        }\
+    }
+
+#define _PART_BTN_PRESSED_PROG(partname);\
+    program {\
+        name:   partname"-pressed";\
+        signal: "mouse,down,1";\
+        source: partname;\
+        action: STATE_SET "pressed" 0.0;\
+        target: partname;\
+        target: partname"-text";\
+    }
+
+#define _PART_BTN_SUPER_PRESSED_PROG(partname);\
+    program {\
+        name:   partname"-pressed";\
+        signal: "mouse,down,1";\
+        source: partname;\
+        action: STATE_SET "pressed" 0.0;\
+        target: partname;\
+        target: partname"-text";\
+        target: partname"-text-super";\
+    }
+
+#define _PART_BTN_CLICKED_PROG(partname);\
+    program {\
+        name:   partname"-clicked";\
+        signal: "mouse,up,1";\
+        source: partname;\
+        script {\
+            set_state(PART:partname, "default", 0.0);\
+            set_state(PART:partname"-text", "default", 0.0);\
+        }\
+    }
+
+#define _PART_BTN_NUM_CLICKED_PROG(partname, num);\
+    program {\
+        name:   partname"-clicked";\
+        signal: "mouse,up,1";\
+        source: partname;\
+        script {\
+            set_state(PART:partname, "default", 0.0);\
+            set_state(PART:partname"-text", "default", 0.0);\
+            calc_digit_add(num);\
+        }\
+    }
+
+#define _PART_BTN_FNC_CLICKED_PROG(partname, fnc);\
+    program {\
+        name:   partname"-clicked";\
+        signal: "mouse,up,1";\
+        source: partname;\
+        script {\
+            set_state(PART:partname, "default", 0.0);\
+            set_state(PART:partname"-text", "default", 0.0);\
+            fnc();\
+        }\
+    }
+    
+#define _PART_BTN_SUPER_CLICKED_PROG(partname);\
+    program {\
+        name:   partname"-clicked";\
+        signal: "mouse,up,1";\
+        source: partname;\
+        action: STATE_SET "default" 0.0;\
+        target: partname;\
+        target: partname"-text";\
+        target: partname"-text-super";\
+    }
+
+#define _PART_STATE_CHANGE_PROG(state, step ); \
+program \
+    {\
+            name: state"state_change_to_";\
+            signal: "to_"state"_state";\
+            source: "*";\
+            action: STATE_SET state step;\
+            target: "num_field";\
+            target: "num_field-text";\
+            target: "del-button";\
+            target: "blocker";\
+            target: "call-button";\
+        }
+
+#define _PART_KEYPAD(partname, label, subtext, r1x, r1y, r2x, r2y ); \
+part\
+        {\
+            name: partname;\
+            type: RECT;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 0 0 0 255;\
+                rel1 \
+                {\
+                    relative: r1x r1y;\
+                }\
+                rel2 \
+                {\
+                    relative: r2x r2y;\
+                }\
+            }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 255 255 255 255;\
+            }\
+        }\
+        part\
+        {\
+            name: partname"-text";\
+            type: TEXT;\
+            mouse_events: 0;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 255 255 255 255;\
+                text \
+                {\
+                    align: 0.52 0.28;\
+                    size: 41;\
+                    text: label;\
+                    font: "Sans";\
+                }\
+                rel1 \
+                {\
+                    relative: 0.0 0.0;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 1.0 1.0;\
+                    to: partname;\
+                }\
+            }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 0 0 0 255;\
+            }\
+        }\
+        part\
+        {\
+            name: partname"-subtext";\
+            type: TEXT;\
+            mouse_events: 0;\
+            description \
+            { \
+                state: "default" 0.0;\
+                color: 255 255 255 255;\
+                text \
+                {\
+                    align: 0.525 0.92;\
+                    size: 20;\
+                    text: subtext;\
+                    font: "Sans";\
+                }\
+                rel1 \
+                {\
+                    relative: 0.0 0.0;\
+                    to: partname;\
+                }\
+                rel2 \
+                {\
+                    relative: 1.0 1.0;\
+                    to: partname;\
+                }\
+            }\
+            description \
+            { \
+                state: "clicked" 0.0;\
+                inherit: "default" 0.0;\
+                color: 0 0 0 255;\
+            }\
+        }
+#define _PART_KEYPAD_PROG2(partname, label ); \
+        program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
+            action: STATE_SET "default" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-clicked";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            script{\
+                add_sign(label);\
+            }\
+        }
+
+#define _PART_PIN_ENTER_KEYPAD_PROG(partname, label ); \
+        program \
+        { \
+            name: partname"-pressed";\
+            signal: "mouse,down,1";\
+            source: partname;\
+            action: STATE_SET "clicked" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-unpressed";\
+            signal: "mouse,up,1";\
+            source: partname;\
+            action: STATE_SET "default" 0.0;\
+            target: partname;\
+            target: partname"-text";\
+            target: partname"-subtext";\
+        }\
+        program \
+        { \
+            name: partname"-clicked";\
+            signal: "mouse,clicked,1";\
+            source: partname;\
+            script{\
+                new old[40];\
+                old[20] = get_text(PART:"num_field-text",old,40);\
+                new txt[60];\
+                new num[3] = label;\
+                new pin[40];\
+                pin[39] = get_text(PART:"pin-text",pin,39);\
+                emit(pin,"embryo");\
+                new txt2[60];\
+                emit(num,"embryo");\
+                snprintf(txt2, 60, "%s%s", pin, num);\
+                num = "*";\
+                snprintf(txt, 60, "%s%s", old, num);\
+                set_text(PART:"pin-text", txt2);\
+                emit(txt2,"embryo");\
+                set_text(PART:"num_field-text", txt);\
+           }\
+        }
