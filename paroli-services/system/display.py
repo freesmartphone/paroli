@@ -62,7 +62,7 @@ class DisplayService(tichy.Service):
             self.bobj = bus2.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Display/gta02_bl')
             self.biface = dbus.Interface(self.bobj, 'org.freesmartphone.Device.Display')
 
-            self.Brightness = tichy.settings.Setting('display', 'Brightness', tichy.Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
+            #self.Brightness = tichy.settings.Setting('display', 'Brightness', tichy.Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
 
         except Exception, e:
             logger.warning("can't use e dbus interface service : %s", e)
