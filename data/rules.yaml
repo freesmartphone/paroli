@@ -105,7 +105,7 @@
              - HasAttr(switch, "HEADSET")
              - HasAttr(event, "released")
     actions: Command('amixer -d sset "Amp Spk" unmute')
-
+-
     #
     # Idleness Brightness Handling
     #
