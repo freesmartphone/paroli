@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -72,5 +71,4 @@ class FSOButtonService(Service):
         if action.lower() == 'held':
             self.last = 'held'
             text = "%s_button_%s" % (name.lower(), self.last)
-
         self.emit(text, seconds)

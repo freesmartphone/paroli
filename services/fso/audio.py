@@ -150,4 +150,3 @@ class FSOAudioService(Service):
                                             "wrong error returned"
         else:
             assert False, "PlayerError expected"
-

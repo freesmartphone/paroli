@@ -38,14 +38,14 @@ group  {
                     to: "base";
                 }
                 image {
-                    normal: "backspace.png";
+                    normal: "back.png";
                 }
                 visible: 1;
             }
             description {
                 state: "clicked" 0.0;
                 inherit:"default" 0.0;
-                image.normal: "backspace_pressed.png";
+                image.normal: "back_pressed.png";
             }
         }
         part {
@@ -117,7 +117,7 @@ group  {
                 }
                 rel2 {
                     relative: 0.0 0.0;
-                    offset: 465 166;
+                    offset: 465 186;
                     to: "base";
                 }
             }
@@ -152,12 +152,12 @@ group  {
                 color: 255 255 255 255;
                 text {
                     align: 0.0 0.0;
-                    size: 20;
+                    size: 24;
                     text: "name";
                     font: "Sans";
                 }
                 rel1 {
-                    relative: 0.0 0.8;
+                    relative: 0.0 0.62;
                     to: "name";
                 }
                 rel2 {
@@ -169,7 +169,7 @@ group  {
                 state:"edit-mode" 0.0;
                 inherit:"default" 0.0;
                 rel1 {
-                    relative: 0.12 0.8;
+                    relative: 0.12 0.62;
                     to: "name";
                 }
                 rel2 {
@@ -210,17 +210,17 @@ group  {
                 color: 0 255 0 255;
                 text {
                     align: 0.0 0.0;
-                    size: 20;
+                    size: 24;
                     text: "Edit";
                     font: "Sans";
                 }
                 rel1 {
-                    relative: 0.0 0.0;
-                    to: "name-edit-button";
+                    relative: 0.0 0.62;
+                    to: "name";
                 }
                 rel2 {
                     relative: 1.0 1.0;
-                    to: "name-edit-button";
+                    to: "name";
                 }
             }
         }
@@ -248,7 +248,7 @@ group  {
             name:"number";
             type:RECT;
             description {
-                color: 0 0 0 255;
+                color: 0 0 0 205;
                 rel1 {
                     relative: 0.0 0.0;
                     offset: 16 236;
@@ -256,7 +256,7 @@ group  {
                 }
                 rel2 {
                     relative: 0.0 0.0;
-                    offset: 465 291;
+                    offset: 465 311;
                     to: "base";
                 }
             }
@@ -288,19 +288,25 @@ group  {
             type:RECT;
             description {
                 state: "default" 0.0;
-                color: 255 255 255 0;
+                color: 0 0 0 0;
                 rel1 {
                     relative: 0.0 0.0;
                     to: "number";
                 }
                 rel2 {
-                    relative: 1.0 0.79;
+                    relative: 1.0 1.0;
                     to: "number";
                 }
             }
             description {
                 state: "edit-mode" 0.0;
-                visible:0;
+                visible: 0;
+            }
+            description {
+                state: "pressed" 0.0;
+                inherit: "default" 0.0;
+                color: 255 105 205 200;
+                visible: 1;
             }
         }
         part {
@@ -311,12 +317,12 @@ group  {
                 color: 255 255 255 255;
                 text {
                     align: 0.0 0.0;
-                    size: 20;
+                    size: 24;
                     text: "phone";
                     font: "Sans";
                 }
                 rel1 {
-                    relative: 0.0 0.8;
+                    relative: 0.0 0.62;
                     to: "number";
                 }
                 rel2 {
@@ -328,7 +334,7 @@ group  {
                 state:"edit-mode" 0.0;
                 inherit:"default" 0.0;
                 rel1 {
-                    relative: 0.12 0.8;
+                    relative: 0.12 0.62;
                     to: "number";
                 }
                 rel2 {
@@ -369,17 +375,17 @@ group  {
                 color: 0 255 0 255;
                 text {
                     align: 0.0 0.0;
-                    size: 20;
+                    size: 24;
                     text: "Edit";
                     font: "Sans";
                 }
                 rel1 {
-                    relative: 0.0 0.0;
-                    to: "number-edit-button";
+                    relative: 0.0 0.62;
+                    to: "number";
                 }
                 rel2 {
                     relative: 1.0 1.0;
-                    to: "number-edit-button";
+                    to: "number";
                 }
             }
         }
@@ -460,9 +466,30 @@ group  {
             action: SIGNAL_EMIT "close_details" "edje";
         }
         program {
+            name: "call-contact-pressed";
+            signal: "mouse,down,1";
+            source: "number-text-button";
+            action: STATE_SET "pressed" 0.0;
+            target: "number-text-button";
+        }
+        program {
             name: "call-contact";
             signal: "mouse,up,1";
             source: "number-text-button";
+            after: "call-contact-anim";
+            after: "call-contact-emit"; //TODO: do two things at the same time
+        }
+        program {
+            name: "call-contact-anim";
+            //signal: "callContactAnim";
+            //source: "*";
+            action: STATE_SET "default" 0.0;
+            transition: LINEAR 0.5;
+            target: "number-text-button";
+        }
+                
+        program {
+            name: "call-contact-emit";
             action: SIGNAL_EMIT "call_contact" "people";
         }
         program {
@@ -556,4 +583,5 @@ group  {
         }
     }
 }
+
 

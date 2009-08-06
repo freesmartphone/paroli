@@ -54,14 +54,28 @@ class TelefonyDialer(Application):
         self.edje_obj.add_callback("*", "embryo", self.embryo)
         self.edje_obj.add_callback("*", "call", self.call)
 
+        ## close the Tele app, with the back button
+        self.edje_obj.add_callback("back", "edje", self.signal) 
+        
+        parent.emit("unblock")
+
         ##wait until main object emits back signal or delete is requested
-        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'),Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),
+                                  Wait(self.window, 'back'),
+                                  Wait(self.window.window,'closing'),
+                                  Wait(self.edje_obj, 'back'))
         logger.info('Tele closing')
 
         if i != 2:
             self.window.delete()
 
-    ##DEBUG FUNCTIONS
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("tele2.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+        
+    ##DEBUG FUNCTIONS 
     ## msgs from embryo
     def embryo(self, emission, signal, source):
         logger.info("embryo says:" + signal)
@@ -82,6 +96,7 @@ class TelefonyDialer(Application):
             emission.part_text_set('num_field-text','')
             TeleCaller2(self.window, number, None, self.edje_obj).start(err_callback=self.throw)
         elif signal[0] in ['*'] :
+            emission.part_text_set('num_field-text','')
             self.ussd_service.send_ussd(signal)
         else :
             pass
@@ -143,8 +158,7 @@ class TeleCaller2(Application):
         self.usage_service = Service.get('Usage')
         self.edje_file = join(dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
-        #self.usage_service.occupy_cpu().start()
-
+        self.usage_service.occupy_cpu().start()
         if layout:
             self.main = parent
             self.main.topbar.onclick = 'hide'
@@ -208,7 +222,8 @@ class TeleCaller2(Application):
 
             else:   # If not it means we want to initiate the call first
                 display = unicode(TelNumber(number).get_text()).encode("utf-8")
-                self.edje_obj.part_text_set('num_field-text',display)
+                logger.info("display is %s", display)
+                self.edje_obj.part_text_set('num_field-text', display)
                 self.edje_obj.signal_emit('to_dialing_state',"*")
                 self.edje_obj.layer_set(2)
                 self.edje_obj.show()
@@ -269,8 +284,8 @@ class TeleCaller2(Application):
 
 
             #logger.info("releasing cpu")
-            #self.usage_service.release_cpu().start()
-            self.SoundsService.Stop()
+            self.usage_service.release_cpu().start()
+            self.SoundsService.Stop()        
             self.storage.caller.value = ""
             self.storage.call = None
 

@@ -1,0 +1,1349 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="concept_drawing.svg"
+   inkscape:version="0.46+devel"
+   sodipodi:version="0.32"
+   id="svg8728"
+   height="640"
+   width="480"
+   inkscape:export-filename="/home/jimmac/src/cvs/tango-art-libre/scalable/tools/draw-rectangle.png"
+   inkscape:export-xdpi="90.000000"
+   inkscape:export-ydpi="90.000000"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   style="display:inline">
+  <defs
+     id="defs3">
+    <marker
+       inkscape:stockid="Arrow1Send"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Send"
+       style="overflow:visible">
+      <path
+         id="path3833"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.2,0,0,-0.2,-1.2,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3839"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective2784" />
+    <linearGradient
+       id="linearGradient6581">
+      <stop
+         style="stop-color:#eeeeec;stop-opacity:1;"
+         offset="0"
+         id="stop6583" />
+      <stop
+         style="stop-color:#e0e0de;stop-opacity:1.0000000;"
+         offset="1.0000000"
+         id="stop6585" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient14920">
+      <stop
+         id="stop14922"
+         offset="0"
+         style="stop-color:#5a7aa4;stop-opacity:1;" />
+      <stop
+         id="stop14924"
+         offset="1.0000000"
+         style="stop-color:#1f2b3a;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient13390">
+      <stop
+         id="stop13392"
+         offset="0.0000000"
+         style="stop-color:#81a2cd;stop-opacity:1.0000000;" />
+      <stop
+         id="stop13394"
+         offset="1.0000000"
+         style="stop-color:#2a415f;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient10325">
+      <stop
+         id="stop10327"
+         offset="0"
+         style="stop-color:#5a7aa4;stop-opacity:1;" />
+      <stop
+         id="stop10329"
+         offset="1.0000000"
+         style="stop-color:#455e7e;stop-opacity:1.0000000;" />
+    </linearGradient>
+    <inkscape:perspective
+       id="perspective2872"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2948"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3425"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3566"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3709"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2907"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2934"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2867"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2941"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3015"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3596"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3618"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2917"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3670"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3687"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3703"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3788"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3525"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3760"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4011"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4399"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4414"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5401"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3895"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3936"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3975"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4810"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-y="25"
+     inkscape:window-x="0"
+     inkscape:window-height="750"
+     inkscape:window-width="1280"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     showgrid="true"
+     inkscape:current-layer="layer2"
+     inkscape:cy="190.48698"
+     inkscape:cx="307.28058"
+     inkscape:zoom="0.5"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="0.12156863"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:showpageshadow="false"
+     stroke="#888a85"
+     showborder="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3571"
+       empspacing="5"
+       visible="true"
+       enabled="false"
+       spacingx="1px" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+        <dc:date>2005-10-10</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Andreas Nilsson</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>draw</rdf:li>
+            <rdf:li>rectangle</rdf:li>
+            <rdf:li>square</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Attribution" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer14"
+     inkscape:label="concept_background"
+     style="display:inline">
+    <rect
+       style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3639"
+       width="480"
+       height="640"
+       x="0"
+       y="0"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="screenshot"
+     style="display:none">
+    <image
+       style="display:inline"
+       y="0"
+       x="0"
+       id="image4401"
+       height="640"
+       width="480"
+       sodipodi:absref="/home/lama/Asztal/down/openmoko/paroli/paroli-applications/calculator/screenshot.png"
+       xlink:href="screenshot.png" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer10"
+     inkscape:label="backspace"
+     style="display:inline">
+    <g
+       style="display:inline"
+       id="g3997"
+       transform="translate(0,65)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/delete_new2.png"
+         y="0"
+         x="0"
+         height="69"
+         width="159"
+         id="rect2924"
+         style="color:#000000;fill:#e5e772;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <g
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/back_new.png"
+         transform="translate(-5.3869644,80.500003)"
+         id="g3720">
+        <path
+           transform="matrix(2.3644238,0,0,2.3644238,-103.85489,59.926181)"
+           d="m 86.825729,-44.799999 c 0,3.865993 -3.134006,7 -7,7 -3.865993,0 -7,-3.134007 -7,-7 0,-3.865993 3.134007,-7 7,-7 3.865994,0 7,3.134007 7,7 z"
+           sodipodi:ry="7"
+           sodipodi:rx="7"
+           sodipodi:cy="-44.799999"
+           sodipodi:cx="79.825729"
+           id="path3727"
+           style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           sodipodi:type="arc" />
+        <path
+           sodipodi:nodetypes="cccc"
+           id="path3729"
+           d="m 89.186544,-55.457696 0,18.915391 L 75.000002,-46 89.186544,-55.457696 z"
+           style="stroke-width:1px;display:inline" />
+      </g>
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="onc">
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       y="65"
+       x="321"
+       height="69"
+       width="159"
+       id="rect3920"
+       style="color:#000000;fill:#e5e772;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="calculator"
+     style="opacity:1;display:inline">
+    <rect
+       inkscape:tile-y0="51.920658"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-h="96"
+       inkscape:tile-w="96"
+       inkscape:tile-cy="99.920658"
+       inkscape:tile-cx="109.17326"
+       ry="0"
+       y="256"
+       x="1.0703125e-05"
+       height="96"
+       width="96"
+       id="rect3034"
+       style="fill:#fb9743;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7144"
+       transform="translate(-1.3574465e-5,95.999998)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7146"
+       transform="translate(-1.3574465e-5,192)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7148"
+       transform="translate(-1.3574465e-5,288)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7150"
+       transform="translate(95.999986,-2.1220809e-6)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7152"
+       transform="translate(95.999986,95.999998)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7154"
+       transform="translate(95.999986,192)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7156"
+       transform="translate(95.999986,288)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7158"
+       transform="translate(191.99998,-2.1220809e-6)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7160"
+       transform="translate(191.99998,95.999998)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7162"
+       transform="translate(191.99998,192)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7164"
+       transform="translate(191.99998,288)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7166"
+       transform="translate(287.99996,-2.1220809e-6)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7168"
+       transform="translate(287.99996,95.999998)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7170"
+       transform="translate(287.99996,192)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7172"
+       transform="translate(287.99996,288)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7174"
+       transform="translate(383.99996,-2.1220809e-6)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7176"
+       transform="translate(383.99996,95.999998)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7178"
+       transform="translate(383.99996,192)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <use
+       height="1052.3622"
+       width="744.09448"
+       id="use7180"
+       transform="translate(383.99996,288)"
+       xlink:href="#rect3034"
+       inkscape:tiled-clone-of="#rect3034"
+       y="0"
+       x="0"
+       style="fill:#000000;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       id="text2599"
+       y="333.16016"
+       x="22.687511"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="333.16016"
+         x="22.687511"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2601"
+         sodipodi:role="line">7</tspan></text>
+    <text
+       id="text2607"
+       y="428.68484"
+       x="22.843761"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="428.68484"
+         x="22.843761"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2609"
+         sodipodi:role="line">4</tspan></text>
+    <text
+       id="text2615"
+       y="524.20947"
+       x="21.847668"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="524.20947"
+         x="21.847668"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2617"
+         sodipodi:role="line">1</tspan></text>
+    <text
+       id="text2623"
+       y="617.54388"
+       x="22.708235"
+       style="font-size:40.06520843999999926px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       transform="scale(0.99627721,1.0037367)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="617.54388"
+         x="22.708235"
+         style="font-size:80.13041687000000479px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2625"
+         sodipodi:role="line">0</tspan></text>
+    <text
+       id="text2631"
+       y="333.12109"
+       x="117.86597"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="333.12109"
+         x="117.86597"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2633"
+         sodipodi:role="line">8</tspan></text>
+    <text
+       id="text2639"
+       y="428.11844"
+       x="118.2566"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="428.11844"
+         x="118.2566"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2641"
+         sodipodi:role="line">5</tspan></text>
+    <text
+       id="text2647"
+       y="524.73682"
+       x="118.92066"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="524.73682"
+         x="118.92066"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2649"
+         sodipodi:role="line">2</tspan></text>
+    <text
+       id="text2655"
+       y="596.96094"
+       x="227.3242"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="596.96094"
+         x="227.3242"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2657"
+         sodipodi:role="line">.</tspan></text>
+    <text
+       id="text2663"
+       y="333.12109"
+       x="213.43501"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="333.12109"
+         x="213.43501"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2665"
+         sodipodi:role="line">9</tspan></text>
+    <text
+       id="text2671"
+       y="428.64578"
+       x="212.86861"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="428.64578"
+         x="212.86861"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2673"
+         sodipodi:role="line">6</tspan></text>
+    <text
+       id="text2679"
+       y="524.17041"
+       x="213.29829"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="524.17041"
+         x="213.29829"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2681"
+         sodipodi:role="line">3</tspan></text>
+    <text
+       id="text2695"
+       y="324.37598"
+       x="323.13007"
+       style="font-size:65px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       xml:space="preserve"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="324.37598"
+         x="323.13007"
+         style="font-size:65px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2697"
+         sodipodi:role="line">(</tspan></text>
+    <text
+       id="text2703"
+       y="452.33121"
+       x="310.55505"
+       style="font-size:101.78000640999999860px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       xml:space="preserve"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="452.33121"
+         x="310.55505"
+         style="font-size:101.78000640999999860px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2705"
+         sodipodi:role="line">*</tspan></text>
+    <text
+       id="text2711"
+       y="521.07812"
+       x="302.48438"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="521.07812"
+         x="302.48438"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2713"
+         sodipodi:role="line">+</tspan></text>
+    <text
+       id="text2743"
+       y="720.50848"
+       x="290.63461"
+       style="font-size:54.03194427000000388px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       transform="scale(1.3929577,0.71789689)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="720.50848"
+         x="290.63461"
+         style="font-size:108.06388855000000149px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2745"
+         sodipodi:role="line">-</tspan></text>
+    <text
+       id="text2751"
+       y="617.03906"
+       x="398.48438"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="617.03906"
+         x="398.48438"
+         style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2753"
+         sodipodi:role="line">=</tspan></text>
+    <g
+       style="fill:#ffffff;display:inline;enable-background:new"
+       id="g3148"
+       transform="translate(-153.50308,205.67967)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         xml:space="preserve"
+         style="font-size:20.10246849px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Bitstream Vera Sans"
+         x="264.99164"
+         y="383.27417"
+         id="text2949"><tspan
+           sodipodi:role="line"
+           id="tspan2951"
+           style="font-size:40.20493698px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+           x="264.99164"
+           y="383.27417">+</tspan></text>
+      <text
+         transform="scale(1.1531915,0.8671586)"
+         xml:space="preserve"
+         style="font-size:29.17646408px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Bitstream Vera Sans"
+         x="264.27405"
+         y="479.82858"
+         id="text2953"><tspan
+           sodipodi:role="line"
+           id="tspan2955"
+           style="font-size:58.35292816px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+           x="264.27405"
+           y="479.82858">-</tspan></text>
+      <text
+         transform="scale(0.9302624,1.0749655)"
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         style="font-size:63.57037735px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         x="311.91479"
+         y="379.76413"
+         id="text2957"><tspan
+           sodipodi:role="line"
+           id="tspan2959"
+           style="font-size:63.57037735px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+           x="311.91479"
+           y="379.76413">/</tspan></text>
+    </g>
+    <text
+       id="text3000"
+       y="322.80859"
+       x="420.47162"
+       style="font-size:60px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       xml:space="preserve"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="322.80859"
+         x="420.47162"
+         style="font-size:60px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan3002"
+         sodipodi:role="line">)</tspan></text>
+    <text
+       id="text3119"
+       y="636.33478"
+       x="264.83887"
+       style="font-size:58.59460067999999922px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       transform="scale(1.510584,0.66199562)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="636.33478"
+         x="264.83887"
+         style="font-size:117.18920135000000471px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan3121"
+         sodipodi:role="line">-</tspan></text>
+    <text
+       id="text3123"
+       y="416.83481"
+       x="421.01532"
+       style="font-size:65.11373900999998909px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       xml:space="preserve"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="416.83481"
+         x="421.01532"
+         style="font-size:65.11373900999998909px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan3125"
+         sodipodi:role="line">:</tspan></text>
+    <g
+       style="fill:#ffffff;display:inline;enable-background:new"
+       id="g3134"
+       transform="translate(-59.06021,204.07936)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         sodipodi:linespacing="125%"
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         x="354.68909"
+         y="402.48117"
+         id="text2933"><tspan
+           sodipodi:role="line"
+           id="tspan2935"
+           style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+           x="354.68909"
+           y="402.48117">ANS</tspan></text>
+    </g>
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="use7150-8"
+       width="96"
+       height="48"
+       x="-3.5564881e-13"
+       y="208"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <text
+       id="text2631-5"
+       y="249.89453"
+       x="14.355469"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="249.89453"
+         x="14.355469"
+         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2633-4"
+         sodipodi:role="line">sin</tspan></text>
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="use3863"
+       width="96"
+       height="48"
+       x="96"
+       y="208"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <text
+       xml:space="preserve"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       x="103.45312"
+       y="249.89453"
+       id="text3865"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3867"
+         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         x="103.45312"
+         y="249.89453">cos</tspan></text>
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="use3869"
+       width="96"
+       height="48"
+       x="192"
+       y="208"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <text
+       id="text3871"
+       y="249.89453"
+       x="203.35547"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="249.89453"
+         x="203.35547"
+         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan3873"
+         sodipodi:role="line">log</tspan></text>
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="use3875"
+       width="96"
+       height="48"
+       x="288"
+       y="208"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="use3881"
+       width="96"
+       height="48"
+       x="384"
+       y="208"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <text
+       id="text3883"
+       y="244.36328"
+       x="418.37109"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="244.36328"
+         x="418.37109"
+         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan3885"
+         sodipodi:role="line">π</tspan></text>
+    <g
+       id="g3912"
+       transform="translate(11.128907,24)"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         id="text3877"
+         y="226.98438"
+         x="319.99219"
+         style="font-size:48px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="226.98438"
+           x="319.99219"
+           style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+           id="tspan3879"
+           sodipodi:role="line">√</tspan></text>
+      <text
+         sodipodi:linespacing="100%"
+         id="text3877-4"
+         y="205.98438"
+         x="299.99219"
+         style="font-size:32px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;opacity:0.83240225;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Oblique"
+         xml:space="preserve"><tspan
+           y="205.98438"
+           x="299.99219"
+           style="font-size:32px;font-style:oblique;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans Oblique"
+           id="tspan3879-0"
+           sodipodi:role="line">x</tspan></text>
+    </g>
+    <text
+       id="text3871-2"
+       y="115.08594"
+       x="338.74219"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#ff3939;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="115.08594"
+         x="338.74219"
+         style="font-size:48px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ff3939;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans;fill-opacity:1"
+         id="tspan3873-8"
+         sodipodi:role="line">ON/C</tspan></text>
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="rect4788"
+       width="54"
+       height="69"
+       x="159"
+       y="65"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <rect
+       inkscape:tile-y0="51.920658"
+       inkscape:tile-x0="61.17326"
+       ry="0"
+       y="65"
+       x="213"
+       height="69"
+       width="54"
+       id="rect4790"
+       style="fill:#fc8734;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       style="fill:#fb781b;fill-opacity:1;stroke:none;display:inline;enable-background:new"
+       id="rect4792"
+       width="54"
+       height="69"
+       x="267"
+       y="65"
+       ry="0"
+       inkscape:tile-x0="61.17326"
+       inkscape:tile-y0="51.920658" />
+    <text
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       x="212.04297"
+       y="107.89453"
+       id="text4794"><tspan
+         sodipodi:role="line"
+         id="tspan4796"
+         style="font-size:28px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         x="212.04297"
+         y="107.89453">2nd</tspan></text>
+    <text
+       id="text4798"
+       y="107.89453"
+       x="158.04297"
+       style="font-size:24;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="107.89453"
+         x="158.04297"
+         style="font-size:24;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan4800"
+         sodipodi:role="line">DRG</tspan></text>
+    <text
+       id="text2663-4"
+       y="201.12109"
+       x="479.84375"
+       style="font-size:64px;font-style:normal;font-weight:normal;text-align:end;text-anchor:end;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;enable-background:new;font-family:Bitstream Vera Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         y="201.12109"
+         x="479.84375"
+         style="font-size:64px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;line-height:100%;writing-mode:lr-tb;text-anchor:end;fill:#ffffff;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+         id="tspan2665-6"
+         sodipodi:role="line">01234567891</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer13"
+     inkscape:label="illume_topbar"
+     style="display:inline">
+    <g
+       style="display:inline"
+       id="g3624"
+       inkscape:export-filename="/home/lama/Asztal/down/openmoko/paroli-images/calculator.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         y="0"
+         x="0"
+         height="65"
+         width="480"
+         id="rect2842"
+         style="color:#000000;fill:#c1e591;fill-opacity:1;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <text
+         id="text3616"
+         y="43.201878"
+         x="76.367531"
+         style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="43.201878"
+           x="76.367531"
+           id="tspan3618"
+           sodipodi:role="line">Illume's topbar</tspan></text>
+      <path
+         id="path3620"
+         d="M 30.405592,17.038926 8.5961085,29.630637 29.687038,41.807491 30.405592,17.038926 z"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <path
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="m 446.59611,17.038926 21.80948,12.591711 -21.09093,12.176854 -0.71855,-24.768565 z"
+         id="path3622" />
+    </g>
+  </g>
+</svg>

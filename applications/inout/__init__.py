@@ -63,6 +63,9 @@ class InOutCallLog(Application):
 
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
+        
+        ## close the Tele app, with the back button (signal, source, method)
+        self.edje_obj.add_callback("back", "edje", self.signal) 
 
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
@@ -75,6 +78,8 @@ class InOutCallLog(Application):
         self.item_list.add_callback("save_number", "*", self.create_contact)
 
         self.item_list.elm_window = self.window.window
+
+        parent.emit("unblock")
 
         i, args = yield WaitFirst(Wait(self.window, 'back'),Wait(self.window, 'delete_request'), Wait(self.window.window,'closing'))
 
@@ -89,6 +94,12 @@ class InOutCallLog(Application):
             self.window.delete()
             del self.item_list
 
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("i-o2.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+    
     def restore_edit(self, *args, **kargs):
         self.edje_obj.edje.signal_emit("ListFilled", "python")
 

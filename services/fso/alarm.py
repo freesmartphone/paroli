@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Jeremy Chang (jeremy@openmoko.org)
@@ -52,13 +51,10 @@ class FSOSlot(dbus.service.Object):
     def Alarm(self):
         logger.info( "!!!!!!!!!!!!!! Alarm !!!!!!!!!!!!!!!!!!" )
         try:
-            #if self.action is not None:
-                #self.action(self.args)
-            #self.action = None
-            #self.args = None
-            self.AlarmService = Service.get("Alarm")
-            self.AlarmService.ring()
-
+            if self.action is not None:
+                self.action(self.args)
+            self.action = None
+            self.args = None
         except Exception, ex:
             logger.exception( "Alarm except %s", ex )
 
@@ -87,60 +83,15 @@ class FSOAlarmService(Service):
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.otimed', time_out=120)
-            yield Service.get('SysTime').wait_initialized()
-
-            self.rtc = Service.get("SysTime").rtc
-
-            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
-            alarm_obj = bus.get_object('org.freesmartphone.otimed',
+            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            alarm_obj = bus.get_object('org.freesmartphone.otimed', 
                           '/org/freesmartphone/Time/Alarm')
             self.alarm = dbus.Interface(alarm_obj, 'org.freesmartphone.Time.Alarm')
-
-            self.ListLabel = [('title','name'),('value','value')]
-
-            self.hour = TimeSetting("hour",3,List(range(24)), "int")
-
-            self.minute =  TimeSetting("minute",4,List(range(60)), "int")
-
-            self.AlarmList = List()
-            self.AlarmList.append(self.hour)
-            self.AlarmList.append(self.minute)
-
-            self.alarm_setting = ListSetting('Time', 'set alarm', Text, value="set", setter=self.SetAlarm, options=['set'], model=self.AlarmList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
-
-            self.AlarmList.connect('save', self.UpdateAlarmTime)
-
+            logger.info('Alarm service OK! %s', self.alarm)
         except Exception, e:
             logger.exception("can't use freesmartphone Alarm service : %s", e)
 
-    @tasklet
-    def SetAlarm(self, val):
-        yield val
-
-    def UpdateAlarmTime(self, *args, **kargs):
-        logger.info("alarm updating called")
-        now = self.rtc.GetCurrentTime()
-        year = time.localtime(self.rtc.GetCurrentTime())[0]
-        month = time.localtime(self.rtc.GetCurrentTime())[1]
-        day = time.localtime(self.rtc.GetCurrentTime())[2]
-        hour = self.hour.value
-        minute = self.minute.value
-        sec = 0
-        wday = time.localtime(self.rtc.GetCurrentTime())[6]
-        yday = time.localtime(self.rtc.GetCurrentTime())[7]
-        isdst = time.localtime(self.rtc.GetCurrentTime())[8]
-
-        new_time = time.mktime((year, month, day, hour, minute, sec, wday, yday, isdst))
-
-        if int(now) - int(new_time) > 0:
-            alarm = time.mktime((year, month, day+1, hour, minute, sec, wday+1, yday+1, isdst))
-        else:
-            alarm = new_time
-
-        yield WaitDBus(self.alarm.SetAlarm, 'org.tichy.notification', int(alarm) )
-
-
-    @tasklet
+    @tichy.tasklet.tasklet
     def clear_alarm(self):
         try:
             yield WaitDBus( self.alarm.ClearAlarm, 'org.tichy.notification')
@@ -157,23 +108,3 @@ class FSOAlarmService(Service):
         except Exception, ex:
             logger.exception("Exception : %s", ex)
             raise
-
-    def ring(self, *args):
-        logger.info("ring ring")
-
-class TimeSetting(Object):
-    def __init__(self, name, rep_part, val_range, type_arg):
-        self.service = Service.get('SysTime')
-        self.name = name
-        self.value = time.localtime(self.service.rtc.GetCurrentTime())[rep_part]
-        self.rep_part = rep_part
-        self.val_range = val_range
-        self.val_type = type_arg
-
-    def action(self, *args, **kargs):
-        pass
-
-    def __repr__(self):
-        time = time.localtime(self.service.rtc.GetCurrentTime())[self.rep_part]
-        return time
-

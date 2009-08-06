@@ -1,8 +1,14 @@
 images {
-   image: "Edit.png" COMP;
+   image: "edit.png" COMP;
+   image: "sweep.png" COMP;
    image: "Save.png" COMP;
+   image: "save.png" COMP;
+   image: "save_pressed.png" COMP;
    image: "Done.png" COMP;
    image: "Delete.png" COMP;
+   image: "delete.png" COMP;
+   image: "back.png" COMP;
+   image: "back_pressed.png" COMP;
 }
 
 styles

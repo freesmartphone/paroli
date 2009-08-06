@@ -73,6 +73,8 @@ class Letters(Application):
 
         self.item_list.add_callback("details", "*", self.msg_details)
 
+        parent.emit("unblock")
+
         i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'), Wait(self.window.window,'closing'))
         logger.info('Messages closing')
 
@@ -80,6 +82,12 @@ class Letters(Application):
             self.contacts.disconnect(self.oid)
             self.window.delete()
             del self.item_list
+
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("msgs2.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
 
     ##DEBUG FUNCTIONS
     ## general output check
@@ -107,9 +115,10 @@ class Letters(Application):
         detail_layout.elm_obj.show()
 
         textbox = Entry(self.window.window.elm_obj)
-        textbox.entry_set(text.value)
+        textbox.entry_set(unicode(text.value).replace('&','&amp;'))
 
         textbox.size_hint_weight_set(1.0, 1.0)
+        textbox.scale_set(1.5)
         textbox.editable_set(False)
         textbox.line_wrap_set(True)
         textbox.show()

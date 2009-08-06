@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #    Paroli
 #
 #    copyright 2008 Mirko Lindner (mirko@openmoko.org)
@@ -80,4 +79,3 @@ class FSOPowerService(Service):
             return bat_value
         else:
             return 50
-

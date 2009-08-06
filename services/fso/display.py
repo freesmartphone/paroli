@@ -65,7 +65,7 @@ class FSODisplayService(Service):
             self.bobj = bus2.get_object('org.freesmartphone.odeviced', '/org/freesmartphone/Device/Display/gta02_bl')
             self.biface = dbus.Interface(self.bobj, 'org.freesmartphone.Device.Display')
 
-            self.Brightness = Setting('display', 'Brightness', Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
+            #self.Brightness = Setting('display', 'Brightness', Int, value=self.getBrightness(), setter=self.setBrightness, options=[20,40,60,80,100])
 
         except Exception, e:
             logger.exception("can't use e dbus interface service : %s", e)

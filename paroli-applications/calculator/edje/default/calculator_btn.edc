@@ -1,0 +1,470 @@
+#include "macros.edc"
+
+group { 
+    name: "main";
+    min:  480 (640-64);
+    max:  480 (640-64);    
+    script {
+        public zero = 0;
+        public mytimer = 0;
+        public calltimer_s = 0;
+        public calltimer_m = 0;
+        public calltimer_h = 0;
+        public del_button_pressed = 0;
+        
+        public current = 0;  //Current float number
+        public sum = 0;
+        public sub = 0;
+        public mul = 0;
+        public div = 0;
+        public restart = 0;
+        public locale = 0;   //The ascii value used for '.' by current locale
+
+        public get_locale() {
+            new buf[5];
+            snprintf(buf, 4, "%f", 1.1);
+            set_int(locale, buf[1]);
+        }
+
+        public calc_digit_add(val) {
+            new buf[32];
+            new text[32];
+
+            get_text(PART:"num-field-text", text, 31);
+
+            //need a new number (+.-,*,/ pressed)
+            if (get_int(restart))
+                snprintf(buf, 31, "%i", val);
+            //point pressed
+            else if (val == -1) 
+                snprintf(buf, 31, "%i%c", get_int(current), get_int(locale));
+            //only the 0 digit is on screen
+            else if ((text[0] == '0') && (text[1] == 0))
+                snprintf(buf, 31, "%i", val);
+            //Normal: append the number
+            else
+                snprintf(buf, 31, "%s%i", text, val);
+
+            set_text(PART:"num-field-text", buf);
+            set_float(current, atof(buf));
+           
+            if (get_int(restart))
+                set_int(restart, 0);
+        }
+
+        public calc_reset() {
+            set_float(current, 0.0);
+            set_float(sum, 0.0);
+            set_float(sub, 0.0);
+            set_float(mul, 0.0);
+            set_float(div, 0.0);
+            set_text(PART:"num-field-text", "0");
+        }
+
+        public calc_result() {
+            new buf[32];
+
+            if (get_float(sum)) {
+                snprintf(buf, 31, "%f", get_float(sum) + get_float(current));
+              set_float(sum, 0.0);
+            }
+            else if (get_float(sub)) {
+                snprintf(buf, 31, "%f", get_float(sub) - get_float(current));
+                set_float(sub, 0.0);
+            }
+            else if (get_float(mul)) {
+                snprintf(buf, 31, "%f", get_float(mul) * get_float(current));
+                set_float(mul, 0.0);
+            }
+            else if (get_float(div)) {
+                snprintf(buf, 31, "%f", get_float(div) / get_float(current));
+                set_float(div, 0.0);
+            }
+            else {
+                return;
+            }
+
+            //remove leading zeroes
+            new i = 0;
+            while (buf[i] != 0) i++;
+            i--;
+            while (i && (buf[i] == '0')) {
+                buf[i] = 0;
+                i--;
+            }
+            if (buf[i] == get_int(locale)) buf[i] = 0;
+
+            //Set result
+            set_text(PART:"num-field-text", buf);
+            set_float(current, atof(buf));
+        }
+
+        public calc_sum() {
+            if (get_float(sum))
+                calc_result();
+            set_float(sum, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+        }
+
+        public calc_sub() {
+            if (get_float(sub))
+                calc_result();
+            set_float(sub, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+        }
+
+        public calc_mul() {
+            if (get_float(mul))
+                calc_result();
+            set_float(mul, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+        }
+
+        public calc_div() {
+            if (get_float(div))
+                calc_result();
+            set_float(div, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+        }
+    }    
+    
+    parts {
+        part {
+            name: "base";
+            type: RECT;
+            description { 
+                state: "default"  0.0;
+                color: 0 0 0 255;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 0 -40;
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                }
+            }
+        }
+
+        part
+        {
+            name: "num-field";
+            type: RECT;
+            description 
+            { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 0 69;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 1.0 0.0;
+                    offset: 0 143;
+                    to: "base";
+                }
+            }
+            description
+            {
+              state: "incoming" 0.0;
+              inherit:"default" 0.0;
+            }
+        }        
+        part
+        {
+            name: "num-field-text";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 1.0 0.5;
+                    size: 60;
+                    text: "demo only";
+                    font: "Sans";
+                    elipsis: 1.0; 
+                }
+                rel1 {
+                    relative: 0.0 0.0;
+                    to: "num-field";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to: "num-field";
+                }
+            }
+        }
+
+        part {
+            name: "onc";
+            type: RECT;
+            description { 
+                min: 159 69;
+                max: 159 69;
+                state: "default" 0.0;
+                color: 21 21 21 255;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 321 0;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 479 68;
+                    to: "base";
+                }
+            }
+            description { 
+                state: "pressed" 0.0;
+                inherit: "default" 0.0;
+                color: 255 255 255 255;
+            }
+        }
+        part {
+            name: "onc-text";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                color: 255 73 80 255;
+                text {
+                    align: 0.5 0.5;
+                    size: 40;
+                    text: "ON/C";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.0 0.0;
+                    to: "onc";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to: "onc";
+                }
+            }
+            description { 
+                state: "pressed" 0.0;
+                inherit: "default" 0.0;
+                color: 0 0 0 255;
+            }
+        }
+        
+        part {
+            name: "del-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+                min: 159 69;
+                max: 159 69;
+                state: "default" 0.0;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 0 0;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 158 68;
+                    to: "base";
+                }
+                image {
+                    normal: "backspace.png";
+                }
+                visible: 1;
+            }
+            description {
+                state: "clicked" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "backspace_pressed.png";
+            }
+            description {
+                state: "number" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back.png";
+            }
+            description {
+                state: "number-pressed" 0.0;
+                inherit:"default" 0.0;
+                image.normal: "back_pressed.png";
+            }
+         }
+        _PART_SMALL_BTN_TEXT("button-sin", "sin", 0, 144);
+        _PART_SMALL_BTN_TEXT("button-cos", "cos", 96, 144);
+        _PART_SMALL_BTN_TEXT("button-log", "log", 192, 144);
+        _PART_SMALL_BTN_TEXT("button-sqrt", "√", 288, 144);
+        //_PART_SMALL_BTN_TEXT("button-pi", "π", 384, 144);
+        _PART_SMALL_BTN_TEXT_SUPER("button-x-power-y", "x", "y", 384, 144);
+        
+        _PART_BIG_BTN("button-7", "7", 0, 192);
+        _PART_BIG_BTN("button-8", "8", 96, 192);
+        _PART_BIG_BTN("button-9", "9", 192, 192);
+        _PART_BIG_BTN("button-open-bracket", "(", 288, 192);
+        _PART_BIG_BTN("button-close-bracket", ")", 384, 192);
+        
+        _PART_BIG_BTN("button-4", "4", 0, 288);
+        _PART_BIG_BTN("button-5", "5", 96, 288);
+        _PART_BIG_BTN("button-6", "6", 192, 288);
+        _PART_BIG_BTN("button-mul", "*", 288, 288);
+        _PART_BIG_BTN("button-div", "/", 384, 288);
+        
+        _PART_BIG_BTN("button-1", "1", 0, 384);
+        _PART_BIG_BTN("button-2", "2", 96, 384);
+        _PART_BIG_BTN("button-3", "3", 192, 384);
+        _PART_BIG_BTN("button-sum", "+", 288, 384);
+        _PART_BIG_BTN("button-sub", "-", 384, 384);
+        
+        _PART_BIG_BTN("button-0", "0", 0, 480);
+        _PART_BIG_BTN("button-sign", "±", 96, 480);
+        _PART_BIG_BTN("button-dot", "·", 192, 480);
+        _PART_BIG_BTN_TEXT("button-ans", "ANS", 288, 480);
+        _PART_BIG_BTN("button-eq", "=", 384, 480);
+
+    } //end of parts
+    
+    programs {
+        program { 
+            name: "init";
+            signal: "load";
+            source: "";
+            script {
+               set_text(PART:"num-field-text", "0");
+               get_locale();
+            }
+        }
+        program { 
+            name:   "num-field-clicked";
+            signal: "mouse,clicked,1";
+            source: "num-field";
+            action: SIGNAL_EMIT "num_field_pressed" "num-field-text2";
+        }
+        program { 
+            name: "del-button-changer";
+            signal: "mouse,down,1";
+            source: "del-button";
+            script{
+                //start_timer("del_all");
+                //del_digit();
+                new state[30];
+                new Float:floaty;
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (!((strcmp(state, "active")   == 0) ||
+                        (strcmp(state, "incoming") == 0) ||
+                        (strcmp(state, "dialing")  == 0) ||
+                        (strcmp(state, "muted")    == 0) ||
+                        (strcmp(state, "silent")   == 0))) {
+                    
+                        if (get_int(del_button_pressed) == 1) {
+                            set_state(PART:"del-button", "clicked", 0.0);
+                        } else {
+                            set_state(PART:"del-button", "number-pressed", 0.0);
+                        }
+                    }
+                }
+            }
+        }
+        program { 
+            name: "del-button-clicked";
+            signal: "mouse,up,1";
+            source: "del-button";
+            script {
+                emit("back","main_command");
+                //stop_timer();
+                new state[30];
+                new Float:floaty;
+                if (get_state(PART:"del-button", state[0], 30, floaty) == 0) {
+                    if (!((strcmp(state, "active") == 0) ||
+                        (strcmp(state, "incoming") == 0) ||
+                        (strcmp(state, "dialing")  == 0) ||
+                        (strcmp(state, "muted")    == 0) ||
+                        (strcmp(state, "silent")   == 0))) {
+                        new old[40];
+                        old[39] = get_text(PART:"num-field-text",old,40);
+                        new len = strlen(old);
+                        if (len != 0) {
+                            set_state(PART:"del-button", "number", 0.0);
+                        } else {
+                            set_state(PART:"del-button", "default", 0.0);
+                            if (get_int(del_button_pressed) == 1) {
+                                emit("back","main_command");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        _PART_BTN_PRESSED_PROG("onc");
+        
+        _PART_BTN_PRESSED_PROG("button-sin");
+        _PART_BTN_PRESSED_PROG("button-cos");
+        _PART_BTN_PRESSED_PROG("button-log");
+        _PART_BTN_PRESSED_PROG("button-sqrt");
+        _PART_BTN_SUPER_PRESSED_PROG("button-x-power-y");
+        
+        _PART_BTN_PRESSED_PROG("button-7");
+        _PART_BTN_PRESSED_PROG("button-8");
+        _PART_BTN_PRESSED_PROG("button-9");
+        _PART_BTN_PRESSED_PROG("button-open-bracket");
+        _PART_BTN_PRESSED_PROG("button-close-bracket");
+        
+        _PART_BTN_PRESSED_PROG("button-4");
+        _PART_BTN_PRESSED_PROG("button-5");
+        _PART_BTN_PRESSED_PROG("button-6");
+        _PART_BTN_PRESSED_PROG("button-mul");
+        _PART_BTN_PRESSED_PROG("button-div");
+        
+        _PART_BTN_PRESSED_PROG("button-1");
+        _PART_BTN_PRESSED_PROG("button-2");
+        _PART_BTN_PRESSED_PROG("button-3");
+        _PART_BTN_PRESSED_PROG("button-sum");
+        _PART_BTN_PRESSED_PROG("button-sub");
+        
+        _PART_BTN_PRESSED_PROG("button-0");
+        _PART_BTN_PRESSED_PROG("button-sign");
+        _PART_BTN_PRESSED_PROG("button-dot");
+        _PART_BTN_PRESSED_PROG("button-ans");
+        _PART_BTN_PRESSED_PROG("button-eq");
+
+        _PART_BTN_FNC_CLICKED_PROG("onc", calc_reset);
+        
+        _PART_BTN_CLICKED_PROG("button-sin");
+        _PART_BTN_CLICKED_PROG("button-cos");
+        _PART_BTN_CLICKED_PROG("button-log");
+        _PART_BTN_CLICKED_PROG("button-sqrt");
+        _PART_BTN_SUPER_CLICKED_PROG("button-x-power-y");
+        
+        _PART_BTN_NUM_CLICKED_PROG("button-7", 7);
+        _PART_BTN_NUM_CLICKED_PROG("button-8", 8);
+        _PART_BTN_NUM_CLICKED_PROG("button-9", 9);
+        _PART_BTN_CLICKED_PROG("button-open-bracket");
+        _PART_BTN_CLICKED_PROG("button-close-bracket");
+        
+        _PART_BTN_NUM_CLICKED_PROG("button-4", 4);
+        _PART_BTN_NUM_CLICKED_PROG("button-5", 5);
+        _PART_BTN_NUM_CLICKED_PROG("button-6", 6);
+        _PART_BTN_FNC_CLICKED_PROG("button-mul", calc_mul);
+        _PART_BTN_FNC_CLICKED_PROG("button-div", calc_div);
+        
+        _PART_BTN_NUM_CLICKED_PROG("button-1", 1);
+        _PART_BTN_NUM_CLICKED_PROG("button-2", 2);
+        _PART_BTN_NUM_CLICKED_PROG("button-3", 3);
+        _PART_BTN_FNC_CLICKED_PROG("button-sum", calc_sum);
+        _PART_BTN_FNC_CLICKED_PROG("button-sub", calc_sub);
+        
+        _PART_BTN_NUM_CLICKED_PROG("button-0", 0);
+        _PART_BTN_CLICKED_PROG("button-sign");
+        _PART_BTN_NUM_CLICKED_PROG("button-dot", -1);
+        _PART_BTN_CLICKED_PROG("button-ans");
+        _PART_BTN_FNC_CLICKED_PROG("button-eq", calc_result);
+
+    } //end of programs
+    
+    
+} //end of group
+
+

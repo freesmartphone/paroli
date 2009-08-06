@@ -269,4 +269,3 @@ class PhoneContact(Contact):
                 contact = PhoneContact(**kargs)
                 ret.append(contact)
         yield ret
-

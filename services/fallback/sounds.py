@@ -80,4 +80,3 @@ class FallbackSoundsService(Service):
             self.vibra_service.stop()
         except Exception, e:
             logger.exception("got error in Stop %s", e)
-

@@ -1,0 +1,14 @@
+bt settings module for paroli
+
+This is a very rough start for a bt module for paroli settings.
+
+this should reside in either of:
+
+when running from source folder:
+ [wherever you put the source on your phone]/paroli-services/
+
+or when using an installed paroli
+
+  /usr/share/paroli/services/
+
+if oyu have any questions join #paroli on freenode and ask mirko-paroli/vegyraupe or pop a mail to vegyraupe@paroli-project.org

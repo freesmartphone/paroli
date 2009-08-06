@@ -39,8 +39,10 @@ class Settings(Application):
     ##the icon attribute is currently unused
     icon = 'icon.png'
 
-    ##the category is used by paroli when applications are to be grouped.Set it to 'launcher' if you want your application to appear on the launcher screen
-    category = 'settings'
+    ## the category is used by paroli when applications are to be grouped.
+    ## Set it to 'launcher' if you want your application to appear 
+    ## on the launcher screen
+    category = 'launcher' # was 'settings'
 
     ##the run method of the app is called when the app is started
     def run(self, parent=None,  standalone=False):
@@ -64,11 +66,19 @@ class Settings(Application):
             return cmp(m2, m1)
 
         self.list_label = [('title', 'value')]
-        self.item_list = ElementaryList(self.groups, self.window, self.edje_file, "group", self.list_label, comp)
-
-        self.item_list.add_callback("*", "sublist", self._show_sublist)
-
-        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.window, 'back'), Wait(self.window.window,'closing'))
+        self.item_list = ElementaryList(self.groups, self.window, self.edje_file, 
+                                        "item", self.list_label, comp)
+        
+        self.item_list.add_callback("*", "sublist", self._show_sublist) 
+        
+        ## close the Tele app, with the back button (signal, source, method)
+        self.edje_obj.add_callback("back", "edje", self.signal) 
+        
+        parent.emit("unblock")
+        
+        i, args = yield WaitFirst(Wait(self.window, 'delete_request'),
+                                  Wait(self.window, 'back'),
+                                  Wait(self.window.window,'closing'))
         ##we write a logger message that the application is closing
         logger.info('Settings closing')
 
@@ -77,8 +87,15 @@ class Settings(Application):
             self.item_list._remove_cb()
             self.window.delete()
 
+    def signal(self, emission, signal, source):
+        """ Callback function. It invokes, when the "back" button clicked."""
+        logger.info("settings.py:signal() emmision: %s, signal: %s, source: %s", 
+                    str(emission), str(signal), str(source))
+        self.window.emit('back')
+
     def _show_sublist(self, emission, signal, source, group):
-        logger.info("showing sublist from group %s", group[0])
+        logger.info("showing sublist from group %s; source: %s, signal: %s", 
+                     str(group[0]), str(source), str(signal))
         SettingsSublist(self.window, self.edje_file, str(group[0]), self.edje_obj).start()
 
 class SettingsSublist(Application):
@@ -107,7 +124,8 @@ class SettingsSublist(Application):
             return cmp(m2.name, m1.name)
 
         self.list_label = [('title', 'name'),('subtitle', 'value')]
-        self.item_list = ElementaryList(self.settings, self.window, edje_file, "group", self.list_label, comp)
+        self.item_list = ElementaryList(self.settings, self.window, edje_file,
+                                        "item", self.list_label, comp)
 
         for i in self.settings:
             if hasattr(i, 'options'):
@@ -182,8 +200,8 @@ class ListSettingApp(Application):
 
     name = 'ListSetting'
 
-    def run(self, setting, parent, model, list_label, layout, group="group",save_button=False, *args, **kargs):
-
+    def run(self, setting, parent, model, list_label, layout, group="item", 
+             save_button=False, *args, **kargs):
         layout.elm_obj.hide()
 
         self.parent = parent
@@ -212,12 +230,12 @@ class ListSettingApp(Application):
                 return cmp(m2, m1)
             else:
                 return cmp(m2.name, m1.name)
-
-        item_group = group or "group"
-
+        item_group = group or "item"
+        
         self.list_label = list_label
-        self.item_list = ElementaryList(self.ItemList, self.window, self.edje_file, item_group, list_label, comp)
-
+        self.item_list = ElementaryList(self.ItemList, self.window, self.edje_file, 
+                                        item_group, list_label, comp)
+        
         for i in self.ItemList:
             if hasattr(i, 'connect'):
                 oid = i.connect('updated', self.item_list._redraw_view)

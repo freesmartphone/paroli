@@ -100,4 +100,3 @@ class FSOUsageService(Service):
                 else:
                     logger.debug("not releasing resource %s as it has been already released", resource)
         yield None
-

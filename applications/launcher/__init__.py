@@ -71,6 +71,7 @@ class Launcher(Application):
 
         box = ElementaryBox(self.window.window.elm_obj)
         self.app_objs = {}
+        apps.sort(key=lambda x: x.name) # sort apps alphabetically.
         for app in apps:
             logger.info("register launcher %s", app.name)
             link_obj = ElementaryLayout(self.window.window, self.edje_file, 'link')
@@ -118,17 +119,16 @@ class Launcher(Application):
         self.systime = Service.get('SysTime')
         self.alarm = Service.get('Alarm')
 
-        #self.edje_obj.edje.signal_callback_add("time_setting_on", "*", self.time_setting_start)
-        #self.edje_obj.edje.signal_callback_add("time_setting_off", "*", self.time_setting_stop)
-
         self.ready = 1
+
+        self.window.connect('block', self.block_edje)
+        self.window.connect('unblock', self.unblock_edje)
 
         yield WaitFirst(Wait(self.window, 'backs'),Wait(self.window.window,'closing'))
 
         self.dialog = Service.get("Dialog")
         keep_alive = yield self.dialog.option_dialog("shutdown", "Keep paroli running in the background? Note: if you click no you will not be able to receive calls anymore", "YES", "no")
         logger.debug("keep_alive %s", keep_alive)
-        #self._remove_link_signals()
 
         if keep_alive == "no":
             logger.info("keep alive set to no: %s", keep_alive)
@@ -138,7 +138,16 @@ class Launcher(Application):
 
         if self.window.window.elm_obj.is_deleted() == False:
             self.window.delete()   # Don't forget to close the window
+        
+    def block_edje(self, *args, **kargs):
+        logger.info("blocking edje in launcher")
+        edje = self.edje_obj.elm_obj.edje_get()
+        edje.pass_events_set(True)
 
+    def unblock_edje(self, *args, **kargs):
+        logger.info("unblocking edje in launcher")
+        edje = self.edje_obj.elm_obj.edje_get()
+        edje.pass_events_set(False)
 
     def unblock_screen(self, *args, **kargs):
         logger.info('unblocking screen')
@@ -161,16 +170,19 @@ class Launcher(Application):
         app = args[1]
         edje_obj = self.app_objs[app][0]
         text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
+<<<<<<< HEAD:applications/launcher/__init__.py
         if hasattr(self.storage.window, "window") and app == 'Tele' and value !='' :
             self.storage.window.window.elm_obj.on_hide_add(self._recreate_link_signals)
             #self.storage.window.window.elm_obj.on_show_add(self._remove_link_signals)
         edje_obj.edje.part_text_set('testing_textblock',text)
+=======
+        edje_obj.Edje.part_text_set('testing_textblock',text)
+>>>>>>> 1b1d3bface9e41a725f4671ed486a8ce7ce2df01:paroli-applications/paroli-launcher2/paroli-launcher2.py
 
     def launch_app(self, emmision, signal, source):
         """connected to the 'launch_app' edje signal"""
         logger.info("launching %s", signal)
         if self.ready != 0:
-            self._remove_link_signals()
             self._launch_app(str(signal)).start()
 
     @tasklet
@@ -180,8 +192,9 @@ class Launcher(Application):
         """
         logger.info("launching %s", name)
         # XXX: The launcher shouldn't know anything about this app
-        if name == 'Tele' and self.storage.call != None:
+        if name == 'Dialer' and self.storage.call != None:
             self.storage.window.emit("dehide")
+<<<<<<< HEAD:applications/launcher/__init__.py
         elif self.active_app == None or (self.active_app == "Tele" and self.storage.call != None):
             #self.edje_obj.edje.signal_emit("unready","*")
             app = Application.find_by_name(name)
@@ -189,6 +202,14 @@ class Launcher(Application):
             yield app(self.window, standalone=self.standalone)
             self._recreate_link_signals()
             #self.edje_obj.edje.signal_emit("ready","*")
+=======
+        elif self.active_app == None or (self.active_app == "Dialer" and
+self.storage.call != None) or self.active_app != name:
+            #self.edje_obj.Edje.signal_emit("unready","*")
+            app = tichy.Application.find_by_name(name)
+            self.active_app = name
+            yield app(self.window, standalone=self.standalone)
+>>>>>>> 1b1d3bface9e41a725f4671ed486a8ce7ce2df01:paroli-applications/paroli-launcher2/paroli-launcher2.py
             self.active_app = None
         else:
             logger.info("blocked %s", name)
@@ -200,6 +221,7 @@ class Launcher(Application):
     @tasklet
     def _incoming_ussd(self, msg):
         logger.info('incoming ussd registered')
+<<<<<<< HEAD:applications/launcher/__init__.py
         yield Service.get('Dialog').dialog("window", 'Ussd', msg)
 
     def _remove_link_signals(self, *args, **kargs):
@@ -216,6 +238,10 @@ class Launcher(Application):
         for i in self.app_objs:
             self.app_objs[i][0].edje.signal_callback_add("*", "launch_app", self.launch_app)
 
+=======
+        yield tichy.Service.get('Dialog').dialog("window", 'Ussd', msg)
+    
+>>>>>>> 1b1d3bface9e41a725f4671ed486a8ce7ce2df01:paroli-applications/paroli-launcher2/paroli-launcher2.py
     def quit_app(self, emission, source, name):
 
         emitted = 'back_'+str(self.active_app)

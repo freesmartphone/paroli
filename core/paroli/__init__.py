@@ -121,7 +121,6 @@ def setup_logging():
         format='%(asctime)s [%(levelname)s] %(name)s(%(filename)s:%(lineno)d) %(message)s',
         )
 
-
 class InitAll(Tasklet):
     """Perform all basic initialization of services"""
 
