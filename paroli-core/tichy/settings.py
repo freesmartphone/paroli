@@ -43,7 +43,7 @@ class Setting(tichy.Object):
     # contains a map : { group : { name : setting } }
     groups = {}
 
-    def __init__(self, group, name, type, value=None, setter=None, options="", listenObject=False, signal=False, **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options="", listenObject=False, signal=False, arrayElement=False, **kargs):
         """Create a new setting
 
         :Parameters:
@@ -74,6 +74,7 @@ class Setting(tichy.Object):
         self.Value = type.as_type(value) if value is not None else type()
         self.Setter = setter or self.setter
         self.options = tichy.List(options)
+        self.arrayElement = arrayElement
         
         if listenObject:
             listenObject.connect_to_signal(signal, self.change_val)
@@ -186,6 +187,9 @@ class ToggleSetting(Setting):
         self.listenObject.connect_to_signal(signal, self.change_val)
     
     def change_val(self, val):
+        logger.info(val)
+        if self.arrayElement:
+            val = val[self.arrayElement]
         self.Value.value = val
     
     def rotate(self, *args):
