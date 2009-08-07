@@ -302,19 +302,27 @@ class FreeSmartPhoneSim(tichy.Service):
         
         old_pin = yield editor.edit(None, text="Enter old PIN",  input_method='number')
         
-        current = self.gsm_sim.GetAuthCodeRequired()
+        #current = self.gsm_sim.GetAuthCodeRequired()
         
-        new_pin = yield editor.edit(None, text="Enter new PIN",  input_method='number')
+        new_pin_one = yield editor.edit(None, text="Enter new PIN",  input_method='number')
         
-        try:
-            self.gsm_sim.ChangeAuthCode(old_pin,  new_pin)
+        new_pin_two = yield editor.edit(None, text="Enter new PIN again",  input_method='number')
         
-        except Exception,  e:
+        if new_pin_one == new_pin_two:
+        
+            try:
+                self.gsm_sim.ChangeAuthCode(old_pin,  new_pin_one)
+            
+            except Exception,  e:
+                logger.info("PIN change error")
+                dialog = tichy.Service.get("Dialog")
+                yield dialog.dialog(None,  "Error", "Old pin entered is wrong.")
+        
+        else:
             dialog = tichy.Service.get("Dialog")
-            yield dialog.dialog(None,  "Error",  str(e))
+            yield dialog.dialog(None,  "Error",  "The two new PINs entered don't match.")
         
         ret = ""
-        
         yield ret
 
 class TestSim(tichy.Service):

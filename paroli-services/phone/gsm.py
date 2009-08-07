@@ -123,7 +123,11 @@ class GSMService(tichy.Service):
                 yield sim.send_pin(pin)
                 break
             except sim.PINError:
-                if i == 4: # after 3 times we give up
+                dialog = tichy.Service.get("Dialog")
+                number = 2 - i
+                text = "Incorrect PIN " + str(number)  + " trials left"
+                yield dialog.dialog(None,  "Error",  text)
+                if i == 2: # after 3 times we give up
                     raise
                 logger.info("pin wrong : %s", pin)
 
