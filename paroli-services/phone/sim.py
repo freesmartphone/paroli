@@ -289,7 +289,7 @@ class FreeSmartPhoneSim(tichy.Service):
         
         except Exception,  e:
             dialog = tichy.Service.get("Dialog")
-            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+            yield dialog.dialog(None,  "Error",  str(e))
         
         ret = self.GetAuthRequired()
         
@@ -311,7 +311,7 @@ class FreeSmartPhoneSim(tichy.Service):
         
         except Exception,  e:
             dialog = tichy.Service.get("Dialog")
-            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+            yield dialog.dialog(None,  "Error",  str(e))
         
         ret = ""
         
