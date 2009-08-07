@@ -322,7 +322,7 @@ class StringSettingApp(tichy.Application):
         
         textbox = gui.elementary.Entry(parent.window.elm_obj)
 
-        textbox.entry_set("")
+        textbox.entry_set(setting.value)
         
         textbox.size_hint_weight_set(1.0, 1.0)
         
@@ -355,3 +355,6 @@ class StringSettingApp(tichy.Application):
             self.edje_obj.elm_obj.visible_set(False)
             self.edje_obj.delete()
             layout.elm_obj.show()
+         
+        parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+        
