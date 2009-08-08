@@ -349,8 +349,8 @@ class StringSettingApp(tichy.Application):
                 parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
             else:
                 self.edje_obj.elm_obj.visible_set(False)
-                if setting != None:
-                    self.edje_obj.delete()
+                #if setting != None:
+                self.edje_obj.delete()
                 layout.elm_obj.show()
                 parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                 yield text

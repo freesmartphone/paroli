@@ -265,6 +265,17 @@ class FreeSmartPhoneSim(tichy.Service):
                 raise
             raise PINError(pin)
 
+    def GetAuthStatus(self):
+        val = self.gsm_sim.GetAuthStatus()
+        
+        return val
+
+    def Unlock(self, puk, new_pin):
+        try:
+            yield WaitDBus(self.gsm_sim.Unlock, puk, new_pin)
+        except:
+            raise PINError(pin)
+
     def GetAuthRequired(self):
         val = self.gsm_sim.GetAuthCodeRequired()
         

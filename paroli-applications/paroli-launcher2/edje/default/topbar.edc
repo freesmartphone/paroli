@@ -272,27 +272,27 @@ group{
              mouse_events:0;
              description { 
                 state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
+                        align: 0.5 0.0;
+                        size: 18;
+                        text: "Enter PIN";
+                        font: "Sans";
+                     }
+                rel1 {
+                        relative: 0.0 0.6;
+                        to: "base";
+                }
+                rel2 {
+                        relative: 1.0 1.0;
+                        to: "base";
+                }
                 visible:0;
              }
              description { 
-                state: "pin" 0.0;
-                     color: 255 255 255 255;
-                     text {
-                             align: 0.5 0.0;
-                             text: "Enter PIN";
-                             size: 18;
-                             font: "Sans";
-                     }
-                     rel1 {
-                             relative: 0.0 0.6;
-//                              offset: 150 29;
-                             to: "base";
-                     }
-                     rel2 {
-                             relative: 1.0 1.0;
-//                              offset: 322 41;
-                             to: "base";
-                     }
+                    state: "pin" 0.0;
+                    inherit: "default" 0.0;
+                    visible:1;
                 }
            }
           part{

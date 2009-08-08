@@ -116,18 +116,47 @@ class GSMService(tichy.Service):
         window = None
         editor = tichy.Service.get('TelePIN2')
         sim = tichy.Service.get('SIM')
-        for i in range(4):
-            pin = yield editor.edit(window, name="Enter PIN",
+        
+        status = sim.GetAuthStatus()
+        logger.info("asking for: %s", status)
+        
+        if status in ["SIM PIN", "SIM PIN2"]:
+            pin_status = True
+            ranger = 3
+        else:
+            pin_status = False
+            ranger = 9
+        
+        for i in range(ranger):
+            pin = yield editor.edit(window, name="Enter " + str(status),
                                     input_method='number')
             try:
-                yield sim.send_pin(pin)
-                break
+                if pin_status:
+                    yield sim.send_pin(pin)
+                    break
+                else:
+                    new_pin_one = yield editor.edit(window, name="Enter new PIN",
+                                    input_method='number')
+                    new_pin_two = yield editor.edit(window, name="Enter new PIN again",
+                                    input_method='number')                
+                    if new_pin_one == new_pin_two:
+                        sim.Unlock(pin, new_pin_one)
+                        break
+                    else:
+                        text = "The two PINs entered don't match.<br/>Setting PIN to 0000. Please change it later."
+                        dialog = tichy.Service.get("Dialog")
+                        yield dialog.dialog(None,  "Error",  text)
+                        sim.Unlock(pin, "0000")
+                        break
             except sim.PINError:
                 dialog = tichy.Service.get("Dialog")
-                number = 2 - i
-                text = "Incorrect PIN " + str(number)  + " trials left"
+                if status != "SIM PIN" and status != "SIM PIN2":
+                    number = 9 - i
+                else:
+                    number = 2 - i
+                text = "Incorrect " + str(status) + " " + str(number)  + " trials left"
                 yield dialog.dialog(None,  "Error",  text)
-                if i == 2: # after 3 times we give up
+                if i == ranger: # after ranger times we give up - depends on PIN/PUK
                     raise
                 logger.info("pin wrong : %s", pin)
 
@@ -755,10 +784,11 @@ class TestGsm(GSMService):
 
     @tichy.tasklet.tasklet
     def _ask_pin(self):
-        #window = tichy.Service.get("WindowsManager").get_app_parent()
+        
         window = None
         editor = tichy.Service.get('TelePIN2')
         sim = tichy.Service.get('SIM')
+        
         for i in range(4):
             pin = yield editor.edit(window, name="Enter PIN",
                                     input_method='number')

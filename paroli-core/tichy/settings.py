@@ -187,7 +187,6 @@ class ToggleSetting(Setting):
         self.listenObject.connect_to_signal(signal, self.change_val)
     
     def change_val(self, val):
-        logger.info(val)
         if self.arrayElement:
             val = val[self.arrayElement]
         self.Value.value = val
