@@ -81,7 +81,9 @@ class InOutCallLog(Application):
 
         parent.emit("unblock")
 
-        i, args = yield WaitFirst(Wait(self.window, 'back'),Wait(self.window, 'delete_request'), Wait(self.window.window,'closing'))
+        i, args = yield WaitFirst(Wait(self.window, 'back'),
+	                              Wait(self.window, 'delete_request'),
+                                  Wait(self.window.window,'closing'))
 
         for i in self.callLogs:
             i.missed = False

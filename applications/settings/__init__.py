@@ -27,6 +27,7 @@ from tichy.text import Text
 from tichy.service import Service
 from tichy.application import Application
 from tichy.tasklet import WaitFirst, Wait, tasklet
+from tichy.settings import Setting
 from tichy import config
 from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryListSubwindow
 
@@ -53,7 +54,8 @@ class Settings(Application):
         self.standalone = config.getboolean('standalone','activated', False)
 
         ##generate app-window
-        self.window = ElementaryListWindow(self.edje_file, "main", "list", None, None, True)
+        self.window = ElementaryListWindow(self.edje_file, "main", "list",
+                                           None, None, True)
         self.edje_obj = self.window.main_layout
 
         self.groups = List()
@@ -134,7 +136,8 @@ class SettingsSublist(Application):
 
         self.item_list.add_callback("*", "sublist", self.action)
 
-        yield WaitFirst(Wait(self.window, 'delete_request'),Wait(self.edje_obj, 'back'))
+        yield WaitFirst(Wait(self.window, 'delete_request'),
+                        Wait(self.edje_obj, 'back'))
 
         for i in self.cb_list:
             i[0].disconnect(i[1])
@@ -184,7 +187,9 @@ class NumberSettingApp(Application):
 
         self.edje_obj.edje.signal_emit(str(setting.value),"set_text")
 
-        i, args = yield WaitFirst(Wait(self.window.main_layout, 'save'), Wait(self.window.main_layout, 'back'),Wait(parent, 'back'))
+        i, args = yield WaitFirst(Wait(self.window.main_layout, 'save'),
+                                  Wait(self.window.main_layout, 'back'),
+                                  Wait(parent, 'back'))
 
         if i == 0: ##save clicked
             self.edje_obj.edje.signal_emit("save-notice","*")
@@ -323,7 +328,9 @@ class StringSettingApp(Application):
 
         textbox.show()
 
-        i, args = yield WaitFirst(Wait(self.edje_obj,'save'), Wait(self.edje_obj,'back'),Wait(parent,'back'))
+        i, args = yield WaitFirst(Wait(self.edje_obj,'save'),
+                                  Wait(self.edje_obj,'back'),
+                                  Wait(parent,'back'))
 
         if i == 0: ##save clicked
             text = str(textbox.entry_get()).replace("<br>","")

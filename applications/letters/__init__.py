@@ -68,7 +68,10 @@ class Letters(Application):
         self.edje_obj.add_callback("*", "messaging", self.create_msg)
         self.item_list.add_callback("*", "messaging", self.adv_msg)
         self.item_list.add_callback("save", "*", self.create_contact)
-
+        
+        ## close the Tele app, with the back button (signal, source, method)
+        self.edje_obj.add_callback("back", "edje", self.signal) 
+        
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
         self.item_list.add_callback("details", "*", self.msg_details)

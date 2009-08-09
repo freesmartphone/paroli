@@ -186,7 +186,7 @@ class ElementaryListWindow(ElementaryLayoutWindow):
         self.bg.elm_obj.show()
 
 class ElementaryList(Object):
-      def __init__(self, model, parent, edje_file, group, label_list, comp_fct):
+      def __init__(self, model, parent, edje_file, group, label_list, comp_fct, letter_dict=False):
           self.model = model
           self.parent = parent
           self.edje_file = edje_file
@@ -194,6 +194,7 @@ class ElementaryList(Object):
           self.elm_window = parent.window
           self.label_list = label_list
           self._comp_fct = comp_fct
+          self.letter_dict = letter_dict
           self.cb_list = []
           self.cb_list.append(self.model.connect('appended', self._redraw_view))
           self.cb_list.append(self.model.connect('inserted', self._redraw_view))
@@ -227,9 +228,14 @@ class ElementaryList(Object):
                   for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
-                        if self.label_list.index((part, attribute)) == 0:
-                            if self.letter_index.has_key(value[0]) == False:
-                                self.letter_index[value[0]] = self.model.index(item)
+                        if (isinstance(value, str) and not len(value)) or\
+                           value == None: 
+                            value = " " #bugfix for empty name
+                        if self.letter_dict:
+                            if self.label_list.index((part, attribute)) == 0:
+                                letter = value[0].lower()
+                                if self.letter_index.has_key(letter) == False:
+                                    self.letter_index[letter] = self.model.index(item)
 
                         if isinstance(value, Item):
                             value = unicode(value.get_text())
@@ -261,7 +267,7 @@ class ElementaryList(Object):
                       if test == value:
                           edje_obj.signal_emit(signal,'*')
 
-                  ly.size_hint_min_set(470,60)
+                  ly.size_hint_min_set(470,96)
                   self.box.elm_obj.pack_end(ly)
                   ly.show()
                   self.items.append([item,edje_obj,ly])
@@ -319,12 +325,15 @@ class ElementaryList(Object):
           self.items.remove(index)
           self._redraw_box()
 
-      def jump_to_index(self, key):
-          if self.letter_index.has_key(key):
-              position = self.letter_index[key]
-              point_y = 60 * int(position)
-              if hasattr(self.parent.scroller.elm_obj, 'region_show'):
-                  self.parent.scroller.elm_obj.region_show(0, point_y, 480, 60)
-              else:
-                  logger.info("scroller doesn't have method bounce_set please update your bindings")
-
+      def jump_to_index(self, *args, **kargs):
+          if self.letter_dict:
+              key = args[2]
+              if self.letter_index.has_key(key):
+                  position = self.letter_index[key]
+                  point_y = 100 * int(position)
+                  if hasattr(self.parent.scroller.elm_obj, 'region_show'):
+                      self.parent.scroller.elm_obj.region_show(0, point_y, 480, 60)
+              edje = self.parent.main_layout.elm_obj.edje_get()
+              edje.signal_emit( "close-dict", "dict-button")
+          else:
+            logger.info("this list does not carry a dict, this call does not work here")

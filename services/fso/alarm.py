@@ -91,7 +91,7 @@ class FSOAlarmService(Service):
         except Exception, e:
             logger.exception("can't use freesmartphone Alarm service : %s", e)
 
-    @tichy.tasklet.tasklet
+    @tasklet
     def clear_alarm(self):
         try:
             yield WaitDBus( self.alarm.ClearAlarm, 'org.tichy.notification')

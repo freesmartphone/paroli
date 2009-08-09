@@ -158,7 +158,8 @@ class TeleCaller2(Application):
         self.usage_service = Service.get('Usage')
         self.edje_file = join(dirname(__file__),'tele.edj')
         logger.info("occupy cpu")
-        self.usage_service.occupy_cpu().start()
+        # FIXME (vmx) FSO should be able to handle it, the fallback can't
+        #self.usage_service.occupy_cpu().start()
         if layout:
             self.main = parent
             self.main.topbar.onclick = 'hide'
@@ -284,7 +285,8 @@ class TeleCaller2(Application):
 
 
             #logger.info("releasing cpu")
-            self.usage_service.release_cpu().start()
+            # FIXME (vmx) FSO should be able to handle it, the fallback can't
+            #self.usage_service.release_cpu().start()
             self.SoundsService.Stop()        
             self.storage.caller.value = ""
             self.storage.call = None

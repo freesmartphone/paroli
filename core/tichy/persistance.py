@@ -28,7 +28,7 @@ import logging
 logger = logging.getLogger('core.tichy.persistance')
 
 from os import makedirs
-from os.path import expanduser, join, dirname, exists
+from os.path import expanduser, join, dirname, exists, isfile, split
 try:
     import cPickle as pickle
 except:
@@ -47,11 +47,11 @@ class Persistance(object):
         logger.info("path = %s", path)
 
     def _open_readonly(self):
-        path = os.path.join(self.base_path, self.path)
-        dir = os.path.dirname(path)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        if os.path.isfile(path):
+        path = join(self.base_path, self.path)
+        dir = dirname(path)
+        if not exists(dir):
+            makedirs(dir)
+        if isfile(path):
             try:
                 f = open(path, 'r')
                 return f
@@ -61,12 +61,12 @@ class Persistance(object):
         return None
         
     def _open_write(self):
-        path = os.path.join(self.base_path, self.path)
-        dir = os.path.dirname(path)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+        path = join(self.base_path, self.path)
+        dir = dirname(path)
+        if not exists(dir):
+            makedirs(dir)
         try:
-            if os.path.isfile(path): self._backup(path)
+            if isfile(path): self._backup(path)
             f = open(path, 'w')
             return f
         except IOError, ex:
@@ -85,13 +85,13 @@ class Persistance(object):
         f.close()
             
         # create backup dir
-        (dir, filename) = os.path.split(path)
-        dir_backup = os.path.join(dir, 'backup')
-        if not os.path.exists(dir_backup):
-            os.makedirs(dir_backup)
+        (dir, filename) = split(path)
+        dir_backup = join(dir, 'backup')
+        if not exists(dir_backup):
+            makedirs(dir_backup)
         # save to filename-currenttime format
         curtime = str(int(time.time()))
-        out_filename = os.path.join(dir_backup, filename+"-"+curtime)
+        out_filename = join(dir_backup, filename+"-"+curtime)
         out_file = open(out_filename, 'w')
         out_file.write(file_content)
         out_file.flush()

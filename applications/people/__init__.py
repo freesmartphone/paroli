@@ -23,7 +23,7 @@ logger = getLogger('applications.people')
 
 from os.path import join, dirname
 from ecore.x import ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF, ECORE_X_VIRTUAL_KEYBOARD_STATE_ON
-from elementary import Entry
+from elementary import Button, Entry, Table
 from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryLayout, ElementaryListSubwindow
 from tichy.service import Service
 from tichy.application import Application
@@ -80,7 +80,7 @@ class People(Application):
     def openDict(self, emission, signal, source):
         if signal == "opening":
             self.dictButtons = []
-            self.dictTable = elementary.Table(self.window.window.elm_obj)
+            self.dictTable = Table(self.window.window.elm_obj)
             self.dictTable.show()
             self.dictTable.layer_set(99)
             self.edje_obj.elm_obj.content_set("dict-window",self.dictTable)
@@ -89,7 +89,7 @@ class People(Application):
             keys = self.item_list.letter_index.keys()
             keys.sort()
             for i in keys:
-                button = elementary.Button(self.window.window.elm_obj)
+                button = Button(self.window.window.elm_obj)
                 button.label_set(i)
                 button.on_mouse_up_add(self.item_list.jump_to_index, i)
                 self.dictButtons.append(button)
@@ -272,7 +272,7 @@ class CreateContact(Application):
 
     def run(self, parent, number, name, contact, mode, layout, *args, **kargs):
         try:
-            self.edje_file = os.path.join(os.path.dirname(__file__), 'people.edj')
+            self.edje_file = join(dirname(__file__), 'people.edj')
             number_layout = 0
             text_layout = 0
             send = 0

@@ -61,6 +61,8 @@ class FSOPrefsServices(Service):
         logger.info(
             "connecting to freesmartphone.Preferences dbus interface")
         try:
+            yield Service.get('GSM').wait_initialized()
+            yield Service.get('ConfigService').wait_initialized()
             yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=120)
             # We create the dbus interfaces to org.freesmarphone
             self.bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
@@ -71,7 +73,15 @@ class FSOPrefsServices(Service):
                 self.prefs,
                 'org.freesmartphone.Preferences')
 
+            self.config_service = Service.get("ConfigService")
+            self.values = self.config_service.get_items("RingProfile")
+            if self.values != None: self.values = dict(self.values)
+
             profile = Setting('phone', 'profile', Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profiles(), listenObject=self.prefs, signal="Notify" )
+
+            if self.values != None:
+                yield self.set_profile(self.values['profile'])
+
         except Exception, e:
             logger.exception("can't use freesmartphone Preferences : %s", e)
             self.prefs = None
@@ -87,6 +97,10 @@ class FSOPrefsServices(Service):
     @tasklet
     def set_profile(self, name):
         self.prefs.SetProfile(name)
+        try:
+            self.config_service.set_item('RingProfile', "profile", name)
+        except e:
+            logger.info(e)
         yield self.emit('profile_changed')
 
     def __getitem__(self, name):
