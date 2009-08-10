@@ -584,7 +584,6 @@ group {
                     to: "base";
                 }
                 image {
-                    //normal: "backspace.png";
                     normal: "back.png";
                 }
                 visible: 1;
