@@ -825,8 +825,7 @@ class FSOSIMService(Service):
         new_pin_two = yield editor.edit(None, text="Enter new PIN again", input_method='number')
         
         if new_pin_one == new_pin_two:
-
-        try:
+            try:
                 self.gsm_sim.ChangeAuthCode(old_pin, new_pin_one)
             
             except Exception, e:
