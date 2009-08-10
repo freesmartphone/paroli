@@ -187,9 +187,15 @@ class ToggleSetting(Setting):
         self.listenObject.connect_to_signal(signal, self.change_val)
     
     def change_val(self, val):
+        logger.info("status change")
         if self.arrayElement:
             val = val[self.arrayElement]
-        self.Value.value = val
+        #self.Value.value = val
+        self.preset(val).start()
+    
+    @tichy.tasklet.tasklet
+    def preset(self, val):
+        yield self.set(val)
     
     def rotate(self, *args):
         self.set(self.value).start()

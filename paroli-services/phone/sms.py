@@ -109,7 +109,7 @@ class FreeSmartPhoneSMS(tichy.Service):
             self.values = self.config_service.get_items("Messages")
             if self.values != None: self.values = dict(self.values)
             
-            self.ReportSetting = tichy.settings.Setting('Messages', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
+            self.ReportSetting = tichy.settings.Setting('SMS', 'Delivery Report', tichy.Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
             
         except Exception, e:
             logger.error("can't use freesmartphone SMS : %s", e)

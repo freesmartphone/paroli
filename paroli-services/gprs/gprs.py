@@ -51,10 +51,10 @@ class GprsService(tichy.Service):
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
             #logger.info("values: %s", str(self.values))
-            password = tichy.settings.StringSetting('gprs', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
-            user = tichy.settings.StringSetting('gprs', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
-            apn = tichy.settings.StringSetting('gprs', 'apn', tichy.Text, value=self.get_apn(), setter=self.set_apn)
-            status = tichy.settings.ToggleSetting('gprs', 'status', tichy.Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus", arrayElement="registration")
+            password = tichy.settings.StringSetting('GPRS', 'password', tichy.Text, value=self.get_password(), setter=self.set_password)
+            user = tichy.settings.StringSetting('GPRS', 'user', tichy.Text, value=self.get_user(), setter=self.set_user)
+            apn = tichy.settings.StringSetting('GPRS', 'apn', tichy.Text, value=self.get_apn(), setter=self.set_apn)
+            status = tichy.settings.ToggleSetting('GPRS', 'status', tichy.Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus", arrayElement="registration")
             self.iface.connect_to_signal("NetworkStatus", self.status_change)
             self.iface.connect_to_signal("ContextStatus", self.context_status_change)
         except Exception, e:
@@ -88,7 +88,6 @@ class GprsService(tichy.Service):
         except:
             pass
     
-    
     def status_change(self, status):
          if status['registration'] in ["home","roaming"]:
             self.emit("gprs-status", "on")
@@ -118,14 +117,21 @@ class GprsService(tichy.Service):
     @tichy.tasklet.tasklet
     def set_status(self, val):
         status = self.get_status()
+        ret = status
+        logger.info("status is: %s", status)
         if status == "unregistered":
             self.pdp_id = yield tichy.tasklet.WaitDBus(self.iface.ActivateContext, self.get_apn(), self.get_user(), self.get_password())
             ret = "active"
         elif status in ["home","roaming","busy"]:
             if self.pdp_id != None:
+                logger.info("trying to disconnect PDP")
                 yield tichy.tasklet.WaitDBus(self.iface.DeactivateContext)
+                logger.info("disconnected PDP")
                 self.pdp_id = None
                 ret = "unregistered"
+            else:
+                yield tichy.tasklet.WaitDBus(self.iface.DeactivateContext)
+                logger.info("no pdp_id found not disconnecting")
         else:
             ret = "unregistering"
         yield tichy.tasklet.Wait(self,"gprs-status")

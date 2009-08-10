@@ -71,7 +71,7 @@ class Settings(tichy.Application):
             self.groups.append(tichy.Text(i))
 
         def comp(m1, m2):
-            return cmp(m2, m1)
+            return cmp(m2.lower, m1.lower)
         
         self.list_label = [('title', 'value')]
         self.item_list = gui.elm_list(self.groups, self.window, self.edje_file, 

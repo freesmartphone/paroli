@@ -58,7 +58,7 @@ class FreeSmartPhoneTimeService(tichy.Service):
             self.ValueList.append(self.hour)
             self.ValueList.append(self.minute)
             
-            self.time_setting = tichy.settings.ListSetting('Time', 'set time', tichy.Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+            self.time_setting = tichy.settings.ListSetting('time', 'set time', tichy.Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
             
             self.ValueList.connect('save', self.UpdateSystemTime)
             
