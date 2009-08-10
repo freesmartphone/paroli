@@ -66,7 +66,7 @@ class Settings(Application):
             self.groups.append(Text(i))
 
         def comp(m1, m2):
-            return cmp(m2.lower, m1.lower)
+            return cmp(str(m2).lower, str(m1).lower)
         
         self.list_label = [('title', 'value')]
         self.item_list = ElementaryList(self.groups, self.window, self.edje_file, 
