@@ -184,7 +184,7 @@ class FallbackGSMService(GSMService):
 
     @tasklet
     def _ask_pin(self):
-        #window = Service.get("WindowsManager").get_app_parent()
+
         window = None
         editor = Service.get('TelePIN2')
         sim = Service.get('SIM')
@@ -194,10 +194,10 @@ class FallbackGSMService(GSMService):
             try:
                 yield sim.send_pin(pin)
                 break
-            except sim.PINError, e:
+            except sim.PINError:
                 if i == 4: # after 3 times we give up
                     raise
-                logger.exception("pin wrong : %s", e)
+                logger.exception("pin wrong : %s", pin)
 
     def get_provider(self):
         return 'Charlie Telecom'

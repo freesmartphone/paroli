@@ -777,8 +777,15 @@ group { name: "item";
             name:"unknown-trigger";
             signal:"unknown";
             source:"*";
-            action: STATE_SET "unsaved" 0.0;
-            target: "save_button";
+            script{
+                new value[40];
+                value[39] = get_text(PART:"label",value,40);
+                if (fnmatch("[A-Za-z]*",value) != 0){
+                    set_state(PART:"save_button", "unsaved", 0.0);
+                }
+            }
+//             action: STATE_SET "unsaved" 0.0;
+//             target: "save_button";
         }
    }
 }

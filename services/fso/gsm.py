@@ -189,9 +189,9 @@ class FSOGSMService(GSMService):
 
         try:
 
-            self.SettingReason = ListSetting('Call Forwarding','Reason',Text,value='unconditional', setter=self.ForwardingSetReason,options=["unconditional","mobile busy","no reply","not reachable","all","allconditional"],model=List([ ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy",self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel =[('title','name')])
+            self.SettingReason = ListSetting('call Forwarding','Reason',Text,value='unconditional', setter=self.ForwardingSetReason,options=["unconditional","mobile busy","no reply","not reachable","all","allconditional"],model=List([ ListSettingObject("unconditional", self.action),ListSettingObject("mobile busy",self.action),ListSettingObject("no reply", self.action),ListSettingObject("not reachable", self.action),ListSettingObject("all", self.action),ListSettingObject("all conditional", self.action)]), ListLabel =[('title','name')])
 
-            self.SettingForwarding = ToggleSetting('Call Forwarding', 'active', Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
+            self.SettingForwarding = ToggleSetting('call Forwarding', 'active', Text, value=self.GetForwardingStatus('unconditional'),setter=self.ToggleForwarding, options=['active','inactive'])
 
 
         except Exception, ex:
@@ -200,11 +200,11 @@ class FSOGSMService(GSMService):
 
         try:
 
-            self.SettingChannels = Setting('Call Forwarding', 'channels', Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
+            self.SettingChannels = Setting('call Forwarding', 'channels', Text, value=self.ForwardingGet('class'), setter=self.ForwardingSetClass, options=["voice","data","voice+data","fax","voice+data+fax"])
 
-            self.SettingTargetNumber = NumberSetting('Call Forwarding', 'Target Number', Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
+            self.SettingTargetNumber = NumberSetting('call Forwarding', 'Target Number', Text, value=self.ForwardingGet('number'), setter=self.ForwardingSetNumber)
 
-            self.SettingTargetNumber = NumberSetting('Call Forwarding', 'Timeout', Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
+            self.SettingTargetNumber = NumberSetting('call Forwarding', 'Timeout', Text, value=self.ForwardingGet('timeout'), setter=self.ForwardingSetTimeout)
 
             ##call forwaring setting stop
 
@@ -215,7 +215,7 @@ class FSOGSMService(GSMService):
         try:
 
             ##call identifaction setting start
-            self.CallIdentification = Setting('Network', 'Call Identification', Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
+            self.CallIdentification = Setting('network', 'Call Identification', Text, value=self.GetCallIdentification(), setter=self.SetCallIdentifaction, options=["on","off","network"])
             ##call identifaction setting stop
 
         except Exception, ex:
@@ -223,7 +223,7 @@ class FSOGSMService(GSMService):
 
         try:
             ##network selection etc begin
-            self.NetworkRegistration = Setting('Network', 'Registration', Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
+            self.NetworkRegistration = Setting('network', 'Registration', Text, value=self.GetRegStatus(), setter=self.SetRegStatus, options=["registered","not registered"])
 
 
         except Exception, ex:
@@ -236,7 +236,7 @@ class FSOGSMService(GSMService):
             self.NetworkList = List()
             self.ListLabel = [('title','name'),('subtitle','status')]
 
-            self.scan_setting = ListSetting('Network', 'List', Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
+            self.scan_setting = ListSetting('network', 'List', Text, value="scan", setter=self.run_scan, options=['scan'], model=self.NetworkList, ListLabel=self.ListLabel)
 
         except Exception, ex:
             logger.exception("Error in network list setting : %s", ex)
@@ -675,6 +675,18 @@ class FSOSIMService(Service):
         problem.
         """
         logger.info("Retrieve Phonebook")
+        ready = yield WaitDBus(self.gsm_sim.GetSimReady)
+        if ready == False:
+           logger.info("ready false")
+           while 1:
+              status = yield WaitDBusSignal(self.gsm_sim, 'ReadyStatus')
+              if status == True:
+                  logger.debug("ready now true breaking")
+                  break
+              else:
+                  logger.debug("ready still false not breaking")
+                  continue
+
         entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
                                           'contacts')
         logger.info("Got %d contacts" % len(entries))
@@ -757,6 +769,17 @@ class FSOSIMService(Service):
             logger.exception("send_pin : %s", ex)
             raise PINError(pin)
 
+    def GetAuthStatus(self):
+        val = self.gsm_sim.GetAuthStatus()
+        
+        return val
+
+    def Unlock(self, puk, new_pin):
+        try:
+            yield WaitDBus(self.gsm_sim.Unlock, puk, new_pin)
+        except:
+            raise PINError(pin)
+
     def GetAuthRequired(self):
         val = self.gsm_sim.GetAuthCodeRequired()
 
@@ -782,7 +805,7 @@ class FSOSIMService(Service):
         except Exception,  e:
             logger.exception('SetAuthCodeRequired')
             dialog = Service.get("Dialog")
-            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+            yield dialog.dialog(None,  "Error",  str(e))
 
         ret = self.GetAuthRequired()
 
@@ -793,22 +816,29 @@ class FSOSIMService(Service):
 
         editor = Service.get('TelePIN2')
 
-        old_pin = yield editor.edit(None, text="Enter old PIN",  input_method='number')
+        old_pin = yield editor.edit(None, text="Enter old PIN", input_method='number')
 
-        current = self.gsm_sim.GetAuthCodeRequired()
+        #current = self.gsm_sim.GetAuthCodeRequired()
 
-        new_pin = yield editor.edit(None, text="Enter new PIN",  input_method='number')
+        new_pin_one = yield editor.edit(None, text="Enter new PIN", input_method='number')
+
+        new_pin_two = yield editor.edit(None, text="Enter new PIN again", input_method='number')
+        
+        if new_pin_one == new_pin_two:
 
         try:
-            self.gsm_sim.ChangeAuthCode(old_pin,  new_pin)
-
-        except Exception,  e:
-            logger.exception('ChangeAuthCode')
-            dialog = Service.get("Dialog")
-            yield dialog.dialog(None,  "Error",  str(e),  Exception)
+                self.gsm_sim.ChangeAuthCode(old_pin, new_pin_one)
+            
+            except Exception, e:
+                logger.info("PIN change error")
+                dialog = Service.get("Dialog")
+                yield dialog.dialog(None, "Error", "Old pin entered is wrong.")
+        
+        else:
+            dialog = tichy.Service.get("Dialog")
+            yield dialog.dialog(None, "Error", "The two new PINs entered don't match.")
 
         ret = ""
-
         yield ret
 
 class FSOSMSService(Service):
@@ -853,7 +883,7 @@ class FSOSMSService(Service):
             self.values = self.config_service.get_items("Messages")
             if self.values != None: self.values = dict(self.values)
 
-            self.ReportSetting = Setting('Messages', 'Delivery Report', Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
+            self.ReportSetting = Setting('SMS', 'Delivery Report', Text, value=self.GetDeliveryReport(), setter=self.SetParam, options=["on","off"])
 
         except Exception, e:
             logger.exception("can't use freesmartphone SMS : %s", e)

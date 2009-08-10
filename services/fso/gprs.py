@@ -52,11 +52,11 @@ class FSOGprsService(Service):
             self.config_service = Service.get("Config")
             self.values = self.config_service.get_items("PDP")
             if self.values != None: self.values = dict(self.values)
-            #logger.info("values: %s", (self.values))
-            password = StringSetting('gprs', 'password', Text, value=self.get_password(), setter=self.set_password)
-            user = StringSetting('gprs', 'user', Text, value=self.get_user(), setter=self.set_user)
-            apn = StringSetting('gprs', 'apn', Text, value=self.get_apn(), setter=self.set_apn)
-            status = ToggleSetting('gprs', 'status', Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus")
+            #logger.info("values: %s", str(self.values))
+            password = StringSetting('GPRS', 'password', Text, value=self.get_password(), setter=self.set_password)
+            user = StringSetting('GPRS', 'user', Text, value=self.get_user(), setter=self.set_user)
+            apn = StringSetting('GPRS', 'apn', Text, value=self.get_apn(), setter=self.set_apn)
+            status = ToggleSetting('GPRS', 'status', Text, value=self.get_status(), setter=self.set_status, options=['registered','unregistered'], listenObject=self.iface, signal="NetworkStatus", arrayElement="registration")
             self.iface.connect_to_signal("NetworkStatus", self.status_change)
             self.iface.connect_to_signal("ContextStatus", self.context_status_change)
         except Exception, e:
@@ -88,7 +88,6 @@ class FSOGprsService(Service):
         except:
             pass
 
-
     def status_change(self, status):
          if status['registration'] in ["home","roaming"]:
             self.emit("gprs-status", "on")
@@ -118,14 +117,21 @@ class FSOGprsService(Service):
     @tasklet
     def set_status(self, val):
         status = self.get_status()
+        ret = status
+        logger.info("status is: %s", status)
         if status == "unregistered":
             self.pdp_id = yield WaitDBus(self.iface.ActivateContext, self.get_apn(), self.get_user(), self.get_password())
             ret = "active"
         elif status in ["home","roaming","busy"]:
             if self.pdp_id != None:
+                logger.info("trying to disconnect PDP")
                 yield WaitDBus(self.iface.DeactivateContext)
+                logger.info("disconnected PDP")
                 self.pdp_id = None
                 ret = "unregistered"
+            else:
+                yield tichy.tasklet.WaitDBus(self.iface.DeactivateContext)
+                logger.info("no pdp_id found not disconnecting")
         else:
             ret = "unregistering"
         yield Wait(self,"gprs-status")

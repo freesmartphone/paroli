@@ -66,7 +66,7 @@ class FSOSysTimeService(Service):
             self.ValueList.append(self.hour)
             self.ValueList.append(self.minute)
 
-            self.time_setting = ListSetting('Time', 'set time', Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
+            self.time_setting = ListSetting('time', 'set time', Text, value="set", setter=self.set_time, options=['set'], model=self.ValueList, ListLabel=self.ListLabel, edje_group="ValueSetting", save_button=True)
 
             self.ValueList.connect('save', self.UpdateSystemTime)
 

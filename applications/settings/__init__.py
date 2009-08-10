@@ -29,6 +29,7 @@ from tichy.application import Application
 from tichy.tasklet import WaitFirst, Wait, tasklet
 from tichy.settings import Setting
 from tichy import config
+from elementary import Entry
 from paroli.gui import ElementaryListWindow, ElementaryList, ElementaryListSubwindow
 
 ##create your applications class
@@ -65,8 +66,8 @@ class Settings(Application):
             self.groups.append(Text(i))
 
         def comp(m1, m2):
-            return cmp(m2, m1)
-
+            return cmp(m2.lower, m1.lower)
+        
         self.list_label = [('title', 'value')]
         self.item_list = ElementaryList(self.groups, self.window, self.edje_file, 
                                         "item", self.list_label, comp)
@@ -314,9 +315,10 @@ class StringSettingApp(Application):
         if setting != None:
             self.edje_obj.edje.signal_emit(str(setting.name),"set_text")
 
-        textbox = elementary.Entry(parent.window.elm_obj)
+        textbox = Entry(parent.window.elm_obj)
 
-        textbox.entry_set("")
+        if setting != None:
+            textbox.entry_set(setting.value)
 
         textbox.size_hint_weight_set(1.0, 1.0)
 
@@ -341,13 +343,18 @@ class StringSettingApp(Application):
                 self.edje_obj.delete()
                 layout.elm_obj.show()
                 setting.set(text).start()
+                parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
             else:
                 self.edje_obj.elm_obj.visible_set(False)
-                if setting != None:
-                    self.edje_obj.delete()
+                #if setting != None:
+                self.edje_obj.delete()
                 layout.elm_obj.show()
+                parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
                 yield text
         else:
             self.edje_obj.elm_obj.visible_set(False)
             self.edje_obj.delete()
             layout.elm_obj.show()
+         
+        parent.window.elm_obj.keyboard_mode_set(gui.ecore.x.ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+        

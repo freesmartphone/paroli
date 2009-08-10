@@ -298,9 +298,10 @@ class MsgsWrite(Application):
 
                   textbox.on_key_down_add(self.counter, text_layout)
 
-                  text_layout.connect("send_request", self.send_request, textbox)
+                  text_layout.connect("send_request", self.send_request, textbox, sms.peer)
 
-              i, args = yield WaitFirst(Wait(text_layout, 'back'), Wait(text_layout, 'send'))
+              i, args = yield WaitFirst(Wait(text_layout, 'back'),
+                                        Wait(text_layout, 'send'))
               if i == 0: #back
                   if full:
                       text_layout.elm_obj.hide()
@@ -352,15 +353,18 @@ class MsgsWrite(Application):
         layout.edje.part_text_set( "counter-text", str(len(counter)))
 
     #send_request
-    def send_request(self, layout, entry, **kargs):
+    def send_request(self, layout, entry, number, **kargs):
 
-        counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","").strip()
-        if len(counter) == 0:
-            self.send_empty(layout).start()
-        elif len(counter) > 159:
-            self.dialog.dialog("layout", "Error", "Text too long, only single messages possible at the moment, please shorten your text").start()
+        if len(number) < 4 :
+            self.dialog.dialog("layout", "Error", "Number too short or none entered. Please enter a valid number.").start()
         else:
-            layout.emit("send")
+            counter = unicode(entry.entry_get()).encode("utf-8").replace("<br>","").strip()
+            if len(counter) == 0:
+                self.send_empty(layout).start()
+            elif len(counter) > 159:
+                self.dialog.dialog("layout", "Error", "Text too long, only single messages possible at the moment, please shorten your text").start()
+            else:
+                layout.emit("send")
 
     @tasklet
     def send_empty(self, layout, **kargs):

@@ -46,7 +46,7 @@ class Setting(Object):
     # contains a map : { group : { name : setting } }
     groups = {}
 
-    def __init__(self, group, name, type, value=None, setter=None, options="", listenObject=False, signal=False, **kargs):
+    def __init__(self, group, name, type, value=None, setter=None, options="", listenObject=False, signal=False, arrayElement=False, **kargs):
         """Create a new setting
 
         :Parameters:
@@ -77,7 +77,8 @@ class Setting(Object):
         self.Value = type.as_type(value) if value is not None else type()
         self.Setter = setter or self.setter
         self.options = List(options)
-
+        self.arrayElement = arrayElement
+        
         if listenObject:
             listenObject.connect_to_signal(signal, self.change_val)
 
@@ -189,7 +190,15 @@ class ToggleSetting(Setting):
         self.listenObject.connect_to_signal(signal, self.change_val)
 
     def change_val(self, val):
-        self.Value.value = val
+        logger.info("status change")
+        if self.arrayElement:
+            val = val[self.arrayElement]
+        #self.Value.value = val
+        self.preset(val).start()
+    
+    @tasklet
+    def preset(self, val):
+        yield self.set(val)
 
     def rotate(self, *args):
         self.set(self.value).start()

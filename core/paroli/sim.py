@@ -323,16 +323,49 @@ class GSMService(Service):
         window = None
         editor = Service.get('TelePIN2')
         sim = Service.get('SIM')
-        for i in range(4):
-            pin = yield editor.edit(window, name="Enter PIN",
+
+        status = sim.GetAuthStatus()
+        logger.info("asking for: %s", status)
+        
+        if status in ["SIM PIN", "SIM PIN2"]:
+            pin_status = True
+            ranger = 3
+        else:
+            pin_status = False
+            ranger = 9
+
+        for i in range(ranger):
+            pin = yield editor.edit(window, name="Enter " + str(status),
                                     input_method='number')
             try:
-                yield sim.send_pin(pin)
-                break
-            except sim.PINError, e:
-                if i == 4: # after 3 times we give up
+                if pin_status:
+                    yield sim.send_pin(pin)
+                    break
+                else:
+                    new_pin_one = yield editor.edit(window, name="Enter new PIN",
+                                    input_method='number')
+                    new_pin_two = yield editor.edit(window, name="Enter new PIN again",
+                                    input_method='number')                
+                    if new_pin_one == new_pin_two:
+                        sim.Unlock(pin, new_pin_one)
+                        break
+                    else:
+                        text = "The two PINs entered don't match.<br/>Setting PIN to 0000. Please change it later."
+                        dialog = Service.get("Dialog")
+                        yield dialog.dialog(None,  "Error",  text)
+                        sim.Unlock(pin, "0000")
+                        break
+            except sim.PINError:
+                dialog = Service.get("Dialog")
+                if status != "SIM PIN" and status != "SIM PIN2":
+                    number = 9 - i
+                else:
+                    number = 2 - i
+                text = "Incorrect " + str(status) + " " + str(number)  + " trials left"
+                yield dialog.dialog(None,  "Error",  text)
+                if i == ranger: # after ranger times we give up - depends on PIN/PUK
                     raise
-                logger.exception("pin wrong : %s", e)
+                logger.exception("pin wrong : %s", pin)
 
     def update_missed_call_count(self):
         count = 0
@@ -346,5 +379,3 @@ class GSMService(Service):
             if call.missed and ( not call.checked ):
                 call.check()
         self.missed_call_count.value = 0
-
-
