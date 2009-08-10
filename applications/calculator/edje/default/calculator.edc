@@ -1,0 +1,24 @@
+fonts {
+   // We use Bold font for nearly everything. by Will.
+   //font: "Inspiration-Bold.ttf"   "Sans";
+}
+
+images {
+   image: "back.png" COMP;
+   image: "back_pressed.png" COMP;
+   image: "backspace.png" COMP;
+   image: "backspace_pressed.png" COMP;
+}
+
+styles
+{
+    style 
+    {
+      name: "textblock_style";
+      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+    }
+}
+collections
+{
+    #include "calculator_btn.edc"
+}
