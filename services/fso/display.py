@@ -71,7 +71,7 @@ class FSODisplayService(Service):
             logger.exception("can't use e dbus interface service : %s", e)
         else:
             if not self.theme:
-                self.theme = Setting('display', 'profile', get_profile(), setter=self.set_profile, options=self.get_profile_list())
+                self.theme = Setting('display', 'profile', Text, value=self.get_profile(), setter=self.set_profile, options=self.get_profile_list())
 
     def getBrightness(self, *args, **kargs):
         return self.biface.GetBrightness()

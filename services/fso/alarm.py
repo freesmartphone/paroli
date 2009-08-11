@@ -83,7 +83,7 @@ class FSOAlarmService(Service):
     def _connect_dbus(self):
         try:
             yield WaitDBusName('org.freesmartphone.otimed', time_out=120)
-            bus = dbus.SystemBus(mainloop=tichy.mainloop.dbus_loop)
+            bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             alarm_obj = bus.get_object('org.freesmartphone.otimed', 
                           '/org/freesmartphone/Time/Alarm')
             self.alarm = dbus.Interface(alarm_obj, 'org.freesmartphone.Time.Alarm')

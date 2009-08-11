@@ -62,7 +62,7 @@ class FSOPrefsServices(Service):
             "connecting to freesmartphone.Preferences dbus interface")
         try:
             yield Service.get('GSM').wait_initialized()
-            yield Service.get('ConfigService').wait_initialized()
+            yield Service.get('Config').wait_initialized()
             yield WaitDBusName('org.freesmartphone.opreferencesd', time_out=120)
             # We create the dbus interfaces to org.freesmarphone
             self.bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
@@ -73,7 +73,7 @@ class FSOPrefsServices(Service):
                 self.prefs,
                 'org.freesmartphone.Preferences')
 
-            self.config_service = Service.get("ConfigService")
+            self.config_service = Service.get("Config")
             self.values = self.config_service.get_items("RingProfile")
             if self.values != None: self.values = dict(self.values)
 
