@@ -108,7 +108,7 @@ setup(name='Paroli',
           + plugins_files('paroli-applications/people2', '../../usr/share/paroli/applications/people2') \
           + plugins_files('paroli-applications/settings', '../../usr/share/paroli/applications/settings') \
           + plugins_files('paroli-applications/tele2', '../../usr/share/paroli/applications/tele2') \
-          + plugins_files('paroli-applications/calculator', '../../usr/share/paroli/paroli-applications/calculator') \
+          + plugins_files('paroli-applications/calculator', '../../usr/share/paroli/applications/calculator') \
           + dbus_data \
           + sound_data,
 
