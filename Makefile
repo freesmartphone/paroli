@@ -27,6 +27,7 @@ edj:
 
 .PHONY: dbg
 dbg: clean
+	ssh root@$(HOST) mkdir -p /usr/share/paroli/.
 	rsync --verbose --archive --delete * root@$(HOST):/usr/share/paroli/.
 
 .PHONY: clean
