@@ -60,14 +60,14 @@ class Launcher(Application):
 
         self.active_app = None
 
-        if self.advanced == False:
-            ##create list of apps from list of registered apps
-            apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Paroli-Contacts"]
-        else:
+        if self.advanced:
             apps = []
             for app in Application.subclasses:
                 if app.category == 'launcher':
                     apps.append(app)
+        else:
+            ##create list of apps from list of registered apps
+            apps = ['Paroli-I/O',"Msgs","Paroli-Dialer","Paroli-Contacts"]
 
         box = ElementaryBox(self.window.window.elm_obj)
         self.app_objs = {}
@@ -98,7 +98,7 @@ class Launcher(Application):
         #self.standalone = True
 
         self.msg = Service.get('Messages')
-        if self.msg.ready == False :
+        if not self.msg.ready:
             self.msg.connect('ready',self.unblock_screen)
         else:
             self.unblock_screen()
@@ -136,7 +136,7 @@ class Launcher(Application):
         else:
             logger.info("keep alive set to %s", keep_alive)
 
-        if self.window.window.elm_obj.is_deleted() == False:
+        if not self.window.window.elm_obj.is_deleted():
             self.window.delete()   # Don't forget to close the window
         
     def block_edje(self, *args, **kargs):
@@ -379,7 +379,7 @@ class Launcher(Application):
         edje.part_text_set('clock', time_text)
 
     def open_settings(self, *args, **kargs):
-        if self.settings == True:
+        if self.settings:
             self.launch_app(None, 'Settings', None)
 
     def switch_profile(self, *args, **kargs):

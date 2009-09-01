@@ -397,7 +397,7 @@ class FSOGSMService(GSMService):
 
     @tasklet
     def run_scan(self, val):
-      if self.scanning == False:
+      if not self.scanning:
           self.scanning = True
           self.NetworkList.clear()
           providers = yield WaitDBus(self.gsm_network.ListProviders)
@@ -676,11 +676,11 @@ class FSOSIMService(Service):
         """
         logger.info("Retrieve Phonebook")
         ready = yield WaitDBus(self.gsm_sim.GetSimReady)
-        if ready == False:
+        if not ready:
            logger.info("ready false")
            while 1:
               status = yield WaitDBusSignal(self.gsm_sim, 'ReadyStatus')
-              if status == True:
+              if status:
                   logger.debug("ready now true breaking")
                   break
               else:

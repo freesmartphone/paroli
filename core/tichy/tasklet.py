@@ -141,7 +141,7 @@ class Tasklet(object):
         """
         # This somehow complicated try switch is used to handle all
         # possible return and exception from the generator function
-        assert self.closed == False, "Trying to send to a closed tasklet"
+        assert not self.closed, "Trying to send to a closed tasklet"
         try:
             value = self.generator.send(value)
         except StopIteration, e:

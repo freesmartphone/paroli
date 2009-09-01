@@ -103,13 +103,13 @@ class FSOWifiService(Service):
             raise
 
     def closing(self, *args, **kargs):
-        if self.power_iface.GetPower() == True:
+        if self.power_iface.GetPower():
             self.power('moo').start()
 
     @tasklet
     def power(self, status):
         logger.info("setting power of wifi device")
-        if self.power_iface.GetPower() == True:
+        if self.power_iface.GetPower():
             yield WaitDBus(self.power_iface.SetPower,False)
             ret = "inactive"
         else:
@@ -252,7 +252,7 @@ class WifiNetwork(Object):
         self.obj_addr = ConnmanProps['Device']
         self.mode = ConnmanProps['WiFi.Mode']
         self.mac = ConnmanProps['Address']
-        if ConnmanProps['Connected'] == True or str(ConnmanProps['Connected']) == '1':
+        if ConnmanProps['Connected'] or str(ConnmanProps['Connected']) == '1':
             self.info = 'connected'
         else:
             self.info = self.WiFiSecurity

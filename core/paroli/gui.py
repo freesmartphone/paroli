@@ -101,7 +101,7 @@ class ElementaryTopbar(Object):
         self.parent = parent
         self.onclick = onclick
         self.standalone = config.getboolean('standalone','activated', False)
-        if self.standalone == True:
+        if self.standalone:
             self.bg = ElementaryLayout(parent.window, edje_file, "bg-tb-on")
             self.tb = ElementaryLayout(parent.window, edje_file, "tb")
             self.bg.elm_obj.content_set("tb-swallow", self.tb.elm_obj)
@@ -209,18 +209,18 @@ class ElementaryList(Object):
 
       def _redraw_view(self, *args, **kargs):
           #logger.info("list redrawing")
-          if self.elm_window.elm_obj.is_deleted() == True:
+          if self.elm_window.elm_obj.is_deleted():
                 self._remove_cb()
           else:
               self.sort()
-              if self.box.elm_obj.is_deleted() == False:
+              if not self.box.elm_obj.is_deleted():
                   self.box.elm_obj.delete()
               self.box = ElementaryBox(self.elm_window.elm_obj)
               self.items = []
               self.letter_index = {}
               #self.model.sort()
               for item in self.model:
-                  if self.elm_window.elm_obj.is_deleted() == True:
+                  if self.elm_window.elm_obj.is_deleted():
                       logger.info('window deleted %s', self.model)
                   ly = elementary.Layout(self.elm_window.elm_obj)
                   ly.file_set(self.edje_file, self.group)
@@ -234,7 +234,7 @@ class ElementaryList(Object):
                         if self.letter_dict:
                             if self.label_list.index((part, attribute)) == 0:
                                 letter = value[0].lower()
-                                if self.letter_index.has_key(letter) == False:
+                                if not self.letter_index.has_key(letter):
                                     self.letter_index[letter] = self.model.index(item)
 
                         if isinstance(value, Item):

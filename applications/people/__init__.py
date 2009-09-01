@@ -105,7 +105,7 @@ class People(Application):
             logger.info("closing")
             for i in self.dictButtons :
                 i.hide()
-                if i.is_deleted() == False:
+                if not i.is_deleted():
                     del i
     
     def signal(self, emission, signal, source):

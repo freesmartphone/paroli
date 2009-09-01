@@ -291,7 +291,7 @@ class TeleCaller2(Application):
             self.storage.caller.value = ""
             self.storage.call = None
 
-            if self.main.window.elm_obj.is_deleted() == False:
+            if not self.main.window.elm_obj.is_deleted():
                 if layout:
                     layout.elm_obj.show()
                     self.layout.elm_obj.delete()
@@ -303,7 +303,7 @@ class TeleCaller2(Application):
         except Exception, e:
             logger.exception("Got error in caller : %s", e)
             self.SoundsService.Stop()
-            if self.main.window.elm_obj.is_deleted() == False:
+            if not self.main.window.elm_obj.is_deleted():
                 if layout:
                     layout.elm_obj.show()
                     self.main.restore_orig()

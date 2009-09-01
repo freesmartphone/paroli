@@ -71,7 +71,7 @@ class FSOUsageService(Service):
             if resource in self.iface.ListResources():
                 logger.debug("requesting resource %s state", resource)
                 state = yield WaitDBus(self.iface.GetResourceState,resource)
-                if state == False and self.flags[resource] == False:
+                if not state and not self.flags[resource]:
                     try:
                         logger.debug("requesting resource %s", resource)
                         yield WaitDBus(self.iface.RequestResource,resource)
@@ -89,7 +89,7 @@ class FSOUsageService(Service):
             if resource in self.iface.ListResources():
                 logger.debug("requesting resource %s state", resource)
                 state = yield WaitDBus(self.iface.GetResourceState,resource)
-                if state == True and self.flags[resource] == True:
+                if state and self.flags[resource]:
                     try:
                         logger.debug("releasing resource %s", resource)
                         yield WaitDBus(self.iface.ReleaseResource,resource)
