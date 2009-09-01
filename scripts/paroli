@@ -1,5 +1,9 @@
 #!/bin/sh -e
-#cd /usr/share/paroli/
-cd ..
+cd /usr/share/paroli
+if [ -z "$1" ]; then
+	FLAVOUR=fallback
+else
+	FLAVOUR=$1
+fi
 PYTHONPATH=core \
-exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.cfg
+exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$FLAVOUR.cfg
