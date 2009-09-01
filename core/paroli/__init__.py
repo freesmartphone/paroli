@@ -253,7 +253,7 @@ def main(*args):
     set_default_services()
 
     # We import all the modules into the plugin directory
-    default_plugins_path = '/usr/share/tichy/plugins'
+    default_plugins_path = '/usr/share/paroli/plugins'
     plugins_dirs = config.get('plugins', 'path', default_plugins_path)
     for plugins_dir in [d.strip() for d in plugins_dirs.split(',')]:
         logger.debug('plugins_dir: %s', plugins_dir)
