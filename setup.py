@@ -66,7 +66,7 @@ def plugins_files(source, dest, ):
 		ret.append((f_dest, src))
 	return ret
 
-setup(name='Paroli',
+setup(name='paroli',
 	version='0.1',
 	description="Paroli",
 	author="Mirko Lindler",
