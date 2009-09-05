@@ -24,3 +24,8 @@ provided py paroli init.
 """
 
 mainloop = None # set from outside in this singleton
+
+__all__ = ["application", "config", "list", "persistance", "service", "tasklet", "ttime", 
+           "item", "notifications", "config", "object", "plugins", "settings", "text", 
+           "int" ]
+
