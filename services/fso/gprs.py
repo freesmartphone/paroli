@@ -26,6 +26,7 @@ import dbus
 from tichy.tasklet import WaitDBusName, WaitDBus, Wait, tasklet
 from tichy.service import Service
 from tichy.settings import StringSetting
+from tichy.settings import ToggleSetting
 from tichy.text import Text
 from tichy import mainloop
 
