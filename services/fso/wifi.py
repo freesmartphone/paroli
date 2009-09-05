@@ -30,7 +30,7 @@ from tichy.list import List
 from tichy.tasklet import Tasklet, WaitDBus, WaitDBusName, WaitDBusSignal, Sleep, WaitDBusNameChange, WaitFirst, tasklet
 from tichy.service import Service
 from tichy import mainloop
-from tichy.settings import ToggleSetting, ListSetting
+import tichy.settings
 
 class FSOWifiService(Service):
     """The 'Wifi' service
