@@ -1,9 +1,62 @@
 #!/bin/sh -e
-cd /usr/share/paroli
-if [ -z "$1" ]; then
-	FLAVOUR=fallback
-else
-	FLAVOUR=$1
+
+
+usage()
+{
+cat << EOF
+usage: $0 options
+
+This script runs paroli with right settings and python path.
+
+OPTIONS:
+   -h      Show this message
+   -e      Used engine, valids are: fso, pyneo, fallback
+   -d      root directory. The script steps into that directory
+           and launch everything from it.
+
+EOF
+}
+
+DIR=
+ENGINE=
+
+while getopts 'd:e:' OPTION; do
+    case $OPTION in
+    d)
+        DIR=$OPTARG
+        echo "root dir: $DIR"
+        ;;
+    e)
+        ENGINE=$OPTARG
+        echo "used engine: $ENGINE"
+        ;; 
+    h)
+        usage
+        exit 1
+        ;;
+    ?)
+        usage
+        exit
+        ;;
+    esac
+done 
+
+if [ -z $DIR ]; then
+	DIR='..'
 fi
-PYTHONPATH=core \
-exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$FLAVOUR.cfg
+if [ -z $ENGINE ]; then
+	ENGINE='fso'
+fi
+if [ -z $PPATH ]; then
+	PPATH=core
+fi
+
+cd $DIR
+echo "pwd: $PWD"
+echo "PYTHONPATH=$PPATH \ 
+exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$ENGINE.cfg"
+
+PYTHONPATH=$PPATH \
+exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$ENGINE.cfg
+
+
