@@ -83,7 +83,9 @@ setup(name='paroli',
 			#'data/paroli-dialer.desktop'
 			], ),
 		('/etc/paroli/', [
-			'scripts/paroli.cfg',
+			'scripts/paroli.pyneo.cfg',
+			'scripts/paroli.fallback.cfg',
+			'scripts/paroli.fso.cfg',
 			], ),
 		# images
 		(join(prefix, 'share/pixmaps/'), [
