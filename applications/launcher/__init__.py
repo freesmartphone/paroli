@@ -164,9 +164,9 @@ class Launcher(Application):
 
     def _set_subtext(self, *args, **kargs):
         if args[0] != "0" and args[0] != 0:
-          value = args[0]
+            value = args[0]
         else:
-          value = ''
+            value = ''
         app = args[1]
         edje_obj = self.app_objs[app][0]
         text = '<normal>' + app + '</normal> <small>' + str(value) +'</small>'
@@ -400,7 +400,7 @@ class Launcher(Application):
         current = self.audio_service.get_speaker_volume()
         all_values = [20, 40, 60, 80, 100]
         if all_values.count(current) == 0:
-          current = 40
+            current = 40
 
         current_index = all_values.index(current)
 
@@ -500,23 +500,23 @@ class TopBar(Service):
         tb = ElementaryTopbar(parent, onclick, self.edje_file, standalone)
 
         if hasattr(tb,"tb"):
-          self.tb_list.append(tb.tb.elm_obj)
-          tb.tb.elm_obj.on_del_add(self.tb_deleted)
-          if hasattr(self,"power"):
-              try:
-                  self.battery_capacity(0,self.power.get_battery_capacity())
-              except:
-                  pass
-          if hasattr(self,"gsm"):
-              try:
-                  self.network_strength(0,self.gsm.network_strength)
-              except:
-                  pass
-          if hasattr(self,"prefs"):
-              try:
-                  self.profile_change(0,self.prefs.get_profile())
-              except:
-                  pass
+            self.tb_list.append(tb.tb.elm_obj)
+            tb.tb.elm_obj.on_del_add(self.tb_deleted)
+            if hasattr(self,"power"):
+                try:
+                    self.battery_capacity(0,self.power.get_battery_capacity())
+                except:
+                    pass
+            if hasattr(self,"gsm"):
+                try:
+                    self.network_strength(0,self.gsm.network_strength)
+                except:
+                    pass
+            if hasattr(self,"prefs"):
+                try:
+                    self.profile_change(0,self.prefs.get_profile())
+                except:
+                    pass
           #logger.info("topbar created for %s", parent)
         return tb
 
