@@ -363,7 +363,10 @@ class FSOGSMService(GSMService):
 
     @tasklet
     def _release(self, call):
-        logger.info("RELEASE release call %s", (call.number))
+        number = str(call.number)
+        _number  = number[-len(number):-len(number)+3]
+        _number += 'x'*(len(number)-3)
+        logger.info("RELEASE release call %s", _number)
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
