@@ -44,7 +44,7 @@ class FallbackSoundsService(Service):
             self.vibra_service = Service.get('Vibrator')
             self.values = self.config_service.get_items("sounds")
             if self.config_service.get_items("sounds") == None:
-                    self.config_service.set_item('sounds', "ringtone_file", "/usr/share/sounds/phone_ringing.ogg")
+                    self.config_service.set_item('sounds', "ringtone_file", "/usr/share/sounds/ringtone_ringnroll.wav")
                     self.config_service.set_item('sounds', "smstone_file", "/usr/share/sounds/alarm.wav")
                     self.config_service.set_item('sounds', "callvibra", "1")
                     self.config_service.set_item('sounds', "smsvibra", "1")

@@ -1,4 +1,4 @@
-ring-tone: "phone_ringing.ogg"
+ring-tone: "phone_ringing.wav"
 ring-volume: 10
 
 message-tone: "alarm.wav"
