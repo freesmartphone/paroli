@@ -61,6 +61,7 @@ class FSOAudioService(Service):
 
     @tasklet
     def init(self):
+        logger.info("audio.py->init()")
         yield Service.get('GSM').wait_initialized()
         yield self._connect_dbus()
         if self.device != None:
@@ -112,6 +113,30 @@ class FSOAudioService(Service):
             self.device.SetSpeakerVolume(int(val))
             logger.info("set volume to %d", self.get_speaker_volume())
 
+    def push_scenario(self, state):
+        """It push on top of the stack the new scenario(gsmhandset, speakerout)
+        """
+        logger.info("we push the gsmhandset scenario for enabling sound in call")
+        try:
+            self.audio.PushScenario('gsmhandset')
+        except dbus.DBusException, e:
+            logger.exception("pushscenarrio: %s", e)
+        
+        logger.info("current scenario file is: %s", self.audio.GetScenario())
+        
+        
+        return
+    
+    def pull_scenario(self):
+        """It pulls scenario from the top of the stack, reenabling the last 
+        used scenario.
+        """
+        logger.info("pull_scenario")
+        used_scenario = self.audio.PullScenario()
+        logger.info("this is the scenario what we used: %s", used_scenario)
+        logger.info("and this is the current scenario: %s", self.audio.GetScenario())
+        return
+        
     def audio_toggle(self):
         if self.device != None:
             if self.muted == 0:
@@ -132,20 +157,28 @@ class FSOAudioService(Service):
     def stop_all_sounds(self):
         logger.info("Stop all sounds")
         self.audio.StopAllSounds()
+        #restore the previous scenario file
+        self.pull_scenario()
 
     def ringtone(self, ringtype):
         if ringtype == "call":
             logger.info("playing ringtone")
-            self.play("/usr/share/sounds/phone_ringing.ogg", 1)
+            self.play("/usr/share/sounds/ringtone_ringnroll.wav", 1)
         if ringtype == "message":
             logger.info("playing smstone")
-            self.play("/usr/share/sounds/notify_message.mp3")
+            self.play("/usr/share/sounds/notify_message.wav")
 
     def play(self, filepath, loop=0, length=0):
+        if filepath == "/usr/share/sounds/phone_ringing.ogg":
+            # TODO: how the hell coming this phone_ringing.ogg parameter?
+            # needs to be fixed ASAP
+            logger.error("/usr/share/sounds/phone_ringing.ogg passed as argument!")
+            filepath = "/usr/share/sounds/ringtone_ringnroll.wav"
         try:
             self.audio.PlaySound( filepath, loop, length )
         except dbus.DBusException, e:
-            logger.exception("play: %s", e)
+            logger.exception("play: %s, filepath: %s", e, filepath)
+            
             assert e.get_dbus_name() == "org.freesmartphone.Device.Audio.PlayerError", \
                                             "wrong error returned"
         else:

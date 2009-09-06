@@ -327,6 +327,7 @@ class FSOGSMService(GSMService):
         _number  = number[-len(number):-len(number)+3]
         _number += 'x'*(len(number)-3)
         logger.info("create call %s" % _number) # hide privacy
+        # we need to set scenario files somewhere. Maybe in Call class?
         call = Call(number, direction=direction)
         self.logs.insert(0, call)
         return call
@@ -362,7 +363,7 @@ class FSOGSMService(GSMService):
 
     @tasklet
     def _release(self, call):
-        #logger.info("release call %s", (call.number))
+        logger.info("RELEASE release call %s", (call.number))
         yield WaitDBus(self.gsm_call.Release, call.__id)
 
 
