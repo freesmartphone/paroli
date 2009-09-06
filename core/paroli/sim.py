@@ -116,6 +116,18 @@ class Call(Item):
         """
         logger.info("initiate call")
         gsm_service = Service.get('GSM')
+        
+        if self.direction == 'out':
+            # we need to set the scenario file
+            audio_service = Service.get('Audio')
+            audio_service.push_scenario('gsmhandset')
+        else: # 'in'
+            # we need to set the scenario file
+            audio_service = Service.get('Audio')
+            audio_service.push_scenario('stereoout')
+
+            
+        
         yield gsm_service._initiate(self)
         self.status = 'initiating'
         self.emit(self.status)
