@@ -29,7 +29,7 @@ from tichy.tasklet import Wait, WaitFirst
 from paroli.gui import ElementaryListWindow, ElementaryList
 
 class InOutCallLog(Application):
-    name = 'InOutCallLog'
+    name = 'CallLog'
     icon = 'icon.png'
     category = 'launcher' # So that we see the app in the launcher
     launcher_info = ['GSM',"missed_call_count"]
