@@ -58,6 +58,7 @@ class FSOAudioService(Service):
         self.device = None
         self.audio = None
         self.muted = 0
+        self.pushed = 0
 
     @tasklet
     def init(self):
@@ -119,6 +120,7 @@ class FSOAudioService(Service):
         logger.info("we push the gsmhandset scenario for enabling sound in call")
         try:
             self.audio.PushScenario('gsmhandset')
+            self.pushed += 1
         except dbus.DBusException, e:
             logger.exception("pushscenarrio: %s", e)
         
@@ -132,8 +134,13 @@ class FSOAudioService(Service):
         used scenario.
         """
         logger.info("pull_scenario")
-        used_scenario = self.audio.PullScenario()
-        logger.info("this is the scenario what we used: %s", used_scenario)
+        
+        if self.pushed > 0:
+            used_scenario = self.audio.PullScenario()
+            self.pushed -= 1
+            logger.info("this is the scenario what we used: %s", used_scenario)
+        else:
+            logger.error("we want to pull scenario without pushing it first!!!")
         logger.info("and this is the current scenario: %s", self.audio.GetScenario())
         return
         
