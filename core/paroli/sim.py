@@ -155,6 +155,12 @@ class Call(Item):
         """Activate the call"""
         logger.info("activate call")
         gsm_service = Service.get('GSM')
+        
+        # we need to set the scenario file
+        audio_service = Service.get('Audio')
+        audio_service.push_scenario('gsmhandset')
+        logger.info("gsmhandset .state file pushed!+!!")
+        
         yield gsm_service._activate(self)
         self.status = 'activating'
         self.emit(self.status)
