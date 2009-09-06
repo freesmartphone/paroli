@@ -113,21 +113,21 @@ class FSOAudioService(Service):
             logger.info("set volume to %d", self.get_speaker_volume())
 
     def audio_toggle(self):
-      if self.device != None:
-          if self.muted == 0:
-              self.muted = 1
-              self.device.SetMicrophoneMuted(True)
-              # Notice: this does in no way affect the ringtone volume of an incoming call
-              self.device.SetSpeakerVolume(0)
-              logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
-          elif self.muted == 1:
-              self.device.SetMicrophoneMuted(self.mic_state)
-              self.device.SetSpeakerVolume(self.speaker_volume)
-              self.muted = 0
-              logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
-          return 0
-      else:
-          return 1
+        if self.device != None:
+            if self.muted == 0:
+                self.muted = 1
+                self.device.SetMicrophoneMuted(True)
+                # Notice: this does in no way affect the ringtone volume of an incoming call
+                self.device.SetSpeakerVolume(0)
+                logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
+            elif self.muted == 1:
+                self.device.SetMicrophoneMuted(self.mic_state)
+                self.device.SetSpeakerVolume(self.speaker_volume)
+                self.muted = 0
+                logger.info("mic muted: %i speaker volume %i", self.get_mic_status(),self.get_speaker_volume())
+            return 0
+        else:
+            return 1
 
     def stop_all_sounds(self):
         logger.info("Stop all sounds")
