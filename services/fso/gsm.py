@@ -401,18 +401,18 @@ class FSOGSMService(GSMService):
 
     @tasklet
     def run_scan(self, val):
-      if not self.scanning:
-          self.scanning = True
-          self.NetworkList.clear()
-          providers = yield WaitDBus(self.gsm_network.ListProviders)
-
-          for i in providers:
-              if i[1] != 'forbidden':
-                  obj = Provider(i, self.RegisterWithProvider_pre)
-                  self.NetworkList.append(obj)
-          self.scanning = False
-
-      yield "scan"
+        if not self.scanning:
+            self.scanning = True
+            self.NetworkList.clear()
+            providers = yield WaitDBus(self.gsm_network.ListProviders)
+  
+            for i in providers:
+                if i[1] != 'forbidden':
+                    obj = Provider(i, self.RegisterWithProvider_pre)
+                    self.NetworkList.append(obj)
+            self.scanning = False
+  
+        yield "scan"
 
     ##call identification
 
@@ -432,17 +432,17 @@ class FSOGSMService(GSMService):
         reason = self.ForwardingGetReason()
         if self.GetForwardingStatus(reason) == 'inactive':
 
-              channel = self.ForwardingGet('status')
-              number = self.ForwardingGet('number')
-              timeout = self.ForwardingGet('timeout')
-              try:
-                  if reason == "no reply":
-                      yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout)))
-                  else:
-                      yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
-              except Exception, e:
-                  logger.exception('ToggleForwarding')
-                  yield Service.get('Dialog').dialog("window", 'Error', str(e))
+            channel = self.ForwardingGet('status')
+            number = self.ForwardingGet('number')
+            timeout = self.ForwardingGet('timeout')
+            try:
+                if reason == "no reply":
+                    yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout)))
+                else:
+                    yield WaitDBus(self.gsm_network.EnableCallForwarding( reason, channel, number, int(timeout) ))
+            except Exception, e:
+                logger.exception('ToggleForwarding')
+                yield Service.get('Dialog').dialog("window", 'Error', str(e))
 
         else:
             self.gsm_network.DisableCallForwarding( reason )
@@ -681,15 +681,15 @@ class FSOSIMService(Service):
         logger.info("Retrieve Phonebook")
         ready = yield WaitDBus(self.gsm_sim.GetSimReady)
         if not ready:
-           logger.info("ready false")
-           while 1:
-              status = yield WaitDBusSignal(self.gsm_sim, 'ReadyStatus')
-              if status:
-                  logger.debug("ready now true breaking")
-                  break
-              else:
-                  logger.debug("ready still false not breaking")
-                  continue
+            logger.info("ready false")
+            while 1:
+                status = yield WaitDBusSignal(self.gsm_sim, 'ReadyStatus')
+                if status:
+                    logger.debug("ready now true breaking")
+                    break
+                else:
+                    logger.debug("ready still false not breaking")
+                    continue
 
         entries = yield FSOSIMService.retry_on_sim_busy(self.gsm_sim.RetrievePhonebook,
                                           'contacts')

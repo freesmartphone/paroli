@@ -337,8 +337,8 @@ class TeleCaller2(Application):
             current = self.audio_service.get_speaker_volume()
             all_values = [20, 40, 60, 80, 100]
             if all_values.count(current) == 0:
-              current = 40
-
+                current = 40
+            
             current_index = all_values.index(current)
 
             if len(all_values)-1 == current_index:
