@@ -223,7 +223,9 @@ class TeleCaller2(Application):
 
             else:   # If not it means we want to initiate the call first
                 display = unicode(TelNumber(number).get_text()).encode("utf-8")
-                logger.info("display is %s", display)
+                _display = display[-len(display):-len(display)+3]
+                _display += 'x'*(len(display)-3)
+                logger.info("display is %s", _display) # hide privacy
                 self.edje_obj.part_text_set('num_field-text', display)
                 self.edje_obj.signal_emit('to_dialing_state',"*")
                 self.edje_obj.layer_set(2)

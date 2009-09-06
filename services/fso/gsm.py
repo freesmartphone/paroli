@@ -324,7 +324,9 @@ class FSOGSMService(GSMService):
                 Indicate the direction of the call. Can be 'in' or
                 'out'
         """
-        logger.info("create call %s" % number)
+        _number  = number[-len(number):-len(number)+3]
+        _number += 'x'*(len(number)-3)
+        logger.info("create call %s" % _number) # hide privacy
         call = Call(number, direction=direction)
         self.logs.insert(0, call)
         return call
@@ -336,7 +338,9 @@ class FSOGSMService(GSMService):
         if not self.gsm_call:
             raise Exception("No connectivity")
         number = str(call.number)
-        logger.info("initiate call to %s", number)
+        _number  = number[-len(number):-len(number)+3]
+        _number += 'x'*(len(number)-3)
+        logger.info("initiate call to %s", _number) # hide privacy
         call_id = yield WaitDBus(self.gsm_call.Initiate, number, "voice")
         call_id = int(call_id)
         logger.info("call id : %d", call_id)
