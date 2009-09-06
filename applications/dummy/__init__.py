@@ -10,7 +10,7 @@ from paroli.gui import ElementaryLayoutWindow
 class Dummy(Application):
 	name = 'Dummy'
 	icon = 'icon.png'
-	category = 'launcher' # So that we see the app in the launcher
+	category = 'dunno' #Any other category than launcher dont appear in launcher
 
 	def run(self, parent=None, standalone=False):
 		logger.info('run starts')
