@@ -1,397 +1,277 @@
-// // these are the elements you can form edje objects from
-    group
-    {
-        // // the name parameter is the one also used by python to retrieve the group
-        name:"stringsetting";
-        // // the are the maximum and minumum size of the canvas
-        // // if you do not specifiy them your object will not be visible
-        min: 480 590;
-        // // every group can contain any number of parts, all of which are generated when the group is called
-        parts
-        {            
-            part
-            {
-                // // it is advisable to have a base part which catches all clicks not made on any other object and prevents them from getting to the elements laying below
-                name:"base";
-                // // edc knows several types: IMAGE, RECT, TEXT etc.
-                // // rect will open a simple rectangle between rel1 and rel2 (see below)
-                type:RECT;
-                // // the description part defines the design of the part
-                description 
-                { 
-                    // // an element can have multiple designs depending on its state
-                    state:   "default"  0.0;
-                    color: 0 0 0 255;
-                    // // in edc size can be allocated via pixels as well as relative
-                    // // in most cases relativ sizes are more advisable as they allow easy scaling
-                    rel1 
-                    {
-                        // // rel1 defines the top left of the element
-                        // // the first is the x-value and the second the y-value
-                        relative: 0.0 0.0;
-                    }
-                    rel2 
-                    {
-                        // // rel2 defines the bottom right of the element
-                        // // the first is the x-value and the second the y-value
-                        relative: 1.0 1.0;
-                    }
+group {
+    name: "stringsetting";
+    min: 480 590;
+    parts {            
+        part {
+            name:"base";
+            type:RECT;
+            description { 
+                state: "default"  0.0;
+                color: 0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
+            }
+        }
+        
+        part { 
+            name:"entry-description";
+            type: TEXT;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.0 0.0;
+                    font: "Sans";
+                    size: 36;
+                    text: "";
+                }
+                rel1 { 
+                    to:"base";
+                    relative: 0.0 0.25;
+                }
+                rel2 {
+                    to:"base";
+                    relative: 1.0 0.35;
                 }
             }
-            part{ 
-                name:"entry-description";
-                type: TEXT;
-                description { 
-                  state: "default" 0.0;
-                  color: 255 255 255 255;
-                  text{
-                      align: 0.0 0.0;
-                      font: "Sans";
-                      size: 36;
-                      text: "";
-                  }
-                  rel1 { to:"base";
-                    relative: 0.0 0.25;
-                  }
-                  rel2 {to:"base";
-                    relative: 1.0 0.35;
-                  }
-              }
-            }
-            
-            part{
-              name:"entry";
-              type:SWALLOW;
-              description { 
-                  state: "default" 0.0;
-                  rel1 { to:"base";
+        }
+        
+        part {
+            name:"entry";
+            type:SWALLOW;
+            description { 
+                state: "default" 0.0;
+                rel1 { 
+                    to:"base";
                     relative: 0.0 0.45;
-                  }
-                  rel2 {to:"base";
+                }
+                rel2 {
+                    to:"base";
                     relative: 1.0 0.8;
-                  }
-              }
+                }
             }
-          part {
-                name: "back-button";
-                type: IMAGE;
-                mouse_events: 1;
-                description {
-                      state: "default" 0.0;
-                      min: 114 33;
-                      max: 114 33;
-                      rel1 
-                      {
-//                         relative: 0.02 0.03;
-                        relative: 0.0 0.0;
-                        offset: 9 20;
-//                         to: "base";
-                      }
-                      rel2 
-                      {
-//                           relative: 0.26625 0.0828;
-                          relative: 0.0 0.0;
-                          offset: 123 53;
-//                           to: "base";
-                      }
-                      image {
-                          normal: "back.png";
-                      }
-                      visible: 1;
-                  }
+        }
+        
+        part {
+            name: "back-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+                state: "default" 0.0;
+                min: 114 33;
+                max: 114 33;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 9 20;
+                    // to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 123 53;
+                    // to: "base";
+                }
+                image { normal: "back.png"; }
+                visible: 1;
             }
-          
-          part {
+        }
+      
+        part {
             name: "Save-button";
             type: IMAGE;
             mouse_events: 1;
             description {
-                  state: "default" 0.0;
-                  min: 76 33;
-                  max: 76 33;
-                  rel1 
-                  {
-//                     relative: 0.8079 0.03;
-                     relative: 0.0 0.0;
-                     offset: 402 20;
-//                     to: "base";
-                  }
-                  rel2 
-                  {
-//                       relative: 0.96625 0.0828;
-                      relative: 0.0 0.0;
-                      offset: 478 53;
-//                       to: "base";
-                  }
-                  image {
-                      normal: "Save_button.png";
-                  }
-                  visible: 1;
-              }
+                state: "default" 0.0;
+                min: 76 33;
+                max: 76 33;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 402 20;
+                    // to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 478 53;
+                    // to: "base";
+                }
+                image { normal: "Save_button.png"; }
+                visible: 1;
             }
-            part 
-            {
-                name: "save-notice";
-                type: RECT;
-                mouse_events: 1;
-                description 
-                { 
-                    state:   "default"  0.0;
-                    visible:0;
-                    color: 0 0 0 160;
-                }
-                description 
-                { 
-                    state:   "save"  0.0;
-                rel1 { to:"base";
-                  relative: 0.0 0.0;
-                }
-                rel2 {to:"base";
-                  relative: 1.0 1.0;
-                }
-                    visible:1;
-                    color: 0 0 0 160;
-                }
-            }
-            part 
-            {
-                name: "save-notice-text";
-                type: TEXT;
-                mouse_events: 0;
-                description 
-                { 
-                    state: "default" 0.0;
-                    visible:0;
-                }
-                description { state: "save" 0.0;
-                  color: 255 255 255 255;
-                  text{
-                          align: 0.15 0.4;
-                          size: 32;
-                          text: "Sending";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.7 0.51;
-                          to: "save-notice";
-                  }
-                  rel2 {
-                          relative: 1.0 0.7;
-                          to: "save-notice";
-                  }
-             }
-      }
         }
-        // //a new part in this is the programs, they are simple functions executed on certain events
-    programs
-    {
-        program{
+        
+        part {
+            name: "save-notice";
+            type: RECT;
+            mouse_events: 1;
+            description { 
+                state: "default"  0.0;
+                visible: 0;
+                color: 0 0 0 160;
+            }
+            description { 
+                state: "save" 0.0;
+                rel1 { 
+                    to: "base";
+                    relative: 0.0 0.0;
+                }
+                rel2 {
+                    to: "base";
+                    relative: 1.0 1.0;
+                }
+                visible: 1;
+                color: 0 0 0 160;
+            }
+        }
+        part {
+            name: "save-notice-text";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                visible: 0;
+            }
+            description { 
+                state: "save" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.15 0.4;
+                    size: 32;
+                    text: "Sending";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.7 0.51;
+                    to: "save-notice";
+                }
+                rel2 {
+                    relative: 1.0 0.7;
+                    to: "save-notice";
+                }
+            }
+        }
+    }
+
+    programs {
+        program {
             name: "back_clicked";
             signal: "mouse,clicked,1";
             source: "back-button";
             action: SIGNAL_EMIT "back" "main_command";
         }
-        program{
-            name: " save_clicked";
+        program {
+            name: "save_clicked";
             signal: "mouse,clicked,1";
             source: "Save-button";
             action: SIGNAL_EMIT "save" "main_command";
         }
-        program{
+        program {
             name: "set_text";
             signal: "*";
             source: "set_text";
-            script{
+            script {
                 set_text(PART:"entry-description",sig[0]);
             }
         }
-      program 
-        { 
-          name: "show_save_notice";
-          signal: "save-notice";
-          source: "*";
-          action: STATE_SET "save" 0.0; 
-          target: "save-notice";
-          target: "save-notice-text"; 
+        program { 
+            name: "show_save_notice";
+            signal: "save-notice";
+            source: "*";
+            action: STATE_SET "save" 0.0; 
+            target: "save-notice";
+            target: "save-notice-text"; 
         }
     }
 }
     
 group { 
-   name: "StringSetting";
-   min: 480 590;
-   parts {
-      part{
-         name: "base";
-         type: RECT;
-         description{ state: "default" 0.0;
-            color:0 0 0 255;
-            rel1 
-            {
-                // // rel1 defines the top left of the element
-                // // the first is the x-value and the second the y-value
-                relative: 0.0 0.0;
+    name: "StringSetting";
+    min: 480 590;
+    parts {
+        part {
+            name: "base";
+            type: RECT;
+            description { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
-            rel2 
-            {
-                // // rel2 defines the bottom right of the element
-                // // the first is the x-value and the second the y-value
-                relative: 1.0 1.0;
-            }
-         }
-      }
-      part {
+        }
+        
+        part {
             name: "Save-button";
             type: IMAGE;
             mouse_events: 1;
             description {
-                  state: "default" 0.0;
-                  min: 76 33;
-                  max: 76 33;
-                  rel1 
-                  {
+                state: "default" 0.0;
+                min: 76 33;
+                max: 76 33;
+                rel1 {
                     relative: 0.8079 0.03;
-    //                  offset: 9 20;
+                    // offset: 9 20;
                     to: "base";
-                  }
-                  rel2 
-                  {
-                      relative: 0.96625 0.0828;
-    //                   offset: 123 53;
-                      to: "base";
-                  }
-                  image {
-                      normal: "Save_button.png";
-                  }
-                  visible: 1;
-              }
+                }
+                rel2 {
+                    relative: 0.96625 0.0828;
+                    // offset: 123 53;
+                    to: "base";
+                }
+                image { normal: "Save_button.png"; }
+                visible: 1;
             }
-            part {
-                name: "back-button";
-                type: IMAGE;
-                mouse_events: 1;
-                description {
-                      state: "default" 0.0;
-                      min: 114 33;
-                      max: 114 33;
-                      rel1 
-                      {
-                        relative: 0.02 0.03;
-        //                  offset: 9 20;
-                        to: "base";
-                      }
-                      rel2 
-                      {
-                          relative: 0.26625 0.0828;
-        //                   offset: 123 53;
-                          to: "base";
-                      }
-                      image {
-                          normal: "back.png";
-                      }
-                      visible: 1;
-                  }
+        }
+            
+        part {
+            name: "back-button";
+            type: IMAGE;
+            mouse_events: 1;
+            description {
+                state: "default" 0.0;
+                min: 114 33;
+                max: 114 33;
+                rel1 {
+                    relative: 0.02 0.03;
+                    // offset: 9 20;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.26625 0.0828;
+                    // offset: 123 53;
+                    to: "base";
+                }
+                image { normal: "back.png"; }
+                visible: 1;
             }
-      part{
-         name:"entry";
-         type:SWALLOW;
-         description { 
-            state: "default" 0.0;
-            rel1 { to:"base";
-               relative: 0.0 0.11;
+        }
+      
+        part {
+            name: "entry";
+            type: SWALLOW;
+            description { 
+                state: "default" 0.0;
+                rel1 { 
+                    to:"base";
+                    relative: 0.0 0.11;
+                }
+                rel2 {
+                    to:"base";
+                    relative: 1.0 1.0;
+                }
             }
-            rel2 {to:"base";
-               relative: 1.0 1.0;
-            }
-         }
-      }
-//       part 
-//             {
-//                 name: "save-notice";
-//                 type: RECT;
-//                 mouse_events: 1;
-//                 description 
-//                 { 
-//                     state:   "default"  0.0;
-//                     visible:0;
-//                     color: 0 0 0 160;
-//                 }
-//                 description 
-//                 { 
-//                     state:   "save"  0.0;
-//                 rel1 { to:"base";
-//                   relative: 0.0 0.0;
-//                 }
-//                 rel2 {to:"base";
-//                   relative: 1.0 1.0;
-//                 }
-//                     visible:1;
-//                     color: 0 0 0 160;
-//                 }
-//             }
-//             part 
-//             {
-//                 name: "save-notice-text";
-//                 type: TEXT;
-//                 mouse_events: 0;
-//                 description 
-//                 { 
-//                     state: "default" 0.0;
-//                     visible:0;
-//                 }
-//                 description { state: "save" 0.0;
-//                   color: 255 255 255 255;
-//                   text{
-//                           align: 0.15 0.4;
-//                           size: 32;
-//                           text: "Sending";
-//                           font: "Sans";
-//                   }
-//                   rel1 {
-//                           relative: 0.7 0.51;
-//                           to: "save-notice";
-//                   }
-//                   rel2 {
-//                           relative: 1.0 0.7;
-//                           to: "save-notice";
-//                   }
-//              }
-//       }
-//       part{
-//          name: "layover";
-//          type: RECT;
-//          mouse_events: 0;
-//          description{ state: "default" 0.0;
-//             visible:0;
-//             color:0 255 0 100;
-//             rel1{
-//                relative: 0.0 0.0;
-//                to: "base";
-//             }
-//             rel2 {
-//                relative: 1.0 1.0;
-//                to: "base";
-//             }
-//          }
-//       }
-   }
-   programs {  
-      program { 
-         name: "back_clicked";
-         signal: "mouse,up,1";
-         source: "back-button";
-         script {
-            emit("back", "main_command");
-         }
-      }
-      program { 
-         name: "save_clicked";
-         signal: "mouse,up,1";
-         source: "Save-button";
-         script {
-            emit("save", "main_command");
-         }
-      }
-
-   }
+        }
+    }
+    
+    programs {  
+        program { 
+            name: "back_clicked";
+            signal: "mouse,up,1";
+            source: "back-button";
+            script { emit("back", "main_command"); }
+        }
+        program { 
+            name: "save_clicked";
+            signal: "mouse,up,1";
+            source: "Save-button";
+            script { emit("save", "main_command"); }
+        }
+    }
 }

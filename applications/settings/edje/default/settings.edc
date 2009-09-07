@@ -1,4 +1,4 @@
-// // the base element in all edc files
+// the base element in all edc files
 collections {
     fonts {
         font: "Inspiration-Bold.ttf"   "Sans";
@@ -18,5 +18,4 @@ collections {
     #include "togglesetting.edc"
     #include "valuesetting.edc"
 
-// // collections closing    
 } 

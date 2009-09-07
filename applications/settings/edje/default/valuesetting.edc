@@ -1,176 +1,161 @@
-group{
+group {
     name: "ValueSetting";
     min: 400 75;
     max: 400 75;
-    parts{
-        part{
+    parts {
+        part {
             name: "base";
-            type:RECT;
-            description{
-                state:   "default"  0.0;
-                color: 0 0 0 255;
-                rel1{
-                    relative: 0.0 0.0;
-                }
-                rel2{
-                    relative: 1.0 1.0;
-                }
-            }
-            description{
-                state: "selected" 0.0;
-                inherit: "default" 0.0;
-                color: 255 255 255 255;
-            }
-        }
-        part{
-            name: "decrease";
             type: RECT;
-            description{
+            description {
                 state: "default"  0.0;
                 color: 0 0 0 255;
-                rel1{
-                    relative: 0.0 0.0;
-                }
-                rel2{
-                    relative: 0.2 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 255 255 255 255;
             }
         }
-        part{
+        
+        part {
+            name: "decrease";
+            type: RECT;
+            description {
+                state: "default"  0.0;
+                color: 0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 0.2 1.0; }
+            }
+            description {
+                state: "selected" 0.0;
+                inherit: "default" 0.0;
+                color: 255 255 255 255;
+            }
+        }
+        
+        part {
             name: "decrease-icon";
             type: TEXT;
             mouse_events: 0;
-            description{
+            description {
                 state: "default"  0.0;
                 color: 255 255 255 255;
-                text{
-                        align: 0.5 0.5;
-                        size: 40;
-                        text: "-";
-                        font: "Sans";
+                text {
+                    align: 0.5 0.5;
+                    size: 40;
+                    text: "-";
+                    font: "Sans";
                 }
-                rel1{
+                rel1 {
                     relative: 0.0 0.0;
                     to: "decrease";
                 }
-                rel2{
+                rel2 {
                     relative: 1.0 1.0;
                     to: "decrease";
                 }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 0 0 0 255;
             }
         }
-        part{
+        
+        part {
             name: "increase";
             type: RECT;
-            description{
+            description {
                 state: "default"  0.0;
                 color: 0 0 0 255;
-                rel1{
-                    relative: 0.8 0.0;
-                }
-                rel2{
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.8 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 255 255 255 255;
             }
         }
-        part{
+        
+        part {
             name: "increase-icon";
             type: TEXT;
             mouse_events: 0;
-            description{
+            description {
                 state: "default"  0.0;
                 color: 255 255 255 255;
-                text{
-                        align: 0.5 0.5;
-                        size: 40;
-                        text: "+";
-                        font: "Sans";
+                text {
+                    align: 0.5 0.5;
+                    size: 40;
+                    text: "+";
+                    font: "Sans";
                 }
-                rel1{
+                rel1 {
                     relative: 0.0 0.0;
                     to: "increase";
                 }
-                rel2{
+                rel2 {
                     relative: 1.0 1.0;
                     to: "increase";
                 }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 0 0 0 255;
             }
         }
-        part{
+        part {
             name: "title";
-            type:TEXT;
-            mouse_events:0;
-            description{
+            type: TEXT;
+            mouse_events: 0;
+            description {
                 state: "default"  0.0;
                 color: 255 255 255 255;
-                text{
+                text {
                     align: 0.1 0.0;
                     font: "Sans";
                     size: 40;
                     text: "Hour:";
                 }
-                rel1{
-                    relative: 0.21 0.0;
-                }
-                rel2{
-                    relative: 0.79 1.0;
-                }
+                rel1 { relative: 0.21 0.0; }
+                rel2 { relative: 0.79 1.0; }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 0 0 0 255;
             }
         }
-        part{
+        part {
             name: "value";
-            type:TEXT;
-            mouse_events:0;
-            description{
+            type: TEXT;
+            mouse_events: 0;
+            description {
                 state: "default"  0.0;
                 color: 255 255 255 255;
-                text{
+                text {
                     align: 0.7 0.0;
                     font: "Sans";
                     size: 40;
                     text: "12";
                 }
-                rel1{
-                    relative: 0.21 0.0;
-                }
-                rel2{
-                    relative: 0.79 1.0;
-                }
+                rel1 { relative: 0.21 0.0; }
+                rel2 { relative: 0.79 1.0; }
             }
-            description{
+            description {
                 state: "selected" 0.0;
                 inherit: "default" 0.0;
                 color: 0 0 0 255;
             }
         }
     }
-    programs{/*
-        program{
+    
+    programs { 
+        program {
             name: "select";
             signal: "mouse,up,1";
             source: "base";
@@ -180,11 +165,11 @@ group{
             target: "subtitle";
             after: "send_toggle";
         }
-        program{
+        program {
             name: "send_toggle";
             action: SIGNAL_EMIT "callback" "xxx";
-        }*/
-        program{
+        }
+        program {
             name: "decrease_down";
             signal: "mouse,down,1";
             source: "decrease";
@@ -192,7 +177,7 @@ group{
             target: "decrease";
             target: "decrease-icon";
         }
-        program{
+        program {
             name: "decrease_up";
             signal: "mouse,up,1";
             source: "decrease";
@@ -201,11 +186,11 @@ group{
             target: "decrease-icon";
             after: "decrease_send";
         }
-        program{
+        program {
             name: "decrease_send";
             action: SIGNAL_EMIT "pressed" "decrease";
         }
-        program{
+        program {
             name: "increase_down";
             signal: "mouse,down,1";
             source: "increase";
@@ -213,7 +198,7 @@ group{
             target: "increase";
             target: "increase-icon";
         }
-        program{
+        program {
             name: "increase_up";
             signal: "mouse,up,1";
             source: "increase";
@@ -222,9 +207,10 @@ group{
             target: "increase-icon";
             after: "increase_send";
         }
-        program{
+        program {
             name: "increase_send";
             action: SIGNAL_EMIT "pressed" "increase";
         }
     }
 }
+
