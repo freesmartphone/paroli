@@ -1,75 +1,65 @@
 group { 
-   name: "CreateText";
-   min: 480 590;
-   parts {
-      part{
-         name: "base";
-         type: RECT;
-         description{ state: "default" 0.0;
-            color:0 0 0 255;
-            rel1{
-               relative: 0.0 0.0;
+    name: "CreateText";
+    min: 480 590;
+    parts {
+        part {
+            name: "base";
+            type: RECT;
+            description { 
+                state: "default" 0.0;
+                color:0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
-            rel2 {
-               relative: 1.0 1.0;
-            }
-         }
-      }
-      part
-        {
-            name:"send-button";
-            type:RECT;
-            description 
-            { 
+        }
+        
+        part {
+            name: "send-button";
+            type: RECT;
+            description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
+                rel1 {
                     relative: 0.8 0.0;
                     offset: 0 20;
                     to: "base";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 0.0;
                     offset: 0 53;
                     to: "base";
                 }
             }
         }
-        part
-        {
-            name:"send-button-text";
-            type:TEXT;
-            mouse_events:0;
-            description 
-            { 
+        
+        part {
+            name: "send-button-text";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
                 state: "default" 0.0;
                 color: 255 255 255 255;
-                text 
-                {
+                text {
                     align: 0.0 0.0;
                     size: 24;
                     text: "Send:";
                     font: "Sans";
                 }
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
                     to: "send-button";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to: "send-button";
                 }
             }
-            description
-            {
+            description {
                 state: "edit-mode" 0.0;
                 visible:0;
             }
         }
+        
         part {
             name: "back-button";
             type: IMAGE;
@@ -87,165 +77,160 @@ group {
                     offset: 160 88;
                     to: "base";
                 }
-                image {
-                    normal: "back.png";
-                }
+                image { normal: "back.png"; }
                 visible: 1;
-            }
-            /*description {
+            }/*
+            description {
                 state: "pressed" 0.0;
                 inherit:"default" 0.0;
                 image.normal: "back_pressed.png";
             }*/
         }
-         part {
+        
+        part {
             name: "back-button-effecter";
             type: IMAGE;
             mouse_events: 0;
             description {
                 state: "default" 0.0;
-                visible:0;
+                visible: 0;
             }
             description {
                 state: "clicked" 0.0;
                 min: 159 69;
                 max: 159 69;
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
                     offset: 0 0;
                     to: "back-button";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to: "back-button";
                 }
                 visible: 1;
-                image {
-                    normal: "back_pressed.png";
-                }
+                image { normal: "back_pressed.png"; }
             }
         }
-      part
-        {
-            name:"counter-text";
-            type:TEXT;
-            mouse_events:0;
-            description
-            {
+        
+        part {
+            name: "counter-text";
+            type: TEXT;
+            mouse_events: 0;
+            description {
                 color: 255 255 255 255;
-                text 
-                {
+                text {
                     align: 0.1 0.15;
                     size: 16;
                     text: "0";
                     font: "Sans";
                 }
-                rel1 
-                {
+                rel1 {
                     relative: 0.9 0.13;
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 0.2;
                 }
             }
         }
-      part{
-         name:"entry";
-         type:SWALLOW;
-         description { 
-            state: "default" 0.0;
-            rel1 { to:"base";
-               relative: 0.0 0.21;
-            }
-            rel2 {to:"base";
-               relative: 1.0 1.0;
-            }
-         }
-      }
-            part 
-            {
-                name: "save-notice";
-                type: RECT;
-                mouse_events: 1;
-                description 
-                { 
-                    state:   "default"  0.0;
-                    visible:0;
-                    color: 0 0 0 160;
+        
+        part {
+            name: "entry";
+            type: SWALLOW;
+            description { 
+                state: "default" 0.0;
+                rel1 { 
+                    to:"base";
+                    relative: 0.0 0.21;
                 }
-                description 
-                { 
-                    state:   "save"  0.0;
-                rel1 { to:"base";
-                  relative: 0.0 0.0;
-                }
-                rel2 {to:"base";
-                  relative: 1.0 1.0;
-                }
-                    visible:1;
-                    color: 0 0 0 160;
+                rel2 {
+                    to:"base";
+                    relative: 1.0 1.0;
                 }
             }
-            part 
-            {
-                name: "save-notice-text";
-                type: TEXT;
-                mouse_events: 0;
-                description 
-                { 
-                    state: "default" 0.0;
-                    visible:0;
+        }
+        
+        part {
+            name: "save-notice";
+            type: RECT;
+            mouse_events: 1;
+            description { 
+                state: "default"  0.0;
+                visible:0;
+                color: 0 0 0 160;
+            }
+            description { 
+                state: "save"  0.0;
+                rel1 { 
+                    to:"base";
+                    relative: 0.0 0.0;
                 }
-                description { state: "save" 0.0;
-                  color: 255 255 255 255;
-                  text{
-                          align: 0.15 0.4;
-                          size: 32;
-                          text: "Sending";
-                          font: "Sans";
-                  }
-                  rel1 {
-                          relative: 0.7 0.51;
-                          to: "save-notice";
-                  }
-                  rel2 {
-                          relative: 1.0 0.7;
-                          to: "save-notice";
-                  }
-             }
-      }
-      part{
-         name: "layover";
-         type: RECT;
-         mouse_events: 0;
-         description{ state: "default" 0.0;
-            visible:0;
-            color:0 255 0 100;
-            rel1{
-               relative: 0.0 0.0;
-               to: "base";
+                rel2 {
+                    to:"base";
+                    relative: 1.0 1.0;
+                }
+                visible:1;
+                color: 0 0 0 160;
             }
-            rel2 {
-               relative: 1.0 1.0;
-               to: "base";
+        }
+        
+        part {
+            name: "save-notice-text";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                visible: 0;
             }
-         }
-      }
-   }
-   programs {  
-      program 
-        { 
+            description { 
+                state: "save" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.15 0.4;
+                    size: 32;
+                    text: "Sending";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.7 0.51;
+                    to: "save-notice";
+                }
+                rel2 {
+                    relative: 1.0 0.7;
+                    to: "save-notice";
+                }
+            }
+        }
+      
+        part {
+            name: "layover";
+            type: RECT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                visible: 0;
+                color: 0 255 0 100;
+                rel1 {
+                    relative: 0.0 0.0;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to: "base";
+                }
+            }
+        }
+    }
+    
+    programs {  
+        program { 
             name: "back-button-down";
             signal: "mouse,down,1";
             source: "back-button";
             action: STATE_SET "clicked" 0.0;
             target: "back-button-effecter";
         }
-        program 
-        { 
+        program { 
             name: "back-button-up";
             signal: "mouse,up,1";
             source: "back-button";
@@ -253,30 +238,28 @@ group {
             target: "back-button-effecter";
             after:"back-button-clicked";
         }
-        
-        program 
-        { 
+        program { 
             name: "back-button-clicked";
             signal: "mouse,clicked,1";
             source: "back-button";
             action: SIGNAL_EMIT "back" "main_command";
         }
-      program { 
-         name: "send_clicked";
-         signal: "mouse,up,1";
-         source: "send-button";
-         script {
-            emit("send_request", "main_command")
-         }
-      }
-      program 
-        { 
-          name: "show_save_notice";
-          signal: "save-notice";
-          source: "*";
-          action: STATE_SET "save" 0.0; 
-          target: "save-notice";
-          target: "save-notice-text"; 
+        program { 
+            name: "send_clicked";
+            signal: "mouse,up,1";
+            source: "send-button";
+            script {
+                emit("send_request", "main_command")
+            }
         }
-   }
+        program { 
+            name: "show_save_notice";
+            signal: "save-notice";
+            source: "*";
+            action: STATE_SET "save" 0.0; 
+            target: "save-notice";
+            target: "save-notice-text"; 
+        }
+    }
 }
+
