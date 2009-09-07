@@ -11,7 +11,6 @@ group {
         public calltimer_m = 0;
         public calltimer_h = 0;
         public del_button_pressed = 0;
-        
         public current = 0;  //Current float number
         public sum = 0;
         public sub = 0;
@@ -29,9 +28,7 @@ group {
         public calc_digit_add(val) {
             new buf[32];
             new text[32];
-
             get_text(PART:"num-field-text", text, 31);
-
             //need a new number (+.-,*,/ pressed)
             if (get_int(restart))
                 snprintf(buf, 31, "%i", val);
@@ -44,10 +41,8 @@ group {
             //Normal: append the number
             else
                 snprintf(buf, 31, "%s%i", text, val);
-
             set_text(PART:"num-field-text", buf);
             set_float(current, atof(buf));
-           
             if (get_int(restart))
                 set_int(restart, 0);
         }
@@ -63,10 +58,9 @@ group {
 
         public calc_result() {
             new buf[32];
-
             if (get_float(sum)) {
                 snprintf(buf, 31, "%f", get_float(sum) + get_float(current));
-              set_float(sum, 0.0);
+                set_float(sum, 0.0);
             }
             else if (get_float(sub)) {
                 snprintf(buf, 31, "%f", get_float(sub) - get_float(current));
@@ -83,7 +77,6 @@ group {
             else {
                 return;
             }
-
             //remove leading zeroes
             new i = 0;
             while (buf[i] != 0) i++;
@@ -93,7 +86,6 @@ group {
                 i--;
             }
             if (buf[i] == get_int(locale)) buf[i] = 0;
-
             //Set result
             set_text(PART:"num-field-text", buf);
             set_float(current, atof(buf));
@@ -149,12 +141,10 @@ group {
             }
         }
 
-        part
-        {
+        part {
             name: "num-field";
             type: RECT;
-            description 
-            { 
+            description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
                 rel1 {
@@ -168,14 +158,12 @@ group {
                     to: "base";
                 }
             }
-            description
-            {
-              state: "incoming" 0.0;
-              inherit:"default" 0.0;
+            description {
+                state: "incoming" 0.0;
+                inherit:"default" 0.0;
             }
         }        
-        part
-        {
+        part {
             name: "num-field-text";
             type: TEXT;
             mouse_events: 0;
@@ -272,9 +260,7 @@ group {
                     offset: 158 68;
                     to: "base";
                 }
-                image {
-                    normal: "back.png";
-                }
+                image { normal: "back.png"; }
                 visible: 1;
             }
             description {
@@ -292,7 +278,8 @@ group {
                 inherit:"default" 0.0;
                 image.normal: "back_pressed.png";
             }
-         }
+        }
+        
         _PART_SMALL_BTN_TEXT("button-sin", "sin", 0, 144);
         _PART_SMALL_BTN_TEXT("button-cos", "cos", 96, 144);
         _PART_SMALL_BTN_TEXT("button-log", "log", 192, 144);
@@ -323,7 +310,6 @@ group {
         _PART_BIG_BTN("button-dot", "·", 192, 480);
         _PART_BIG_BTN_TEXT("button-ans", "ANS", 288, 480);
         _PART_BIG_BTN("button-eq", "=", 384, 480);
-
     } //end of parts
     
     programs {
@@ -346,7 +332,7 @@ group {
             name: "del-button-changer";
             signal: "mouse,down,1";
             source: "del-button";
-            script{
+            script {
                 //start_timer("del_all");
                 //del_digit();
                 new state[30];
@@ -461,10 +447,7 @@ group {
         _PART_BTN_NUM_CLICKED_PROG("button-dot", -1);
         _PART_BTN_CLICKED_PROG("button-ans");
         _PART_BTN_FNC_CLICKED_PROG("button-eq", calc_result);
-
     } //end of programs
-    
-    
 } //end of group
 
 

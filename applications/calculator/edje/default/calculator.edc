@@ -10,15 +10,13 @@ images {
    image: "backspace_pressed.png" COMP;
 }
 
-styles
-{
-    style 
-    {
-      name: "textblock_style";
-      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+styles {
+    style {
+        name: "textblock_style";
+        base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
     }
 }
-collections
-{
+
+collections {
     #include "calculator_btn.edc"
 }
