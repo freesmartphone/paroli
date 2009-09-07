@@ -1,116 +1,85 @@
-group{
+group {
     name: "bg-tb-off";
     min: 480 590;
-    parts
-    {
-        part 
-        {
+    parts {
+        part {
             name: "base";
             type: RECT;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
-        part 
-        {
+        
+        part {
             name: "content-swallow";
             type: SWALLOW;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
     }
 }
 
-group{
+group {
     name: "bg-tb-on";
     min: 480 640;
     max: 480 640;
-    parts
-    {
-        part 
-        {
+    parts {
+        part {
             name: "base";
             type: RECT;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
-        part 
-        {
+        
+        part {
             name: "tb-swallow";
             type: SWALLOW;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default 0.0;
                 color: 0 0 0 255;
                 fixed: 1 1;
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.0;
-//                     offset: 0 -1;
+                    // offset: 0 -1;
                     to:"base";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 0.078;
-//                     offset: 480 49;
+                    // offset: 480 49;
                     to:"base";
                 }
             }
         }
-        part 
-        {
+        
+        part {
             name: "content-swallow";
             type: SWALLOW;
-//             type: RECT;
+            // type: RECT;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 255 255;
                 fixed: 1 1;
-                rel1 
-                {
+                rel1 {
                     relative: 0.0 0.07; // launcher TODO: clean topbar a lot
                     to:"base";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to:"base";
                 }
@@ -119,7 +88,7 @@ group{
     }
 }
 
-group{
+group {
     name: "tb";
     min: 480 50;
     max: 480 50;
@@ -129,108 +98,119 @@ group{
             new year, month, day, yearday, weekday, hour, minute;
             new Float:second;
             new Float:s;
-            
             date(year, month, day, yearday, weekday, hour, minute, second);
             s = 60.0 - second;
-                  while (s < 0.0) s = s + 5.0;
+            while (s < 0.0) s = s + 5.0;
             timer(60.0 - second, "clock_cb", 1);
-            if ((hour < 10) && (minute < 10)) 
-              {snprintf(buf, 10, "0%i:0%i", hour, minute);}
-            else if ((hour < 10) && (minute >= 10))
-              {snprintf(buf, 10, "0%i:%i", hour, minute);}
-            else if ((hour >= 10) && (minute < 10))
-              {snprintf(buf, 10, "%i:0%i", hour, minute);}
-            else if ((hour >= 10) && (minute >= 10)) 
-              {snprintf(buf, 10, "%i:%i", hour, minute);}
+            if ((hour < 10) && (minute < 10)) {
+                snprintf(buf, 10, "0%i:0%i", hour, minute);
+            } else if ((hour < 10) && (minute >= 10)) {
+                snprintf(buf, 10, "0%i:%i", hour, minute);
+            } else if ((hour >= 10) && (minute < 10)) {
+                snprintf(buf, 10, "%i:0%i", hour, minute);
+            } else if ((hour >= 10) && (minute >= 10)) {
+                snprintf(buf, 10, "%i:%i", hour, minute);
+            }
             set_text(PART:"clock", buf);
         }
-        
-      }
-    parts
-    {
-        part 
-        {
+    }
+    
+    parts {
+        part {
             name: "base";
             type: RECT;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.0 0.0;
-                }
-                rel2 
-                {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
-        part 
-        {
+        
+        part {
             name: "base-click-area";
             type: RECT;
             mouse_events: 1;
-            description 
-            { 
-                state:   "default"  0.0;
+            description { 
+                state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 
-                {
-                    relative: 0.25 0.0;
-                }
-                rel2 
-                {
-                    relative: 0.75 1.0;
-                }
+                rel1 { relative: 0.25 0.0; }
+                rel2 { relative: 0.75 1.0; }
             }
         }
-        part{
+        
+        part {
             name: "profile-speaker";
-            mouse_events:0;
+            mouse_events: 0;
             description {
                 state: "default" 0.0;
                 min: 28 49;
                 max: 28 49;
                 rel1 {
-//                     relative: 0.05 0.03;
+                    // relative: 0.05 0.03;
                     relative: 0.042 0.0;
-//                     offset: 1 0; 
+                    // offset: 1 0; 
                     to: "base";
                 }
                 rel2 {
-//                     relative: 0.09 0.06;
+                    // relative: 0.09 0.06;
                     relative: 0.112 1.0;
-//                     offset: 29 49; 
+                    // offset: 29 49; 
                     to: "base";
                 }
-                image {
-                    normal: "profile-speaker.png";
-                }
+                image { normal: "profile-speaker.png"; }
             }
         }
-        part
-        {
+        
+        part {
             name: "profile-text";
             type: TEXT;
-            mouse_events:0;
+            mouse_events: 0;
             description { 
                 state: "default" 0.0;
                 color: 255 255 255 255;
                 text {
-                        align: 0.3 0.6;
-                        size: 20;
-                        text: "silent";
-                        font: "Sans";
+                    align: 0.3 0.6;
+                    size: 20;
+                    text: "silent";
+                    font: "Sans";
                 }
                 rel1 {
-                        relative: 0.1 0.01;
-                        to: "base";
+                    relative: 0.1 0.01;
+                    to: "base";
                 }
                 rel2 {
-                        relative: 0.25 0.99;
-                        to: "base";
+                    relative: 0.25 0.99;
+                    to: "base";
+                }
+            }
+            description { 
+                state: "hidden" 0.0;
+                visible: 0;
+            }
+        }
+        
+        part {
+            name: "clock";
+            type: TEXT;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.5 0.0;
+                    size: 18;
+                    text: "20:08";
+                    font: "Sans";
+                }
+                rel1 {
+                    relative: 0.44 0.4;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.56 1.0;
+                    to: "base";
                 }
             }
             description { 
@@ -238,225 +218,196 @@ group{
                 visible:0;
             }
         }
-        part
-        {
-            name: "clock";
+        
+        part {
+            name: "title";
             type: TEXT;
             mouse_events:0;
             description { 
                 state: "default" 0.0;
                 color: 255 255 255 255;
                 text {
-                        align: 0.5 0.0;
-                        size: 18;
-                        text: "20:08";
-                        font: "Sans";
+                    align: 0.5 0.0;
+                    size: 18;
+                    text: "Enter PIN";
+                    font: "Sans";
                 }
                 rel1 {
-                        relative: 0.44 0.4;
-                        to: "base";
+                    relative: 0.0 0.6;
+                    to: "base";
                 }
                 rel2 {
-                        relative: 0.56 1.0;
-                        to: "base";
+                    relative: 1.0 1.0;
+                    to: "base";
                 }
+                visible:0;
             }
             description { 
-                state: "hidden" 0.0;
+                state: "pin" 0.0;
+                inherit: "default" 0.0;
+                visible:1;
+            }
+        }
+        
+        part {
+            name: "gprs";
+            type: IMAGE;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                min: 25 25;
+                max: 25 25;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 390 16; 
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 415 41; 
+                    to: "base";
+                }
+                image { normal: "gprs.png"; }
+                visible: 0;
+            }
+            description {
+                state: "on" 0.0;
+                inherit: "default" 0.0;
+                visible: 1;
+            }
+            description {
+                state: "off" 0.0;
+                inherit: "default" 0.0;
+            }
+        }
+        
+        part {
+            name: "gsm";
+            type: IMAGE;
+            mouse_events: 0;
+            description { 
+                state: "default" 0.0;
+                min: 23 16;
+                max: 23 16;
+                rel1 {
+                    relative: 0.0 0.0;
+                    offset: 418 25; 
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.0 0.0;
+                    offset: 441 41; 
+                    to: "base";
+                }
+                image { normal: "gsm_no_service.png"; }
+                visible: 1;
+            }
+            description { 
+                state: "gsm_strengh_1" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "gsm_1.png";
+            }
+            description { 
+                state: "gsm_strengh_2" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "gsm_2.png";
+            }
+            description { 
+                state: "gsm_strengh_3" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "gsm_3.png";
+            }
+            description { 
+                state: "gsm_strengh_4" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "gsm_4.png";
+            }
+            description { 
+                state: "gsm_no_service" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "gsm_no_service.png";
+            }
+            description { 
+                state: "pin" 0.0;
                 visible:0;
             }
         }
-           part{
-             name: "title";
-             type: TEXT;
-             mouse_events:0;
-             description { 
+        
+        part {
+            name: "battery";
+            type: IMAGE;
+            mouse_events:0;
+            description { 
                 state: "default" 0.0;
-                color: 255 255 255 255;
-                text {
-                        align: 0.5 0.0;
-                        size: 18;
-                        text: "Enter PIN";
-                        font: "Sans";
-                     }
+                min: 25 15;
+                max: 25 15;
                 rel1 {
-                        relative: 0.0 0.6;
-                        to: "base";
+                    relative: 0.0 0.0;
+                    offset: 448 26; 
+                    to: "base";
                 }
                 rel2 {
-                        relative: 1.0 1.0;
-                        to: "base";
+                    relative: 0.0 0.0;
+                    offset: 473 41; 
+                    to: "base";
                 }
+                image { normal: "battery_0.png"; }
+                visible: 1;
+            }
+            description { 
+                state: "battery_1" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "battery_1.png";
+            }
+            description { 
+                state: "battery_2" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "battery_2.png";
+            }
+            description { 
+                state: "battery_3" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "battery_3.png";
+            }
+            description { 
+                state: "charging" 0.0;
+                inherit: "default" 0.0;
+                image.normal: "battery_charging.png";
+            }
+            description { 
+                state: "pin" 0.0;
                 visible:0;
-             }
-             description { 
-                    state: "pin" 0.0;
-                    inherit: "default" 0.0;
-                    visible:1;
-                }
-           }
-          part{
-              name: "gprs";
-              type: IMAGE;
-              mouse_events:0;
-              description { 
-                  state: "default" 0.0;
-                  min: 25 25;
-                  max: 25 25;
-                  rel1 {
-                      relative: 0.0 0.0;
-                      offset: 390 16; 
-                      to: "base";
-                  }
-                  rel2 {
-                      relative: 0.0 0.0;
-                      offset: 415 41; 
-                      to: "base";
-                  }
-                  image {
-                      normal: "gprs.png";
-                  }
-                  visible: 0;
-              }
-              description{
-                  state:"on" 0.0;
-                  inherit:"default" 0.0;
-                  visible: 1;
-              }
-              description{
-                  state:"off" 0.0;
-                  inherit:"default" 0.0;
-              }
-          }
-          part{
-                name: "gsm";
-                type: IMAGE;
-                mouse_events:0;
-                description { state: "default" 0.0;
-                              min: 23 16;
-                              max: 23 16;
-                              rel1 {
-                                      relative: 0.0 0.0;
-                                      offset: 418 25; 
-                                      to: "base";
-                              }
-                              rel2 {
-                                      relative: 0.0 0.0;
-                                      offset: 441 41; 
-                                      to: "base";
-                              }
-                        image {
-                           normal: "gsm_no_service.png";
-                        }
-                        visible: 1;
-                      }
-                 description { state: "gsm_strengh_1" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "gsm_1.png";
-                 }
-                 description { state: "gsm_strengh_2" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "gsm_2.png";
-                 }
-                 description { state: "gsm_strengh_3" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "gsm_3.png";
-                 }
-                 description { state: "gsm_strengh_4" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "gsm_4.png";
-                 }
-                 description { state: "gsm_no_service" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "gsm_no_service.png";
-                 }
-                description { 
-                    state: "pin" 0.0;
-                    visible:0;
-                }
-              }
-              part{
-                name: "battery";
-                type: IMAGE;
-                mouse_events:0;
-                description { state: "default" 0.0;
-                              min: 25 15;
-                              max: 25 15;
-                              rel1 {
-                                      relative: 0.0 0.0;
-                                      offset: 448 26; 
-                                      to: "base";
-                              }
-                              rel2 {
-                                      relative: 0.0 0.0;
-                                      offset: 473 41; 
-                                      to: "base";
-                              }
-                        image {
-                           normal: "battery_0.png";
-                        }
-                        visible: 1;
-                      }
-                 description { state: "battery_1" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "battery_1.png";
-                 }
-                 description { state: "battery_2" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "battery_2.png";
-                 }
-                 description { state: "battery_3" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "battery_3.png";
-                 }
-                 description { state: "charging" 0.0;
-                     inherit: "default" 0.0;
-                     image.normal: "battery_charging.png";
-                 }
-                description { 
-                    state: "pin" 0.0;
-                    visible:0;
-                }
-              }
+            }
+        }
     }
-    programs
-    {
-        program 
-        { 
+    
+    programs {
+        program { 
             name: "init";
             signal: "load";
             source: "*";
-            script
-            {
-                clock_cb(1);
-            }
+            script { clock_cb(1); }
         }
-        program 
-        { 
+        program { 
             name: "top-bar-clicked";
             signal: "mouse,up,1";
             source: "base-click-area";
             action: SIGNAL_EMIT "top-bar" "del-button";
         }
-        program 
-        { 
+        program { 
             name: "profile-change";
             signal: "*";
             source: "profile-change";
-            script{
-                set_text(PART:"profile-text",sig[0]);
-            }
+            script { set_text(PART:"profile-text",sig[0]); }
         }
-        program 
-        { 
+        program { 
             name: "hide_clock";
             signal: "hide_clock";
             source: "*";
             action: STATE_SET "hidden" 0.0;
             target: "clock";
         }
-        program 
-        { 
+        program { 
             name: "show_pin_title";
             signal: "show_pin_title";
             source: "*";
@@ -465,71 +416,58 @@ group{
             target: "gsm";
             target: "battery";
         }
-        program
-              {
-                  name: "set_gsm";
-                  signal: "*";
-                  source: "gsm_change";
-                  script{
-                      new val;
-                      val = atoi(sig);
-                      if( val >= 80 ) {
-                         set_state(PART:"gsm", "gsm_strengh_4", 0.0);
-                      }
-                      else if( val >= 60 && val < 80) {
-                         set_state(PART:"gsm", "gsm_strengh_3", 0.0);
-                      }
-                      else if( val >= 40 && val < 60) {
-                         set_state(PART:"gsm", "gsm_strengh_2", 0.0);
-                      }
-                      else if( val > 20 && val < 40) {
-                         set_state(PART:"gsm", "gsm_strengh_1", 0.0);
-                      }
-                      else if( val > 0 && val < 20) {
-                         set_state(PART:"gsm", "gsm_strengh_0", 0.0);
-                      }
-                      else {
-                         set_state(PART:"gsm", "gsm_no_service", 0.0);
-                      }
-                  }
-              }
-              program
-              {
-                  name: "set_gprs";
-                  signal: "*";
-                  source: "gprs_status";
-                  script{
-                      set_state(PART:"gprs",sig[0], 0.0);
-                  }
-              }
-              program
-              {
-                  name: "set_battery_status_charging";
-                  signal: "*";
-                  source: "battery_status_charging";
-                  action: STATE_SET "charging" 0.0;
-                  target: "battery";
-              }
-              program
-              {
-                  name: "set_battery";
-                  signal: "*";
-                  source: "battery_change";
-                  script{
-                      new val;
-                      val = atoi(sig);
-                      if(val >= 66) {
-                         set_state(PART:"battery", "battery_3", 0.0);
-                      }
-                      else if(val >= 33 && val < 66) {
-                         set_state(PART:"battery", "battery_2", 0.0);
-                      }
-                      else if(val < 33){
-                         set_state(PART:"battery", "battery_1", 0.0);
-                      }
-                      emit(sig,"embryo");
-                  }
-              }
+        program {
+            name: "set_gsm";
+            signal: "*";
+            source: "gsm_change";
+            script {
+                new val;
+                val = atoi(sig);
+                if( val >= 80 ) {
+                    set_state(PART:"gsm", "gsm_strengh_4", 0.0);
+                } else if( val >= 60 && val < 80) {
+                    set_state(PART:"gsm", "gsm_strengh_3", 0.0);
+                } else if( val >= 40 && val < 60) {
+                    set_state(PART:"gsm", "gsm_strengh_2", 0.0);
+                } else if( val > 20 && val < 40) {
+                    set_state(PART:"gsm", "gsm_strengh_1", 0.0);
+                } else if( val > 0 && val < 20) {
+                    set_state(PART:"gsm", "gsm_strengh_0", 0.0);
+                } else {
+                    set_state(PART:"gsm", "gsm_no_service", 0.0);
+                }
+            }
+        }
+        program {
+            name: "set_gprs";
+            signal: "*";
+            source: "gprs_status";
+            script { set_state(PART:"gprs",sig[0], 0.0); }
+        }
+        program {
+            name: "set_battery_status_charging";
+            signal: "*";
+            source: "battery_status_charging";
+            action: STATE_SET "charging" 0.0;
+            target: "battery";
+        }
+        program {
+            name: "set_battery";
+            signal: "*";
+            source: "battery_change";
+            script {
+                new val;
+                val = atoi(sig);
+                if(val >= 66) {
+                    set_state(PART:"battery", "battery_3", 0.0);
+                } else if(val >= 33 && val < 66) {
+                    set_state(PART:"battery", "battery_2", 0.0);
+                } else if(val < 33) {
+                    set_state(PART:"battery", "battery_1", 0.0);
+                }
+                emit(sig,"embryo");
+            }
+        }
     }
-    
 }
+
