@@ -26,12 +26,8 @@ collections {
 				name: "dummy.textview";
 				type: TEXTBLOCK;
 				description {
-					rel1 {
-						relative: 0.04 0.06;
-						}
-					rel2 {
-						relative: 0.94 0.96;
-						}
+					rel1 { relative: 0.04 0.06; }
+					rel2 { relative: 0.94 0.96; }
 					text {
 						style: "style";
 						min: 0 1;
