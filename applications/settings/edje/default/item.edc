@@ -1,3 +1,4 @@
+
 group {
     name: "item";
     min: 400 60;
@@ -5,7 +6,7 @@ group {
     parts {
         part {
             name: "base";
-            type:RECT;
+            type: RECT;
             description {
                 state: "default" 0.0;
                 color: 0 0 0 255;
@@ -42,8 +43,8 @@ group {
         }
         part {
             name: "subtitle";
-            type:TEXT;
-            mouse_events:0;
+            type: TEXT;
+            mouse_events: 0;
             description {
                 state: "default"  0.0;
                 color: 255 255 255 255;

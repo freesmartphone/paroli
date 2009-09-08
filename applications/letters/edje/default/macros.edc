@@ -41,7 +41,7 @@
             rel1 {\
                 relative: 0.01 0.02;\
                 to: partname;\
-            }
+            }\
             rel2 {\
                 relative: 0.99 0.98;\
                 to: partname;\

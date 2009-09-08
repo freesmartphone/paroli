@@ -163,7 +163,7 @@ group {
             action: STATE_SET "selected" 0.0;
             target: "base";
             target: "title";
-            target: "subtitle";
+            // target: "subtitle"; // it seems, there is no "subtitle" part
             after: "send_toggle";
         }
         program {
