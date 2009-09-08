@@ -10,8 +10,9 @@ collections {
         image: "Save_button.png" COMP;
         image: "backspace.png" COMP;
     }
-  
+    #include "macros.edc"
     #include "stringsetting.edc"
+    #include "StringSetting.edc"
     #include "numbersetting.edc"
     #include "settings_main.edc"
     #include "item.edc"
