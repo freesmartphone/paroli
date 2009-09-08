@@ -186,46 +186,46 @@ class ElementaryListWindow(ElementaryLayoutWindow):
         self.bg.elm_obj.show()
 
 class ElementaryList(Object):
-      def __init__(self, model, parent, edje_file, group, label_list, comp_fct, letter_dict=False):
-          self.model = model
-          self.parent = parent
-          self.edje_file = edje_file
-          self.group = group
-          self.elm_window = parent.window
-          self.label_list = label_list
-          self._comp_fct = comp_fct
-          self.letter_dict = letter_dict
-          self.cb_list = []
-          self.cb_list.append(self.model.connect('appended', self._redraw_view))
-          self.cb_list.append(self.model.connect('inserted', self._redraw_view))
-          self.cb_list.append(self.model.connect('removed', self._redraw_view))
-          self.box = ElementaryBox(self.elm_window.elm_obj)
-          self.callbacks = []
-          self.sort()
-          self.items = []
-          self.letter_index = {}
-          self._redraw_view()
-          self.elm_window.elm_obj.on_del_add(self._remove_cb)
-
-      def _redraw_view(self, *args, **kargs):
-          #logger.info("list redrawing")
-          if self.elm_window.elm_obj.is_deleted():
-                self._remove_cb()
-          else:
-              self.sort()
-              if not self.box.elm_obj.is_deleted():
-                  self.box.elm_obj.delete()
-              self.box = ElementaryBox(self.elm_window.elm_obj)
-              self.items = []
-              self.letter_index = {}
-              #self.model.sort()
-              for item in self.model:
-                  if self.elm_window.elm_obj.is_deleted():
-                      logger.info('window deleted %s', self.model)
-                  ly = elementary.Layout(self.elm_window.elm_obj)
-                  ly.file_set(self.edje_file, self.group)
-                  edje_obj = ly.edje_get()
-                  for part, attribute in self.label_list:
+    def __init__(self, model, parent, edje_file, group, label_list, comp_fct, letter_dict=False):
+        self.model = model
+        self.parent = parent
+        self.edje_file = edje_file
+        self.group = group
+        self.elm_window = parent.window
+        self.label_list = label_list
+        self._comp_fct = comp_fct
+        self.letter_dict = letter_dict
+        self.cb_list = []
+        self.cb_list.append(self.model.connect('appended', self._redraw_view))
+        self.cb_list.append(self.model.connect('inserted', self._redraw_view))
+        self.cb_list.append(self.model.connect('removed', self._redraw_view))
+        self.box = ElementaryBox(self.elm_window.elm_obj)
+        self.callbacks = []
+        self.sort()
+        self.items = []
+        self.letter_index = {}
+        self._redraw_view()
+        self.elm_window.elm_obj.on_del_add(self._remove_cb)
+    
+    def _redraw_view(self, *args, **kargs):
+        #logger.info("list redrawing")
+        if self.elm_window.elm_obj.is_deleted():
+            self._remove_cb()
+        else:
+            self.sort()
+            if not self.box.elm_obj.is_deleted():
+                self.box.elm_obj.delete()
+            self.box = ElementaryBox(self.elm_window.elm_obj)
+            self.items = []
+            self.letter_index = {}
+            #self.model.sort()
+            for item in self.model:
+                if self.elm_window.elm_obj.is_deleted():
+                    logger.info('window deleted %s', self.model)
+                ly = elementary.Layout(self.elm_window.elm_obj)
+                ly.file_set(self.edje_file, self.group)
+                edje_obj = ly.edje_get()
+                for part, attribute in self.label_list:
                     if hasattr(item, attribute):
                         value = getattr(item, attribute)
                         if (isinstance(value, str) and not len(value)) or\
@@ -236,104 +236,102 @@ class ElementaryList(Object):
                                 letter = value[0].lower()
                                 if not self.letter_index.has_key(letter):
                                     self.letter_index[letter] = self.model.index(item)
-
                         if isinstance(value, Item):
                             value = unicode(value.get_text())
                         elif isinstance(value, Text):
                             value = value.value
-
                         txt = unicode(value).encode('utf-8')
                         edje_obj.part_text_set(part,txt)
                     else:
                         logger.info(" %s doesn't have attribute %s", item, attribute)
 
-                  ##check for optional display elements
-                  if edje_obj.data_get('attribute1') != None:
-                      attribute = edje_obj.data_get('attribute1')
-                      if edje_obj.data_get('attribute2') != None:
-                          item_cp = getattr(item,attribute)
-                          attribute = edje_obj.data_get('attribute2')
-                      else:
-                          item_cp = item
-                      if edje_obj.data_get('value') == 'None':
-                          value = None
-                      else:
-                          value = edje_obj.data_get('value')
-                      signal = edje_obj.data_get('signal')
-                      if attribute[-2] == "(":
-                          test = getattr(item_cp,attribute[:-2])()
-                      else:
-                          test = getattr(item_cp,attribute)
-                      if test == value:
-                          edje_obj.signal_emit(signal,'*')
+                    ##check for optional display elements
+                    if edje_obj.data_get('attribute1') != None:
+                        attribute = edje_obj.data_get('attribute1')
+                        if edje_obj.data_get('attribute2') != None:
+                            item_cp = getattr(item,attribute)
+                            attribute = edje_obj.data_get('attribute2')
+                        else:
+                            item_cp = item
+                        if edje_obj.data_get('value') == 'None':
+                            value = None
+                        else:
+                            value = edje_obj.data_get('value')
+                        signal = edje_obj.data_get('signal')
+                        if attribute[-2] == "(":
+                            test = getattr(item_cp,attribute[:-2])()
+                        else:
+                            test = getattr(item_cp,attribute)
+                        if test == value:
+                            edje_obj.signal_emit(signal,'*')
 
-                  ly.size_hint_min_set(470,96)
-                  self.box.elm_obj.pack_end(ly)
-                  ly.show()
-                  self.items.append([item,edje_obj,ly])
-                  edje_obj.signal_callback_add("*", "list_command", self.signal_send_others, [item,edje_obj,ly])
+                ly.size_hint_min_set(470,96)
+                self.box.elm_obj.pack_end(ly)
+                ly.show()
+                self.items.append([item,edje_obj,ly])
+                edje_obj.signal_callback_add("*", "list_command", self.signal_send_others, [item,edje_obj,ly])
 
-              self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
-              self.box.elm_obj.show()
-              self.parent.scroller.elm_obj.show()
-              self._renew_callbacks()
+            self.parent.scroller.elm_obj.content_set(self.box.elm_obj)
+            self.box.elm_obj.show()
+            self.parent.scroller.elm_obj.show()
+            self._renew_callbacks()
 
-      def _renew_callbacks(self, *args, **kargs):
-          logger.info("renewing callbacks")
-          for cb in self.callbacks:
-                for i in self.items:
-                    i[1].signal_callback_add(cb[0], cb[1] , cb[2], i)
+    def _renew_callbacks(self, *args, **kargs):
+        logger.info("renewing callbacks")
+        for cb in self.callbacks:
+            for i in self.items:
+                i[1].signal_callback_add(cb[0], cb[1] , cb[2], i)
 
-      def sort(self,*args,**kargs):
-          logger.debug("list sorting")
-          self.model.sort(self._comp_fct)
+    def sort(self,*args,**kargs):
+        logger.debug("list sorting")
+        self.model.sort(self._comp_fct)
 
-      def _remove_cb(self, *args, **kargs):
-          logger.debug('window removed, removing cb')
-          for i in self.cb_list :
-              try:
-                  self.model.disconnect(i)
-              except Exception, e:
-                  logger.exception("ooops wrong oid")
+    def _remove_cb(self, *args, **kargs):
+        logger.debug('window removed, removing cb')
+        for i in self.cb_list :
+            try:
+                self.model.disconnect(i)
+            except Exception, e:
+                logger.exception("ooops wrong oid")
 
-      def _modified(self, *args, **kargs):
-          logger.info('scrolled')
-          logger.info(args)
-          logger.info(kargs)
+    def _modified(self, *args, **kargs):
+        logger.info('scrolled')
+        logger.info(args)
+        logger.info(kargs)
 
-      def add_callback(self, signal, source, func):
-          self.callbacks.append([signal, source, func])
-          for i in self.items:
-              i[1].signal_callback_add(signal, source , func, i)
+    def add_callback(self, signal, source, func):
+        self.callbacks.append([signal, source, func])
+        for i in self.items:
+            i[1].signal_callback_add(signal, source , func, i)
 
-      def signal_send_others(self, emission, signal, source, item):
-          for i in self.items:
-              if i != item:
-                  i[1].signal_emit(signal, "list")
+    def signal_send_others(self, emission, signal, source, item):
+        for i in self.items:
+            if i != item:
+                i[1].signal_emit(signal, "list")
 
-      def signal_send(self, signal, source):
-          for i in self.items:
-              i[1].signal_emit(signal, source)
+    def signal_send(self, signal, source):
+        for i in self.items:
+            i[1].signal_emit(signal, source)
 
-      def _remove_item(self, list, removed_item):
-          logger.info('remove called')
-          for item in self.items:
-              if item[0] is removed_item:
-                  index = item
-                  item[2].remove_all()
+    def _remove_item(self, list, removed_item):
+        logger.info('remove called')
+        for item in self.items:
+            if item[0] is removed_item:
+                index = item
+                item[2].remove_all()
+        self.items.remove(index)
+        self._redraw_box()
 
-          self.items.remove(index)
-          self._redraw_box()
-
-      def jump_to_index(self, *args, **kargs):
-          if self.letter_dict:
-              key = args[2]
-              if self.letter_index.has_key(key):
-                  position = self.letter_index[key]
-                  point_y = 100 * int(position)
-                  if hasattr(self.parent.scroller.elm_obj, 'region_show'):
-                      self.parent.scroller.elm_obj.region_show(0, point_y, 480, 60)
-              edje = self.parent.main_layout.elm_obj.edje_get()
-              edje.signal_emit( "close-dict", "dict-button")
-          else:
+    def jump_to_index(self, *args, **kargs):
+        if self.letter_dict:
+            key = args[2]
+            if self.letter_index.has_key(key):
+                position = self.letter_index[key]
+                point_y = 100 * int(position)
+                if hasattr(self.parent.scroller.elm_obj, 'region_show'):
+                    self.parent.scroller.elm_obj.region_show(0, point_y, 480, 60)
+            edje = self.parent.main_layout.elm_obj.edje_get()
+            edje.signal_emit( "close-dict", "dict-button")
+        else:
             logger.info("this list does not carry a dict, this call does not work here")
+
