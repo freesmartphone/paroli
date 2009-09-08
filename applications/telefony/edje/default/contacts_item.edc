@@ -11,14 +11,11 @@ group {
             description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 {
-                    relative: 0.01 0.01;
-                }
-                rel2 {
-                    relative: 0.99 0.99;
-                }
+                rel1 { relative: 0.01 0.01; }
+                rel2 { relative: 0.99 0.99; }
             }
         }
+        
         part {
             name: "border-outer";
             type: RECT;
@@ -42,6 +39,7 @@ group {
                 inherit: "default" 0.0;
             }
         }
+        
         part {
             name: "label";
             mouse_events: 0;
@@ -65,7 +63,8 @@ group {
                 }
             }
         }
-        part{
+        
+        part {
             name: "label-action";
             mouse_events: 0;
             type: SWALLOW;
@@ -82,6 +81,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "label-number";
             type: TEXT;
@@ -105,8 +105,8 @@ group {
                     to: "base";
                 }
             }
-          
         }
+        
         part {
             name: "clickable";
             type: RECT;
@@ -136,15 +136,16 @@ group {
             }
         }
     }
+    
     programs {
-//        program{
-//            name: "clickable-pressed-1";
-//            signal: "mouse,clicked,1";
-//            source: "clickable";
-//            action: STATE_SET "changed" 0.0;
-//            target: "clickable";
-//            after: "clickable-pressed-2";
-//        } 
+        // program{
+        //     name: "clickable-pressed-1";
+        //     signal: "mouse,clicked,1";
+        //     source: "clickable";
+        //     action: STATE_SET "changed" 0.0;
+        //     target: "clickable";
+        //     after: "clickable-pressed-2";
+        // } 
         program {
             name: "clickable-pressed";
             signal: "mouse,up,1";
@@ -164,13 +165,10 @@ group {
             type: SWALLOW;
             description { 
                 state: "default" 0.0;
-                rel1 {
-                    relative: 0.00 0.00;
-                }
-                rel2 {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.00 0.00; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
     }
 }
+

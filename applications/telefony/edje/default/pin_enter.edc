@@ -1,6 +1,6 @@
 #include "macros_rev2.edc"
 
-group{
+group {
     name: "pin_enter";
     min:  480 590;
     max:  480 590;
@@ -21,7 +21,6 @@ group{
                     new num[39];
                     strnprep(num, old, len-1);
                     set_text(PART:"num_field-text",num);
-                        
                     new num2[39];
                     strnprep(num2, old2, len-1);
                     set_text(PART:"pin-text",num2);
@@ -52,6 +51,7 @@ group{
                 color: 0 0 0 255;
             }
         }
+        
         part {
             name: "num_field";
             type: RECT;
@@ -60,16 +60,17 @@ group{
                 color: 0 0 0 255;
                 rel1 {
                     relative:0.1062 0.105;
-//                    offset: 51 28;
+                    // offset: 51 28;
                     to: "base";
                 }
                 rel2 {
                     relative:0.8959 0.17375;
-//                    offset: 430 72;
+                    // offset: 430 72;
                     to: "base";
                 }
             }
-        }        
+        }
+        
         part {
             name: "num_field-text";
             type: TEXT;
@@ -93,6 +94,7 @@ group{
                 }
             }
         }
+        
         part {
             name: "call-button";
             type: RECT;
@@ -102,20 +104,19 @@ group{
                 color: 0 0 0 255;
                 rel1 {
                     relative: 0.01 0.206;
-//                    offset: 1 120;
-//                    to: "base";
+                    // offset: 1 120;
+                    // to: "base";
                 }
                 rel2 {
                     relative: 0.6645 0.354;
-//                    offset: 319 189;
-//                    to: "base";
+                    // offset: 319 189;
+                    // to: "base";
                 }
-//                image {
-//                    normal: "enter.png";
-//                }
+                // image { normal: "enter.png"; }
                 visible: 1;
             }
         }
+        
         part {
             name: "call-button-text";
             type: TEXT;
@@ -148,53 +149,48 @@ group{
             name: "call-button-effecter";
             type: RECT;
             mouse_events: 0;
-            description 
-            { 
+            description { 
                 state: "default" 0.0;
                 color: 255 255 255 255;
-                visible:0;
-                rel1 
-                {
+                visible: 0;
+                rel1 {
                     relative: 0.0 0.0;
                     to: "call-button";
                 }
-                rel2 
-                {
+                rel2 {
                     relative: 1.0 1.0;
                     to: "call-button";
                 }
             }
-            description 
-            { 
+            description { 
                 state: "clicked" 0.0;
                 inherit: "default" 0.0;
                 visible: 1;
             }
         }
-
-         part {
+        
+        part {
             name: "del-button";
             type: IMAGE;
             mouse_events: 1;
             description {
-               state: "default" 0.0;
-               rel1 {
-                  relative: 0.6667 0.206;
-//                   offset: 320 120;
-                  to: "base";
-               }
-               rel2 {
-                  relative: 0.9999 0.354;
-//                   offset: 479 189;
-                  to: "base";
-               }
-               image {
-                  normal: "backspace.png";
-               }
-               visible: 1;
+                state: "default" 0.0;
+                rel1 {
+                    relative: 0.6667 0.206;
+                    // offset: 320 120;
+                    to: "base";
+                }
+                rel2 {
+                    relative: 0.9999 0.354;
+                    // offset: 479 189;
+                    to: "base";
+                }
+                image { normal: "backspace.png"; }
+                visible: 1;
             }
         }
-        part{
+        
+        part {
             name: "del-button-effecter";
             type: RECT;
             mouse_events: 0;
@@ -203,12 +199,12 @@ group{
                 color: 255 255 255 255;
                 rel1 {
                     relative: 0.0 0.0;
-//                    offset: 320 110;
+                    // offset: 320 110;
                     to: "del-button";
                 }
                 rel2 {
                     relative: 1.0 1.0;
-//                    offset: 479 179;
+                    // offset: 479 179;
                     to: "del-button";
                 }
                 visible: 0;
@@ -260,7 +256,6 @@ group{
     }
     
     programs {
-        
         program { 
             name: "call-2-clicked";
             signal: "mouse,down,1";
@@ -273,8 +268,8 @@ group{
             signal: "mouse,up,1";
             source: "call-button";
             script {
-               set_state(PART:"call-button-effecter", "default", 0.0);
-               send_pin();
+                set_state(PART:"call-button-effecter", "default", 0.0);
+                send_pin();
             }
         }
         program { 
@@ -282,7 +277,7 @@ group{
             signal: "mouse,down,1";
             source: "del-button";
             script {
-//                start_timer("del_all");
+                // start_timer("del_all");
                 del_digit();
                 set_state(PART:"del-button-effecter", "visible", 0.0);
             }
@@ -291,28 +286,29 @@ group{
             name: "del-button-clicked";
             signal: "mouse,up,1";
             source: "del-button";
-            script{
-//                 stop_timer();
+            script {
+                // stop_timer();
                 set_state(PART:"del-button-effecter", "default", 0.0);
             }
         }
 
-//         programs ROW TWO
+        // programs ROW TWO
         _PART_PIN_ENTER_KEYPAD_PROG("button-1-2", "1");
         _PART_PIN_ENTER_KEYPAD_PROG("button-2-2", "2");
         _PART_PIN_ENTER_KEYPAD_PROG("button-3-2", "3");
-//         programs ROW THREE
+        // programs ROW THREE
         _PART_PIN_ENTER_KEYPAD_PROG("button-4-2", "4");
         _PART_PIN_ENTER_KEYPAD_PROG("button-5-2", "5");
         _PART_PIN_ENTER_KEYPAD_PROG("button-6-2", "6");
-//         programs ROW FOUR
+        // programs ROW FOUR
         _PART_PIN_ENTER_KEYPAD_PROG("button-7-2", "7");
         _PART_PIN_ENTER_KEYPAD_PROG("button-8-2", "8");
         _PART_PIN_ENTER_KEYPAD_PROG("button-9-2", "9");
-//         programs ROW FIVE
+        // programs ROW FIVE
         _PART_PIN_ENTER_KEYPAD_PROG("button-star-2", "*");
         _PART_PIN_ENTER_KEYPAD_PROG("button-0-2", "0");
         _PART_PIN_ENTER_KEYPAD_PROG("button-hash-2", "#");
     }
 }
+
 

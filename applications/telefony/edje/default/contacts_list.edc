@@ -14,11 +14,12 @@ group {
                     relative: 0.0 0.0;
                     offset: 0 50;
                 }
-                rel2 {
+                rel2 { 
                     relative: 0.99 1.0;
                 }
             }
         }
+        
         part {
             name: "add-button-text";
             type: TEXT;
@@ -53,6 +54,7 @@ group {
                 inherit: "default" 0.0;
             }
         }
+        
         part {
             name: "add-button";
             type: RECT;
@@ -78,41 +80,32 @@ group {
                 inherit:"default" 0.0;
             }
         }
+        
         part {
             name: "up_pager";
             type: IMAGE;
             description { 
                 state: "default" 0.0;
                 visible: 1;
-                rel1 {
-                    relative: 0.5 0.06;
-                }
-                rel2 {
-                    relative: 0.75 0.15;
-                }
-                image {
-                    normal: "minus.png";
-                }
+                rel1 { relative: 0.5 0.06; }
+                rel2 { relative: 0.75 0.15; }
+                image { normal: "minus.png"; }
             }
         }
+        
         part {
             name: "down_pager";
             type: IMAGE;
-            description{ 
+            description {
                 state: "default" 0.0;
                 visible: 1;
-                rel1{
-                    relative: 0.76 0.06;
-                }
-                rel2 {
-                    relative: 1.0 0.15;
-                }
-                image {
-                    normal: "plus.png";
-                }
+                rel1 { relative: 0.76 0.06; }
+                rel2 { relative: 1.0 0.15; }
+                image { normal: "plus.png"; }
             }
         }
-        part{
+        
+        part {
             name: "contacts-items";
             type: SWALLOW;
             description { 
@@ -129,28 +122,28 @@ group {
             }
         }
     }
+    
     programs {
-//        program { 
-//            name: "edit_button_click"; 
-//            signal: "mouse,clicked,1"; 
-//            source: "edit-button"; 
-//            action: SIGNAL_EMIT "edit" ""; 
-//        } 
-//        program { 
-//            name: "edit_button_to_edit"; 
-//            signal: "edit_button_to_edit"; 
-// //           source: "edit-button*"; 
-//            action: STATE_SET "edit-mode" 0.0; 
-//            target: "edit-button"; 
-//        }
-//        program { 
-//            name: "edit_button_to_default"; 
-//            signal: "edit_button_to_default"; 
-// //           source: "edit-button*"; 
-//            action: STATE_SET "default" 0.0; 
-//            target: "edit-button"; 
-//        } 
-
+        // program { 
+        //     name: "edit_button_click"; 
+        //     signal: "mouse,clicked,1"; 
+        //     source: "edit-button"; 
+        //     action: SIGNAL_EMIT "edit" ""; 
+        // } 
+        // program { 
+        //     name: "edit_button_to_edit"; 
+        //     signal: "edit_button_to_edit"; 
+        //     source: "edit-button*"; 
+        //     action: STATE_SET "edit-mode" 0.0; 
+        //     target: "edit-button"; 
+        // }
+        // program { 
+        //     name: "edit_button_to_default"; 
+        //     signal: "edit_button_to_default"; 
+        //     source: "edit-button*"; 
+        //     action: STATE_SET "default" 0.0; 
+        //     target: "edit-button"; 
+        // } 
         program { 
             name: "up_pager";
             signal: "mouse,up,1";
@@ -177,12 +170,8 @@ group {
             description {
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 {
-                    relative: 0.0 0.0;
-                }
-                rel2 {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
         part {
@@ -191,13 +180,10 @@ group {
             description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 {
-                    relative: 0.0 0.0;
-                }
-                rel2 {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
     }
 }
+

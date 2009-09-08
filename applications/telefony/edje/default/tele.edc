@@ -1,49 +1,45 @@
 fonts {
-   // We use Bold font for nearly everything. by Will.
-   //font: "Inspiration-Bold.ttf"   "Sans";
+    // We use Bold font for nearly everything. by Will.
+    //font: "Inspiration-Bold.ttf"   "Sans";
 }
 
 images {
-   image: "back.png" COMP;
-   image: "save.png" COMP;
-   image: "next.png" COMP;
-   image: "next_pressed.png" COMP;
-   image: "minus.png" COMP;
-   image: "plus.png" COMP;
-
-   image: "call_activate.png" COMP;
-   image: "call_activate2.png" COMP;
-   image: "call_activate_pressed.png" COMP;
-   image: "call_end.png" COMP;
-   image: "call_end_pressed.png" COMP;
-   image: "call_end2.png" COMP;
-   image: "call.png" COMP;
-   image: "end_call.png" COMP;
-   image: "answer.png" COMP;
-   image: "back.png" COMP;
-   image: "back_pressed.png" COMP;
-   image: "backspace.png" COMP;
-   image: "backspace_pressed.png" COMP;
-   image: "speaker.png" COMP;
-   image: "mute.png" COMP;
-   image: "enter.png" COMP;
+    image: "back.png" COMP;
+    image: "save.png" COMP;
+    image: "next.png" COMP;
+    image: "next_pressed.png" COMP;
+    image: "minus.png" COMP;
+    image: "plus.png" COMP;
+    image: "call_activate.png" COMP;
+    image: "call_activate2.png" COMP;
+    image: "call_activate_pressed.png" COMP;
+    image: "call_end.png" COMP;
+    image: "call_end_pressed.png" COMP;
+    image: "call_end2.png" COMP;
+    image: "call.png" COMP;
+    image: "end_call.png" COMP;
+    image: "answer.png" COMP;
+    image: "back.png" COMP;
+    image: "back_pressed.png" COMP;
+    image: "backspace.png" COMP;
+    image: "backspace_pressed.png" COMP;
+    image: "speaker.png" COMP;
+    image: "mute.png" COMP;
+    image: "enter.png" COMP;
 }
 
-styles
-{
-    style 
-    {
-      name: "textblock_style";
-      base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+styles {
+    style {
+        name: "textblock_style";
+        base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
     }
 }
-collections
-{
-  
+
+collections {
     #include "dialpad_rev2.edc"
     #include "save_contact.edc"
     #include "contacts_item.edc"
     #include "contacts_list.edc"
     #include "pin_enter.edc"
-
 }
+

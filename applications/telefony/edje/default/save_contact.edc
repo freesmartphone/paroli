@@ -1,5 +1,4 @@
 
-
 group { 
     name: "save-number";
     parts {
@@ -9,14 +8,11 @@ group {
             description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
-                rel1 {
-                    relative: 0.00 0.00;
-                }
-                rel2 {
-                    relative: 1.0 1.0;
-                }
+                rel1 { relative: 0.00 0.00; }
+                rel2 { relative: 1.0 1.0; }
             }
         }
+        
         part {
             name: "number";
             type: TEXT;
@@ -40,6 +36,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "back-button";
             type: IMAGE;
@@ -58,12 +55,11 @@ group {
                     offset: 123 53;
                     to: "base";
                 }
-                image {
-                    normal: "back.png";
-                }
+                image { normal: "back.png"; }
                 visible: 1;
             }
         }
+        
         part {
             name: "save-button";
             type: IMAGE;
@@ -82,15 +78,14 @@ group {
                     offset: 471 53;
                     to: "base";
                 }
-                image {
-                    normal: "save.png";
-                }
+                image { normal: "save.png"; }
                 visible: 1;
             }
         }
+        
         part {
-            name:"edit-box";
-            type:RECT;
+            name: "edit-box";
+            type: RECT;
             description { 
                 state: "default" 0.0;
                 color: 0 0 0 255;
@@ -106,6 +101,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "Edit-text";
             type: TEXT;
@@ -128,10 +124,12 @@ group {
                 }
             }
         }
+        
         part {
             name: "name-text";
             type: TEXT;
-            description { state: "default" 0.0;
+            description { 
+                state: "default" 0.0;
                 color: 255 255 255 255;
                 text {
                     align: 0.15 0.4;
@@ -151,6 +149,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "name-text-field";
             type: TEXT;
@@ -175,6 +174,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "name-box";
             type: SWALLOW;
@@ -192,6 +192,7 @@ group {
                 }
             }
         }
+        
         part {
             name: "save-notice";
             type: RECT;
@@ -207,6 +208,7 @@ group {
                 color: 0 0 0 160;
             }
         }
+        
         part {
             name: "save-notice-text";
             type: TEXT;
@@ -249,14 +251,12 @@ group {
             source: "back-button";
             action: SIGNAL_EMIT "close_window" "name-box";
         }
-        
-//        program { 
-//            name: "edit_button_click"; 
-//            signal: "mouse,clicked,1"; 
-//            source: "edit-button"; 
-//            action: SIGNAL_EMIT "edit" ""; 
-//        } 
-
+        // program { 
+        //     name: "edit_button_click"; 
+        //     signal: "mouse,clicked,1"; 
+        //     source: "edit-button"; 
+        //     action: SIGNAL_EMIT "edit" ""; 
+        // } 
         program { 
             name: "show_save_notice";
             signal: "save-notice";
@@ -277,3 +277,4 @@ group {
         }
     }
 }
+
