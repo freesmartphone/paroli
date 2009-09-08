@@ -48,6 +48,7 @@ styles {
 
 collections {
     #include "dialpad_numbers.edc"
+    #include "people_profile.edc"
     #include "contacts_details.edc"
     #include "contacts_item.edc"
     #include "edit_name.edc"
