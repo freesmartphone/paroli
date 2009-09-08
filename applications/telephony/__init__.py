@@ -39,7 +39,7 @@ class TelefonyDialer(Application):
     def run(self, parent=None, standalone=False):
 
         ##set edje_file
-        self.edje_file = join(dirname(__file__),'tele.edj')
+        self.edje_file = join(dirname(__file__),'telephony.edj')
 
         self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
         self.edje_obj = self.window.main_layout
@@ -156,7 +156,7 @@ class TeleCaller2(Application):
         self.dialog = Service.get('Dialog')
         self.audio_service = Service.get('Audio')
         self.usage_service = Service.get('Usage')
-        self.edje_file = join(dirname(__file__),'tele.edj')
+        self.edje_file = join(dirname(__file__),'telephony.edj')
         logger.info("occupy cpu")
         # FIXME (vmx) FSO should be able to handle it, the fallback can't
         #self.usage_service.occupy_cpu().start()
@@ -488,7 +488,7 @@ class PINApp2(Application):
 
         logger.info("PIN2 called")
         ##set edje_file
-        self.edje_file = join(dirname(__file__),'tele.edj')
+        self.edje_file = join(dirname(__file__),'telephony.edj')
 
         self.main = ElementaryLayoutWindow(self.edje_file, "pin_enter")
         #logger.info("PIN2 main generated")

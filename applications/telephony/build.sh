@@ -1,8 +1,8 @@
 #!/bin/sh -e
-echo "building tele.edj..."
+echo "building telephony.edj..."
 edje_cc\
 	-id edje/default/images\
 	-id ../../resources/images\
 	-fd ../../resources/fonts\
-	edje/default/tele.edc\
-	-o tele.edj
+	edje/default/telephony.edc\
+	-o telephony.edj
