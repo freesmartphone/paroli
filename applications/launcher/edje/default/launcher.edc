@@ -1,38 +1,38 @@
 
 collections {
     fonts {
-		font: "Inspiration-Bold.ttf" "Sans";
-	}
-	
-	images {
-		image: "alarm.png" COMP;
-		image: "gsm_no_service.png" COMP;
-		image: "profile-speaker.png" COMP;
-		image: "gprs.png" COMP;
-		image: "gsm_0.png" COMP;
-		image: "gsm_1.png" COMP;
-		image: "gsm_2.png" COMP;
-		image: "gsm_3.png" COMP;
-		image: "gsm_4.png" COMP;
-		image: "battery_0.png" COMP;
-		image: "battery_1.png" COMP;
-		image: "battery_2.png" COMP;
-		image: "battery_3.png" COMP;
-		image: "battery_charging.png" COMP;
-		image: "bg.png" COMP;
-	}
-	
-	styles {
-		style {
-			name: "textblock_style";
-			base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
-			tag:  "small"    "+ font_size=15";
-			tag:  "normal"    "+ color=#fff";
-			tag:  "br"        "  \n";
-		}
-	}
+        font: "Inspiration-Bold.ttf" "Sans";
+    }
+    
+    images {
+        image: "alarm.png" COMP;
+        image: "gsm_no_service.png" COMP;
+        image: "profile-speaker.png" COMP;
+        image: "gprs.png" COMP;
+        image: "gsm_0.png" COMP;
+        image: "gsm_1.png" COMP;
+        image: "gsm_2.png" COMP;
+        image: "gsm_3.png" COMP;
+        image: "gsm_4.png" COMP;
+        image: "battery_0.png" COMP;
+        image: "battery_1.png" COMP;
+        image: "battery_2.png" COMP;
+        image: "battery_3.png" COMP;
+        image: "battery_charging.png" COMP;
+        image: "bg.png" COMP;
+    }
+    
+    styles {
+        style {
+            name: "textblock_style";
+            base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
+            tag:  "small"    "+ font_size=15";
+            tag:  "normal"    "+ color=#fff";
+            tag:  "br"        "  \n";
+        }
+    }
 
-	#include "paroli-launcher_macros.edc"
+    #include "paroli-launcher_macros.edc"
     #include "topbar.edc"
     #include "launcher_main.edc"
     #include "launcher_link.edc"

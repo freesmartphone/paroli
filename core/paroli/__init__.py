@@ -115,11 +115,11 @@ def parse_options():
 def setup_logging():
     """Set up two logging handlers, one in the log file, one in the
     stdoutput"""
-	# TODO: read a config file here
+    # TODO: read a config file here
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s [%(levelname)s] %(name)s(%(filename)s:%(lineno)d) %(message)s',
-        )
+    )
 
 class InitAll(Tasklet):
     """Perform all basic initialization of services"""

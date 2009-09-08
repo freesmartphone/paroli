@@ -63,7 +63,7 @@ class InOutCallLog(Application):
 
         self.edje_obj.add_callback("to_edit_mode", "*", self.to_edit_mode)
         self.edje_obj.add_callback("to_default_mode", "*", self.to_default_mode)
-        
+
         ## close the Tele app, with the back button (signal, source, method)
         self.edje_obj.add_callback("back", "edje", self.signal) 
 
@@ -82,8 +82,8 @@ class InOutCallLog(Application):
         parent.emit("unblock")
 
         i, args = yield WaitFirst(Wait(self.window, 'back'),
-	                              Wait(self.window, 'delete_request'),
-                                  Wait(self.window.window,'closing'))
+                                   Wait(self.window, 'delete_request'),
+                                   Wait(self.window.window,'closing'))
 
         for i in self.callLogs:
             i.missed = False
@@ -101,7 +101,7 @@ class InOutCallLog(Application):
         logger.info("i-o2.py:signal() emmision: %s, signal: %s, source: %s", 
                     str(emission), str(signal), str(source))
         self.window.emit('back')
-    
+
     def restore_edit(self, *args, **kargs):
         self.edje_obj.edje.signal_emit("ListFilled", "python")
 
@@ -124,7 +124,7 @@ class InOutCallLog(Application):
         self.item_list.model.remove_group(deleting)
 
         for item in self.item_list.items:
-                item[1].signal_emit("to_default_mode", "*")
+            item[1].signal_emit("to_default_mode", "*")
 
         if len(self.callLogs) == 0:
             self.edje_obj.edje.signal_emit("ListEmpty", "python")

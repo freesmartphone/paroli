@@ -68,10 +68,10 @@ class Letters(Application):
         self.edje_obj.add_callback("*", "messaging", self.create_msg)
         self.item_list.add_callback("*", "messaging", self.adv_msg)
         self.item_list.add_callback("save", "*", self.create_contact)
-        
+
         ## close the Tele app, with the back button (signal, source, method)
         self.edje_obj.add_callback("back", "edje", self.signal) 
-        
+
         self.oid = self.contacts.connect('inserted', self.item_list._redraw_view)
 
         self.item_list.add_callback("details", "*", self.msg_details)
@@ -197,152 +197,152 @@ class MsgsWrite(Application):
     def run(self, parent, sms, mode, layout=None, *args, **kargs):
         self.dialog = Service.get("Dialog")
         try:
-          self.edje_file = join(dirname(__file__), 'messages.edj')
-          number_layout = 0
-          text_layout = 0
-          send = 0
-          number = ""
-          full = False
-          pre_text = None
+            self.edje_file = join(dirname(__file__), 'messages.edj')
+            number_layout = 0
+            text_layout = 0
+            send = 0
+            number = ""
+            full = False
+            pre_text = None
 
-          self.window = parent
+            self.window = parent
 
-          if layout != None:
-              layout.elm_obj.hide()
+            if layout != None:
+                layout.elm_obj.hide()
 
-          if mode != "reply":
-              full = True
-              number = ""
-          else:
-              sms.text = ""
+            if mode != "reply":
+                full = True
+                number = ""
+            else:
+                sms.text = ""
 
-          while True:
+            while True:
 
-              if full:
+                if full:
 
-                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                    parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
 
-                  if number_layout == 0:
+                    if number_layout == 0:
 
-                      number_layout =  ElementaryLayout(parent.window, self.edje_file, "edit_number")
+                        number_layout =  ElementaryLayout(parent.window, self.edje_file, "edit_number")
 
-                      edje_obj = number_layout.elm_obj.edje_get()
+                        edje_obj = number_layout.elm_obj.edje_get()
 
-                      edje_obj.part_text_set('num_field-text', number)
+                        edje_obj.part_text_set('num_field-text', number)
 
-                      number_layout.elm_obj.show()
+                        number_layout.elm_obj.show()
 
-                      parent.main_layout.elm_obj.hide()
+                        parent.main_layout.elm_obj.hide()
 
-                  else:
-                      logger.info("back pressed in text")
-                      number_layout.elm_obj.show()
-                      edje_obj = number_layout.elm_obj.edje_get()
+                    else:
+                        logger.info("back pressed in text")
+                        number_layout.elm_obj.show()
+                        edje_obj = number_layout.elm_obj.edje_get()
 
-                  edje_obj.signal_callback_add("num_field_pressed", "*", self.num_field_action)
-                  self.number_layout = number_layout
-                  parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
+                    edje_obj.signal_callback_add("num_field_pressed", "*", self.num_field_action)
+                    self.number_layout = number_layout
+                    parent.bg.elm_obj.content_set("content-swallow", number_layout.elm_obj)
 
-                  number_layout.connect("too_short", self.error_win, "number too short")
+                    number_layout.connect("too_short", self.error_win, "number too short")
 
-                  i, args = yield WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
+                    i, args = yield WaitFirst(Wait(number_layout, 'back'), Wait(number_layout, 'next'))
 
-                  if i == 0: #back
-                      break
+                    if i == 0: #back
+                        break
 
-                  if i == 1: #next
-                      number_layout.elm_obj.hide()
-                      number = edje_obj.part_text_get('num_field-text')
-                      sms.peer = number
+                    if i == 1: #next
+                        number_layout.elm_obj.hide()
+                        number = edje_obj.part_text_get('num_field-text')
+                        sms.peer = number
 
-              if sms.text == "" or mode == "forward":
+                if sms.text == "" or mode == "forward":
 
-                  text_layout = ElementaryLayout(parent.window, self.edje_file, "CreateText")
+                    text_layout = ElementaryLayout(parent.window, self.edje_file, "CreateText")
 
-                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
+                    parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_ON)
 
-                  text_layout.elm_obj.layer_set(99)
+                    text_layout.elm_obj.layer_set(99)
 
-                  edje_obj = text_layout.elm_obj.edje_get()
+                    edje_obj = text_layout.elm_obj.edje_get()
 
-                  text_layout.elm_obj.show()
+                    text_layout.elm_obj.show()
 
-                  parent.main_layout.elm_obj.hide()
+                    parent.main_layout.elm_obj.hide()
 
-                  parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
+                    parent.bg.elm_obj.content_set("content-swallow", text_layout.elm_obj)
 
-                  textbox = Entry(parent.window.elm_obj)
+                    textbox = Entry(parent.window.elm_obj)
 
-                  textbox.color_set(255, 255, 255, 255)
+                    textbox.color_set(255, 255, 255, 255)
 
-                  if pre_text != None:
-                      textbox.entry_set(unicode(pre_text).encode("utf-8"))
-                  else:
-                      textbox.entry_set(unicode(sms.text).encode("utf-8"))
+                    if pre_text != None:
+                        textbox.entry_set(unicode(pre_text).encode("utf-8"))
+                    else:
+                        textbox.entry_set(unicode(sms.text).encode("utf-8"))
 
-                  self.counter(textbox, "event", text_layout)
+                    self.counter(textbox, "event", text_layout)
 
-                  textbox.size_hint_weight_set(1.0, 1.0)
+                    textbox.size_hint_weight_set(1.0, 1.0)
 
-                  sc = Scroller(parent.window.elm_obj)
-                  sc.content_set(textbox)
+                    sc = Scroller(parent.window.elm_obj)
+                    sc.content_set(textbox)
 
-                  textbox.line_wrap_set(True)
-                  text_layout.elm_obj.content_set('entry', sc)
-                  sc.show()
+                    textbox.line_wrap_set(True)
+                    text_layout.elm_obj.content_set('entry', sc)
+                    sc.show()
 
-                  textbox.editable_set(True)
+                    textbox.editable_set(True)
 
-                  textbox.focus()
-                  textbox.show()
+                    textbox.focus()
+                    textbox.show()
 
-                  textbox.on_key_down_add(self.counter, text_layout)
+                    textbox.on_key_down_add(self.counter, text_layout)
 
-                  text_layout.connect("send_request", self.send_request, textbox, sms.peer)
+                    text_layout.connect("send_request", self.send_request, textbox, sms.peer)
 
-              i, args = yield WaitFirst(Wait(text_layout, 'back'),
-                                        Wait(text_layout, 'send'))
-              if i == 0: #back
-                  if full:
-                      text_layout.elm_obj.hide()
-                      logger.info("win set False")
-                      parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-                      pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
-                      pre_text = pre_text.strip()
-                      textbox.on_key_down_del(self.counter)
-                      continue
-                  else:
-                      logger.debug("breaking")
-                      break
-              if i == 1: #send
-                  send = 1
-                  logger.info("win set False")
-                  parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
-                  break
+                i, args = yield WaitFirst(Wait(text_layout, 'back'),
+                                          Wait(text_layout, 'send'))
+                if i == 0: #back
+                    if full:
+                        text_layout.elm_obj.hide()
+                        logger.info("win set False")
+                        parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                        pre_text = unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
+                        pre_text = pre_text.strip()
+                        textbox.on_key_down_del(self.counter)
+                        continue
+                    else:
+                        logger.debug("breaking")
+                        break
+                if i == 1: #send
+                    send = 1
+                    logger.info("win set False")
+                    parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+                    break
 
-          logger.info("broke loop")
-          if send == 1:
-              text =  unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
-              sms.text = text.strip()
-              text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
-              yield self.send_sms(sms)
+            logger.info("broke loop")
+            if send == 1:
+                text =  unicode(textbox.entry_get()).encode("utf-8").replace("<br>","")
+                sms.text = text.strip()
+                text_layout.elm_obj.edje_get().signal_emit("save-notice","*")
+                yield self.send_sms(sms)
 
-          if number_layout:
-              number_layout.delete()
+            if number_layout:
+                number_layout.delete()
 
-          if text_layout:
-              logger.info("deleting text layout")
-              text_layout.delete()
-              parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
+            if text_layout:
+                logger.info("deleting text layout")
+                text_layout.delete()
+                parent.window.elm_obj.keyboard_mode_set(ECORE_X_VIRTUAL_KEYBOARD_STATE_OFF)
 
-          if layout != None:
-              layout.elm_obj.show()
-          else:
-              parent.restore_orig()
+            if layout != None:
+                layout.elm_obj.show()
+            else:
+                parent.restore_orig()
 
-          ret = "done"
+            ret = "done"
 
-          yield ret
+            yield ret
 
         except Exception, e:
             logger.exception('run')
@@ -398,9 +398,9 @@ class MsgsWrite(Application):
     def send_sms(self, sms):
         """tasklet that performs the sending process
 
-		connects to SIM service and tries sending the sms, if it fails
-		it opens an error dialog, if it succeeds it deletes the edje
-		window it it given
+        connects to SIM service and tries sending the sms, if it fails
+        it opens an error dialog, if it succeeds it deletes the edje
+        window it it given
         """
         logger.info("send message called")
         message_service = Service.get('Messages')
