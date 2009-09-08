@@ -1,8 +1,8 @@
 #!/bin/sh -e
-echo "building paroli-launcher.edj..."
+echo "building launcher.edj..."
 edje_cc\
 	-id edje/default/images\
 	-id ../../resources/images\
 	-fd ../../resources/fonts\
-	edje/default/paroli-launcher.edc\
-	-o paroli-launcher.edj
+	edje/default/launcher.edc\
+	-o launcher.edj

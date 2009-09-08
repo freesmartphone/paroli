@@ -49,7 +49,7 @@ class Launcher(Application):
 
         self.settings = config.getboolean('settings','activated', False)
 
-        self.edje_file = join(dirname(__file__),'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__),'launcher.edj')
 
         self.window = ElementaryLayoutWindow(self.edje_file, "main", None, None, True)
 
@@ -443,7 +443,7 @@ class BusyWin(Service):
 
     def __init__(self):
         super(BusyWin, self).__init__()
-        self.edje_file = join(dirname(__file__), 'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__), 'launcher.edj')
         self.win = None
 
     @tasklet
@@ -473,7 +473,7 @@ class TopBar(Service):
 
     def __init__(self):
         super(TopBar, self).__init__()
-        self.edje_file = join(dirname(__file__), 'paroli-launcher.edj')
+        self.edje_file = join(dirname(__file__), 'launcher.edj')
         self.tb_list = []
 
     @tasklet
