@@ -1,24 +1,25 @@
-images {
-    image: "edit.png" COMP;
-    image: "sweep.png" COMP;
-    image: "Save.png" COMP;
-    image: "save.png" COMP;
-    image: "save_pressed.png" COMP;
-    image: "Done.png" COMP;
-    image: "Delete.png" COMP;
-    image: "delete.png" COMP;
-    image: "back.png" COMP;
-    image: "back_pressed.png" COMP;
-}
-
-styles {
-    style {
-        name: "textblock_style";
-        base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
-    }
-}
 
 collections {
+    images {
+        image: "edit.png" COMP;
+        image: "sweep.png" COMP;
+        image: "Save.png" COMP;
+        image: "save.png" COMP;
+        image: "save_pressed.png" COMP;
+        image: "Done.png" COMP;
+        image: "Delete.png" COMP;
+        image: "delete.png" COMP;
+        image: "back.png" COMP;
+        image: "back_pressed.png" COMP;
+    }
+    
+    styles {
+        style {
+            name: "textblock_style";
+            base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
+        }
+    }
+
     #include "list_tb.edc"
     #include "list_main.edc"
     #include "history_label.edc"
