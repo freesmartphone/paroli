@@ -1,4 +1,3 @@
-#include "macros_rev2.edc"
 
 group {
     name: "pin_enter";

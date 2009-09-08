@@ -36,9 +36,13 @@ styles {
 }
 
 collections {
+    #include "macros_rev2.edc"
+    #include "scroll_container.edc"
     #include "dialpad_rev2.edc"
+    #include "tele_profile.edc"
     #include "save_contact.edc"
     #include "contacts_item.edc"
+    #include "tele_pseudo.edc"
     #include "contacts_list.edc"
     #include "pin_enter.edc"
 }

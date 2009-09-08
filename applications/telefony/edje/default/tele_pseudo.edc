@@ -1,0 +1,18 @@
+
+group {
+    min: 470 60;
+    max: 470 60;
+    name: "pseudo";
+    parts {
+        part {
+            name: "base";
+            type: SWALLOW;
+            description { 
+                state: "default" 0.0;
+                rel1 { relative: 0.00 0.00; }
+                rel2 { relative: 1.0 1.0; }
+            }
+        }
+    }
+}
+
