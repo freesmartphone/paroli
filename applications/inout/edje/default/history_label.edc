@@ -1,0 +1,49 @@
+
+group {
+    name: "history-label";
+    min: 80 30;
+    max: 480 30;
+    parts {
+        part {
+            name: base;
+            type: RECT;
+            description {
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
+            }
+        }
+        part {
+            name: text;
+            type: TEXT;
+            description {
+                state: "default" 0.0;
+                color: 255 255 255 255;
+                text {
+                    align: 0.0 0.0;
+                    size: 20;
+                    text: "Missed";
+                    font: "Sans";
+                }
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
+            }
+            description {
+                state: "Missed" 0.0;
+                inherit:"default" 0.0;
+                color: 255 0 0 255;
+            }
+            description {
+                state: "Outgoing" 0.0;
+                inherit:"default" 0.0;
+            }
+            description {
+                state: "Incoming" 0.0;
+                inherit:"default" 0.0;
+                color: 0 255 0 255;
+            }
+        }
+    }
+}
+

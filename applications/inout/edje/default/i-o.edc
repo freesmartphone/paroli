@@ -19,7 +19,9 @@ styles {
 }
 
 collections {
-    #include "list.edc"
+    #include "list_tb.edc"
+    #include "list_main.edc"
+    #include "history_label.edc"
     #include "item.edc"
     #include "create_message.edc"
 }
