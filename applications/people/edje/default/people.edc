@@ -12,31 +12,15 @@ collections {
         image: "back_pressed.png" COMP;
         image: "backspace.png" COMP;
         image: "backspace_pressed.png" COMP;
-        image: "Done_button.png" COMP;
-        image: "Edit_button.png" COMP;
         image: "edit.png" COMP;
         image: "edit_pressed.png" COMP;
-        image: "Next_button.png" COMP;
         image: "next.png" COMP;
         image: "next_pressed.png" COMP;
         image: "Save_button.png" COMP;
         image: "save.png" COMP;
         image: "save_pressed.png" COMP;
-        image: "Delete_button.png" COMP;
         image: "delete.png" COMP;
         image: "delete_pressed.png" COMP;
-        image: "1.png" COMP;
-        image: "2.png" COMP;
-        image: "3.png" COMP;
-        image: "4.png" COMP;
-        image: "5.png" COMP;
-        image: "6.png" COMP;
-        image: "7.png" COMP;
-        image: "8.png" COMP;
-        image: "9.png" COMP;
-        image: "0.png" COMP;
-        image: "asterisk.png" COMP;
-        image: "sharp.png" COMP;
         image: "back.png" COMP;
     }
     
