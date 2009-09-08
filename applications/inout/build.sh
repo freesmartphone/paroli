@@ -1,8 +1,8 @@
 #!/bin/sh -e
-echo "building i-o.edj..."
+echo "building inout.edj..."
 edje_cc\
 	-id edje/default/images\
 	-id ../../resources/images\
 	-fd ../../resources/fonts\
-	edje/default/i-o.edc\
-	-o i-o.edj
+	edje/default/inout.edc\
+	-o inout.edj

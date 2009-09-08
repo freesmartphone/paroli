@@ -36,7 +36,7 @@ class InOutCallLog(Application):
 
     def run(self, parent=None, standalone=False):
         ##to be standardized
-        self.edje_file = join(dirname(__file__), 'i-o.edj')
+        self.edje_file = join(dirname(__file__), 'inout.edj')
 
         self.gsm_service = Service.get('GSM')
         self.callLogs = self.gsm_service.logs
