@@ -55,9 +55,9 @@ class Launcher(Application):
 
         self.edje_obj = self.window.main_layout
         if hasattr(self.window.topbar, "tb"):
-
             self.window.topbar.tb.elm_obj.edje_get().signal_emit("hide_clock","*")
-
+        
+        self.window.window.elm_obj.resize(480, 640-64)
         self.active_app = None
 
         if self.advanced:
