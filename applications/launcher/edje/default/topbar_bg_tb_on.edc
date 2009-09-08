@@ -1,0 +1,61 @@
+
+group {
+    name: "bg-tb-on";
+    min: 480 640;
+    max: 480 640;
+    parts {
+        part {
+            name: "base";
+            type: RECT;
+            mouse_events: 1;
+            description { 
+                state: "default" 0.0;
+                color: 0 0 0 255;
+                rel1 { relative: 0.0 0.0; }
+                rel2 { relative: 1.0 1.0; }
+            }
+        }
+        
+        part {
+            name: "tb-swallow";
+            type: SWALLOW;
+            mouse_events: 1;
+            description { 
+                state: "default 0.0;
+                color: 0 0 0 255;
+                fixed: 1 1;
+                rel1 {
+                    relative: 0.0 0.0;
+                    // offset: 0 -1;
+                    to:"base";
+                }
+                rel2 {
+                    relative: 1.0 0.078;
+                    // offset: 480 49;
+                    to:"base";
+                }
+            }
+        }
+        
+        part {
+            name: "content-swallow";
+            type: SWALLOW;
+            // type: RECT;
+            mouse_events: 1;
+            description { 
+                state: "default" 0.0;
+                color: 0 0 255 255;
+                fixed: 1 1;
+                rel1 {
+                    relative: 0.0 0.07; // launcher TODO: clean topbar a lot
+                    to:"base";
+                }
+                rel2 {
+                    relative: 1.0 1.0;
+                    to:"base";
+                }
+            }
+        }
+    }
+}
+
