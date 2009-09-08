@@ -38,7 +38,7 @@ class Letters(Application):
 
         ##set edje file to be used
         ##TODO: make one edje file per plugin
-        self.edje_file = join(dirname(__file__),'msgs.edj')
+        self.edje_file = join(dirname(__file__),'messages.edj')
 
         ##get message service and list of all messages
         self.contact_service = Service.get('Contacts')
@@ -197,7 +197,7 @@ class MsgsWrite(Application):
     def run(self, parent, sms, mode, layout=None, *args, **kargs):
         self.dialog = Service.get("Dialog")
         try:
-          self.edje_file = join(dirname(__file__), 'msgs.edj')
+          self.edje_file = join(dirname(__file__), 'messages.edj')
           number_layout = 0
           text_layout = 0
           send = 0
