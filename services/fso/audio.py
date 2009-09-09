@@ -182,6 +182,7 @@ class FSOAudioService(Service):
             logger.error("/usr/share/sounds/phone_ringing.ogg passed as argument!")
             filepath = "/usr/share/sounds/ringtone_ringnroll.wav"
         try:
+            # rules.yaml RingTone() function
             self.audio.PlaySound( filepath, loop, length )
         except dbus.DBusException, e:
             logger.exception("play: %s, filepath: %s", e, filepath)
