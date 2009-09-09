@@ -71,7 +71,7 @@ class TelNumber(Text):
 
 class ListSettingObject(object):
 
-      def __init__(self, name, action):
-          self.name = name
-          self.action = action
+    def __init__(self, name, action):
+        self.name = name
+        self.action = action
 
