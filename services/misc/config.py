@@ -66,7 +66,6 @@ class ConfigService(Service):
         except IOError, e:
             logger.exception("can't use freesmartphone IdleNotifier service : %s", e)
             return None
-            raise
 
     def get_items(self, section, path=False):
         try:
