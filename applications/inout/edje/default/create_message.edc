@@ -1,12 +1,5 @@
 //details for contact
 
-// styles {
-//     style {
-//         name: "textblock_style_2";
-//         base: "font=Sans font_size=20 align=left valign=top color=#fff  wrap=word";
-//     }
-// }
-
 group { 
     name: "create_message";
     min: 480 570;

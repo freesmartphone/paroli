@@ -24,12 +24,7 @@ collections {
         image: "back.png" COMP;
     }
     
-    styles {
-        style {
-            name: "textblock_style";
-            base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
-        }
-    }
+    #include "../../../../resources/edc/textblock_style.edc"
 
     #include "dialpad_numbers.edc"
     #include "people_profile.edc"

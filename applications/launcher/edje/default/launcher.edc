@@ -22,15 +22,7 @@ collections {
         image: "bg.png" COMP;
     }
     
-    styles {
-        style {
-            name: "textblock_style";
-            base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
-            tag:  "small"    "+ font_size=15";
-            tag:  "normal"    "+ color=#fff";
-            tag:  "br"        "  \n";
-        }
-    }
+    #include "../../../../resources/edc/textblock_style.edc"
 
     #include "paroli-launcher_macros.edc"
     #include "topbar.edc"

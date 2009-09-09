@@ -30,12 +30,7 @@ collections {
         image: "enter.png" COMP;
     }
     
-    styles {
-        style {
-            name: "textblock_style";
-            base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
-        }
-    }
+    #include "../../../../resources/edc/textblock_style.edc"
 
     #include "macros_rev2.edc"
     #include "scroll_container.edc"

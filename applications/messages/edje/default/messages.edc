@@ -1,11 +1,5 @@
 
 collections {
-    styles {
-        style {
-            name: "textblock_style";
-            base: "font=Sans font_size=24 align=left valign=top color=#0ff  wrap=word";
-        }
-    }
     
     images {
         image: "add.png" COMP;
@@ -21,6 +15,8 @@ collections {
         image: "back.png" COMP;
         image: "back_pressed.png" COMP;
     }
+    
+    #include "../../../../resources/edc/textblock_style.edc"
 
     #include "macros.edc"
     #include "dialpad.edc"

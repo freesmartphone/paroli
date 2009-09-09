@@ -13,13 +13,8 @@ collections {
         image: "back_pressed.png" COMP;
     }
     
-    styles {
-        style {
-            name: "textblock_style";
-            base: "font=Sans font_size=24 align=left valign=top color=#000  wrap=word";
-        }
-    }
-
+    #include "../../../../resources/edc/textblock_style.edc"
+    
     #include "list_tb.edc"
     #include "list_main.edc"
     #include "history_label.edc"
