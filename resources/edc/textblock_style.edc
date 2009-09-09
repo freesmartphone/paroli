@@ -1,0 +1,9 @@
+styles {
+    style {
+        name: "textblock_style";
+        base: "font=Sans font_size=40 align=left color=#fff  wrap=word";
+        tag:  "small"    "+ font_size=15";
+        tag:  "normal"    "+ color=#fff";
+        tag:  "br"        "  \n";
+    }
+}
