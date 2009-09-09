@@ -81,7 +81,7 @@ class EventsLoop(Object):
         self.emit("closing")
         logger.info("emitted closing")
         ecore.main_loop_quit()
-        elementary.shutdown()
+        #elementary.shutdown() #TODO: find out the proper fix!!!!!
 
     def iterate(self):
         pass #ecore.main_loop_iterate()
