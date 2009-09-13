@@ -75,6 +75,9 @@ setup(name='paroli',
     packages = ['tichy', 'paroli', ],
     scripts= ['scripts/paroli'],
     data_files = [
+        (join(prefix, 'share/icons'), [
+            'data/paroli.png',
+            ], ),
         (join(prefix, 'share/applications'), [
             'data/paroli.desktop',
             #'data/paroli-io.desktop',
