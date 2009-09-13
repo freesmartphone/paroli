@@ -53,8 +53,8 @@ class FSOSysTimeService(Service):
             yield WaitDBusName('org.freesmartphone.odeviced', time_out=120)
             bus = dbus.SystemBus(mainloop=mainloop.dbus_loop)
             rtc_obj = bus.get_object('org.freesmartphone.odeviced',
-                          '/org/freesmartphone/Device/RealTimeClock/rtc0')
-            self.rtc = dbus.Interface(rtc_obj, 'org.freesmartphone.Device.RealTimeClock')
+                          '/org/freesmartphone/Device/RTC/rtc0')
+            self.rtc = dbus.Interface(rtc_obj, 'org.freesmartphone.Device.RealtimeClock')
 
             self.ListLabel = [('title','name'),('value','value')]
 
