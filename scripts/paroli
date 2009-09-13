@@ -54,9 +54,9 @@ fi
 cd $DIR
 echo "pwd: $PWD"
 echo "PYTHONPATH=$PPATH \ 
-exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$ENGINE.cfg"
+exec python -OO core/paroli/__init__.py --cfgfile /etc/paroli/paroli.$ENGINE.cfg"
 
 PYTHONPATH=$PPATH \
-exec python -OO core/paroli/__init__.py --cfgfile scripts/paroli.$ENGINE.cfg
+exec python -OO core/paroli/__init__.py --cfgfile /etc/paroli/paroli.$ENGINE.cfg
 
 
